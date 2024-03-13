@@ -1,19 +1,11 @@
-@use './sample';
-@use './variables';
+@import 'header';
+@import 'variables';
+@import 'home';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  h2 {
-    @apply bg-teal-100 text-3xl;
-}
-}
-
-.container {
-  background-color: #ff0000;
-  h1 {
-    color: #0000ff;
-  }
+html {
+    background-color: $primary-color;
 }

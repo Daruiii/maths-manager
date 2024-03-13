@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto">
     <div class="quote-box">
-        <p class="quote-text">“L'imagination est plus importante que le savoir”</p>
+        <p class="quote-text">“ouais”</p>
         <p class="quote-author">(Albert Einstein)</p>
     </div>
 </div>
