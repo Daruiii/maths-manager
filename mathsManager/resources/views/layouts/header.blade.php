@@ -5,10 +5,10 @@
         </div>
 
         <div class="hidden md:flex space-x-4">
-            <a href="{{ route('classe', 'premiere-spe') }}" class="link {{ request()->routeIs('classe', 'premiere-spe') ? 'active' : '' }}">Première SPE</a>
-            <a href="{{ route('home') }}" class="link">Terminale SPE</a>
-            <a href="{{ route('home') }}" class="link">Maths expertes</a>
-            <a href="{{ route('home') }}" class="link">Mes devoirs</a>
+            @foreach ($classes as $class)
+            <a href="{{ route('classe.show', $class->level) }}" class="link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
+        @endforeach
+            <a href="{{ route('home') }}" class="link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
         </div>
         <div class="auth-links">
             @auth

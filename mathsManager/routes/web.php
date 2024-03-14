@@ -1,16 +1,14 @@
 <?php
 
 use App\Http\Controllers\Auth\ProviderController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ClasseController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::get('/classe', function () {
-    return view('classes.classe');
-})->name('classe');
+Route::get('/classe/{level}', [ClasseController::class, 'show'])->name('classe.show');
 
 // Socialite routes
 Route::get('auth/{provider}/redirect', [ProviderController::class, 'redirect']);
