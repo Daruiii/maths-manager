@@ -1,6 +1,9 @@
 @import 'header';
 @import 'variables';
 @import 'home';
+@import 'auth';
+@import 'classe/show';
+@import 'button/google';
 
 @tailwind base;
 @tailwind components;
@@ -8,4 +11,13 @@
 
 html {
     background-color: $primary-color;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: $text-color;
 }

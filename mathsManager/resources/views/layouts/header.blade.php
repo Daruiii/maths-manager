@@ -14,7 +14,11 @@
             @auth
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center focus:outline-none">
+                        @if (Auth::user()->is_admin)
+                            <span class="text-blue-500">{{ Auth::user()->name }}</span>
+                        @else
                         <span>{{ Auth::user()->name }}</span>
+                        @endif
                         <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                             stroke-width="2" viewBox="0 0 24 24" class="ml-2 w-4 h-4">
                             <path d="M19 9l-7 7-7-7"></path>

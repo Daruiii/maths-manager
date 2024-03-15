@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Classe;
 use App\Models\Chapter;
+use App\Models\Subchapter;
 
 class ClasseController extends Controller
 {
@@ -20,7 +21,8 @@ class ClasseController extends Controller
         $classe = Classe::where('level', $level)->firstOrFail();
         // display chapters of the class
         $chapters = Chapter::where('class_id', $classe->id)->get();
-        return view('classe.show', compact('classe', 'chapters'));
+        $subchapters = Subchapter::where('chapter_id', $chapters->first()->id)->get();
+        return view('classe.show', compact('classe', 'chapters', 'subchapters'));
     }
 
     public function create() // admin

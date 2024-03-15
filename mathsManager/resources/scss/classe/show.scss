@@ -1,2 +1,65 @@
 @import "../variables";
 
+$light-gray: #f8fafc; // Idem
+$transition-duration: 300ms;
+
+.chapters-container {
+  padding: 1.5rem;
+     .header {
+    width: 50%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    
+    .title {
+      font-size: $font-size-medium;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      font-size: $font-size-small;
+      font-weight: "semi-bold";
+      margin-top: 0.25rem;
+    }
+
+    .add-button {
+      background-color: $admin;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      font-weight: bold;
+      transition: background-color $transition-duration ease-in-out;
+
+      &:hover {
+        background-color: darken($admin, 10%);
+      }
+    }
+  }
+  
+  .chapter-list {
+    margin-top: 1.25rem;
+    
+    .chapter {
+      background-color: white;
+      border-radius: 0.5rem; // équivalent de rounded-lg
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); // équivalent de shadow-md
+      padding: 1rem;
+      transition: all $transition-duration ease-in-out;
+      
+      &-title {
+        font-size: 1rem; // équivalent de text-lg
+        font-weight: semi-bold;
+      }
+      
+      &-content {
+        padding-top: 0.5rem;
+        padding-bottom: 1rem;
+        padding-left: 1rem;
+      }
+
+      &:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); // augmente l'ombre au survol
+      }
+    }
+  }
+}
