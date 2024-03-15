@@ -10,17 +10,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::middleware(['is.admin'])->group(function () {
-    Route::get('/classe/{level}', [ClasseController::class, 'show'])->name('classe.show');
-});
 // Classe routes
-
+Route::get('/classe/{level}', [ClasseController::class, 'show'])->name('classe.show');
 Route::get('/classe', [ClasseController::class, 'index'])->name('classe.index');
-Route::get('/classe/create', [ClasseController::class, 'create'])->name('classe.create');
-Route::post('/classe', [ClasseController::class, 'store'])->name('classe.store');
-Route::get('/classe/{level}/edit', [ClasseController::class, 'edit'])->name('classe.edit');
-Route::patch('/classe/{level}', [ClasseController::class, 'update'])->name('classe.update');
-Route::delete('/classe/{level}', [ClasseController::class, 'destroy'])->name('classe.destroy');
+Route::middleware(['is.admin'])->group(function () {
+    Route::get('/classe/create', [ClasseController::class, 'create'])->name('classe.create');
+    Route::post('/classe', [ClasseController::class, 'store'])->name('classe.store');
+    Route::get('/classe/{level}/edit', [ClasseController::class, 'edit'])->name('classe.edit');
+    Route::patch('/classe/{level}', [ClasseController::class, 'update'])->name('classe.update');
+    Route::delete('/classe/{level}', [ClasseController::class, 'destroy'])->name('classe.destroy');
+});
+
 
 // Chapter routes
 Route::get('/chapter', [ChapterController::class, 'index'])->name('chapter.index');
@@ -40,7 +40,7 @@ Route::get('/subchapter/{id}/edit', [SubchapterController::class, 'edit'])->name
 Route::patch('/subchapter/{id}', [SubchapterController::class, 'update'])->name('subchapter.update');
 Route::delete('/subchapter/{id}', [SubchapterController::class, 'destroy'])->name('subchapter.destroy');
 
-// Socialite routes
+// Socialite routes (connection with google)
 Route::get('auth/{provider}/redirect', [ProviderController::class, 'redirect']);
 Route::get('auth/{provider}/callback', [ProviderController::class, 'callback']);
 

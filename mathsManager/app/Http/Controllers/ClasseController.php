@@ -19,8 +19,10 @@ class ClasseController extends Controller
     public function show($level) // student
     {
         $classe = Classe::where('level', $level)->firstOrFail();
-        // display chapters of the class
         $chapters = Chapter::where('class_id', $classe->id)->get();
+        if ($chapters->isEmpty()) {
+            return view('classe.show', compact('classe', 'chapters'));
+        }
         $subchapters = Subchapter::where('chapter_id', $chapters->first()->id)->get();
         return view('classe.show', compact('classe', 'chapters', 'subchapters'));
     }

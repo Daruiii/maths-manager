@@ -20,11 +20,15 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'provider',
         'provider_id',
         'provider_token'
     ];
 
+    const ROLE_ADMIN = 'admin';
+    const ROLE_TEACHER = 'teacher';
+    const ROLE_STUDENT = 'student';
     /**
      * The attributes that should be hidden for serialization.
      *

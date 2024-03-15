@@ -8,7 +8,7 @@
                 <h2 class="subtitle">Chapitres</h2>
             </div>
             @auth
-                @if (Auth::user()->is_admin)
+                @if (Auth::user()->role === 'admin')
                     <a href="#addChapter" class="add-button">Ajouter un chapitre</a>
                 @endif
             @endauth
@@ -28,7 +28,7 @@
                             </svg>
                         </button>
                         @auth
-                            @if (Auth::user()->is_admin)
+                            @if (Auth::user()->role === 'admin')
                                 <div class="flex items-center space-x-2">
                                     <a href="#editChapter" class="p-2 rounded-full text-blue-500 hover:text-blue-600">
                                         {{-- Icône d'Édition --}}
