@@ -8,11 +8,16 @@
             </svg>
         </button>
         <!-- Links for large screens -->
-        <div class="hidden md:flex space-x-4">
+        <div class="hidden md:flex space-x-4 items-center">
             @foreach ($classes as $class)
             <a href="{{ route('classe.show', $class->level) }}" class="link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
         @endforeach
             <a href="{{ route('home') }}" class="link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
+        @auth
+        @if (Auth::user()->role === 'admin')
+            <a href="{{ route('classe.index') }}" class="bg-blue-500 text-white rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
+        @endif
+        @endauth
         </div>
         <div class="hidden md:flex">
             @auth
