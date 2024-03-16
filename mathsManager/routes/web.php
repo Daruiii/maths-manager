@@ -6,30 +6,32 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClasseController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\SubchapterController;
+use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Classe routes
-Route::get('/classe/{level}', [ClasseController::class, 'show'])->name('classe.show');
 Route::get('/classe', [ClasseController::class, 'index'])->name('classe.index');
-Route::middleware(['is.admin'])->group(function () {
+Route::middleware([IsAdmin::class])->group(function () {
     Route::get('/classe/create', [ClasseController::class, 'create'])->name('classe.create');
     Route::post('/classe', [ClasseController::class, 'store'])->name('classe.store');
-    Route::get('/classe/{level}/edit', [ClasseController::class, 'edit'])->name('classe.edit');
-    Route::patch('/classe/{level}', [ClasseController::class, 'update'])->name('classe.update');
-    Route::delete('/classe/{level}', [ClasseController::class, 'destroy'])->name('classe.destroy');
+    Route::get('/classe/{id}/edit', [ClasseController::class, 'edit'])->name('classe.edit');
+    Route::patch('/classe/{id}', [ClasseController::class, 'update'])->name('classe.update');
+    Route::delete('/classe/{id}', [ClasseController::class, 'destroy'])->name('classe.destroy');
 });
-
+Route::get('/classe/{level}', [ClasseController::class, 'show'])->name('classe.show');
 
 // Chapter routes
 Route::get('/chapter', [ChapterController::class, 'index'])->name('chapter.index');
-Route::get('/chapter/{id}', [ChapterController::class, 'show'])->name('chapter.show');
+Route::middleware([IsAdmin::class])->group(function () {
 Route::get('/chapter/create', [ChapterController::class, 'create'])->name('chapter.create');
 Route::post('/chapter', [ChapterController::class, 'store'])->name('chapter.store');
 Route::get('/chapter/{id}/edit', [ChapterController::class, 'edit'])->name('chapter.edit');
 Route::patch('/chapter/{id}', [ChapterController::class, 'update'])->name('chapter.update');
 Route::delete('/chapter/{id}', [ChapterController::class, 'destroy'])->name('chapter.destroy');
+});
+Route::get('/chapter/{id}', [ChapterController::class, 'show'])->name('chapter.show');
 
 // Subchapter routes
 Route::get('/subchapter', [SubchapterController::class, 'index'])->name('subchapter.index');

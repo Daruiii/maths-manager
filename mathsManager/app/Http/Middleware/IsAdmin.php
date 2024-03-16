@@ -18,7 +18,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if ( !Auth::user()->role == User::ROLE_ADMIN ) {
+        if (Auth::check() && Auth::user()->role !== User::ROLE_ADMIN) {
             // Redirigez les non-administrateurs vers la page d'accueil
             return redirect('/home');
         }

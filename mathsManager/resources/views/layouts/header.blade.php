@@ -55,7 +55,10 @@
         @endforeach
             <a href="{{ route('home') }}" class="block link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
         @auth
-        <a href="{{ route('profile.edit') }}" class="block bg-blue-100 rounded-lg p-3 link {{ request()->is("profile") ? 'active' : '' }}">Mon profil</a>
+        @if (Auth::user()->role === 'admin')
+            <a href="{{ route('classe.index') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
+        @endif
+            <a href="{{ route('profile.edit') }}" class="block bg-blue-100 rounded-lg p-3 link {{ request()->is("profile") ? 'active' : '' }}">Mon profil</a>
             <a href="{{ route('logout') }}" class="block bg-red-100 rounded-lg p-3 link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a>
         @else

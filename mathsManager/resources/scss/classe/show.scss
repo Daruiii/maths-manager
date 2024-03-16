@@ -1,11 +1,12 @@
 @import "../variables";
 
-$light-gray: #f8fafc; // Idem
+$light-gray: #f8fafc;
 $transition-duration: 300ms;
 
 .chapters-container {
-  padding: 1.5rem;
-     .header {
+  padding: 1.5rem; 
+
+  .header {
     width: 50%;
     justify-content: space-between;
     align-items: center;
@@ -18,7 +19,7 @@ $transition-duration: 300ms;
 
     .subtitle {
       font-size: $font-size-small;
-      font-weight: "semi-bold";
+      font-weight: semi-bold;
       margin-top: 0.25rem;
     }
 
@@ -28,6 +29,7 @@ $transition-duration: 300ms;
       padding: 0.5rem 1rem;
       border-radius: 0.25rem;
       font-weight: bold;
+      text-align: center;
       transition: background-color $transition-duration ease-in-out;
 
       &:hover {
@@ -37,17 +39,19 @@ $transition-duration: 300ms;
   }
   
   .chapter-list {
-    margin-top: 1.25rem;
-    
+    display: flex;
+    flex-direction: column;
+
     .chapter {
+      min-width: 40rem;
       background-color: white;
-      border-radius: 0.5rem; // équivalent de rounded-lg
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); // équivalent de shadow-md
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       padding: 1rem;
       transition: all $transition-duration ease-in-out;
-      
+
       &-title {
-        font-size: 1rem; // équivalent de text-lg
+        font-size: 1rem;
         font-weight: semi-bold;
       }
       
@@ -58,8 +62,33 @@ $transition-duration: 300ms;
       }
 
       &:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); // augmente l'ombre au survol
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       }
     }
+  }
+
+  @media (max-width: 880px) { // Ajouté pour gérer les petits écrans
+    .header {
+      flex-direction: column;
+      gap: 0.5rem; // Ajoute de l'espace entre le titre et le bouton sur mobile
+
+      .title, .subtitle {
+        text-align: center; // Centre le texte pour les petits écrans
+      }
+    }
+
+    .chapter .flex .button {
+      width: 100%; // Permettre aux boutons de remplir toute la largeur du conteneur
+      margin-top: 0.5rem; // Ajouter un espace entre les boutons
+    }
+    .chapter {
+      // background-color: blue !important; 
+      padding: 0.5rem; // Diminuer le padding
+      margin: 0.5rem 0; // Ajuster les marges pour un meilleur espacement
+      width: auto; // Laisser le conteneur ajuster sa largeur automatiquement
+      min-width: 15rem !important;
+      max-width: 20rem !important;
+    }
+  
   }
 }

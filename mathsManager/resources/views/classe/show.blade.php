@@ -9,18 +9,21 @@
             </div>
             @auth
                 @if (Auth::user()->role === 'admin')
-                    <a href="#addChapter" class="add-button">Ajouter un chapitre</a>
+                    <a href= "{{ route('chapter.create') }}" class="add-button">Ajouter un chapitre</a>
                 @endif
             @endauth
         </div>
-        <div class="space-y-5 chapter-list">
+        <div class="space-y-4 chapter-list">
             @foreach ($chapters as $index => $chapter)
                 <div x-data="{ open: false, confirmDelete: false }" class="chapter bg-white rounded-lg shadow-md p-4 mb-4">
                     {{-- Chapitre Titre et Boutons d'Action pour Admin --}}
                     <div class="flex justify-between items-center">
                         <button @click="open = !open"
-                            class="flex items-center justify-between w-full text-left chapter-title text-lg font-semibold text-gray-700">
-                            <span>{{ $index + 1 }}. {{ $chapter->title }}</span>
+                            class="flex items-center justify-between w-2/3 text-left chapter-title text-lg font-semibold text-gray-700">
+                            <span class="truncate">{{ $index + 1 }}. {{ $chapter->title }}</span>
+                        </button>
+                        <button <button @click="open = !open"
+                            class="flex items-center justify-end w-full text-left chapter-title text-lg font-semibold text-gray-700">
                             {{-- Icône de Chevron --}}
                             <svg :class="{ 'transform rotate-180': open }" class="w-6 h-6"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,7 +33,8 @@
                         @auth
                             @if (Auth::user()->role === 'admin')
                                 <div class="flex items-center space-x-2">
-                                    <a href="#editChapter" class="p-2 rounded-full text-blue-500 hover:text-blue-600">
+                                    <a href="{{ route('chapter.edit', $chapter->id) }}"
+                                        class="p-2 rounded-full text-blue-500 hover:text-blue-600">
                                         {{-- Icône d'Édition --}}
                                         <svg fill="#000000" height="15px" width="15px" version="1.1" id="Capa_1"
                                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"

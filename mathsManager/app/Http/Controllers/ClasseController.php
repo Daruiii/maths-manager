@@ -41,18 +41,18 @@ class ClasseController extends Controller
 
         Classe::create($request->all());
 
-        return redirect()->route('classe.index');
+        return redirect()->route('home');
     }
 
-    public function edit($level) // admin
+    public function edit($id) // admin
     {
-        $classe = Classe::where('level', $level)->firstOrFail();
+        $classe = Classe::where('id', $id)->firstOrFail();
         return view('classe.edit', compact('classe'));
     }
 
-    public function update(Request $request, $level)
+    public function update(Request $request, $id)
     {
-        $classe = Classe::where('level', $level)->firstOrFail();
+        $classe = Classe::where('id', $id)->firstOrFail();
 
         $request->validate([
             'name' => 'required',
@@ -61,12 +61,12 @@ class ClasseController extends Controller
 
         $classe->update($request->all());
 
-        return redirect()->route('classe.index');
+        return redirect()->route('home');
     }
 
-    public function destroy($level)
+    public function destroy($id)
     {
-        $classe = Classe::where('level', $level)->firstOrFail();
+        $classe = Classe::where('id', $id)->firstOrFail();
         $classe->delete();
 
         return redirect()->route('classe.index');

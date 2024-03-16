@@ -22,7 +22,8 @@ class ChapterController extends Controller
 
     public function create() // admin
     {
-        return view('chapter.create');
+        $classes = Classe::all();
+        return view('chapter.create', compact('classes'));
     }
 
     public function store(Request $request) // admin
@@ -32,15 +33,18 @@ class ChapterController extends Controller
             'class_id' => 'required'
         ]);
 
-        Chapter::create($request->all());
+        $classLevel = Classe::findOrFail($request->class_id)->level;
 
-        return redirect()->route('chapter.index');
+        Chapter::create($request->all());
+        return redirect()->route('classe.show', $classLevel);
     }
 
     public function edit($id) // admin
     {
         $chapter = Chapter::findOrFail($id);
-        return view('chapter.edit', compact('chapter'));
+        $classes = Classe::all();
+
+        return view('chapter.edit', compact('chapter', 'classes'));
     }
 
     public function update(Request $request, $id) // admin
@@ -53,8 +57,9 @@ class ChapterController extends Controller
         ]);
 
         $chapter->update($request->all());
+        $classLevel = Classe::findOrFail($request->class_id)->level;
 
-        return redirect()->route('chapter.index');
+        return redirect()->route('classe.show', $classLevel);
     }
 
     public function destroy($id) // admin
