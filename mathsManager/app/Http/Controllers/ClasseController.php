@@ -41,7 +41,7 @@ class ClasseController extends Controller
 
         Classe::create($request->all());
 
-        return redirect()->route('home');
+        return redirect()->route('classe.index');
     }
 
     public function edit($id) // admin
@@ -61,7 +61,7 @@ class ClasseController extends Controller
 
         $classe->update($request->all());
 
-        return redirect()->route('home');
+        return redirect()->route('classe.index');
     }
 
     public function destroy($id)

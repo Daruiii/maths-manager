@@ -17,7 +17,7 @@
         
         <form action="{{ route('classe.update', $classe->level) }}" method="POST">
             @csrf
-            @method('PUT')
+            @method('PATCH')
             
             <div class="form-group">
                 <label for="name">Nom de la classe</label>

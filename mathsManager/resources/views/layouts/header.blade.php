@@ -15,7 +15,7 @@
             <a href="{{ route('home') }}" class="link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
         @auth
         @if (Auth::user()->role === 'admin')
-            <a href="{{ route('classe.index') }}" class="bg-blue-500 text-white rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
+            <a href="{{ route('admin') }}" class="bg-blue-500 text-white rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
         @endif
         @endauth
         </div>
@@ -54,14 +54,14 @@
             @endauth
         </div>
     <!-- Dropdown Links for small screens -->
-    <div class="md:hidden absolute right-1 top-0 mt-14 p-4 rounded-lg shadow-xl bg-gray-100 space-y-4"  x-show="open" @click.away="open = false">
+    <div class="md:hidden absolute right-1 top-0 mt-14 p-4 rounded-lg shadow-xl bg-gray-100 space-y-4 z-50"  x-show="open" @click.away="open = false">
         @foreach ($classes as $class)
             <a href="{{ route('classe.show', $class->level) }}" class="block link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
         @endforeach
             <a href="{{ route('home') }}" class="block link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
         @auth
         @if (Auth::user()->role === 'admin')
-            <a href="{{ route('classe.index') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
+            <a href="{{ route('admin') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
         @endif
             <a href="{{ route('profile.edit') }}" class="block bg-blue-100 rounded-lg p-3 link {{ request()->is("profile") ? 'active' : '' }}">Mon profil</a>
             <a href="{{ route('logout') }}" class="block bg-red-100 rounded-lg p-3 link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}"
