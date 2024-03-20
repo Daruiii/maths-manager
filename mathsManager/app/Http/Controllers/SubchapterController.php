@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
+use App\Models\Exercise;
 
 class SubchapterController extends Controller
 {
@@ -18,7 +19,8 @@ class SubchapterController extends Controller
     public function show($id) // students
     {
         $subchapter = Subchapter::findOrFail($id);
-        return view('subchapter.show', compact('subchapter'));
+        $exercises = Exercise::where('subchapter_id', $id)->get();
+        return view('subchapter.show', compact('subchapter', 'exercises'));
     }
 
     public function create($id) // admin

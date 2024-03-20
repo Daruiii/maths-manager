@@ -11,15 +11,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'CMU Serif';
+    src: url('../fonts/cmunbx.ttf') format('truetype');
+    font-weight: normal;
+    font-style : normal;
+}
+
 html {
     background-color: $primary-color;
 }
 
 .container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     color: $text-color;
+    font-family: 'CMU Serif', serif;
+}
+
+.pdf-container {
+    width: 100%;
+    border: 1px solid $primary-color;
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\SubchapterController;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ExerciseController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::middleware('auth')->group(function () {
@@ -51,6 +52,19 @@ Route::middleware([IsAdmin::class])->group(function () {
     Route::delete('/subchapter/{id}', [SubchapterController::class, 'destroy'])->name('subchapter.destroy');
 });
 Route::get('/subchapter/{id}', [SubchapterController::class, 'show'])->name('subchapter.show');
+
+// Exercise routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/exercise/{id}/create', [ExerciseController::class, 'create'])->name('exercise.create');
+        Route::post('/exercise', [ExerciseController::class, 'store'])->name('exercise.store');
+        Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
+        Route::get('/exercise/{id}', [ExerciseController::class, 'show'])->name('exercise.show');
+        Route::get('/exercise/{id}/edit', [ExerciseController::class, 'edit'])->name('exercise.edit');
+        Route::patch('/exercise/{id}', [ExerciseController::class, 'update'])->name('exercise.update');
+        Route::delete('/exercise/{id}', [ExerciseController::class, 'destroy'])->name('exercise.destroy');
+    });
+});
 
 // Users routes
 Route::middleware('auth')->group(function () {

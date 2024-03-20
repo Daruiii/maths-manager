@@ -86,7 +86,7 @@
                                 </div>
                                 @foreach ($chapter->subchapters as $subchapter)
                                     <div class="flex items-center space-x-2">
-                                        <a href="#exo" class="my-2 flex items-center space-x-2 truncate">
+                                        <a href="{{ route('subchapter.show', $subchapter->id) }}" class="my-2 flex items-center space-x-2 truncate">
                                             <span>¤ {{ $subchapter->title }}</span>
                                         </a>
                                         @auth
