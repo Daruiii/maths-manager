@@ -36,6 +36,8 @@
                     @endforeach
                     @endif
                 </div>
+                @auth
+                @if (Auth::user()->role === 'admin')
                 <div>
                 <form action="{{ route('exercise.destroy', $ex->id) }}" method="POST" class="inline">
                     @csrf
@@ -51,6 +53,8 @@
                     </button>
                 </form>
                 </div>
+                @endif
+                @endauth
             @endforeach
         </div>
     </div>
