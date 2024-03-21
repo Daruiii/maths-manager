@@ -146,7 +146,7 @@ protected function generatePngFromLatex($texPath, $outputDir)
         shell_exec($latexCommand);
     
         // Conversion du PDF en PNG
-        $convertCommand = "convert -trim -density 150 $pdfFilePath -quality 90 $pngFilePath";
+        $convertCommand = "convert -trim -density 200 $pdfFilePath -quality 90 $pngFilePath";
         shell_exec($convertCommand);
     }
     

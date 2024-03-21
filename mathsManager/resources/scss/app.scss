@@ -7,20 +7,21 @@
 @import 'form';
 @import 'footer';
 @import 'loader';
+@import 'fonts';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-    font-family: 'CMU Serif';
-    src: url('../fonts/cmunbx.ttf') format('truetype');
-    font-weight: normal;
-    font-style : normal;
-}
-
 html {
     background-color: $primary-color;
+}
+
+h1{
+    font-family: 'CMU Serif';
+}
+nav {
+    font-family: 'CMU Serif roman';
 }
 
 .container {
@@ -31,7 +32,6 @@ html {
     justify-content: center;
     overflow: hidden;
     color: $text-color;
-    font-family: 'CMU Serif', serif;
 }
 
 .pdf-container {

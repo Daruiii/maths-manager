@@ -14,13 +14,13 @@
             @endauth
         </div>
         <div class=" chapter-list">
-            @foreach ($chapters as $index => $chapter)
-                <div x-data="{ open: false, confirmDelete: false }" class="chapter bg-white rounded-lg shadow-md p-4 mb-4">
+            @foreach ($chapters as $indexChap => $chapter)
+                <div x-data="{ open: false, confirmDelete: false }" class="chapter bg-white rounded-lg shadow-md p-2 mb-4">
                     {{-- Chapitre Titre et Boutons d'Action pour Admin --}}
                     <div class="flex justify-between items-center">
                         <button @click="open = !open"
                             class="flex items-center justify-between w-2/3 text-left chapter-title text-lg font-semibold text-gray-700">
-                            <span class="truncate">{{ $index + 1 }}. {{ $chapter->title }}</span>
+                            <span class="truncate">{{ $indexChap + 1 }}. {{ $chapter->title }}</span>
                         </button>
                         <button <button @click="open = !open"
                             class="flex items-center justify-end w-full text-left chapter-title text-lg font-semibold text-gray-700">
@@ -70,7 +70,7 @@
                         <div class="flex items-start space-x-2 mb-4">
                             <div class="flex flex-col w-2/3 bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
-                                    <h3 class="text-lg font-semibold truncate">Exercices :</h3>
+                                    <h3 class="text-lg font-semibold truncate">Exercices par thème :</h3>
                                     @auth
                                         @if (Auth::user()->role === 'admin')
                                             <a href="{{ route('subchapter.create', ['id' => $chapter->id]) }}"
@@ -84,10 +84,12 @@
                                         @endif
                                     @endauth
                                 </div>
-                                @foreach ($chapter->subchapters as $subchapter)
-                                    <div class="flex items-center space-x-2">
-                                        <a href="{{ route('subchapter.show', $subchapter->id) }}" class="my-2 flex items-center space-x-2 truncate">
-                                            <span>¤ {{ $subchapter->title }}</span>
+                                <div class="space-y-2">
+                                @foreach ($chapter->subchapters as $index => $subchapter)
+                                    <div class="flex items-center justify-between px-2 border-b-2 border-gray-200">
+                                        <a href="{{ route('subchapter.show', $subchapter->id) }}" class="my-2 flex w-full items-center justify-between space-x-2 truncate hover:underline">
+                                            <span>{{$indexChap+1}}.{{$index+1}} - {{ $subchapter->title }}</span>
+                                            <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.144"></g><g id="SVGRepo_iconCarrier"> <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
                                         </a>
                                         @auth
                                             @if (Auth::user()->role === 'admin')
@@ -131,6 +133,7 @@
                                         @endauth
                                     </div>
                                 @endforeach
+                                </div>
                             </div>
                             {{-- Boutons Quiz et Récap ici --}}
                             <div class="flex flex-col space-y-2 w-1/3">

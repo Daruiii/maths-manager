@@ -19,7 +19,6 @@ $transition-duration: 300ms;
 
     .subtitle {
       font-size: $font-size-small;
-      font-weight: semi-bold;
       margin-top: 0.25rem;
     }
 
@@ -47,7 +46,7 @@ $transition-duration: 300ms;
       background-color: white;
       border-radius: 0.5rem;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      padding: 1rem;
+      padding: 0.5rem 1rem;
       transition: all $transition-duration ease-in-out;
 
       &-title {
