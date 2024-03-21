@@ -6,6 +6,7 @@
 @import 'button/google';
 @import 'form';
 @import 'footer';
+@import 'loader';
 
 @tailwind base;
 @tailwind components;
@@ -35,5 +36,4 @@ html {
 
 .pdf-container {
     width: 100%;
-    border: 1px solid $primary-color;
 }
