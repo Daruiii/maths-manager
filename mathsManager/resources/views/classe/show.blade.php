@@ -5,7 +5,7 @@
         <div class="flex header">
             <div>
                 <h1 class="title">{{ $classe->name }}</h1>
-                <h2 class="subtitle">Chapitres</h2>
+                <h2 class="cmu-serif subtitle">Chapitres</h2>
             </div>
             @auth
                 @if (Auth::user()->role === 'admin')

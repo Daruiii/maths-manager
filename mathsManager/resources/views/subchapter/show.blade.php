@@ -43,8 +43,8 @@
                     <div x-data="{ showClue: false, showSolution: false }" class="mb-10 bg-white rounded-lg box-shadow shadow-xl w-full">
                         <div class="p-4">
                             <div class="flex row justify-between items-center">
-                                <h2 class="truncate font-bold text-sm">Exercice {{ $ex->id }}. {{ $ex->name }}
-                                </h2>
+                                <h2 class="truncate font-bold text-sm exercise-title">Exercice {{ $ex->id }}.
+                                    {{ $ex->name }}</h2>
                                 {{-- <h2> #{{ $ex->id }}{{ $index + 1 }}</h2> --}}
                                 @auth
                                     @if (Auth::user()->role === 'admin')
@@ -89,21 +89,28 @@
                                     @endif
                                 @endauth
                             </div>
-                            @foreach ($exercisePngFiles as $pngFile)
+                            <div class="exercise-content text-sm px-4">
+                                {!! $ex->statement !!}
+                            </div>
+
+                            {{-- @foreach ($exercisePngFiles as $pngFile)
                                 <div class="pdf-container">
                                     <img src="{{ asset('storage/' . $pngFile) }}" alt="Exercice image" class="png"
                                         style="width: 500px; height: auto;">
                                 </div>
-                            @endforeach
+                            @endforeach --}}
                         </div>
                         <div class="bg-[#E1DBD5] w-full p-2 rounded-b-lg">
                             <div class="flex justify-between items-center">
                                 @if ($ex->clue)
-                                    <button @click="showClue = !showClue" class="flex row text-sm font-bold">
+                                    <button @click="showClue = !showClue" class="dropdownCC flex row text-sm font-bold">
                                         Voir l'indice
-                                        <svg :class="{'rotate-180': !showClue}" class="transition-transform" width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg :class="{ 'rotate-180': !showClue }" class="transition-transform"
+                                            width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
                                             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                            </g>
                                             <g id="SVGRepo_iconCarrier">
                                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                                     d="M7.00003 15.5C6.59557 15.5 6.23093 15.2564 6.07615 14.8827C5.92137 14.509 6.00692 14.0789 6.29292 13.7929L11.2929 8.79289C11.6834 8.40237 12.3166 8.40237 12.7071 8.79289L17.7071 13.7929C17.9931 14.0789 18.0787 14.509 17.9239 14.8827C17.7691 15.2564 17.4045 15.5 17 15.5H7.00003Z"
@@ -111,13 +118,19 @@
                                             </g>
                                         </svg>
                                     </button>
+                                @else
+                                    <div class=""></div>
                                 @endif
                                 @if ($ex->solution)
-                                    <button @click="showSolution = !showSolution" class="flex row text-sm font-bold">
+                                    <button @click="showSolution = !showSolution"
+                                        class="dropdownCC flex row text-sm font-bold">
                                         Voir la correction
-                                        <svg :class="{'rotate-180': !showSolution}" class="transition-transform" width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg :class="{ 'rotate-180': !showSolution }" class="transition-transform"
+                                            width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
                                             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                            </g>
                                             <g id="SVGRepo_iconCarrier">
                                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                                     d="M7.00003 15.5C6.59557 15.5 6.23093 15.2564 6.07615 14.8827C5.92137 14.509 6.00692 14.0789 6.29292 13.7929L11.2929 8.79289C11.6834 8.40237 12.3166 8.40237 12.7071 8.79289L17.7071 13.7929C17.9931 14.0789 18.0787 14.509 17.9239 14.8827C17.7691 15.2564 17.4045 15.5 17 15.5H7.00003Z"
@@ -128,22 +141,36 @@
                                 @endif
                             </div>
 
-                            <div x-show="showClue" class="bg-[#E1DBD5] w-full p-2 rounded-b-lg">
-                                <h3>Indice:</h3>
+                            <div x-show="showClue" class="bg-[#D4D68D] w-full p-2 rounded-lg">
+                                <h3 class="exercise-cc font-bold">Indice:</h3>
                                 <p>{{ $ex->clue }}</p>
                             </div>
-                            <div x-show="showSolution" class="bg-[#E1DBD5] w-full p-2 rounded-b-lg">
-                                <h3>Correction:</h3>
-                                @foreach ($solutionPngFiles as $pngFile)
+                            <div x-show="showSolution" class="exercise-cc bg-[#D68D8D] w-full p-2 rounded-lg">
+                                <h3 class="exercise-cc font-bold">Correction:</h3>
+                                <div class="solution-content text-sm p-4">
+                                    {!! $ex->solution !!}
+                                </div>
+                                {{-- @foreach ($solutionPngFiles as $pngFile)
                                     <div class="pdf-container">
-                                        <img src="{{ asset('storage/' . $pngFile) }}" alt="Solution image" class="png"
-                                            style="width: 500px; height: auto;">
+                                        <img src="{{ asset('storage/' . $pngFile) }}" alt="Solution image"
+                                            class="png" style="width: 500px; height: auto;">
                                     </div>
-                                @endforeach
+                                @endforeach --}}
                             </div>
                         </div>
                     </div>
                 @endforeach
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const elements = document.querySelectorAll('.latex').forEach((element) => {
+                            katex.render(element.textContent, element, {
+                                throwOnError: false,
+                                displayMode: element.tagName === 'DIV',
+                                macros: window.macros,
+                            });
+                        });
+                    });
+                </script>
             </div>
         </div>
     @endsection

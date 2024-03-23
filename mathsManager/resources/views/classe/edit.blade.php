@@ -15,7 +15,7 @@
             </div>
         @endif
         
-        <form action="{{ route('classe.update', $classe->level) }}" method="POST">
+        <form action="{{ route('classe.update', $classe->id) }}" method="POST">
             @csrf
             @method('PATCH')
             

@@ -1,0 +1,49 @@
+@import 'fonts';
+
+.exercise-title {
+    font-family: "CMU Exercise Bold";
+}
+
+.exercise-content {
+    font-family:"CMU Serif";
+}
+.solution-content {
+    font-family: "CMU TI";
+}
+.exercise-cc {
+    font-family: "CMU TI";
+}
+.dropdownCC {
+    font-family: "CMU TI";
+}
+.exercise-content span, .solution-content span {
+    font-size: 0.875rem;
+}
+
+.math-set {
+    font-family: 'AMS Math', sans-serif; /* Remplacez par votre police préférée pour les symboles mathématiques */
+    font-weight: bold;
+}
+
+.latex-prop, .latex-cor, .latex-thm, .latex-definition, .latex-rappels, .latex-rem {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f8f8f8;
+}
+
+/* Exemple de style spécifique pour 'proposition' */
+.latex-prop {
+    border-color: red;
+}
+
+.enumb {
+    // liste numérotée
+    list-style-type: decimal;
+    margin-left: 2rem;
+}
+.point {
+    list-style-type: disc;
+    margin-left: 2rem;
+}
+/* ... styles supplémentaires pour cor, thm, definition, etc ... */

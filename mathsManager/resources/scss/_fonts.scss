@@ -2,23 +2,26 @@
 
 @font-face {
     font-family: 'CMU Serif';
+    src: url('../fonts/cmunrm.ttf') format('truetype');
+}
+.cmu-serif {
+    font-family: 'CMU Serif', serif;
+}
+
+@font-face {
+    font-family: 'CMU Exercise Bold';
     src: url('../fonts/cmunbx.ttf') format('truetype');
-    font-weight: normal;
-    font-style : normal;
+}
+.cmu-exercise-bold {
+    font-family: 'CMU Exercise Bold', serif;
 }
 
 @font-face {
-    font-family: 'CMU Serif bold italic';
-    src: url('../fonts/cmunbi.ttf') format('truetype');
-    font-weight: bold;
-    font-style : italic;
+    font-family: 'CMU TI';
+    src: url('../fonts/cmunti.ttf') format('truetype');
 }
-
-@font-face {
-    font-family: 'CMU Serif bold';
-    src: url('../fonts/cmunbl.ttf') format('truetype');
-    font-weight: bold;
-    font-style : normal;
+.cmu-ti {
+    font-family: 'CMU TI', serif;
 }
 
 @font-face {

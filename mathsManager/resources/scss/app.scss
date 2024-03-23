@@ -8,6 +8,7 @@
 @import 'footer';
 @import 'loader';
 @import 'fonts';
+@import 'katex';
 
 @tailwind base;
 @tailwind components;
@@ -18,8 +19,9 @@ html {
 }
 
 h1{
-    font-family: 'CMU Serif';
+    font-family: 'CMU Exercise Bold';
 }
+
 nav {
     font-family: 'CMU Serif roman';
 }

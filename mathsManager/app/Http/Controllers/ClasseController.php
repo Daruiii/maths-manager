@@ -60,8 +60,8 @@ class ClasseController extends Controller
         ]);
 
         $classe->update($request->all());
-
-        return redirect()->route('classe.index');
+        $classes = Classe::all();
+        return redirect()->route('classe.index', compact('classes'));
     }
 
     public function destroy($id)
