@@ -112,40 +112,45 @@ class ExerciseController extends Controller
 
     protected function convertCustomLatexToHtml($latexContent)
     {
-        // Remplacer $...$ par \( ... \)
+        // Nettoyage initial du contenu et remplacement des espaces non sécables
+        $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
+    
+        // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu KaTeX
         $patterns = [
             '/\$(.*?)\$/' => "<span class='latex'>$1</span>",
             '/\$\$(.*?)\$\$/' => "<div class='latex'>$1</div>",
             '/\\\\\((.*?)\\\\\)/' => "<span class='latex'>$1</span>",
             '/\\\\\[(.*?)\\\\\]/' => "<div class='latex'>$1</div>",
+            "/\\\\begin\{itemize\}/" => "<ul>",
+            "/\\\\end\{itemize\}/" => "</ul>",
+            "/\\\\begin\{enumerate\}/" => "<ol>",
+            "/\\\\end\{enumerate\}/" => "</ol>",
+            "/\\\\item/" => "<li>",
+            // Ajouter d'autres patterns ici si nécessaire
         ];
+    
+        // Appliquer les remplacements pour les maths et les listes
         foreach ($patterns as $pattern => $replacement) {
-            $latexContent = preg_replace($pattern, $replacement, $latexContent);
+            $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
-
-        $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
-        // convertir commandes et environnements LaTeX personnalisés en HTML
-        $htmlContent = str_replace("\\enmb", "<ol class='enumb'>", $cleanedContent);
-        $htmlContent = str_replace("\\fenmb", "</ol>", $htmlContent);
-
-        $htmlContent = str_replace("\\enm", "<ol>", $htmlContent);
-        $htmlContent = str_replace("\\fenm", "</ol>", $htmlContent);
-        $htmlContent = str_replace("\\begin{enumerate}", "<ol>", $htmlContent);
-        $htmlContent = str_replace("\\end{enumerate}", "</ol>", $htmlContent);
-
-        $htmlContent = str_replace("\\begin\{itemize\}", "<ul>", $htmlContent);
-
-        $htmlContent = str_replace("\\itm", "<ul class='point'>", $htmlContent);
-        $htmlContent = str_replace("\\item", "<li>", $htmlContent);
-        $htmlContent = str_replace("\\fitm", "</ul>", $htmlContent);
-        $htmlContent = str_replace("\\end\{itemize\}", "</ul>", $htmlContent);
-
-        // Convertir les environnements théoriques
-        $htmlContent = preg_replace("/\\\\(prop|cor|thm|definition|rappels|rem)\\b/", "<div class='latex-$1'>", $htmlContent);
-        $htmlContent = str_replace("\\finboite", "</div>", $htmlContent);
-
-        return $htmlContent;
+    
+        // Convertir les commandes personnalisées en HTML
+        $customCommands = [
+            "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
+            "\\enm" => "<ol>", "\\fenm" => "</ol>",
+            "\\itm" => "<ul class='point'>", "\\fitm" => "</ul>",
+            // Convertir les environnements théoriques
+            "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
+            "\\finboite" => "</div>",
+        ];
+    
+        foreach ($customCommands as $command => $html) {
+            $cleanedContent = str_replace($command, $html, $cleanedContent);
+        }
+    
+        return $cleanedContent;
     }
+    
 
 
     public function show(Exercise $exercise)
