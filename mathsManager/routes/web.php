@@ -33,7 +33,7 @@ Route::get('/classe/{level}', [ClasseController::class, 'show'])->name('classe.s
 Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('/chapter', [ChapterController::class, 'index'])->name('chapter.index');
-        Route::get('/chapter/create', [ChapterController::class, 'create'])->name('chapter.create');
+        Route::get('/chapter/{id}/create', [ChapterController::class, 'create'])->name('chapter.create');
         Route::post('/chapter', [ChapterController::class, 'store'])->name('chapter.store');
         Route::get('/chapter/{id}/edit', [ChapterController::class, 'edit'])->name('chapter.edit');
         Route::patch('/chapter/{id}', [ChapterController::class, 'update'])->name('chapter.update');

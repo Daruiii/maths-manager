@@ -9,7 +9,9 @@
             </div>
             @auth
                 @if (Auth::user()->role === 'admin')
-                    <a href= "{{ route('chapter.create') }}" class="add-button">Ajouter un chapitre</a>
+                    <a href= "{{ route('chapter.create', $classe->id) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Ajouter un Chapitre
+                    </a>
                 @endif
             @endauth
         </div>

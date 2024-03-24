@@ -31,7 +31,11 @@
             <label for="class_id">Classe</label>
             <select class="form-control" id="class_id" name="class_id" required>
                 @foreach ($classes as $class)
-                    <option value="{{ $class->id }}">{{ $class->name }}</option>
+                    @if ($class->id === $classeActive)
+                        <option value="{{ $class->id }}" selected>{{ $class->name }}</option>
+                    @else
+                        <option value="{{ $class->id }}">{{ $class->name }}</option>
+                    @endif
                 @endforeach
             </select>
         </div>

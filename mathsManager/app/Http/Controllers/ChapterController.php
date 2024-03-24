@@ -20,10 +20,11 @@ class ChapterController extends Controller
         return view('chapter.show', compact('chapter'));
     }
 
-    public function create() // admin
+    public function create($id) // admin
     {
         $classes = Classe::all();
-        return view('chapter.create', compact('classes'));
+        $classeActive = Classe::findOrFail($id)->id;
+        return view('chapter.create', compact('classes', 'classeActive'));
     }
 
     public function store(Request $request) // admin
