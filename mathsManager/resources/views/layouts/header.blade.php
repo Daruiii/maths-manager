@@ -66,14 +66,14 @@
         @endif
             <a href="{{ route('profile.edit') }}" class="block bg-blue-100 rounded-lg p-3 link {{ request()->is("profile") ? 'active' : '' }}">Mon profil</a>
             <a href="{{ route('logout') }}" class="block bg-red-100 rounded-lg p-3 link"
-                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a>
+                onclick="event.preventDefault(); document.getElementById('logout-form-small').submit();">Se déconnecter</a>
         @else
             <a href="{{ route('login') }}" class="block bg-green-100 rounded-lg p-3 link">Se connecter</a>
         @endauth
     </div>
 </nav>
 @auth
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+    <form id="logout-form-small" action="{{ route('logout') }}" method="POST" class="hidden">
         @csrf
     </form>
 @endauth

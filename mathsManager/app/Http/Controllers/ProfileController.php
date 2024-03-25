@@ -44,6 +44,15 @@ class ProfileController extends Controller
             $avatarName = $user->email . '-' . $newAvatar->getClientOriginalName();
             $newAvatar->move($destinationPath, $avatarName);
             $user->avatar = $avatarName;
+        } else {
+            // supprime l'avatar si ce n'est pas l'avatar par défaut
+            if ($user->avatar && $user->avatar != 'default.jpg') {
+                $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+            $user->avatar = 'default.jpg';
         }
     
         $user->save();
