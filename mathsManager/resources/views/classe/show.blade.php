@@ -17,7 +17,8 @@
         </div>
         <div class=" chapter-list">
             @foreach ($chapters as $indexChap => $chapter)
-                <div x-data="{ open: false, confirmDelete: false }" class="chapter bg-white rounded-lg shadow-md p-2 mb-4">
+            @props(['color' => $chapter->theme])
+                <div x-data="{ open: false, confirmDelete: false }" class="chapter bg-white rounded-lg p-2 mb-4" style="border-left: 5px solid {{ $chapter->theme }}; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);" x-cloak>
                     {{-- Chapitre Titre et Boutons d'Action pour Admin --}}
                     <div class="flex justify-between items-center">
                         <button @click="open = !open"
@@ -88,8 +89,8 @@
                                 </div>
                                 <div class="space-y-2">
                                 @foreach ($chapter->subchapters as $index => $subchapter)
-                                    <div class="flex items-center justify-between px-2 border-b-2 border-gray-200">
-                                        <a href="{{ route('subchapter.show', $subchapter->id) }}" class="my-2 flex w-full items-center justify-between space-x-2 truncate hover:underline">
+                                    <div class="flex items-center justify-between px-2 border-b border-gray-200">
+                                        <a href="{{ route('subchapter.show', $subchapter->id) }}" class="my-2 flex w-full items-center justify-between space-x-2 truncate hover:underline border-l-2 border-black pl-2">
                                             <span>{{$indexChap+1}}.{{$index+1}} - {{ $subchapter->title }}</span>
                                             <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.144"></g><g id="SVGRepo_iconCarrier"> <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
                                         </a>

@@ -30,6 +30,17 @@
         </div>
 
         <div class="form-group">
+            <label for="theme">Thème (no homo)</label>
+            <select class="form-control" id="theme" name="theme">
+                @foreach ($themeColors as $themeKey => $themeColor)
+                <option value="{{ $themeColor }}"{{ $chapter->theme == $themeColor ? ' selected' : '' }} style="background-color: {{ $themeColor }};">
+                    {{ $themeKey }}
+                </option>
+            @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="class_id">Classe</label>
             <select class="form-control" id="class_id" name="class_id" required>
                 @foreach ($classes as $class)

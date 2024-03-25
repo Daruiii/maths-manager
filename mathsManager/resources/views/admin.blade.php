@@ -14,6 +14,11 @@
         <a href="{{ route('classe.index') }}" class="p-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
             Gérer les classes
         </a>
+
+        <!-- Bouton pour les exercices -->
+        <a href="{{ route('exercises.index') }}" class="p-4 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+            Gérer les exercices
+        </a>
         
         <!-- Ajoutez plus de boutons pour d'autres entités si nécessaire -->
     </div>

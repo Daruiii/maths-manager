@@ -14,8 +14,16 @@ class ExerciseController extends Controller
 {
     public function index()
     {
-        $exercises = Exercise::all();
-        return view('exercise.index', compact('exercises'));
+        $search = request()->get('search');
+        if ($search) {
+            $exercises = Exercise::where('name', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%')
+                ->get();
+        } else {
+            $exercises = Exercise::all();
+        }
+        $subchapters = Subchapter::all();
+        return view('exercise.index', compact('exercises', 'subchapters'));
     }
 
     public function create($id)

@@ -8,6 +8,18 @@ use App\Models\Classe;
 
 class ChapterController extends Controller
 {
+    protected $themeColors = [
+        'analyse1' => '#87CBEA',
+        'analyse2' => '#6CAAEE',
+        'suites' => '#7CE6D0',
+        'geometrie' => '#E6D07C',
+        'probabilites' => '#E67C7C',
+        'trigonometrie' => '#E6AA74',
+        'complexes' => '#794A11',
+        'arithmetique' => '#CF8FE6',
+        'matrices' => '#EC9CDB',
+    ];
+
     public function index() // students
     {
         $chapters = Chapter::all();
@@ -24,7 +36,8 @@ class ChapterController extends Controller
     {
         $classes = Classe::all();
         $classeActive = Classe::findOrFail($id)->id;
-        return view('chapter.create', compact('classes', 'classeActive'));
+        $themeColors = $this->themeColors;
+        return view('chapter.create', compact('classes', 'classeActive', 'themeColors'));
     }
 
     public function store(Request $request) // admin
@@ -44,8 +57,8 @@ class ChapterController extends Controller
     {
         $chapter = Chapter::findOrFail($id);
         $classes = Classe::all();
-
-        return view('chapter.edit', compact('chapter', 'classes'));
+        $themeColors = $this->themeColors;
+        return view('chapter.edit', compact('chapter', 'classes', 'themeColors'));
     }
 
     public function update(Request $request, $id) // admin

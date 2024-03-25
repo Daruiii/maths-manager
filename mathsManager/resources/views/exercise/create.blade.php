@@ -54,8 +54,18 @@
                     <textarea class="form-control" id="solution" name="solution" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>
 
-                <input type="hidden" name="subchapter_id" value="{{ $subchapter_id }}">
-
+                @if ($subchapter_id)
+                    <input type="hidden" name="subchapter_id" value="{{ $subchapter_id }}">
+                @else
+                    <div class="form-group">
+                        <label for="subchapter_id">Sous-chapitre de l'Exercice:</label>
+                        <select class="form-control" id="subchapter_id" name="subchapter_id">
+                            @foreach ($subchapters as $subchapter)
+                                <option value="{{ $subchapter->id }}">{{ $subchapter->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
                 <div class="form-group">
                     <label for="clue">Indice pour l'Exercice (LaTeX, optionnel):</label>
                     <textarea class="form-control" id="clue" name="clue" rows="3" placeholder="Insérer le LaTeX ici..."></textarea>
