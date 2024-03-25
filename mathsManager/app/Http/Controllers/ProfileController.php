@@ -26,35 +26,61 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+        $user->fill($request->validated());
+    
+        if ($request->hasFile('avatar')) {
+            // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
+            if ($user->avatar && $user->avatar != 'default.jpg') {
+                $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+    
+            // Stocke le nouvel avatar
+            $newAvatar = $request->file('avatar');
+            $destinationPath = public_path('/storage/images');
+            $avatarName = $user->email . '-' . $newAvatar->getClientOriginalName();
+            $newAvatar->move($destinationPath, $avatarName);
+            $user->avatar = $avatarName;
         }
-
-        $request->user()->save();
-
+    
+        $user->save();
+    
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+ /**
+ * Delete the user's account.
+ */
+public function destroy(Request $request): RedirectResponse
+{
+    $request->validateWithBag('userDeletion', [
+        'password' => ['required', 'current_password'],
+    ]);
 
-        $user = $request->user();
+    $user = $request->user();
 
-        Auth::logout();
+    $destinationPath = public_path('/storage/images');
 
-        $user->delete();
+    $avatarPath = $destinationPath.'/'.$user->avatar;
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+    if ($user->avatar !== 'default.jpg' && file_exists($avatarPath)) {
+        unlink($avatarPath);
     }
+
+    Auth::logout();
+
+    $user->delete();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return Redirect::to('/home');
+}
+
 }

@@ -24,14 +24,15 @@
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center focus:outline-none">
                         @if (Auth::user()->role === 'admin')
-                            <span class="text-blue-500">{{ Auth::user()->name }}</span>
+                            <span class="text-blue-500 text-xs mr-2">{{ Auth::user()->name }}</span>
                         @else
-                        <span>{{ Auth::user()->name }}</span>
+                        <span class="text-xs mr-2">{{ Auth::user()->name }}</span>
                         @endif
-                        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2" viewBox="0 0 24 24" class="ml-2 w-4 h-4">
-                            <path d="M19 9l-7 7-7-7"></path>
-                        </svg>
+                        @if (Auth::user()->provider)
+                            <img src="{{ Auth::user()->avatar }}" class="w-9 h-9 rounded-full border border-black" alt="Profile Picture">
+                        @else
+                        <img src="{{ asset('storage/images/' . Auth::user()->avatar) }}" class="w-9 h-9 rounded-full border border-black" alt="Profile Picture">
+                        @endif
                     </button>
                     <div x-show="open" @click.away="open = false"
                         class="popup absolute right-0 mt-2 py-2 w-48 rounded-md shadow-xl z-20">
@@ -64,10 +65,10 @@
             <a href="{{ route('admin') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
         @endif
             <a href="{{ route('profile.edit') }}" class="block bg-blue-100 rounded-lg p-3 link {{ request()->is("profile") ? 'active' : '' }}">Mon profil</a>
-            <a href="{{ route('logout') }}" class="block bg-red-100 rounded-lg p-3 link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}"
+            <a href="{{ route('logout') }}" class="block bg-red-100 rounded-lg p-3 link"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a>
         @else
-            <a href="{{ route('login') }}" class="block bg-green-100 rounded-lg p-3 link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">Se connecter</a>
+            <a href="{{ route('login') }}" class="block bg-green-100 rounded-lg p-3 link">Se connecter</a>
         @endauth
     </div>
 </nav>

@@ -18,10 +18,10 @@ class UserController extends Controller
         } else {
             $users = User::all();
         }
-    
+
         return view('user.index', compact('users'));
     }
-    
+
 
     // Affiche le formulaire de création d'un nouvel utilisateur
     public function create()
@@ -59,18 +59,48 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'role' => 'required|in:admin,student,teacher',
             'password' => 'sometimes|min:6',
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
-
+    
         $user = User::findOrFail($id);
+    
+        if ($request->hasFile('avatar')) {
+            // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
+            if ($user->avatar && $user->avatar != 'default.jpg') {
+                $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+    
+            // Stocke le nouvel avatar
+            $newAvatar = $request->file('avatar');
+            $destinationPath = public_path('/storage/images');
+            $avatarName = $user->email . '-' . $newAvatar->getClientOriginalName();
+            $newAvatar->move($destinationPath, $avatarName);
+            $user->avatar = basename($avatarName);
+        }
+    
         $user->update($validatedData);
         return redirect()->route('users.index');
     }
+    
 
-    // Supprime un utilisateur de la base de données
+    // Supprime un utilisateur de la base de données par un admin
+    // Supprime un utilisateur de la base de données par un admin
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+
+        if ($user->avatar && $user->avatar != 'default.jpg') {
+            $avatarPath = public_path('/storage/images/' . $user->avatar);
+            if (file_exists($avatarPath)) {
+                unlink($avatarPath);
+            }
+        }
+
         $user->delete();
+
         return redirect()->route('users.index');
     }
 }

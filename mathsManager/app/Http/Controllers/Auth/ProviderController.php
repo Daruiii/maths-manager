@@ -37,9 +37,15 @@ class ProviderController extends Controller
 
             // Si aucun utilisateur n'est trouvé par email, créez un nouveau compte.
             if (!$user) {
+                if ($provider === 'google') {
+                    $avatar = $SocialUser->avatar_original;
+                } else {
+                    $avatar = $SocialUser->avatar;
+                }
                 $user = User::create([
                     'name' => $SocialUser->getName(),
                     'email' => $SocialUser->getEmail(),
+                    'avatar' => $avatar,
                     'provider' => $provider,
                     'provider_id' => $SocialUser->getId(),
                     'provider_token' => $SocialUser->token,
