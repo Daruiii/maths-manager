@@ -18,7 +18,7 @@
         @method('patch')
         {{-- Avatar --}}
         <div class="relative w-32 h-32 rounded-full overflow-hidden">
-            @if ($user->provider && Str::startsWith($user->avatar, 'http'))
+            @if (Str::startsWith($user->avatar, 'http'))
                 <img src="{{ $user->avatar }}" alt="Avatar" class="absolute inset-0 w-full h-full object-cover"
                     id="imagePreview">
                 <label for="avatar" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 cursor-pointer transition duration-300 ease-in-out text-white" style="pointer-events: none;">
