@@ -28,7 +28,8 @@
                         @else
                         <span class="text-xs mr-2">{{ Auth::user()->name }}</span>
                         @endif
-                        @if (Auth::user()->provider)
+                        {{-- startwith --}}
+                        @if (Auth::user()->provider && Str::startsWith(Auth::user()->avatar, 'http'))
                             <img src="{{ Auth::user()->avatar }}" class="w-9 h-9 rounded-full border border-black" alt="Profile Picture">
                         @else
                         <img src="{{ asset('storage/images/' . Auth::user()->avatar) }}" class="w-9 h-9 rounded-full border border-black" alt="Profile Picture">
