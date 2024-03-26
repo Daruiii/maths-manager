@@ -46,4 +46,36 @@
     list-style-type: disc;
     margin-left: 2rem;
 }
-/* ... styles supplémentaires pour cor, thm, definition, etc ... */
+.textup {
+    font-family: "CMU Serif";
+}
+
+.latex-center {
+    width: 50%;
+    margin: 0 auto;
+}
+.latex-minipage {
+    display: inline-block;
+    border: 1px solid #000000;
+    width: 100%;
+    margin: 0;
+    padding: 0 0.5rem;
+}
+
+.latex-tabularx {
+    display: table;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 1.20;
+}
+
+.texttt {
+    font-family: "CMU bold";
+    font-size: 0.875rem;
+}
+
+.katex .mord.mtight {
+    font-size: 0.75rem;
+}
+

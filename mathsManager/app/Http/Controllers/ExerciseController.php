@@ -109,11 +109,9 @@ class ExerciseController extends Controller
         $exercise->clue = $request->clue;
         $exercise->name = $request->name;
         $exercise->subchapter_id = $request->subchapter_id;
-        $exercise->statement = $statementHtml; // Utilisez le contenu HTML converti
-        $exercise->solution = $solutionHtml; // Utilisez le contenu HTML converti si disponible
+        $exercise->statement = $statementHtml;
+        $exercise->solution = $solutionHtml;
         $exercise->save();
-
-        // La logique pour gérer les fichiers LaTeX reste inchangée...
 
         return redirect()->route('subchapter.show', $request->subchapter_id);
     }
@@ -134,7 +132,18 @@ class ExerciseController extends Controller
             "/\\\\begin\{enumerate\}/" => "<ol>",
             "/\\\\end\{enumerate\}/" => "</ol>",
             "/\\\\item/" => "<li>",
-            // Ajouter d'autres patterns ici si nécessaire
+            "/\\\\textbf\{(.*?)\}/" => "<strong>$1</strong>",
+            "/\\\\textup\{(.*?)\}/" => "<span class='textup'>$1</span>",
+            "/\\\\textit\{(.*?)\}/" => "<em>$1</em>",
+            "/\\\\texttt\{(.*?)\}/" => "<code class='texttt'>$1</code>",
+            "/\\\\begin\{(.+?)\}/" => "<div class='latex-$1'>",
+            "/\\\\end\{(.+?)\}/" => "</div>",
+            "/\\\\\\\/" => "<br>",
+            "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
+            "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
+            "/\\\\hline/" => "<hr>",
+            "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;", 
+            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",     
         ];
     
         // Appliquer les remplacements pour les maths et les listes
