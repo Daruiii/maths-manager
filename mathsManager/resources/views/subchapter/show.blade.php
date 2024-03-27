@@ -25,7 +25,7 @@
             </div>
             <h2 class="text-xs px-4 py-1 w-full">{{ $subchapter->description }}</h2>
 
-            <div class=" p-3 flex flex-col align-center justify-start w-3/4">
+            <div class=" p-5 flex flex-col align-center justify-start w-full">
                 @foreach ($exercises as $index => $ex)
                     @php
                         $exerciseId = $ex->id;

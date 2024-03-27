@@ -132,9 +132,9 @@ class ExerciseController extends Controller
             "/\\\\begin\{enumerate\}/" => "<ol>",
             "/\\\\end\{enumerate\}/" => "</ol>",
             "/\\\\item/" => "<li>",
-            "/\\\\textbf\{(.*?)\}/" => "<strong>$1</strong>",
+            "/\\\\textbf\{(.*?)\}/" => "<p class='textbf'>$1</p>",
             "/\\\\textup\{(.*?)\}/" => "<span class='textup'>$1</span>",
-            "/\\\\textit\{(.*?)\}/" => "<em>$1</em>",
+            "/\\\\textit\{(.*?)\}/" => "<p class='textit'>$1</p>",
             "/\\\\texttt\{(.*?)\}/" => "<code class='texttt'>$1</code>",
             "/\\\\begin\{(.+?)\}/" => "<div class='latex-$1'>",
             "/\\\\end\{(.+?)\}/" => "</div>",
@@ -143,7 +143,9 @@ class ExerciseController extends Controller
             "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
             "/\\\\hline/" => "<hr>",
             "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;", 
-            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",     
+            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",  
+            // listpart 
+            "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
         ];
     
         // Appliquer les remplacements pour les maths et les listes

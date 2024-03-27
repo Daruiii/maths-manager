@@ -1,12 +1,14 @@
 @import 'fonts';
 
-.exercise-title {
+.exercise-title, ::marker {
     font-family: "CMU Exercise Bold";
 }
 
 .exercise-content {
     font-family:"CMU Serif";
+    font-weight:100;
 }
+
 .solution-content {
     font-family: "CMU TI";
 }
@@ -18,11 +20,6 @@
 }
 .exercise-content span, .solution-content span {
     font-size: 0.875rem;
-}
-
-.math-set {
-    font-family: 'AMS Math', sans-serif; /* Remplacez par votre police préférée pour les symboles mathématiques */
-    font-weight: bold;
 }
 
 .latex-prop, .latex-cor, .latex-thm, .latex-definition, .latex-rappels, .latex-rem {
@@ -38,10 +35,15 @@
 }
 
 .enumb {
-    // liste numérotée
     list-style-type: decimal;
     margin-left: 2rem;
 }
+
+li ol.enumb {
+    list-style-type: lower-alpha;
+    margin-left: 2rem;
+}
+
 .point {
     list-style-type: disc;
     margin-left: 2rem;
@@ -50,16 +52,32 @@
     font-family: "CMU Serif";
 }
 
+.textbf {
+    font-family: "CMU Exercise Bold";
+}
+
 .latex-center {
-    width: 50%;
-    margin: 0 auto;
+    display : flex;
+    justify-content: center;
+    align-items: center;
 }
 .latex-minipage {
-    display: inline-block;
-    border: 1px solid #000000;
-    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border : 1px solid #000000;
+    width: auto;
     margin: 0;
     padding: 0 0.5rem;
+    padding-right: 1rem;
+}
+
+.latex-align {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
 .latex-tabularx {
@@ -71,11 +89,27 @@
 }
 
 .texttt {
-    font-family: "CMU bold";
+    font-family: "CMU TT";
     font-size: 0.875rem;
 }
 
-.katex .mord.mtight {
-    font-size: 0.75rem;
+.textit {
+    font-family: "CMU TI";
 }
 
+.katex .mord.mtight {
+    font-size: 0.5rem;
+}
+
+.listpart{
+    margin-left: -2rem;
+    margin-top: 1rem;
+}
+span .op-limits .vlist-r .vlist span .mord.mtight {
+    font-size: 0.70rem;
+}
+
+span .msupsub span .hide-tail{
+    font-size: 0.5rem;
+    margin-bottom: 0.10rem;
+}

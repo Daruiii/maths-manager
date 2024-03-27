@@ -18,14 +18,14 @@
         <div class=" chapter-list">
             @foreach ($chapters as $indexChap => $chapter)
             @props(['color' => $chapter->theme])
-                <div x-data="{ open: false, confirmDelete: false }" class="chapter bg-white rounded-lg p-2 mb-4" style="border-left: 5px solid {{ $chapter->theme }}; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);" x-cloak>
+            <div class="chapter bg-white rounded-lg p-2 mb-4" style="border-left: 5px solid {{ $chapter->theme }}; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
                     {{-- Chapitre Titre et Boutons d'Action pour Admin --}}
                     <div class="flex justify-between items-center">
-                        <button @click="open = !open"
+                        <button 
                             class="flex items-center justify-between w-2/3 text-left chapter-title text-lg font-semibold text-gray-700">
                             <span class="truncate">{{ $indexChap + 1 }}. {{ $chapter->title }}</span>
                         </button>
-                        <button <button @click="open = !open"
+                        <button
                             class="flex items-center justify-end w-full text-left chapter-title text-lg font-semibold text-gray-700">
                             {{-- Icône de Chevron --}}
                             <svg :class="{ 'transform rotate-180': open }" class="w-6 h-6"
@@ -56,20 +56,24 @@
                                             </g>
                                         </svg>
                                     </a>
-                                    <button @click="confirmDelete = true"
-                                        class="p-2 rounded-full text-red-500 hover:text-red-600">
-                                        {{-- Icône de Suppression --}}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
+                                    <form method="POST" action="{{ route('chapter.destroy', $chapter->id) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce chapitre ?')"
+                                            class="p-2 rounded-full text-red-500 hover:text-red-600">
+                                            {{-- Icône de Suppression --}}
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                             @endif
                         @endauth
                     </div>
-                    <div x-show="open" x-cloak class="px-4 pt-2 pb-4">
+                    <div x-cloak class="px-4 pt-2 pb-4">
                         <div class="flex items-start space-x-2 mb-4">
                             <div class="flex flex-col w-2/3 bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
@@ -151,29 +155,9 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Popup de Confirmation de Suppression --}}
-                    <div x-show="confirmDelete" @click.away="confirmDelete = false"
-                        class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" x-cloak>
-                        <div class="bg-white p-4 rounded-lg shadow-xl">
-                            <p>Êtes-vous sûr de vouloir supprimer ce chapitre ?</p>
-                            <div class="flex justify-end space-x-2 mt-4">
-                                <button @click="confirmDelete = false"
-                                    class="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
-                                    Annuler
-                                </button>
-                                <form method="POST" action="{{ route('chapter.destroy', $chapter->id) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                        Supprimer
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             @endforeach
         </div>
     </div>
+    
 @endsection

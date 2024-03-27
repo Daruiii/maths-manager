@@ -61,12 +61,12 @@ window.macros = {
     '\\bnm': 'b_{n-1}',
     '\\ptn': '\\forall n \\in \\N',
     '\\ptne': '\\forall n \\in \\N^*',
-    '\\limn': '\\lim_{n \\to +\\infty}',
-    '\\limplus': '\\lim_{x \\to +\\infty}',
-    '\\limoins': '\\lim_{x \\to -\\infty}',
-    '\\limz': '\\lim_{x \\to 0}',
-    '\\limzp': '\\lim_{x \\to 0, x > 0}',
-    '\\limzm': '\\lim_{x \\to 0, x < 0}',
+    '\\limn': '\\displaystyle \\lim_{n \\to +\\infty}',
+    '\\limplus': '\\displaystyle \\lim_{x \\to +\\infty}',
+    '\\limoins': '\\displaystyle \\lim_{x \\to -\\infty}',
+    '\\limz': '\\displaystyle \\lim_{x \\to 0}',
+    '\\limzp': '\\displaystyle \\lim_{x \\to 0, x > 0}',
+    '\\limzm': '\\displaystyle \\lim_{x \\to 0, x < 0}',
     '\\Frac': '\\displaystyle \\frac{#1}{#2}',
     '\\parenthese': '\\left( #1 \\right)',
     '\\Rp': '[0;+\\infty[',
@@ -84,6 +84,7 @@ window.macros = {
     '\\fp': '\\frac{#1\\pi}{#2}',
     '\\bar': '\\overline{#1}',
     '\\reperei': '(O;\\vect{i},\\vect{j},\\vect{k})',
-    '\\reperea': '(1;\\vect{AB},\\vect{AD},\\vect{AE})'
-    // Assurez-vous d'ajouter le reste de vos macros ici
+    '\\reperea': '(1;\\vect{AB},\\vect{AD},\\vect{AE})',
+    '\\enmb': '\\begin{enumb}',
+    '\\fenmb': '\\end{enumb}',
 };
