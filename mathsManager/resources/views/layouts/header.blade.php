@@ -80,17 +80,19 @@
         toggleButton.addEventListener('click', function() {
             mobileMenu.classList.toggle('hidden');
         });
-
+        if (profileToggle) {
         profileToggle.addEventListener('click', function() {
             profilePopup.classList.toggle('hidden');
         });
-
+    }
+    if (profilePopup) {
         document.addEventListener('click', function(event) {
             var isClickInsideProfile = profileToggle.contains(event.target) || profilePopup.contains(event.target);
             if (!isClickInsideProfile) {
                 profilePopup.classList.add('hidden');
             }
         });
+    }
     });
 </script>
 

@@ -105,7 +105,11 @@ class ExerciseController extends Controller
         $statementHtml = $this->convertCustomLatexToHtml($request->statement);
         $solutionHtml = $request->solution ? $this->convertCustomLatexToHtml($request->solution) : null;
 
+        $lastExercise = Exercise::latest()->first();
+        $newId = $lastExercise ? $lastExercise->id + 1 : 1;
+
         $exercise = new Exercise();
+        $exercise->id = $newId;
         $exercise->clue = $request->clue;
         $exercise->name = $request->name;
         $exercise->subchapter_id = $request->subchapter_id;
@@ -137,6 +141,9 @@ class ExerciseController extends Controller
             "/\\\\textit\{(.*?)\}/" => "<p class='textit'>$1</p>",
             "/\\\\texttt\{(.*?)\}/" => "<code class='texttt'>$1</code>",
             "/\\\\begin\{(.+?)\}/" => "<div class='latex-$1'>",
+            // begin{align"*"} est traité différemment car "*" est un
+            // caractère spécial qui ne fonctionne pas dans les classes HTML/CSS
+            "/\\\\begin\{align\*\}/" => "<div class='latex-align'>",
             "/\\\\end\{(.+?)\}/" => "</div>",
             "/\\\\\\\/" => "<br>",
             "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
@@ -212,7 +219,11 @@ class ExerciseController extends Controller
     {
         $exercise = Exercise::findOrFail($id);
         $exercise->delete();
-
+        $exercises = Exercise::all();
+        foreach ($exercises as $index => $exercise) {
+            $exercise->id = $index + 1;
+            $exercise->save();
+        }
         return redirect()->route('subchapter.show', $exercise->subchapter_id);
     }
 

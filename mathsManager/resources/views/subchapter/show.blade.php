@@ -169,6 +169,10 @@
                                 macros: window.macros,
                             });
                         });
+                        const beginAlign = document.querySelectorAll('.latex-align').forEach((element) => {
+                           // begin align sur latex, va permettre d'aligner des équations, lorsque qu'on croise un signe &.
+                          
+                        });
                     });
                 </script>
             </div>

@@ -1,3 +1,5 @@
+@import "variables";
+
 .footer {
     bottom: 0px;
     width: 100%;
@@ -13,7 +15,12 @@
 
 @media (max-width: 768px) {
     .footer {
-        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position:fixed;
         bottom: 0;
+        width: 20%;
+        font-size: 0.25rem;
     }
 }
