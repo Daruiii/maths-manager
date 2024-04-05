@@ -1,5 +1,6 @@
 -- MariaDB dump 10.19  Distrib 10.5.21-MariaDB, for debian-linux-gnu (x86_64)
---
+-- command : mysqldump -u root -p mathsManager > backup.sql
+-- pour renvoi : mysql -u root -p mathsManager < backup.sql
 -- Host: localhost    Database: mathsManager
 -- ------------------------------------------------------
 -- Server version	10.5.21-MariaDB-0+deb11u1

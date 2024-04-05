@@ -104,17 +104,21 @@ class ExerciseController extends Controller
         // Convertir les commandes LaTeX personnalisées en HTML
         $statementHtml = $this->convertCustomLatexToHtml($request->statement);
         $solutionHtml = $request->solution ? $this->convertCustomLatexToHtml($request->solution) : null;
+        $clueHtml = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
 
         $lastExercise = Exercise::latest()->first();
         $newId = $lastExercise ? $lastExercise->id + 1 : 1;
 
         $exercise = new Exercise();
         $exercise->id = $newId;
-        $exercise->clue = $request->clue;
+        $exercise->clue = $clueHtml;
+        $exercise->latex_clue = $request->clue;
         $exercise->name = $request->name;
         $exercise->subchapter_id = $request->subchapter_id;
         $exercise->statement = $statementHtml;
+        $exercise->latex_statement = $request->statement;
         $exercise->solution = $solutionHtml;
+        $exercise->latex_solution = $request->solution;
         $exercise->save();
 
         return redirect()->route('subchapter.show', $request->subchapter_id);
@@ -124,7 +128,7 @@ class ExerciseController extends Controller
     {
         // Nettoyage initial du contenu et remplacement des espaces non sécables
         $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
-    
+
         // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu KaTeX
         $patterns = [
             '/\$(.*?)\$/' => "<span class='latex'>$1</span>",
@@ -149,17 +153,19 @@ class ExerciseController extends Controller
             "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
             "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
             "/\\\\hline/" => "<hr>",
-            "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;", 
-            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",  
-            // listpart 
+            "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;",
+            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
             "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
+            "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
+            "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
+            "/\\\\times/" => "×",
         ];
-    
+
         // Appliquer les remplacements pour les maths et les listes
         foreach ($patterns as $pattern => $replacement) {
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
-    
+
         // Convertir les commandes personnalisées en HTML
         $customCommands = [
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
@@ -169,15 +175,13 @@ class ExerciseController extends Controller
             "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
             "\\finboite" => "</div>",
         ];
-    
+
         foreach ($customCommands as $command => $html) {
             $cleanedContent = str_replace($command, $html, $cleanedContent);
         }
-    
+
         return $cleanedContent;
     }
-    
-
 
     public function show(Exercise $exercise)
     {
@@ -195,21 +199,29 @@ class ExerciseController extends Controller
         $request->validate([
             'subchapter_id' => 'required',
             'statement' => 'required',
+            'latex_statement' => 'nullable',
             'solution' => 'nullable',
+            'latex_solution' => 'nullable',
             'name' => 'nullable',
             'clue' => 'nullable',
+            'latex_clue' => 'nullable',
         ]);
 
         $statementHtml = $this->convertCustomLatexToHtml($request->statement);
         $solutionHtml = $this->convertCustomLatexToHtml($request->solution);
+        $clueHtml = $this->convertCustomLatexToHtml($request->clue);
 
         $exercise = Exercise::findOrFail($id);
         $exercise->update([
             'subchapter_id' => $request->subchapter_id,
+            'latex_statement' => $request->statement,
+            'latex_solution' => $request->solution,
+            'latex_clue' => $request->clue,
             'statement' => $statementHtml,
             'solution' => $solutionHtml,
             'name' => $request->name,
-            'clue' => $request->clue,
+            'clue' => $clueHtml,
+            
         ]);
 
         return redirect()->route('subchapter.show', $request->subchapter_id);

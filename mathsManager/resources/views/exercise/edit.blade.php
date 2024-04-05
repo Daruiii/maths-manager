@@ -37,19 +37,19 @@
 
             <div class="form-group">
                 <label for="statement">Énoncé de l'Exercice (LaTeX):</label>
-                <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici...">{{ $exercise->statement }}</textarea>
+                <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici...">{{ $exercise->latex_statement }}</textarea>
             </div>
 
             <div class="form-group">
                 <label for="solution">Solution de l'Exercice (LaTeX, optionnel):</label>
-                <textarea class="form-control" id="solution" name="solution" rows="4" placeholder="Insérer le LaTeX ici...">{{ $exercise->solution }}</textarea>
+                <textarea class="form-control" id="solution" name="solution" rows="4" placeholder="Insérer le LaTeX ici...">{{ $exercise->latex_solution }}</textarea>
             </div>
 
             <input type="hidden" name="subchapter_id" value="{{ $exercise->subchapter_id }}">
-
+          
             <div class="form-group">
                 <label for="clue">Indice pour l'Exercice (LaTeX, optionnel):</label>
-                <textarea class="form-control" id="clue" name="clue" rows="3" placeholder="Insérer le LaTeX ici...">{{ $exercise->clue }}</textarea>
+                <textarea class="form-control" id="clue" name="clue" rows="3" placeholder="Insérer le LaTeX ici...">{{ $exercise->latex_clue }}</textarea>
             </div>
             
             <button type="submit" class="submit-btn-form">Mettre à jour l'Exercice</button>

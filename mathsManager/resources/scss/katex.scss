@@ -1,99 +1,25 @@
 @import 'fonts';
 
+// Styles généraux
 .exercise-title, ::marker {
     font-family: "CMU Exercise Bold";
 }
 
-.exercise-content {
-    font-family:"CMU Serif";
-    font-weight:100;
+.exercise-content, .solution-content, .exercise-cc, .dropdownCC {
+    font-family: "CMU Serif";
+    font-weight: 100;
 }
 
-.solution-content {
-    font-family: "CMU TI";
-}
-.exercise-cc {
-    font-family: "CMU TI";
-}
-.dropdownCC {
-    font-family: "CMU TI";
-}
 .exercise-content span, .solution-content span {
     font-size: 0.875rem;
 }
 
-.latex-prop, .latex-cor, .latex-thm, .latex-definition, .latex-rappels, .latex-rem {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px 0;
-    background-color: #f8f8f8;
-}
-
-/* Exemple de style spécifique pour 'proposition' */
-.latex-prop {
-    border-color: red;
-}
-
-.enumb {
-    list-style-type: decimal;
-    margin-left: 2rem;
-}
-
-li ol.enumb {
-    list-style-type: lower-alpha;
-    margin-left: 2rem;
-}
-
-.point {
-    list-style-type: disc;
-    margin-left: 2rem;
-}
 .textup {
     font-family: "CMU Serif";
 }
 
 .textbf {
     font-family: "CMU Exercise Bold";
-}
-
-.latex-center {
-    display : flex;
-    justify-content: center;
-    align-items: center;
-}
-.latex-minipage {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    border : 1px solid #000000;
-    width: auto;
-    margin: 0;
-    padding: 0 0.5rem;
-    padding-right: 1rem;
-}
-
-.latex-align {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-}
-
-.latex-pmatrix {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-}
-
-.latex-tabularx {
-    display: table;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    line-height: 1.20;
 }
 
 .texttt {
@@ -105,19 +31,80 @@ li ol.enumb {
     font-family: "CMU TI";
 }
 
-.katex .mord.mtight {
-    font-size: 0.5rem;
+// Exemple de style spécifique pour 'proposition' 
+.latex-prop {
+    border: 1px solid red;
 }
 
-.listpart{
+.latex-prop, .latex-cor, .latex-thm, .latex-definition, .latex-rappels, .latex-rem {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f8f8f8;
+}
+
+// Listes
+.enumb {
+    list-style-type: decimal;
+    margin-left: 2rem;
+}
+
+li ol.enumb {
+    list-style-type: lower-alpha;
+}
+
+.point {
+    list-style-type: disc;
+    margin-left: 2rem;
+}
+
+.listpart {
     margin-left: -2rem;
     margin-top: 1rem;
 }
-span .op-limits .vlist-r .vlist span .mord.mtight {
+
+// Flexbox
+.latex-center, .latex-align, .latex-pmatrix {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.latex-minipage {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid #000;
+    width: auto;
+    padding: 0 0.5rem;
+    padding-right: 1rem;
+}
+
+// KaTeX
+.katex .mord.mtight, // indice puissance
+.katex .mord.mtight .mbin, // signe "-" "+" entre indice puissance
+.katex .mord.mtight .mrel, // signe "=" entre indice puissance
+.katex .mord.mtight .mopen, // parenthèse ouvrante indice puissance
+.katex .mord.mtight .mclose // parenthèse fermante indice puissance
+{
+    font-size: 0.65rem;
+}
+
+// puissance de puissance
+.katex .mord .msupsub .vlist-r .vlist span .mord.mtight .msupsub .vlist-r .vlist span .mord.mtight {
+    font-size: 0.4rem;
+}
+
+span .op-limits .vlist-r .vlist span .mord.mtight { // limites
     font-size: 0.70rem;
 }
 
-span .msupsub span .hide-tail{
+span .msupsub span .hide-tail { // bail de la racine
     font-size: 0.5rem;
     margin-bottom: 0.10rem;
+}
+.katex span .msupsub span .vlist-r .vlist span { // + en indice
+    font-size: 0.55rem;
 }

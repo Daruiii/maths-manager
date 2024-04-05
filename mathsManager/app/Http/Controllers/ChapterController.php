@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Chapter;
 use App\Models\Classe;
+use App\Models\Subchapter;
+use App\Models\Exercise;
 
 class ChapterController extends Controller
 {
@@ -81,6 +83,12 @@ class ChapterController extends Controller
         $chapter = Chapter::findOrFail($id);
         $chapter->delete();
         $classLevel = Classe::findOrFail($chapter->class_id)->level;
+        // renumérotation des id des exercices restants
+        $exercises = Exercise::all();
+        foreach ($exercises as $index => $exercise) {
+            $exercise->id = $index + 1;
+            $exercise->save();
+        }
 
         return redirect()->route('classe.show', $classLevel);
     }

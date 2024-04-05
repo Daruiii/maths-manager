@@ -23,7 +23,7 @@
                     @endif
                 @endauth
             </div>
-            <h2 class="text-xs px-4 py-1 w-full">{{ $subchapter->description }}</h2>
+            <h2 class="text-xs px-4 py-1 w-full cmu-ti">{{ $subchapter->description }}</h2>
 
             <div class=" p-5 flex flex-col align-center justify-start w-full">
                 @foreach ($exercises as $index => $ex)
@@ -143,7 +143,9 @@
 
                             <div x-show="showClue" class="bg-[#D4D68D] w-full p-2 rounded-lg">
                                 <h3 class="exercise-cc font-bold">Indice:</h3>
-                                <p>{{ $ex->clue }}</p>
+                                <div class="solution-content text-sm p-4">
+                                    {!! $ex->clue !!}
+                                </div>
                             </div>
                             <div x-show="showSolution" class="exercise-cc bg-[#D68D8D] w-full p-2 rounded-lg">
                                 <h3 class="exercise-cc font-bold">Correction:</h3>
