@@ -5,7 +5,12 @@
     font-family: "CMU Exercise Bold";
 }
 
-.exercise-content, .solution-content, .exercise-cc, .dropdownCC {
+.solution-content, .dropdownCC, .exercise-cc {
+    font-family: "CMU TI" !important;
+
+}
+
+.exercise-content, .solution-content, .dropdownCC {
     font-family: "CMU Serif";
     font-weight: 100;
 }
@@ -53,6 +58,14 @@ li ol.enumb {
     list-style-type: lower-alpha;
 }
 
+li ol.enumb-decimal {
+    list-style-type: decimal;
+}
+
+li ol.enumb-alpha {
+    list-style-type: lower-alpha;
+}
+
 .point {
     list-style-type: disc;
     margin-left: 2rem;
@@ -92,10 +105,28 @@ li ol.enumb {
     font-size: 0.65rem;
 }
 
+.katex .mord.mtight .mopen{// parenthèse ouvrante indice puissance
+    font-size: 0.65rem !important;
+
+}
 // puissance de puissance
 .katex .mord .msupsub .vlist-r .vlist span .mord.mtight .msupsub .vlist-r .vlist span .mord.mtight {
-    font-size: 0.4rem;
+    font-size: 0.5rem;
+    position: relative;
+    top: 0.1rem;
 }
+
+.katex .mclose .msupsub .vlist-r .vlist span .mord.mtight .msupsub .vlist-r .vlist span .mord.mtight {
+    font-size: 0.5rem;
+    position: relative;
+    top: 0.08rem;
+}
+
+.katex .msupsub .vlist-r .vlist span .mord.mtight { // indice puissance
+    position: relative;
+    top: -0.01rem;
+}
+
 
 span .op-limits .vlist-r .vlist span .mord.mtight { // limites
     font-size: 0.70rem;
@@ -105,6 +136,6 @@ span .msupsub span .hide-tail { // bail de la racine
     font-size: 0.5rem;
     margin-bottom: 0.10rem;
 }
-.katex span .msupsub span .vlist-r .vlist span { // + en indice
-    font-size: 0.55rem;
-}
+// .katex span .msupsub span .vlist-r .vlist span { // + en indice
+//     // font-size: 0.55rem;
+// }

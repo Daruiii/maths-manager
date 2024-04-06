@@ -15,7 +15,7 @@
             <a href="{{ route('home') }}" class="link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
             @auth
                 @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('admin') }}" class="bg-blue-500 text-white rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
+                    <a href="{{ route('admin') }}" class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
                 @endif
             @endauth
         </div>

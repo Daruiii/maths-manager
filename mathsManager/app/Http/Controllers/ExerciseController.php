@@ -140,9 +140,9 @@ class ExerciseController extends Controller
             "/\\\\begin\{enumerate\}/" => "<ol>",
             "/\\\\end\{enumerate\}/" => "</ol>",
             "/\\\\item/" => "<li>",
-            "/\\\\textbf\{(.*?)\}/" => "<p class='textbf'>$1</p>",
+            "/\\\\textbf\{(.*?)\}/" => "<span class='textbf'>$1</span>",
             "/\\\\textup\{(.*?)\}/" => "<span class='textup'>$1</span>",
-            "/\\\\textit\{(.*?)\}/" => "<p class='textit'>$1</p>",
+            "/\\\\textit\{(.*?)\}/" => "<span class='textit'>$1</span>",
             "/\\\\texttt\{(.*?)\}/" => "<code class='texttt'>$1</code>",
             "/\\\\begin\{(.+?)\}/" => "<div class='latex-$1'>",
             // begin{align"*"} est traité différemment car "*" est un
