@@ -14,7 +14,38 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("loadingPopup").style.display = "block";
     });
 });
-
+window.katexDelimiters = [
+    {left: "$$", right: "$$", display: true},
+    {left: "\\[", right: "\\]", display: true},
+    {left: "$", right: "$", display: false},
+    {left: "\\\\", right: "", display: true},
+    {left: "\\(", right: "\\)", display: false},
+    {left: "\\begin{equation}", right: "\\end{equation}", display: true},
+    {left: "\\begin{matrix}", right: "\\end{matrix}", display: true},
+    {left: "\\begin{vmatrix}", right: "\\end{vmatrix}", display: true},
+    {left: "\\begin{bmatrix}", right: "\\end{bmatrix}", display: true},
+    {left: "\\begin{pmatrix}", right: "\\end{pmatrix}", display: true},
+    {left: "\\begin{Vmatrix}", right: "\\end{Vmatrix}", display: true},
+    {left: "\\begin{cases}", right: "\\end{cases}", display: true},
+    {left: "\\begin{align}", right: "\\end{align}", display: true},
+    {left: "\\begin{align*}", right: "\\end{align*}", display: true},
+    {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+    {left: "\\begin{gather*}", right: "\\end{gather*}", display: true},
+    {left: "\\begin{split}", right: "\\end{split}", display: true},
+    {left: "\\begin{multiline}", right: "\\end{multiline}", display: true},
+    {left: "\\begin{multiline*}", right: "\\end{multiline*}", display: true},
+    {left: "\\begin{array}", right: "\\end{array}", display: true},
+    {left: "\\begin{subequations}", right: "\\end{subequations}", display: true},
+    {left: "\\begin{gathered}", right: "\\end{gathered}", display: true},
+    {left: "\\begin{smallmatrix}", right: "\\end{smallmatrix}", display: true},
+    {left: "\\xymatrix{", right: "}", display: true},
+    {left: "\\begin{xy}", right: "\\end{xy}", display: true},
+    {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+    {left: "\\textit{", right: "}", display: false},
+    {left: "\\textbf{", right: "}", display: false},
+    {left: "\\texttt{", right: "}", display: false},
+    {left: "\\textup{", right: "}", display: false},
+];
 window.macros = {
     "\\test" : "HAHAHA LETS GOO",
     "\\hdots" : "\\ldots",
@@ -88,6 +119,5 @@ window.macros = {
     '\\bar': '\\overline{#1}',
     '\\reperei': '(O;\\vect{i},\\vect{j},\\vect{k})',
     '\\reperea': '(1;\\vect{AB},\\vect{AD},\\vect{AE})',
-    '\\enmb': '\\begin{enumb}',
-    '\\fenmb': '\\end{enumb}',
+    '\\finboite' : '\\end{tcolorbox}',
 };

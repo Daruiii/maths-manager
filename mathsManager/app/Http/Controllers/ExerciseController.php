@@ -131,34 +131,11 @@ class ExerciseController extends Controller
 
         // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu KaTeX
         $patterns = [
-            '/\$(.*?)\$/' => "<span class='latex'>$1</span>",
-            '/\$\$(.*?)\$\$/' => "<div class='latex'>$1</div>",
-            '/\\\\\((.*?)\\\\\)/' => "<span class='latex'>$1</span>",
-            '/\\\\\[(.*?)\\\\\]/' => "<div class='latex'>$1</div>",
             "/\\\\begin\{itemize\}/" => "<ul>",
             "/\\\\end\{itemize\}/" => "</ul>",
             "/\\\\begin\{enumerate\}/" => "<ol>",
             "/\\\\end\{enumerate\}/" => "</ol>",
             "/\\\\item/" => "<li>",
-            "/\\\\textbf\{(.*?)\}/" => "<span class='textbf'>$1</span>",
-            "/\\\\textup\{(.*?)\}/" => "<span class='textup'>$1</span>",
-            "/\\\\textit\{(.*?)\}/" => "<span class='textit'>$1</span>",
-            "/\\\\texttt\{(.*?)\}/" => "<code class='texttt'>$1</code>",
-            "/\\\\begin\{(.+?)\}/" => "<div class='latex-$1'>",
-            // begin{align"*"} est traité différemment car "*" est un
-            // caractère spécial qui ne fonctionne pas dans les classes HTML/CSS
-            "/\\\\begin\{align\*\}/" => "<div class='latex-align'>",
-            "/\\\\end\{(.+?)\}/" => "</div>",
-            "/\\\\\\\/" => "<br>",
-            "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
-            "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
-            "/\\\\hline/" => "<hr>",
-            "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;",
-            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
-            "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
-            "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
-            "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
-            "/\\\\times/" => "×",
         ];
 
         // Appliquer les remplacements pour les maths et les listes
@@ -171,9 +148,6 @@ class ExerciseController extends Controller
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
             "\\enm" => "<ol>", "\\fenm" => "</ol>",
             "\\itm" => "<ul class='point'>", "\\fitm" => "</ul>",
-            // Convertir les environnements théoriques
-            "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
-            "\\finboite" => "</div>",
         ];
 
         foreach ($customCommands as $command => $html) {

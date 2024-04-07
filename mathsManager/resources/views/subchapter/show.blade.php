@@ -216,17 +216,11 @@
                 @endforeach
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
-                        const elements = document.querySelectorAll('.latex').forEach((element) => {
-                            katex.render(element.textContent, element, {
-                                throwOnError: false,
-                                displayMode: element.tagName === 'DIV',
+                            renderMathInElement(document.body, {
+                                delimiters: window.katexDelimiters,
                                 macros: window.macros,
+                                throwOnError: false,
                             });
-                        });
-                        const beginAlign = document.querySelectorAll('.latex-align').forEach((element) => {
-                            // begin align sur latex, va permettre d'aligner des équations, lorsque qu'on croise un signe &.
-
-                        });
                     });
                 </script>
             </div>
