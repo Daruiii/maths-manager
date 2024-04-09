@@ -129,13 +129,34 @@ class ExerciseController extends Controller
         // Nettoyage initial du contenu et remplacement des espaces non sécables
         $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
 
-        // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu KaTeX
+        // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu que KATEX ne gère pas ou mal
         $patterns = [
             "/\\\\begin\{itemize\}/" => "<ul>",
             "/\\\\end\{itemize\}/" => "</ul>",
             "/\\\\begin\{enumerate\}/" => "<ol>",
             "/\\\\end\{enumerate\}/" => "</ol>",
             "/\\\\item/" => "<li>",
+            "/\\\\textbf\{(.*?)\}/" => "<span class='textbf'>$1</span>",
+            "/\\\\textup\{(.*?)\}/" => "<span class='textup'>$1</span>",
+            "/\\\\textit\{(.*?)\}/" => "<span class='textit'>$1</span>",
+            "/\\\\texttt\{(.*?)\}/" => "<code class='texttt'>$1</code>",
+            "/\\\\begin\{center\}/" => "<div class='latex latex-center'>",
+            "/\\\\end\{center\}/" => "</div>",
+            "/\\\\begin\{minipage\}/" => "<div class='latex latex-minipage'>",
+            "/\\\\end\{minipage\}/" => "</div>",
+            "/\\\\begin\{tabularx\}\{(.+?)\}/" => "<table class='latex latex-tabularx' style='width: $1%;'>",
+            "/\\\\end\{tabularx\}/" => "</table>",
+            "/\\\\\\\/" => "<br>",
+            "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
+            "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
+            "/\\\\hline/" => "<hr>",
+            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
+            // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
+            // "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
+            // "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
+            // "/\\\\times/" => "×",
+            // "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;",
+            // "/\\\\quad/" => "&nbsp;&nbsp;",
         ];
 
         // Appliquer les remplacements pour les maths et les listes
@@ -148,6 +169,9 @@ class ExerciseController extends Controller
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
             "\\enm" => "<ol>", "\\fenm" => "</ol>",
             "\\itm" => "<ul class='point'>", "\\fitm" => "</ul>",
+            // Convertir les environnements théoriques
+            // "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
+            // "\\finboite" => "</div>",
         ];
 
         foreach ($customCommands as $command => $html) {

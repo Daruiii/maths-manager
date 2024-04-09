@@ -195,7 +195,7 @@
 
                             <div x-show="showClue" class="bg-[#D4D68D] w-full p-2 rounded-lg">
                                 <h3 class="exercise-cc font-bold">Indice:</h3>
-                                <div class="solution-content text-sm p-4 cmu-ti">
+                                <div class="clue-content text-sm p-4 cmu-ti">
                                     {!! $ex->clue !!}
                                 </div>
                             </div>
@@ -222,6 +222,7 @@
                                 throwOnError: false,
                             });
                     });
+                    
                 </script>
             </div>
         </div>
