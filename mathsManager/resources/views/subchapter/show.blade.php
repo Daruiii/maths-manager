@@ -216,13 +216,15 @@
                 @endforeach
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
-                            renderMathInElement(document.body, {
+                        const elements = document.querySelectorAll('.solution-content, .clue-content, .exercise-content');
+                        elements.forEach((element) => {
+                            renderMathInElement(element, {
                                 delimiters: window.katexDelimiters,
                                 macros: window.macros,
                                 throwOnError: false,
                             });
                     });
-                    
+                }); 
                 </script>
             </div>
         </div>
