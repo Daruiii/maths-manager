@@ -16,13 +16,18 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 window.katexDelimiters = [
     {left: "$$", right: "$$", display: true},
-    {left: "\\[", right: "\\]", display: true},
+    {left: "\\[", right: "\\]", display: false},
     {left: "$", right: "$", display: false},
-    // {left: "\\\\", right: "", display: true},
+    {left: "\\\\", right: "", display: true},
     {left: "\\(", right: "\\)", display: false},
     // {left: "\\hline", right: "", display: true},
     {left: "\\quad", right: "", display: true},
     {left: "\\qquad", right: "", display: true},
+    // for Frac and frac
+    {left: "\\dfrac{", right: "}", display: true},
+    {left: "\\tfrac{", right: "}", display: false},
+    {left: "\\frac{", right: "}", display: true},
+    {left: "\\Frac{", right: "}", display: true},
     {left: "\\begin{equation}", right: "\\end{equation}", display: true},
     {left: "\\begin{matrix}", right: "\\end{matrix}", display: true},
     {left: "\\begin{vmatrix}", right: "\\end{vmatrix}", display: true},
