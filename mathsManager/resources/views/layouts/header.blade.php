@@ -24,14 +24,14 @@
                 <div class="relative" id="profile-dropdown">
                     <button id="profile-toggle" class="flex items-center focus:outline-none">
                         @if (Auth::user()->role === 'admin')
-                            <span class="text-blue-500 text-xs mr-2">{{ Auth::user()->name }}</span>
+                            <span class="text-blue-200 font-bold text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
                         @else
-                            <span class="text-xs mr-2">{{ Auth::user()->name }}</span>
+                            <span class="text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
                         @endif
                         @if (Str::startsWith(Auth::user()->avatar, 'http'))
-                            <img src="{{ Auth::user()->avatar }}" class="w-9 h-9 rounded-full border border-black" alt="Profile Picture">
+                            <img src="{{ Auth::user()->avatar }}" class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300  "alt="Profile Picture">
                         @else
-                            <img src="{{ asset('storage/images/' . Auth::user()->avatar) }}" class="w-9 h-9 rounded-full border border-black" alt="Profile Picture">
+                            <img src="{{ asset('storage/images/' . Auth::user()->avatar) }}" class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300" alt="Profile Picture">
                         @endif
                     </button>
                     <div id="profile-popup" class="popup absolute right-0 mt-2 py-2 w-48 rounded-md shadow-xl z-20 hidden">

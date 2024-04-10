@@ -33,64 +33,6 @@ class ExerciseController extends Controller
         return view('exercise.create', compact('subchapter_id', 'subchapters'));
     }
 
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'subchapter_id' => 'required',
-    //         'statement' => 'required',
-    //         'solution' => 'nullable', // Assurez-vous que ceci correspond à votre demande réelle
-    //     ]);
-
-    //     $exercise = Exercise::create($request->all());
-
-    //     // Génération du contenu LaTeX pour l'exercice et la correction
-    //     $exerciseContent = $request->statement;
-    //     $solutionContent = $request->solution ?? ''; // Utilisez une chaîne vide si aucune solution n'est fournie
-
-    //     // Dossier de sortie racine pour LaTeX
-    //     $rootOutputDir = storage_path('app/public/latex_output/exercise_' . $exercise->id);
-    //     if (!is_dir($rootOutputDir)) {
-    //         mkdir($rootOutputDir, 0777, true);
-    //     }
-
-    //     // Dossier spécifique pour l'exercice
-    //     $exerciseOutputDir = $rootOutputDir . '/exercise';
-    //     if (!is_dir($exerciseOutputDir)) {
-    //         mkdir($exerciseOutputDir, 0777, true);
-    //     }
-
-    //     // Dossier spécifique pour la correction
-    //     $solutionOutputDir = $rootOutputDir . '/correction';
-    //     if (!is_dir($solutionOutputDir)) {
-    //         mkdir($solutionOutputDir, 0777, true);
-    //     }
-
-    //     // Traiter l'exercice
-    //     $exerciseTexPath = $exerciseOutputDir . "/exercise_{$exercise->id}.tex";
-    //     Storage::disk('local')->put("public/latex_output/exercise_{$exercise->id}/exercise/exercise_{$exercise->id}.tex", $exerciseContent);
-    //     $this->generatePngFromLatex($exerciseTexPath, $exerciseOutputDir);
-
-    //     // Traiter la correction, si disponible
-    //     if (!empty($solutionContent)) {
-    //         $solutionTexPath = $solutionOutputDir . "/solution_{$exercise->id}.tex";
-    //         Storage::disk('local')->put("public/latex_output/exercise_{$exercise->id}/correction/solution_{$exercise->id}.tex", $solutionContent);
-    //         $this->generatePngFromLatex($solutionTexPath, $solutionOutputDir);
-    //     }
-
-    //     return redirect()->route('subchapter.show', $request->subchapter_id);
-    // }
-    // protected function generatePngFromLatex($texPath, $outputDir)
-    // {
-    //     // Compilation LaTeX en PDF
-    //     $latexCommand = "pdflatex -interaction=nonstopmode -output-directory={$outputDir} {$texPath}";
-    //     shell_exec($latexCommand);
-
-    //     // Convertir le PDF en PNG, en gérant plusieurs pages
-    //     $pdfPath = str_replace('.tex', '.pdf', $texPath);
-    //     $pngPath = str_replace('.tex', '.png', $texPath); // Cela produira 'nom_exercice.png'
-    //     $convertCommand = "convert -trim -density 200 {$pdfPath} -quality 90 {$pngPath}";
-    //     shell_exec($convertCommand);
-    // }
     public function store(Request $request)
     {
         $request->validate([
@@ -240,6 +182,65 @@ class ExerciseController extends Controller
         }
         return redirect()->route('subchapter.show', $exercise->subchapter_id);
     }
+
+        // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'subchapter_id' => 'required',
+    //         'statement' => 'required',
+    //         'solution' => 'nullable', // Assurez-vous que ceci correspond à votre demande réelle
+    //     ]);
+
+    //     $exercise = Exercise::create($request->all());
+
+    //     // Génération du contenu LaTeX pour l'exercice et la correction
+    //     $exerciseContent = $request->statement;
+    //     $solutionContent = $request->solution ?? ''; // Utilisez une chaîne vide si aucune solution n'est fournie
+
+    //     // Dossier de sortie racine pour LaTeX
+    //     $rootOutputDir = storage_path('app/public/latex_output/exercise_' . $exercise->id);
+    //     if (!is_dir($rootOutputDir)) {
+    //         mkdir($rootOutputDir, 0777, true);
+    //     }
+
+    //     // Dossier spécifique pour l'exercice
+    //     $exerciseOutputDir = $rootOutputDir . '/exercise';
+    //     if (!is_dir($exerciseOutputDir)) {
+    //         mkdir($exerciseOutputDir, 0777, true);
+    //     }
+
+    //     // Dossier spécifique pour la correction
+    //     $solutionOutputDir = $rootOutputDir . '/correction';
+    //     if (!is_dir($solutionOutputDir)) {
+    //         mkdir($solutionOutputDir, 0777, true);
+    //     }
+
+    //     // Traiter l'exercice
+    //     $exerciseTexPath = $exerciseOutputDir . "/exercise_{$exercise->id}.tex";
+    //     Storage::disk('local')->put("public/latex_output/exercise_{$exercise->id}/exercise/exercise_{$exercise->id}.tex", $exerciseContent);
+    //     $this->generatePngFromLatex($exerciseTexPath, $exerciseOutputDir);
+
+    //     // Traiter la correction, si disponible
+    //     if (!empty($solutionContent)) {
+    //         $solutionTexPath = $solutionOutputDir . "/solution_{$exercise->id}.tex";
+    //         Storage::disk('local')->put("public/latex_output/exercise_{$exercise->id}/correction/solution_{$exercise->id}.tex", $solutionContent);
+    //         $this->generatePngFromLatex($solutionTexPath, $solutionOutputDir);
+    //     }
+
+    //     return redirect()->route('subchapter.show', $request->subchapter_id);
+    // }
+    // protected function generatePngFromLatex($texPath, $outputDir)
+    // {
+    //     // Compilation LaTeX en PDF
+    //     $latexCommand = "pdflatex -interaction=nonstopmode -output-directory={$outputDir} {$texPath}";
+    //     shell_exec($latexCommand);
+
+    //     // Convertir le PDF en PNG, en gérant plusieurs pages
+    //     $pdfPath = str_replace('.tex', '.pdf', $texPath);
+    //     $pngPath = str_replace('.tex', '.png', $texPath); // Cela produira 'nom_exercice.png'
+    //     $convertCommand = "convert -trim -density 200 {$pdfPath} -quality 90 {$pngPath}";
+    //     shell_exec($convertCommand);
+    // }
 
     // public function update(Request $request, $id)
     // {
