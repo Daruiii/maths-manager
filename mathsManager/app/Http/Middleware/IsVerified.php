@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class IsAdmin
+class IsVerified
 {
     /**
      * Handle an incoming request.
@@ -18,7 +18,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if ( Auth::check() && Auth::user()->role !== User::ROLE_ADMIN ) {
+        if ( Auth::check() && Auth::user()->verified !== true ) {
             // Redirigez les non-administrateurs vers la page d'erreur
             return redirect('/home');
         }

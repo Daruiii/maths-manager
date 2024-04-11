@@ -12,6 +12,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\DsExerciseController;
 use App\Http\Controllers\MultipleChapterController;
+use App\Http\Controllers\DSController;
+use App\Http\Middleware\IsVerified;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::middleware('auth')->group(function () {
@@ -94,6 +96,20 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+// DS routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/ds', [DSController::class, 'index'])->name('ds.index');
+        Route::get('/ds/{id}/edit', [DSController::class, 'edit'])->name('ds.edit');
+        Route::patch('/ds/{id}', [DSController::class, 'update'])->name('ds.update');
+    });
+    Route::middleware([IsVerified::class])->group(function () {
+        Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
+        Route::get('/ds/create', [DSController::class, 'create'])->name('ds.create');
+        Route::post('/ds', [DSController::class, 'store'])->name('ds.store');
+        Route::delete('/ds/{id}', [DSController::class, 'destroy'])->name('ds.destroy');
+    });
+});
 
 // Users routes
 Route::middleware('auth')->group(function () {

@@ -52,4 +52,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function ds()
+    {
+        return $this->hasMany(DS::class);
+    }
 }

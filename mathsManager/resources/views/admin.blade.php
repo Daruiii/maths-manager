@@ -29,6 +29,11 @@
         <a href="{{ route('ds_exercises.index') }}" class="p-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-center">
             Gérer les exercices de DS
         </a>
+
+        <!-- Bouton pour les DS -->
+        <a href="{{ route('ds.index') }}" class="p-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-center">
+            Gérer les DS
+        </a>
         
         <!-- Ajoutez plus de boutons pour d'autres entités si nécessaire -->
     </div>

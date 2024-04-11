@@ -17,6 +17,11 @@ class DsExercise extends Model
         return $this->belongsToMany(Chapter::class, 'chapters_exercises_ds', 'exercise_ds_id', 'chapter_id');
     }
 
+    public function ds()
+    {
+        return $this->belongsToMany(DS::class, 'ds_exercises_ds', 'ds_exercise_id', 'ds_id');
+    }
+
     public function multipleChapter()
     {
         return $this->belongsTo(MultipleChapter::class)->onDelete('cascade');
