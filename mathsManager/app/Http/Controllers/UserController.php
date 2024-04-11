@@ -87,7 +87,6 @@ class UserController extends Controller
     
 
     // Supprime un utilisateur de la base de données par un admin
-    // Supprime un utilisateur de la base de données par un admin
     public function destroy($id)
     {
         $user = User::findOrFail($id);
@@ -100,6 +99,24 @@ class UserController extends Controller
         }
 
         $user->delete();
+
+        return redirect()->route('users.index');
+    }
+
+    public function verify($id)
+    {
+        $user = User::findOrFail($id);
+        $user->verified = true;
+        $user->save();
+
+        return redirect()->route('users.index');
+    }
+
+    public function unverify($id)
+    {
+        $user = User::findOrFail($id);
+        $user->verified = false;
+        $user->save();
 
         return redirect()->route('users.index');
     }

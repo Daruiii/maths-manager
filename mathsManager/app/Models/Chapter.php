@@ -25,4 +25,9 @@ class Chapter extends Model
     {
         return $this->hasMany(Quizz::class);
     }
+
+    public function dsExercises()
+    {
+        return $this->belongsToMany(DsExercise::class, 'chapters_exercises_ds', 'chapter_id', 'exercise_ds_id');
+    }
 }

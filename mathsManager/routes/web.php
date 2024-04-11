@@ -10,6 +10,8 @@ use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\DsExerciseController;
+use App\Http\Controllers\MultipleChapterController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::middleware('auth')->group(function () {
@@ -66,6 +68,33 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+// DS_Exercise routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/ds_exercise/create', [DsExerciseController::class, 'create'])->name('ds_exercise.create');
+        Route::post('/ds_exercise', [DsExerciseController::class, 'store'])->name('ds_exercise.store');
+        Route::get('/ds_exercises', [DsExerciseController::class, 'index'])->name('ds_exercises.index');
+        Route::get('/ds_exercise/{id}', [DsExerciseController::class, 'show'])->name('ds_exercise.show');
+        Route::get('/ds_exercise/{id}/edit', [DsExerciseController::class, 'edit'])->name('ds_exercise.edit');
+        Route::patch('/ds_exercise/{id}', [DsExerciseController::class, 'update'])->name('ds_exercise.update');
+        Route::delete('/ds_exercise/{id}', [DsExerciseController::class, 'destroy'])->name('ds_exercise.destroy');
+    });
+});
+
+// Multiple_chapters routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/multiple_chapters/create', [MultipleChapterController::class, 'create'])->name('multiple_chapter.create');
+        Route::post('/multiple_chapters', [MultipleChapterController::class, 'store'])->name('multiple_chapter.store');
+        Route::get('/multiple_chapters', [MultipleChapterController::class, 'index'])->name('multiple_chapters.index');
+        Route::get('/multiple_chapters/{id}', [MultipleChapterController::class, 'show'])->name('multiple_chapters.show');
+        Route::get('/multiple_chapters/{id}/edit', [MultipleChapterController::class, 'edit'])->name('multiple_chapter.edit');
+        Route::patch('/multiple_chapters/{id}', [MultipleChapterController::class, 'update'])->name('multiple_chapter.update');
+        Route::delete('/multiple_chapters/{id}', [MultipleChapterController::class, 'destroy'])->name('multiple_chapter.destroy');
+    });
+});
+
+
 // Users routes
 Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
@@ -76,6 +105,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
         Route::patch('/user/{id}', [UserController::class, 'update'])->name('user.update');
         Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+        // verify et unverify
+        Route::patch('/user/{id}/verify', [UserController::class, 'verify'])->name('user.verify');
+        Route::patch('/user/{id}/unverify', [UserController::class, 'unverify'])->name('user.unverify');
     });
 });
 

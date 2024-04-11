@@ -68,6 +68,14 @@
                 background-color: darken($admin, 5%);
             }
         }
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        // checkbox checked
+        input[type="checkbox"]:checked {
+            background-color: green;
+        }
 
         .form-group {
             margin-bottom: 1rem;
