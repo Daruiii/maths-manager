@@ -12,7 +12,7 @@ class DsExerciseController extends Controller
     public function index(Request $request)
     {        
         $search = $request->get('search');
-        $dsExercises = DsExercise::with('chapters');
+        $dsExercises = DsExercise::with('chapters')->orderBy('multiple_chapter_id', 'asc');
     
         if ($search) {
             $dsExercises->where(function($query) use ($search) {
@@ -55,6 +55,8 @@ class DsExerciseController extends Controller
             "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
             "/\\\\hline/" => "<hr>",
             "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
+            // for all text like texttt textit textbf
+            "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
             // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
             // "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
             // "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
@@ -68,14 +70,14 @@ class DsExerciseController extends Controller
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
         // "\textbf{hello world}" will be "\textbf{hello \ world}" pour ajouter un espace en gros
-        $allTexttags = ["textbf", "textit", "textup", "texttt"];
-        // on content of each {}, replace space with \
-        foreach ($allTexttags as $tag) {
-            $pattern = "/\\\\{$tag}\{(.*?)\}/";
-            $cleanedContent = preg_replace_callback($pattern, function ($matches) {
-                return str_replace(" ", " \\ ", $matches[0]);
-            }, $cleanedContent);
-        }
+        // $allTexttags = ["textbf", "textit", "textup", "texttt"];
+        // // on content of each {}, replace space with \
+        // foreach ($allTexttags as $tag) {
+        //     $pattern = "/\\\\{$tag}\{(.*?)\}/";
+        //     $cleanedContent = preg_replace_callback($pattern, function ($matches) {
+        //         return str_replace(" ", " \\ ", $matches[0]);
+        //     }, $cleanedContent);
+        // }
         // Convertir les commandes personnalisées en HTML
         $customCommands = [
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
@@ -103,7 +105,6 @@ class DsExerciseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'header' => 'nullable|max:255',
             'multiple_chapter_id' => 'required|exists:multiple_chapters,id',
             'harder_exercise' => 'boolean',
             'time' => 'required|integer',
@@ -143,8 +144,7 @@ class DsExerciseController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $validatedData = $request->validate([
-            'header' => 'nullable|max:255',
+        $request->validate([
             'multiple_chapter_id' => 'required|exists:multiple_chapters,id',
             'harder_exercise' => 'boolean',
             'time' => 'required|integer',
@@ -155,12 +155,19 @@ class DsExerciseController extends Controller
             'chapters.*' => 'exists:chapters,id'
         ]);
 
-        $validatedData['latex_statement'] = $validatedData['statement'];
-        $validatedData['statement'] = $this->convertCustomLatexToHtml($validatedData['statement']);
+        $harder_exercise = $request->has('harder_exercise') ? true : false;
+        $statement = $this->convertCustomLatexToHtml($request->statement);
 
         $dsExercise = DsExercise::findOrFail($id);
-        $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
-        $dsExercise->update($validatedData);
+        $dsExercise->update([
+            'harder_exercise' => $harder_exercise,
+            'time' => $request->time,
+            'name' => $request->name,
+            'statement' => $statement,
+            'latex_statement' => $request->statement,
+            'multiple_chapter_id' => $request->multiple_chapter_id
+        ]);
+
         $dsExercise->chapters()->sync($request->chapters);
         return redirect()->route('ds_exercise.show', $id);
     }

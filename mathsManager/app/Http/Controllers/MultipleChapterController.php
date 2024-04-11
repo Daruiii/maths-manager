@@ -43,7 +43,7 @@ class MultipleChapterController extends Controller
         $validatedData = $request->validate([
             'title' => 'required',
             'description' => 'nullable',
-            'theme' => 'required'
+            'theme' => 'nullable'
         ]);
 
         MultipleChapter::create($validatedData);
@@ -64,7 +64,7 @@ class MultipleChapterController extends Controller
         $request->validate([
             'title' => 'required',
             'description' => 'nullable',
-            'theme' => 'required'
+            'theme' => 'nullable'
         ]);
 
         $multipleChapter->update($request->all());

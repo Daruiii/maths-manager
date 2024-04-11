@@ -89,6 +89,8 @@ class ExerciseController extends Controller
             "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
             "/\\\\hline/" => "<hr>",
             "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
+            // for all text like texttt textit textbf
+            "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
             // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
             // "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
             // "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
@@ -102,14 +104,14 @@ class ExerciseController extends Controller
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
         // "\textbf{hello world}" will be "\textbf{hello \ world}" pour ajouter un espace en gros
-        $allTexttags = ["textbf", "textit", "textup", "texttt"];
-        // on content of each {}, replace space with \
-        foreach ($allTexttags as $tag) {
-            $pattern = "/\\\\{$tag}\{(.*?)\}/";
-            $cleanedContent = preg_replace_callback($pattern, function ($matches) {
-                return str_replace(" ", " \\ ", $matches[0]);
-            }, $cleanedContent);
-        }
+        // $allTexttags = ["textbf", "textit", "textup", "texttt"];
+        // // on content of each {}, replace space with \
+        // foreach ($allTexttags as $tag) {
+        //     $pattern = "/\\\\{$tag}\{(.*?)\}/";
+        //     $cleanedContent = preg_replace_callback($pattern, function ($matches) {
+        //         return str_replace(" ", " \\ ", $matches[0]);
+        //     }, $cleanedContent);
+        // }
         // Convertir les commandes personnalisées en HTML
         $customCommands = [
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",

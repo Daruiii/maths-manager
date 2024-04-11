@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 window.katexDelimiters = [
+    // {left: "\\textbf{", right: "}", display: false},
+    // {left: "\\textit{", right: "}", display: false},
+    // {left: "\\texttt{", right: "}", display: false},
+    // {left: "\\textup{", right: "}", display: false},
     {left: "$$", right: "$$", display: true},
     {left: "\\[", right: "\\]", display: false},
     {left: "$", right: "$", display: false},
@@ -47,10 +51,6 @@ window.katexDelimiters = [
     {left: "\\xymatrix{", right: "}", display: true},
     {left: "\\begin{xy}", right: "\\end{xy}", display: true},
     {left: "\\begin{CD}", right: "\\end{CD}", display: true},
-    {left: "\\textit{", right: "}", display: false},
-    {left: "\\textbf{", right: "}", display: false},
-    {left: "\\texttt{", right: "}", display: false},
-    {left: "\\textup{", right: "}", display: false},
 ];
 window.macros = {
     "\\test" : "HAHAHA LETS GOO",

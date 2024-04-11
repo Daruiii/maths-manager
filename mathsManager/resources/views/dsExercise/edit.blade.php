@@ -24,12 +24,6 @@
                     <input type="text" class="form-control" id="name" name="name" value="{{ $dsExercise->name }}" placeholder="Nom de l'exercice DS">
                 </div>
 
-                {{-- pour header --}}
-                <div class="form-group">
-                    <label for="header">Header de l'Exercice DS (LaTeX):</label>
-                    <textarea class="form-control" id="header" name="header" rows="4" placeholder="Insérer le LaTeX ici...">{{ $dsExercise->header }}</textarea>
-                </div>
-
                 <div class="form-group">
                     <label for="statement">Énoncé de l'Exercice DS (LaTeX):</label>
                     <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici...">{{ $dsExercise->latex_statement }}</textarea>

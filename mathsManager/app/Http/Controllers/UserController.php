@@ -14,6 +14,7 @@ class UserController extends Controller
         if ($search) {
             $users = User::where('name', 'like', '%' . $search . '%')
                 ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('role', 'like', '%' . $search . '%')
                 ->get();
         } else {
             $users = User::all();

@@ -48,6 +48,9 @@
                                         Chapitres associés
                                     </th>
                                     <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                        Chap de tri
+                                    </th>
+                                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                         Inj
                                     </th>
                                 <th
@@ -64,13 +67,22 @@
                                         {{ $ex->name }}</td>
                                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                             @foreach ($ex->chapters as $chapter)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 truncate">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full truncate"
+                                                style="background-color: {{ $chapter->theme }}; color: black;">
                                                     {{ $chapter->title }}
                                                 </span>
                                             @endforeach
                                         </td>
+                                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+                                            @foreach ($multipleChapters as $chapter)
+                                            @if ($chapter->id === $ex->multiple_chapter_id)
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                    {{ $chapter->title }}
+                                                </span>
+                                            @endif
+                                            @endforeach
+                                        </td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                        {{-- voir si harder_exercise est true ou false --}}
                                         @if ($ex->harder_exercise)
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                 Oui
