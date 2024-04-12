@@ -20,7 +20,7 @@ window.katexDelimiters = [
     // {left: "\\texttt{", right: "}", display: false},
     // {left: "\\textup{", right: "}", display: false},
     {left: "$$", right: "$$", display: true},
-    {left: "\\[", right: "\\]", display: false},
+    {left: "\\[", right: "\\]", display: true},
     {left: "$", right: "$", display: false},
     {left: "\\\\", right: "", display: true},
     {left: "\\(", right: "\\)", display: false},
@@ -53,6 +53,8 @@ window.katexDelimiters = [
     {left: "\\begin{CD}", right: "\\end{CD}", display: true},
 ];
 window.macros = {
+    "\\[": "\\begin{equation}",
+    "\\]": "\\end{equation}",
     "\\test" : "HAHAHA LETS GOO",
     "\\hdots" : "\\ldots",
     "\\R": "\\mathbb{R}",
