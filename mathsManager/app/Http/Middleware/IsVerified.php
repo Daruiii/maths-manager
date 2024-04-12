@@ -18,7 +18,7 @@ class IsVerified
      */
     public function handle(Request $request, Closure $next)
     {
-        if ( Auth::check() && Auth::user()->verified !== true ) {
+        if ( Auth::check() && Auth::user()->verified == 0) {
             // Redirigez les non-administrateurs vers la page d'erreur
             return redirect('/home');
         }

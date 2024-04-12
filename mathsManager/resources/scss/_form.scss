@@ -11,6 +11,13 @@
     // Un petit effet de texte si vous le souhaitez
     text-shadow: 1px 1px 0px rgba($text-gray, 0.5);
 }
+
+// pour les attributs disabled
+[disabled] {
+    cursor: not-allowed;
+    opacity: 0.1;
+}
+
 // Wrapper for the form to center it on the page
 .form-wrapper {
     display: flex;

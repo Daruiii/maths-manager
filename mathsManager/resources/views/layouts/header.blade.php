@@ -12,7 +12,7 @@
             @foreach ($classes as $class)
                 <a href="{{ route('classe.show', $class->level) }}" class="link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
             @endforeach
-            <a href="{{ route('home') }}" class="link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
+            <a href="{{ route('ds.myDS') }}" class="link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
             @auth
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('admin') }}" class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
@@ -51,7 +51,7 @@
         @foreach ($classes as $class)
             <a href="{{ route('classe.show', $class->level) }}" class="block link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
         @endforeach
-        <a href="{{ route('home') }}" class="block link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
+        <a href="{{ route('ds.myDS') }}" class="block link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
         @auth
             @if (Auth::user()->role === 'admin')
                 <a href="{{ route('admin') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">Admin</a>

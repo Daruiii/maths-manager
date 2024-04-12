@@ -104,10 +104,11 @@ Route::middleware('auth')->group(function () {
         Route::patch('/ds/{id}', [DSController::class, 'update'])->name('ds.update');
     });
     Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
+        Route::get('/ds/myDS', [DSController::class, 'indexUser'])->name('ds.myDS');
         Route::get('/ds/create', [DSController::class, 'create'])->name('ds.create');
         Route::post('/ds', [DSController::class, 'store'])->name('ds.store');
-        Route::delete('/ds/{id}', [DSController::class, 'destroy'])->name('ds.destroy');
+        Route::delete('/ds/{id}', [DSController::class, 'destroy'])->name('ds.destroy');      
+        Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
     });
 });
 
