@@ -6,8 +6,8 @@
     <div class="container mx-auto mb-8">
         <div class="flex justify-start flex-col align-center w-full my-8 ms-12">
             <h1 class="text-xl cmu-bold">Mes devoirs</h1>
-            <a href="{{ route('ds.create') }}" class="flex row justify-start align-center">
-                <div class="flex items-center justify-center mr-3">
+            <div class="flex row justify-start align-center">
+                <a href="{{ route('ds.create') }}" class="flex items-center justify-center mr-3">
                     <svg width="15px" height="15px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
                         fill="#000000">
@@ -28,12 +28,12 @@
                             </g>
                         </g>
                     </svg>
-                </div>
-                <h3
+                </a>
+                <a href="{{ route('ds.create') }}"
                     class="bg-blue-100 rounded-lg p-2 link w-44 text-center hover:bg-blue-200 shadow-md transition duration-300">
                     Générer un DS
-                </h3>
             </a>
+        </div>
         </div>
         @foreach ($dsList as $ds)
         {{-- admin --}}
@@ -98,6 +98,9 @@
                             </h2>
                         @elseif ($ds->status == 'corrected')
                             {{-- href="{{ route('ds.show', $ds->id) }}" --}}
+                            <h2 class="text-sm">
+                                note / 20
+                            </h2>
                             <a href=""
                                 class="bg-blue-100 rounded-lg p-2 link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
                                 Voir la correction
@@ -107,7 +110,7 @@
                 <div class="flex justify-between items-end w-full">
                     <div class="flex gap-2 ">
                         @foreach ($ds->exercisesDS as $exercise)
-                            <h3 class="text-xs cmu font-bold p-1 rounded-lg w-auto text-center hover:bg-blue-200 shadow-md transition duration-300"
+                            <h3 class="text-xs cmu font-bold p-1 rounded-lg w-auto text-center vertical-center hover:bg-blue-200 shadow-md transition duration-300 truncate"
                                 style="background-color: {{ $exercise->multipleChapter->theme }};">
                                 {{ $exercise->multipleChapter->title }}</h3>
                         @endforeach
@@ -116,7 +119,7 @@
                         <h2 class="text-xs font-bold">Type Bac </h2>
                     @endif
                     @if ($ds->harder_exercises)
-                        <h2 class="text-xs font-bold">Exercices plus difficiles</h2>
+                        <h2 class="text-xs font-bold">Approfondissement</h2>
                     @endif
                 </div>
             </div>

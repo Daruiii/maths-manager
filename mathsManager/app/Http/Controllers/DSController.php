@@ -113,7 +113,7 @@ class DSController extends Controller
         $ds->exercises_number = $new_exercises_number ?? $request->exercises_number;
         $ds->harder_exercises = $request->has('harder_exercises') ? true : false;
         $ds->time = $TotalTime;
-        $ds->timer = "0";
+        $ds->timer = $TotalTime;
         $ds->chrono = "0";
         $ds->status = "not_started";
         $ds->user_id = Auth::id();

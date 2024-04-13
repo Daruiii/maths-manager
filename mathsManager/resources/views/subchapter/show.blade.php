@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mx-auto">
         <div
-            class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-2/3 rounded-lg box-shadow shadow-xl">
+            class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-4/5 rounded-lg box-shadow shadow-xl">
             <div class="flex items-start justify-between w-full">
                 <div class="flex items-start justify-center align-start pr-12"
                     style="border-radius : 2rem 0 10rem 0 ; background-color: {{ $subchapter->chapter->theme }};">
