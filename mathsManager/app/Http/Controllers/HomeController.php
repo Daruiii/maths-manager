@@ -13,6 +13,12 @@ class HomeController extends Controller
         return view('home');
     }
 
+    // method for redirect to error isntValid
+    public function isntValid()
+    {
+        return view('errors/isntValid');
+    }
+
     public function admin()
     {
         return view('admin');

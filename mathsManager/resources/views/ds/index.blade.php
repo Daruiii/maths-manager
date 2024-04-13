@@ -10,7 +10,7 @@
             {{-- Add DS button --}}
             <div>
                 <a href="{{ route('ds.create') }}"
-                    class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Ajouter
+                    class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Générer
                     un DS</a>
             </div>
         </div>
@@ -26,9 +26,6 @@
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     User</th>
-                                <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Type Bac</th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Nombre d'exercices</th>
@@ -49,11 +46,8 @@
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                                         {{ $ds->user->name }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                        {{ $ds->type_bac ? 'Oui' : 'Non' }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $ds->exercises_number }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                        {{-- if type_bac true display type bac --}}
                                         @if ($ds->type_bac)
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full truncate bg-green-100 text-green-800">

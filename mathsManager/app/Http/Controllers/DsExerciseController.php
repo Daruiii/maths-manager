@@ -50,6 +50,8 @@ class DsExerciseController extends Controller
             "/\\\\end\{minipage\}/" => "</div>",
             "/\\\\begin\{tabularx\}\{(.+?)\}/" => "<table class='latex-tabularx' style='width: $1%;'>",
             "/\\\\end\{tabularx\}/" => "</table>",
+            "/\\\\begin\{boxed\}/" => "<span class='latex latex-boxed'>",
+            "/\\\\end\{boxed\}/" => "</span>",
             // "/\\\\\\\/" => "<br>",
             "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
             "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",

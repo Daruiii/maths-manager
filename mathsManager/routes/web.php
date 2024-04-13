@@ -20,6 +20,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin', [HomeController::class, 'admin'])->name('admin')->middleware(IsAdmin::class);
 });
 
+// errors
+Route::get('/isntValid', [HomeController::class, 'isntValid'])->name('isntValid');
+
 // Classe routes
 Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {

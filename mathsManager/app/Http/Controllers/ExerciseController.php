@@ -78,12 +78,14 @@ class ExerciseController extends Controller
             "/\\\\begin\{enumerate\}/" => "<ol>",
             "/\\\\end\{enumerate\}/" => "</ol>",
             "/\\\\item/" => "<li>",
-            "/\\\\begin\{center\}/" => "<div class='latex latex-center'>",
+            "/\\\\begin\{center\}/" => "<div class='latex-center'>",
             "/\\\\end\{center\}/" => "</div>",
-            "/\\\\begin\{minipage\}/" => "<div class='latex-minipage'>",
+            "/\\\\begin\{minipage\}/" => "<div class='latex latex-minipage'>",
             "/\\\\end\{minipage\}/" => "</div>",
             "/\\\\begin\{tabularx\}\{(.+?)\}/" => "<table class='latex-tabularx' style='width: $1%;'>",
             "/\\\\end\{tabularx\}/" => "</table>",
+            "/\\\\begin\{boxed\}/" => "<span class='latex latex-boxed'>",
+            "/\\\\end\{boxed\}/" => "</span>",
             // "/\\\\\\\/" => "<br>",
             "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
             "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
@@ -103,15 +105,7 @@ class ExerciseController extends Controller
         foreach ($patterns as $pattern => $replacement) {
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
-        // "\textbf{hello world}" will be "\textbf{hello \ world}" pour ajouter un espace en gros
-        // $allTexttags = ["textbf", "textit", "textup", "texttt"];
-        // // on content of each {}, replace space with \
-        // foreach ($allTexttags as $tag) {
-        //     $pattern = "/\\\\{$tag}\{(.*?)\}/";
-        //     $cleanedContent = preg_replace_callback($pattern, function ($matches) {
-        //         return str_replace(" ", " \\ ", $matches[0]);
-        //     }, $cleanedContent);
-        // }
+    
         // Convertir les commandes personnalisées en HTML
         $customCommands = [
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",

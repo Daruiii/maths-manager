@@ -12,7 +12,7 @@
             @foreach ($classes as $class)
                 <a href="{{ route('classe.show', $class->level) }}" class="link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
             @endforeach
-            <a href="{{ route('ds.myDS') }}" class="link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
+            <a href="{{ route('ds.myDS') }}" class="link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
             @auth
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('admin') }}" class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
@@ -24,7 +24,7 @@
                 <div class="relative" id="profile-dropdown">
                     <button id="profile-toggle" class="flex items-center focus:outline-none">
                         @if (Auth::user()->role === 'admin')
-                            <span class="text-blue-200 font-bold text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
+                            <span class="text-blue-500 font-bold text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
                         @else
                             <span class="text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
                         @endif
@@ -51,7 +51,7 @@
         @foreach ($classes as $class)
             <a href="{{ route('classe.show', $class->level) }}" class="block link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
         @endforeach
-        <a href="{{ route('ds.myDS') }}" class="block link {{ request()->routeIs('home') ? 'active' : '' }}">Mes devoirs</a>
+        <a href="{{ route('ds.myDS') }}" class="block link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
         @auth
             @if (Auth::user()->role === 'admin')
                 <a href="{{ route('admin') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">Admin</a>

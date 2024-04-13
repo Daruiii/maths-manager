@@ -20,7 +20,7 @@ class IsVerified
     {
         if ( Auth::check() && Auth::user()->verified == 0) {
             // Redirigez les non-administrateurs vers la page d'erreur
-            return redirect('/home');
+            return redirect('/isntValid');
         }
 
         return $next($request);

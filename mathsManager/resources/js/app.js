@@ -30,6 +30,7 @@ window.katexDelimiters = [
     {left: "\\tfrac{", right: "}", display: false},
     {left: "\\frac{", right: "}", display: true},
     {left: "\\Frac{", right: "}", display: true},
+    {left: "\\boxed{", right: "}", display: true},
     {left: "\\begin{equation}", right: "\\end{equation}", display: true},
     {left: "\\begin{matrix}", right: "\\end{matrix}", display: true},
     {left: "\\begin{vmatrix}", right: "\\end{vmatrix}", display: true},
@@ -51,6 +52,7 @@ window.katexDelimiters = [
     {left: "\\xymatrix{", right: "}", display: true},
     {left: "\\begin{xy}", right: "\\end{xy}", display: true},
     {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+
 ];
 window.macros = {
     "\\[": "\\begin{equation}",

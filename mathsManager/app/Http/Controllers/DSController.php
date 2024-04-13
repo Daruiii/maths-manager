@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\DS;
 use App\Models\Chapter;
 use App\Models\DsExercise;
+use App\Models\MultipleChapter;
 
 class DSController extends Controller
 {
@@ -23,6 +24,15 @@ class DSController extends Controller
     {
         // with chapters and exercisesDS
         $dsList = Auth::user()->ds;
+        /// sorted by most recent DS first
+        $dsList = $dsList->sortByDesc('created_at');
+        // get the multipleChapters data foreach exerciseDS
+        foreach ($dsList as $ds) {
+            foreach ($ds->exercisesDS as $exerciseDS) {
+                $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
+            }
+        }
+
         return view('ds.myDS', compact('dsList'));
     }
 
@@ -53,16 +63,14 @@ class DSController extends Controller
         // we will select "exercices_number" ds_exercises randomly from the chapters selected
         $exercisesDS = [];
         foreach ($request->chapters as $chapter) {
-            // find a random exercice from the chapter
+            // find all the exercises from the chapter
             $exercises = Chapter::find($chapter)->dsExercises;
-            // if harder_exercises is not checked, we will select only the exercises with harder_exercise = 0
             if (!$request->harder_exercises) {
                 $exercises = $exercises->where('harder_exercise', 0);
             }
             $exercisesDS = array_merge($exercisesDS, $exercises->toArray());
         }
         shuffle($exercisesDS);
-        // supprimer les exercisesDS qui ont le même id
         foreach ($exercisesDS as $key => $exercise) {
             foreach ($exercisesDS as $key2 => $exercise2) {
                 if ($key != $key2 && $exercise['id'] == $exercise2['id']) {
@@ -70,11 +78,25 @@ class DSController extends Controller
                 }
             }
         }
-        // if we have less exercises than the exercises_number, we will only select the number of exercises we have and reduce the exercises_number
+        if ($request->type_bac) {
+            foreach ($exercisesDS as $key => $exercise) {
+                $exercisesDS[$key]['multipleChapter'] = MultipleChapter::find($exercise['multiple_chapter_id']);
+            }
+            // dans tous les exercisesDS, on va chercher les exercises qui ont le même multipleChapter->theme et supprimer les doublons
+            foreach ($exercisesDS as $key => $exercise) { // on aura donc 4 exos avec couleurs différentes affichés sur les labels
+                foreach ($exercisesDS as $key2 => $exercise2) {
+                    if ($key != $key2 && $exercise['multipleChapter']['theme'] == $exercise2['multipleChapter']['theme']) {
+                        unset($exercisesDS[$key]);
+                    }
+                }
+            }
+        }
+
         if (count($exercisesDS) < $request->exercises_number) {
             $new_exercises_number = count($exercisesDS);
         }
         $exercisesDS = array_slice($exercisesDS, 0, $new_exercises_number ?? $request->exercises_number);
+
 
         // somme de time de tous les exercisesDS pour avoir le temps total du DS
         $TotalTime = 0;
@@ -93,14 +115,14 @@ class DSController extends Controller
         $ds->time = $TotalTime;
         $ds->timer = "0";
         $ds->chrono = "0";
-        $ds->status = "ongoing";
+        $ds->status = "not_started";
         $ds->user_id = Auth::id();
         $ds->save();
 
         $ds->chapters()->attach($request->chapters);
         $ds->exercisesDS()->attach($exercisesDS);
 
-        return redirect()->route('ds.index');
+        return redirect()->route('ds.myDS');
     }
 
     // Méthode pour éditer un DS

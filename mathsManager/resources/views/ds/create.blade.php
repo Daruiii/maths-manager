@@ -12,7 +12,7 @@
 
     <section class="form-wrapper">
         <div class="form">
-            <h1 class="form-title">Ajouter un DS</h1>
+            <h1 class="form-title">Générer un DS</h1>
 
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit">Ajouter le DS</button>
+                <button type="submit">Générer le DS</button>
             </form>
             
         </div>
@@ -97,22 +97,21 @@
             if (this.checked) {
                 dsFormWrapper.style.display = 'none';
                 exercises_number.value = 4;
-                harder_exercises.checked = false;
-                exercises_number.setAttribute('disabled', 'disabled');
-                harder_exercises.setAttribute('disabled', 'disabled');
-                multiselectFilter.setAttribute('disabled', 'disabled');
+                exercises_number.setAttribute('hidden', 'hidden');
+                harder_exercises.setAttribute('hidden', 'hidden');
+                multiselectFilter.setAttribute('hidden', 'hidden');
                 chaptersCheckboxes.forEach(function(checkbox) {
                     checkbox.checked = true;
-                    checkbox.setAttribute('disabled', 'disabled');
+                    checkbox.setAttribute('hidden', 'hidden');
                 });
             } else {
                 dsFormWrapper.style.display = 'block';
-                exercises_number.removeAttribute('disabled');
-                harder_exercises.removeAttribute('disabled');
-                multiselectFilter.removeAttribute('disabled');
+                exercises_number.removeAttribute('hidden');
+                harder_exercises.removeAttribute('hidden');
+                multiselectFilter.removeAttribute('hidden');
                 chaptersCheckboxes.forEach(function(checkbox) {
                     checkbox.checked = false;
-                    checkbox.removeAttribute('disabled');
+                    checkbox.removeAttribute('hidden');
                 });
             }
         });
