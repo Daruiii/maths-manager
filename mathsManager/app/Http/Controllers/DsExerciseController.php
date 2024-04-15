@@ -99,7 +99,7 @@ class DsExerciseController extends Controller
 
     public function create()
     {
-        $chapters = Chapter::all();
+        $chapters = Chapter::where('title', '!=', 'Raisonnement par récurrence')->get();
         $multipleChapters = MultipleChapter::all();
         return view('dsExercise.create', compact('chapters', 'multipleChapters'));
     }
@@ -139,7 +139,7 @@ class DsExerciseController extends Controller
     public function edit(string $id)
     {
         $dsExercise = DsExercise::with('chapters')->findOrFail($id);
-        $chapters = Chapter::all();
+        $chapters = Chapter::where('title', '!=', 'Raisonnement par récurrence')->get();
         $multipleChapters = MultipleChapter::all();
         return view('dsExercise.edit', compact('dsExercise', 'chapters', 'multipleChapters'));
     }

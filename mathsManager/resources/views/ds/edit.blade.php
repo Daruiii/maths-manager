@@ -34,7 +34,11 @@
                 <div id="dsFormWrapper">
                 <div class="form-group">
                     <label for="exercises_number">Nombre d'exercices :</label>
-                    <input type="number" id="exercises_number" name="exercises_number" min="1" max="4" value="{{ $ds->exercises_number }}">
+                    <select name="exercises_number" id="exercises_number">
+                        <option value="1" {{ $ds->exercises_number == 1 ? 'selected' : '' }}>1</option>
+                        <option value="2" {{ $ds->exercises_number == 2 ? 'selected' : '' }}>2</option>
+                        <option value="3" {{ $ds->exercises_number == 3 ? 'selected' : '' }}>3</option>
+                        <option value="4" {{ $ds->exercises_number == 4 ? 'selected' : '' }}>4</option>
                 </div>
 
                 <div class="form-group">

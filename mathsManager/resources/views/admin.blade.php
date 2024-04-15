@@ -22,7 +22,7 @@
 
         {{-- bouton pour les multiple_chapters --}}
         <a href="{{ route('multiple_chapters.index') }}" class="p-4 bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
-            Gérer les chap mutliple 
+            Gérer les chapitres duo
         </a>
 
         <!-- Bouton pour les ds_exercices -->

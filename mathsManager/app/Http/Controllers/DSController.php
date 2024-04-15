@@ -46,7 +46,7 @@ class DSController extends Controller
     // Méthode pour créer un DS
     public function create()
     {
-        $chapters = Chapter::all();
+        $chapters = Chapter::where('title', '!=', 'Raisonnement par récurrence')->get();
         return view('ds.create', compact('chapters'));
     }
 
@@ -129,7 +129,7 @@ class DSController extends Controller
     public function edit($id)
     {
         $ds = DS::find($id);
-        $chapters = Chapter::all();
+        $chapters = Chapter::where('title', '!=', 'Raisonnement par récurrence')->get();
         return view('ds.edit', compact('ds', 'chapters'));
     }
 
