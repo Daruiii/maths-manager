@@ -193,7 +193,7 @@ class DSController extends Controller
         $ds->chapters()->sync($request->chapters);
         $ds->exercisesDS()->sync($exercisesDS);
 
-        return redirect()->route('ds.index');
+        return redirect()->route('ds.myDS');
     }
 
     // Méthode pour supprimer un DS
@@ -201,6 +201,6 @@ class DSController extends Controller
     {
         $ds = DS::find($id);
         $ds->delete();
-        return redirect()->route('ds.index');
+        return redirect()->route('ds.myDS');
     }
 }
