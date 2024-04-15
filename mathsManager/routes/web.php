@@ -15,6 +15,10 @@ use App\Http\Controllers\MultipleChapterController;
 use App\Http\Controllers\DSController;
 use App\Http\Middleware\IsVerified;
 
+
+Route::get('/', function () {
+    return view('home');
+});
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [HomeController::class, 'admin'])->name('admin')->middleware(IsAdmin::class);
