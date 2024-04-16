@@ -12,7 +12,7 @@ class DsExerciseController extends Controller
     public function index(Request $request)
     {        
         $search = $request->get('search');
-        $dsExercises = DsExercise::all()->sortByDesc('multiple_chapter_id');
+        $dsExercises = DsExercise::with('chapters')->orderBy('multiple_chapter_id', 'asc');
     
         if ($search) {
             $dsExercises->where(function($query) use ($search) {
@@ -25,6 +25,7 @@ class DsExerciseController extends Controller
             $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
         }
         
+        $dsExercises = $dsExercises->get();
         $multipleChapters = MultipleChapter::all();
     
         return view('dsExercise.index', compact('dsExercises', 'multipleChapters'));
