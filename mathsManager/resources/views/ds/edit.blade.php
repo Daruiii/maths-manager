@@ -75,6 +75,7 @@
     </section>
 
     <script>
+      document.addEventListener('DOMContentLoaded', function() {
             const chaptersCheckboxes = document.querySelectorAll('.multiselect__checkbox');
             if (document.getElementById('type_bac').checked) {
                 document.getElementById('dsFormWrapper').style.display = 'none';
@@ -96,6 +97,7 @@
                 });
                 dsFormWrapper.style.display = 'block';
             }
+        });
         });
     </script>
 @endsection

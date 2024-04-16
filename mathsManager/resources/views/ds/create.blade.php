@@ -77,49 +77,28 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const filterInput = document.querySelector('.multiselect__filter');
-            filterInput.addEventListener('input', function() {
-                const filterValue = this.value.toLowerCase();
-                const options = document.querySelectorAll('.multiselect__option');
-                options.forEach(function(option) {
-                    const label = option.querySelector('.multiselect__label').innerText
-                    .toLowerCase();
-                    if (label.includes(filterValue)) {
-                        option.style.display = 'block';
-                    } else {
-                        option.style.display = 'none';
-                    }
-                });
-            });
-        });
-        document.getElementById('type_bac').addEventListener('change', function() {
-            const exercises_number = document.getElementById('exercises_number');
-            const harder_exercises = document.getElementById('harder_exercises');
-            // for multiselect__filter
-            const multiselectFilter = document.querySelector('.multiselect__filter');
             const chaptersCheckboxes = document.querySelectorAll('.multiselect__checkbox');
-
-            if (this.checked) {
-                dsFormWrapper.style.display = 'none';
+            if (document.getElementById('type_bac').checked) {
+                document.getElementById('dsFormWrapper').style.display = 'none';
                 exercises_number.value = 4;
                 harder_exercises.checked = false;
-                exercises_number.setAttribute('hidden', 'hidden');
-                harder_exercises.setAttribute('hidden', 'hidden');
-                multiselectFilter.setAttribute('hidden', 'hidden');
-                chaptersCheckboxes.forEach(function(checkbox) {
-                    checkbox.checked = true;
-                    checkbox.setAttribute('hidden', 'hidden');
-                });
-            } else {
-                dsFormWrapper.style.display = 'block';
-                exercises_number.removeAttribute('hidden');
-                harder_exercises.removeAttribute('hidden');
-                multiselectFilter.removeAttribute('hidden');
-                chaptersCheckboxes.forEach(function(checkbox) {
-                    checkbox.checked = false;
-                    checkbox.removeAttribute('hidden');
-                });
             }
+        document.getElementById('type_bac').addEventListener('change', function() {
+            const dsFormWrapper = document.getElementById('dsFormWrapper');
+            if (this.checked) {
+                chaptersCheckboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                exercises_number.value = 4;
+                harder_exercises.checked = false;
+                dsFormWrapper.style.display = 'none';
+            } else {
+                chaptersCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                dsFormWrapper.style.display = 'block';
+            }
+        });
         });
     </script>
 @endsection

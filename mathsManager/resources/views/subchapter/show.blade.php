@@ -214,18 +214,6 @@
                         </div>
                     </div>
                 @endforeach
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        const elements = document.querySelectorAll('.solution-content, .clue-content, .exercise-content');
-                        elements.forEach((element) => {
-                            renderMathInElement(element, {
-                                delimiters: window.katexDelimiters,
-                                macros: window.macros,
-                                throwOnError: false,
-                            });
-                    });
-                }); 
-                </script>
             </div>
         </div>
     @endsection

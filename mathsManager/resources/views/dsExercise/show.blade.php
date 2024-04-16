@@ -105,16 +105,4 @@
         </div>
     </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const elements = document.querySelectorAll('.exercise-content');
-            elements.forEach((element) => {
-                renderMathInElement(element, {
-                    delimiters: window.katexDelimiters,
-                    macros: window.macros,
-                    throwOnError: false,
-                });
-            });
-        });
-    </script>
 @endsection
