@@ -42,14 +42,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="multiple_chapter_id">Chapitre:</label>
+                    <label for="multiple_chapter_id">Chapitre duo:</label>
                     <select class="form-control" id="multiple_chapter_id" name="multiple_chapter_id">
                         @foreach ($multipleChapters as $multipleChapter)
                             <option value="{{ $multipleChapter->id }}" {{ $dsExercise->multiple_chapter_id == $multipleChapter->id ? 'selected' : '' }}>{{ $multipleChapter->title }}</option>
                         @endforeach
                     </select>
                 </div>
-
+{{-- 
                 <div class="form-group">
                     <label for="chapters">Chapitres associés:</label>
                     <div class="multiselect">
@@ -63,13 +63,13 @@
                             @endforeach
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <button type="submit" class="submit-btn-form">Modifier l'Exercice DS</button>
             </form>
         </div>
     </section>
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterInput = document.querySelector('.multiselect__filter');
             filterInput.addEventListener('input', function() {
@@ -86,5 +86,5 @@
                 });
             });
         });
-    </script>
+    </script> --}}
 @endsection

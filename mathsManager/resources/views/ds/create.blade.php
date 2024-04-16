@@ -61,7 +61,7 @@
                                 <div class="multiselect__options" style="max-height: 200px; overflow-y: auto;">
                                     @foreach ($chapters as $chapter)
                                         <label class="multiselect__option">
-                                            <input type="checkbox" class="multiselect__checkbox" value="{{ $chapter->id }}" name="chapters[]">
+                                            <input type="checkbox" class="multiselect__checkbox" value="{{ $chapter->id }}" name="multiple_chapters[]">
                                             <span class="multiselect__label">{{ $chapter->title }}</span>
                                         </label>
                                     @endforeach
@@ -102,6 +102,7 @@
             if (this.checked) {
                 dsFormWrapper.style.display = 'none';
                 exercises_number.value = 4;
+                harder_exercises.checked = false;
                 exercises_number.setAttribute('hidden', 'hidden');
                 harder_exercises.setAttribute('hidden', 'hidden');
                 multiselectFilter.setAttribute('hidden', 'hidden');

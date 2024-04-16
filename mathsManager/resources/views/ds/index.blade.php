@@ -44,7 +44,7 @@
                             @foreach ($dsList as $ds)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
-                                        {{ $ds->user->name }}</td>
+                                        {{ $ds->user->name ?? 'Utilisateur supprimé' }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $ds->exercises_number }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
@@ -54,7 +54,7 @@
                                                 Type Bac
                                             </span>
                                         @else
-                                        @foreach ($ds->chapters as $chapter)
+                                        @foreach ($ds->multipleChapters as $chapter)
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full truncate"
                                                 style="background-color: {{ $chapter->theme }}; color: black;">

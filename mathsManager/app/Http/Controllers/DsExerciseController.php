@@ -12,7 +12,7 @@ class DsExerciseController extends Controller
     public function index(Request $request)
     {        
         $search = $request->get('search');
-        $dsExercises = DsExercise::with('chapters')->orderBy('multiple_chapter_id', 'asc');
+        $dsExercises = DsExercise::all()->sortByDesc('multiple_chapter_id');
     
         if ($search) {
             $dsExercises->where(function($query) use ($search) {
@@ -24,9 +24,7 @@ class DsExerciseController extends Controller
         if ($request->filled('multiple_chapter_id')) {
             $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
         }
-    
-        $dsExercises = $dsExercises->get();
-    
+        
         $multipleChapters = MultipleChapter::all();
     
         return view('dsExercise.index', compact('dsExercises', 'multipleChapters'));
@@ -99,9 +97,8 @@ class DsExerciseController extends Controller
 
     public function create()
     {
-        $chapters = Chapter::where('title', '!=', 'Raisonnement par récurrence')->get();
         $multipleChapters = MultipleChapter::all();
-        return view('dsExercise.create', compact('chapters', 'multipleChapters'));
+        return view('dsExercise.create', compact('multipleChapters'));
     }
 
     public function store(Request $request)
@@ -113,8 +110,8 @@ class DsExerciseController extends Controller
             'name' => 'nullable|max:255',
             'statement' => 'required',
             'latex_statement' => 'nullable',
-            'chapters' => 'required|array',
-            'chapters.*' => 'exists:chapters,id'
+            // 'chapters' => 'required|array',
+            // 'chapters.*' => 'exists:chapters,id'
         ]);
 
         $dsExercise = new DsExercise();
@@ -124,13 +121,13 @@ class DsExerciseController extends Controller
         $dsExercise->latex_statement = $dsExercise->statement;
         $dsExercise->save();
 
-        $dsExercise->chapters()->attach($request->chapters);
+        // $dsExercise->chapters()->attach($request->chapters);
         return redirect()->route('ds_exercises.index');
     }
 
     public function show(string $id)
     {
-        $dsExercise = DsExercise::with('chapters')->findOrFail($id);
+        $dsExercise = DsExercise::findOrFail($id);
         // multiple_chapter_id 
         $multipleChapter = MultipleChapter::findOrFail($dsExercise->multiple_chapter_id);
         return view('dsExercise.show', compact('dsExercise', 'multipleChapter'));
@@ -138,10 +135,9 @@ class DsExerciseController extends Controller
 
     public function edit(string $id)
     {
-        $dsExercise = DsExercise::with('chapters')->findOrFail($id);
-        $chapters = Chapter::where('title', '!=', 'Raisonnement par récurrence')->get();
+        $dsExercise = DsExercise::findOrFail($id);
         $multipleChapters = MultipleChapter::all();
-        return view('dsExercise.edit', compact('dsExercise', 'chapters', 'multipleChapters'));
+        return view('dsExercise.edit', compact('dsExercise', 'multipleChapters'));
     }
 
     public function update(Request $request, string $id)
@@ -153,8 +149,8 @@ class DsExerciseController extends Controller
             'name' => 'nullable|max:255',
             'statement' => 'required',
             'latex_statement' => 'nullable',
-            'chapters' => 'required|array',
-            'chapters.*' => 'exists:chapters,id'
+            // 'chapters' => 'required|array',
+            // 'chapters.*' => 'exists:chapters,id'
         ]);
 
         $harder_exercise = $request->has('harder_exercise') ? true : false;
@@ -170,7 +166,7 @@ class DsExerciseController extends Controller
             'multiple_chapter_id' => $request->multiple_chapter_id
         ]);
 
-        $dsExercise->chapters()->sync($request->chapters);
+        // $dsExercise->chapters()->sync($request->chapters);
         return redirect()->route('ds_exercise.show', $id);
     }
 

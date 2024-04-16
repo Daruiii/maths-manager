@@ -39,6 +39,7 @@
                         <option value="2" {{ $ds->exercises_number == 2 ? 'selected' : '' }}>2</option>
                         <option value="3" {{ $ds->exercises_number == 3 ? 'selected' : '' }}>3</option>
                         <option value="4" {{ $ds->exercises_number == 4 ? 'selected' : '' }}>4</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -59,7 +60,7 @@
                             <div class="multiselect__options" style="max-height: 200px; overflow-y: auto;">
                                 @foreach ($chapters as $chapter)
                                 <label class="multiselect__option">
-                                    <input type="checkbox" class="multiselect__checkbox" value="{{ $chapter->id }}" name="chapters[]" {{ $ds->chapters->contains($chapter->id) ? 'checked' : '' }}>
+                                    <input type="checkbox" class="multiselect__checkbox" value="{{ $chapter->id }}" name="multiple_chapters[]" {{ $ds->multipleChapters->contains($chapter->id) ? 'checked' : '' }}>
                                     <span class="multiselect__label">{{ $chapter->title }}</span>
                                 </label>
                             @endforeach

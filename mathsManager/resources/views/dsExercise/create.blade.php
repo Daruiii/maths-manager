@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="multiple_chapter_id">Chapitre:</label>
+                    <label for="multiple_chapter_id">Chapitre duo:</label>
                     <select class="form-control" id="multiple_chapter_id" name="multiple_chapter_id">
                         @foreach ($multipleChapters as $multipleChapter)
                             <option value="{{ $multipleChapter->id }}">{{ $multipleChapter->title }}</option>
@@ -73,7 +73,7 @@
                 </div>
 
                 {{-- chapitres associés --}}
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label for="chapters">Chapitres associés:</label>
                     <div class="multiselect">
                         <div class="multiselect__selected" tabindex="0">
@@ -92,12 +92,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <button type="submit" class="submit-btn-form">Ajouter l'Exercice DS</button>
             </form>
         </div>
     </section>
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterInput = document.querySelector('.multiselect__filter');
             filterInput.addEventListener('input', function() {
@@ -114,5 +114,5 @@
                 });
             });
         });
-    </script>
+    </script> --}}
 @endsection

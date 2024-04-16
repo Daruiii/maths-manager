@@ -18,6 +18,11 @@ class DS extends Model
         return $this->belongsToMany(Chapter::class, 'ds_chapter', 'ds_id', 'chapter_id');
     }
 
+    public function multipleChapters()
+    {
+        return $this->belongsToMany(MultipleChapter::class, 'ds_multiple_chapters', 'ds_id', 'multiple_chapter_id');
+    }
+
     public function exercisesDS()
     {
         return $this->belongsToMany(DsExercise::class, 'ds_exercises_ds', 'ds_id', 'ds_exercise_id');

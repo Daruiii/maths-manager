@@ -14,4 +14,9 @@ class MultipleChapter extends Model
     {
         return $this->hasMany(DsExercise::class);
     }
+
+    public function ds()
+    {
+        return $this->belongsToMany(DS::class, 'ds_multiple_chapters', 'multiple_chapter_id', 'ds_id');
+    }
 }
