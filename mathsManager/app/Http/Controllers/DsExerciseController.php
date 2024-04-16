@@ -117,8 +117,8 @@ class DsExerciseController extends Controller
         $dsExercise = new DsExercise();
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->fill($request->all());
-        $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement);
         $dsExercise->latex_statement = $dsExercise->statement;
+        $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement);
         $dsExercise->save();
 
         // $dsExercise->chapters()->attach($request->chapters);
@@ -154,15 +154,15 @@ class DsExerciseController extends Controller
         ]);
 
         $harder_exercise = $request->has('harder_exercise') ? true : false;
-        $statement = $this->convertCustomLatexToHtml($request->statement);
+        $new_statement = $this->convertCustomLatexToHtml($request->statement);
 
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->update([
             'harder_exercise' => $harder_exercise,
             'time' => $request->time,
             'name' => $request->name,
-            'statement' => $statement,
             'latex_statement' => $request->statement,
+            'statement' => $new_statement,
             'multiple_chapter_id' => $request->multiple_chapter_id
         ]);
 
