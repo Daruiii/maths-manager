@@ -36,12 +36,17 @@
                 </div>
             @endif
 
-            <form action="{{ route('ds_exercise.store') }}" method="POST" id="dsExerciseForm">
+            <form action="{{ route('ds_exercise.store') }}" method="POST" id="dsExerciseForm" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <label for="name">Nom de l'Exercice DS:</label>
                     <input type="text" class="form-control" id="name" name="name"
                         placeholder="Nom de l'exercice DS">
+                </div>
+
+                <div class="form-group">
+                    {{-- <input type="file" id="file" name="images[]" multiple accept="image/jpeg, image/png, image/jpg, image/gif, image/svg"> --}}
+                   <x-multiple-file-input type="file" name="images[]" id="images" />
                 </div>
 
                 <div class="form-group">

@@ -9,42 +9,44 @@ export function loaderForm() {
 }
 
 export function renderCodeMirror() {
-    var statement = CodeMirror.fromTextArea(document.getElementById('statement'), {
-        lineNumbers: true,
-        mode: 'stex',
-        theme: 'ttcn',
-        lineWrapping: true,
-        viewportMargin: Infinity,
-        extraKeys: {
-            'Ctrl-Space': 'autocomplete',
-        }
-    });
-
-    var solution = CodeMirror.fromTextArea(document.getElementById('solution'), {
-        lineNumbers: true,
-        mode: 'stex',
-        theme: 'ttcn',
-        lineWrapping: true,
-        viewportMargin: Infinity,
-        extraKeys: {
-            'Ctrl-Space': 'autocomplete',
-            'Ctrl-Enter': function(cm) {
-                document.getElementById('exerciseForm').submit();
+    var statementID = document.getElementById('statement');
+    if (statementID) {
+        var statement = CodeMirror.fromTextArea(statementID, {
+            lineNumbers: true,
+            mode: 'stex',
+            theme: 'ttcn',
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
             }
-        }
-    });
-
-    var clue = CodeMirror.fromTextArea(document.getElementById('clue'), {
-        lineNumbers: true,
-        mode: 'stex',
-        theme: 'ttcn',
-        lineWrapping: true,
-        viewportMargin: Infinity,
-        extraKeys: {
-            'Ctrl-Space': 'autocomplete',
-            'Ctrl-Enter': function(cm) {
-                document.getElementById('exerciseForm').submit();
+        });
+    }
+    var solutionID = document.getElementById('solution');
+    if (solutionID) {
+        var solution = CodeMirror.fromTextArea(solutionID, {
+            lineNumbers: true,
+            mode: 'stex',
+            theme: 'ttcn',
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
             }
-        }
-    });
+        });
+    }
+
+    var clueID = document.getElementById('clue');
+    if (clueID) {
+        var clue = CodeMirror.fromTextArea(clueID, {
+            lineNumbers: true,
+            mode: 'stex',
+            theme: 'ttcn',
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
+            }
+        });
+    }
 }

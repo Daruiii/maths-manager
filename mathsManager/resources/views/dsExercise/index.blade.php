@@ -53,6 +53,9 @@
                                     <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                         Inj
                                     </th>
+                                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                        Durée
+                                    </th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Actions</th>
@@ -93,6 +96,8 @@
                                             </span>
                                         @endif
                                     </td>
+                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+                                        {{ $ex->time }} min</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
                                         <div class="flex justify-center items-center gap-2">
                                             <a href="{{ route('ds_exercise.show', $ex->id) }}" class="text-indigo-600 hover:text-indigo-900">

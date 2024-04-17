@@ -6,8 +6,7 @@
     <div class="flex justify-start w-full ms-12 mt-5">
     <a href="{{ route('ds_exercises.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Retour</a>
     </div>
-        <div class="my-5 bg-white rounded-lg box-shadow shadow-xl w-4/5">
-        <div class="p-4">
+        <div class="p-4 my-5 bg-white rounded-lg box-shadow shadow-xl w-3/4">
             @if ($dsExercise->name)
                 <div class="flex row justify-end items-center h-2">
                     @auth
@@ -103,6 +102,5 @@
                 </div>
             @endif
         </div>
-    </div>
     </div>
 @endsection

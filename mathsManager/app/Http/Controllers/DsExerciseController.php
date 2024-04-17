@@ -31,7 +31,7 @@ class DsExerciseController extends Controller
         return view('dsExercise.index', compact('dsExercises', 'multipleChapters'));
     }
     
-    protected function convertCustomLatexToHtml($latexContent)
+    protected function convertCustomLatexToHtml($latexContent, $images = [])
     {
         // Nettoyage initial du contenu et remplacement des espaces non sécables
         $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
@@ -70,16 +70,15 @@ class DsExerciseController extends Controller
         foreach ($patterns as $pattern => $replacement) {
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
-        // "\textbf{hello world}" will be "\textbf{hello \ world}" pour ajouter un espace en gros
-        // $allTexttags = ["textbf", "textit", "textup", "texttt"];
-        // // on content of each {}, replace space with \
-        // foreach ($allTexttags as $tag) {
-        //     $pattern = "/\\\\{$tag}\{(.*?)\}/";
-        //     $cleanedContent = preg_replace_callback($pattern, function ($matches) {
-        //         return str_replace(" ", " \\ ", $matches[0]);
-        //     }, $cleanedContent);
-        // }
-        // Convertir les commandes personnalisées en HTML
+
+        // Remplacer les images pour chaque \includegraphics{25}{photoenbeuch.pnj} dans l'ordre des images[]
+        $imageIndex = 0;
+        $cleanedContent = preg_replace_callback("/\\\\includegraphics\{([0-9]+)\}\{(.*?)\}/", function ($matches) use (&$imageIndex, $images) {
+            $imagePath = $images[$imageIndex];
+            $imageIndex++;
+            return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $matches[1]px; height: $matches[1]px;'>";
+        }, $cleanedContent);
+
         $customCommands = [
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
             "\\enm" => "<ol>", "\\fenm" => "</ol>",
@@ -111,15 +110,30 @@ class DsExerciseController extends Controller
             'name' => 'nullable|max:255',
             'statement' => 'required',
             'latex_statement' => 'nullable',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
         ]);
+        $lastExercise = DsExercise::orderBy('id', 'desc')->first();
+        $newExerciseId = $lastExercise ? $lastExercise->id + 1 : 1;
 
-        $dsExercise = new DsExercise();
+        $dsExercise = new DsExercise();        
+        $dsExercise->fill($request->except('images'));
+        $dsExercise->id = $newExerciseId;
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
-        $dsExercise->fill($request->all());
         $dsExercise->latex_statement = $dsExercise->statement;
-        $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement);
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $key => $image) {
+                $imageName = ($key + 1) . '.' . $image->getClientOriginalExtension();
+                // on folder ds_exercises/ then on folder ds_exercise_id then the image
+                $image->storeAs('ds_exercises/' . 'ds_exercise_' . $dsExercise->id, $imageName);
+                $imagePaths[] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . $imageName;
+            }
+        }
+        // give images to the convertCustomLatexToHtml function
+        $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement, $imagePaths);
         $dsExercise->save();
 
         // $dsExercise->chapters()->attach($request->chapters);
@@ -150,6 +164,8 @@ class DsExerciseController extends Controller
             'name' => 'nullable|max:255',
             'statement' => 'required',
             'latex_statement' => 'nullable',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
         ]);
@@ -175,6 +191,11 @@ class DsExerciseController extends Controller
     {
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->delete();
+        $dsExercises = DsExercise::all();
+        foreach ($dsExercises as $index => $exercise) {
+            $exercise->id = $index + 1;
+            $exercise->save();
+        }
         return redirect()->route('ds_exercises.index');
     }
 }
