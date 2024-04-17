@@ -128,7 +128,8 @@ class DsExerciseController extends Controller
             foreach ($request->file('images') as $key => $image) {
                 $imageName = ($key + 1) . '.' . $image->getClientOriginalExtension();
                 // on folder ds_exercises/ then on folder ds_exercise_id then the image
-                $image->storeAs('ds_exercises/' . 'ds_exercise_' . $dsExercise->id, $imageName);
+                $destinationPath = public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id);
+                $image->move($destinationPath, $imageName);
                 $imagePaths[] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . $imageName;
             }
         }
