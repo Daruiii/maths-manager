@@ -71,16 +71,17 @@ class DsExerciseController extends Controller
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
 
-        // Remplacer les images pour chaque \includegraphics{25}{photoenbeuch.pnj} dans l'ordre des images[]
+        // Remplacer les images pour chaque \graph{0.5}{photoenbeuch.pnj} dans l'ordre des images[]
         if (count($images) > 0) {
         $imageIndex = 0;
-        $cleanedContent = preg_replace_callback("/\\\\includegraphics\{([0-9]+)\}\{(.*?)\}/", function ($matches) use (&$imageIndex, $images) {
+        $cleanedContent = preg_replace_callback("/\\\\graph\{(.*?)\}\{(.*?)\}/", function ($matches) use (&$images, &$imageIndex) {
             $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
             $imageIndex++;
-            return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $matches[1]%;'>";
+            $percent = $matches[1]*100;
+            return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'>";
         }, $cleanedContent);
         } else {
-            $cleanedContent = preg_replace("/\\\\includegraphics\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
+            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
         }
 
         $customCommands = [

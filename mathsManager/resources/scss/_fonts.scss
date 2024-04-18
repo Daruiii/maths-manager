@@ -25,10 +25,14 @@
 }
 
 @font-face {
-    font-family: 'CMU Serif roman';
-    src: url('../fonts/cmunrm.ttf') format('truetype');
+    font-family: 'CMU Serif Tx';
+    src: url('../fonts/cmuntx.ttf') format('truetype');
     font-weight: normal;
     font-style : normal;
+}
+
+.cmu-serif-tx {
+    font-family: 'CMU Serif Tx', serif;
 }
 
 @font-face {

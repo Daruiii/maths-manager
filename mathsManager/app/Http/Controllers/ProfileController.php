@@ -90,7 +90,7 @@ public function destroy(Request $request): RedirectResponse
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return Redirect::to('/home');
+    return redirect()->route('home');
 }
 
 }

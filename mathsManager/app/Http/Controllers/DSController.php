@@ -40,6 +40,7 @@ class DSController extends Controller
     public function show($id)
     {
         $ds = DS::find($id);
+        // get the exercisesDS data foreach exerciseDS
         return view('ds.show', compact('ds'));
     }
 

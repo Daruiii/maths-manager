@@ -50,7 +50,6 @@
                     @endauth
                 </div>
                 <div class="exercise-content text-sm px-4 cmu-serif">
-                    {!! $dsExercise->header !!}
                     <h2 class="truncate font-bold text-sm exercise-title">Exercice from {{ $multipleChapter->title }} :
                         {{ $dsExercise->name }}</h2>
                     {!! $dsExercise->statement !!}
