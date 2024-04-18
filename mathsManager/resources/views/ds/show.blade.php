@@ -53,18 +53,10 @@
             <div class="w-2/3 flex flex-col items-start justify-center">
                 @foreach ($ds->exercisesDS as $index => $exercise)
                     <div class="mb-16" id="exercise-{{ $index + 1 }}">
-                        @if ($exercise->name)
-                            <div class="exercise-content text-sm px-4 cmu-serif">
-                                <h2 class="truncate font-bold text-sm exercise-title">Exercice {{ $index + 1 }} :
-                                    {{ $exercise->name }}</h2>
-                                {!! $exercise->statement !!}
-                            </div>
-                        @else
                             <div class="exercise-content text-sm px-4 cmu-serif">
                                 <span class="truncate font-bold text-sm exercise-title"> Exercice {{ $index + 1 }}
                                     :</span> {!! $exercise->statement !!}
                             </div>
-                        @endif
                     </div>
                 @endforeach
             </div>
