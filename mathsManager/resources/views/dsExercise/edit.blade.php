@@ -15,7 +15,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('ds_exercise.update', $dsExercise->id) }}" method="POST" id="dsExerciseForm">
+            <form action="{{ route('ds_exercise.update', $dsExercise->id) }}" method="POST" id="dsExerciseForm" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
 
@@ -27,7 +27,7 @@
                 <div class="form-group">
                 <x-multiple-file-input type="file" name="images[]" id="images" />
                 </div>
-                
+
                 <div class="form-group">
                     <label for="statement">Énoncé de l'Exercice DS (LaTeX):</label>
                     <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici...">{{ $dsExercise->latex_statement }}</textarea>

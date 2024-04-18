@@ -53,10 +53,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     const fileInputs = document.querySelectorAll('input[type="file"]');
-
     fileInputs.forEach(function(input) {
         input.addEventListener('change', function(event) {
             const files = event.target.files;
+            console.log(files);
             const label = input.parentElement;
             const carouselInner = label.querySelector('.carousel-inner');
             carouselInner.innerHTML = ''; // Efface les images existantes
@@ -77,21 +77,6 @@
         });
     });
 });
-
-const oldImages = {!! json_encode($oldImages) !!};
-
-function displayOldImages(images, inputId) {
-    const carouselInner = document.querySelector(`#${inputId}`).parentNode.querySelector('.carousel-inner');
-    carouselInner.innerHTML = '';
-    images.forEach((imagePath) => {
-        const img = document.createElement('img');
-        img.src = imagePath;
-        img.classList.add('carousel-item');
-        carouselInner.appendChild(img);
-    });
-}
-
-displayOldImages(oldImages, '{{ $inputId }}'); // Replace $inputId with the actual ID of your input field
 </script>
 
 <style>

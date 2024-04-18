@@ -72,12 +72,16 @@ class DsExerciseController extends Controller
         }
 
         // Remplacer les images pour chaque \includegraphics{25}{photoenbeuch.pnj} dans l'ordre des images[]
+        if (count($images) > 0) {
         $imageIndex = 0;
         $cleanedContent = preg_replace_callback("/\\\\includegraphics\{([0-9]+)\}\{(.*?)\}/", function ($matches) use (&$imageIndex, $images) {
-            $imagePath = $images[$imageIndex];
+            $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
             $imageIndex++;
             return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $matches[1]%;'>";
         }, $cleanedContent);
+        } else {
+            $cleanedContent = preg_replace("/\\\\includegraphics\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
+        }
 
         $customCommands = [
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
@@ -154,16 +158,8 @@ class DsExerciseController extends Controller
     public function edit(string $id)
     {
         $dsExercise = DsExercise::findOrFail($id);
-        $oldImagesPath = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
-        $oldImages = [];
-        // pour chaque fichier dans le dossier ds_exercise_id must equal http://localhost:8000/storage/ds_exercises/ds_exercise_1/2.jpg
-        
-        foreach ($oldImagesPath as $oldImagePath) {
-            $oldImages[] = asset('storage/' . $oldImagePath);
-        }
-        dd($oldImages);
         $multipleChapters = MultipleChapter::all();
-        return view('dsExercise.edit', compact('dsExercise', 'multipleChapters', 'oldImages'));
+        return view('dsExercise.edit', compact('dsExercise', 'multipleChapters'));
     }
 
     public function update(Request $request, string $id)
@@ -187,16 +183,24 @@ class DsExerciseController extends Controller
         $dsExercise->latex_statement = $dsExercise->statement;
         $imagePaths = [];
         if ($request->hasFile('images')) {
-            // delete old images
-            $oldImages = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
-            foreach ($oldImages as $oldImage) {
-                unlink($oldImage);
+            // remove old image
+            $images = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
+            if ($images) {
+                foreach ($images as $image) {
+                    unlink($image);
+                }
             }
             foreach ($request->file('images') as $key => $image) {
                 $imageName = ($key + 1) . '.' . $image->getClientOriginalExtension();
                 $destinationPath = public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id);
                 $image->move($destinationPath, $imageName);
                 $imagePaths[] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . $imageName;
+            }
+        }
+        else {
+            $imagePaths = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
+            foreach ($imagePaths as $key => $imagePath) {
+                $imagePaths[$key] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . basename($imagePath);
             }
         }
         // give images to the convertCustomLatexToHtml function
