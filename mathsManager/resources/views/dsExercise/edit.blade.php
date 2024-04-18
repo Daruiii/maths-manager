@@ -25,6 +25,10 @@
                 </div>
 
                 <div class="form-group">
+                <x-multiple-file-input type="file" name="images[]" id="images" />
+                </div>
+                
+                <div class="form-group">
                     <label for="statement">Énoncé de l'Exercice DS (LaTeX):</label>
                     <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici...">{{ $dsExercise->latex_statement }}</textarea>
                 </div>

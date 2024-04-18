@@ -45,7 +45,6 @@
                 </div>
 
                 <div class="form-group">
-                    {{-- <input type="file" id="file" name="images[]" multiple accept="image/jpeg, image/png, image/jpg, image/gif, image/svg"> --}}
                    <x-multiple-file-input type="file" name="images[]" id="images" />
                 </div>
 

@@ -10,27 +10,27 @@ use App\Models\MultipleChapter;
 class DsExerciseController extends Controller
 {
     public function index(Request $request)
-    {        
+    {
         $search = $request->get('search');
         $dsExercises = DsExercise::with('chapters')->orderBy('multiple_chapter_id', 'asc');
-    
+
         if ($search) {
-            $dsExercises->where(function($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%')
-                      ->orWhere('id', 'like', '%' . $search . '%');
+            $dsExercises->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('id', 'like', '%' . $search . '%');
             });
         }
-    
+
         if ($request->filled('multiple_chapter_id')) {
             $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
         }
-        
+
         $dsExercises = $dsExercises->get();
         $multipleChapters = MultipleChapter::all();
-    
+
         return view('dsExercise.index', compact('dsExercises', 'multipleChapters'));
     }
-    
+
     protected function convertCustomLatexToHtml($latexContent, $images = [])
     {
         // Nettoyage initial du contenu et remplacement des espaces non sécables
@@ -76,7 +76,7 @@ class DsExerciseController extends Controller
         $cleanedContent = preg_replace_callback("/\\\\includegraphics\{([0-9]+)\}\{(.*?)\}/", function ($matches) use (&$imageIndex, $images) {
             $imagePath = $images[$imageIndex];
             $imageIndex++;
-            return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $matches[1]px; height: $matches[1]px;'>";
+            return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $matches[1]%;'>";
         }, $cleanedContent);
 
         $customCommands = [
@@ -117,8 +117,11 @@ class DsExerciseController extends Controller
         ]);
         $lastExercise = DsExercise::orderBy('id', 'desc')->first();
         $newExerciseId = $lastExercise ? $lastExercise->id + 1 : 1;
+        while (DsExercise::find($newExerciseId)) {
+            $newExerciseId++;
+        }
 
-        $dsExercise = new DsExercise();        
+        $dsExercise = new DsExercise();
         $dsExercise->fill($request->except('images'));
         $dsExercise->id = $newExerciseId;
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
@@ -127,7 +130,6 @@ class DsExerciseController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $key => $image) {
                 $imageName = ($key + 1) . '.' . $image->getClientOriginalExtension();
-                // on folder ds_exercises/ then on folder ds_exercise_id then the image
                 $destinationPath = public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id);
                 $image->move($destinationPath, $imageName);
                 $imagePaths[] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . $imageName;
@@ -152,8 +154,16 @@ class DsExerciseController extends Controller
     public function edit(string $id)
     {
         $dsExercise = DsExercise::findOrFail($id);
+        $oldImagesPath = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
+        $oldImages = [];
+        // pour chaque fichier dans le dossier ds_exercise_id must equal http://localhost:8000/storage/ds_exercises/ds_exercise_1/2.jpg
+        
+        foreach ($oldImagesPath as $oldImagePath) {
+            $oldImages[] = asset('storage/' . $oldImagePath);
+        }
+        dd($oldImages);
         $multipleChapters = MultipleChapter::all();
-        return view('dsExercise.edit', compact('dsExercise', 'multipleChapters'));
+        return view('dsExercise.edit', compact('dsExercise', 'multipleChapters', 'oldImages'));
     }
 
     public function update(Request $request, string $id)
@@ -171,32 +181,44 @@ class DsExerciseController extends Controller
             // 'chapters.*' => 'exists:chapters,id'
         ]);
 
-        $harder_exercise = $request->has('harder_exercise') ? true : false;
-        $new_statement = $this->convertCustomLatexToHtml($request->statement);
-
         $dsExercise = DsExercise::findOrFail($id);
-        $dsExercise->update([
-            'harder_exercise' => $harder_exercise,
-            'time' => $request->time,
-            'name' => $request->name,
-            'latex_statement' => $request->statement,
-            'statement' => $new_statement,
-            'multiple_chapter_id' => $request->multiple_chapter_id
-        ]);
+        $dsExercise->fill($request->except('images'));
+        $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
+        $dsExercise->latex_statement = $dsExercise->statement;
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            // delete old images
+            $oldImages = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
+            foreach ($oldImages as $oldImage) {
+                unlink($oldImage);
+            }
+            foreach ($request->file('images') as $key => $image) {
+                $imageName = ($key + 1) . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id);
+                $image->move($destinationPath, $imageName);
+                $imagePaths[] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . $imageName;
+            }
+        }
+        // give images to the convertCustomLatexToHtml function
+        $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement, $imagePaths);
+        $dsExercise->save();
 
         // $dsExercise->chapters()->sync($request->chapters);
-        return redirect()->route('ds_exercise.show', $id);
+        return redirect()->route('ds_exercises.index');
     }
 
     public function destroy(string $id)
     {
         $dsExercise = DsExercise::findOrFail($id);
-        $dsExercise->delete();
-        $dsExercises = DsExercise::all();
-        foreach ($dsExercises as $index => $exercise) {
-            $exercise->id = $index + 1;
-            $exercise->save();
+        // delete images
+        $images = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
+        if ($images) {
+            foreach ($images as $image) {
+                unlink($image);
+            }
+            rmdir(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id));
         }
+        $dsExercise->delete();
         return redirect()->route('ds_exercises.index');
     }
 }
