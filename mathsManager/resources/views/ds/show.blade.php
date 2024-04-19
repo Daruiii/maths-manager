@@ -54,8 +54,7 @@
                 @foreach ($ds->exercisesDS as $index => $exercise)
                     <div class="mb-16" id="exercise-{{ $index + 1 }}">
                             <div class="exercise-content text-sm px-4 cmu-serif">
-                                <span class="truncate font-bold text-sm exercise-title"> Exercice {{ $index + 1 }}
-                                    :</span> {!! $exercise->statement !!}
+                                <span class="truncate font-bold text-sm exercise-title"> Exercice {{ $index + 1 }}.</span> {!! $exercise->statement !!}
                             </div>
                     </div>
                 @endforeach
