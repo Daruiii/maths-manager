@@ -5,9 +5,8 @@
 
         <div class="flex justify-between items-center pt-6">
             <div>
-                <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices de DS </h2>
+                <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices de DS ({{$dsExercises->count()}})</h2>
             </div>
-            {{-- add  exercise button --}}
             <div>
                 <a href="{{ route('ds_exercise.create') }}"
                     class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Ajouter un exercice</a>
@@ -23,9 +22,9 @@
                 </form>
                 <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-4">
                     <select name="multiple_chapter_id" class="form-select rounded-md shadow-sm mt-1 block">
-                        <option value="">Tous les chapitres multiples</option>
+                        <option value="">Tous les chapitres duo</option>
                         @foreach ($multipleChapters as $index => $chapter)
-                            <option value="{{ $chapter->id }}">{{ $chapter->title }} ({{ $index + 1 }})</option>
+                            <option value="{{ $chapter->id }}">{{ $chapter->title }} ({{ $chapter->dsExercises->where('harder_exercise', false)->count() }} | {{$chapter->dsExercises->where('harder_exercise', true)->count()}} inj)</option>
                         @endforeach
                     </select>
                     <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Filtrer</button>
