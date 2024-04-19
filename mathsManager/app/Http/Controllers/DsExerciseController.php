@@ -57,14 +57,14 @@ class DsExerciseController extends Controller
             "/\\\\hline/" => "<hr>",
             "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
             // PA
-            "/\\\\PA/" =>"<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
             "/\\\\PA\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Première partie $1</span></div>",
+            "/\\\\PA/" =>"<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
             // PB
-            "/\\\\PB/" =>"<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
             "/\\\\PB\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie $1</span></div>",
+            "/\\\\PB/" =>"<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
             // PC
-            "/\\\\PC/" =>"<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
             "/\\\\PC\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie $1</span></div>",
+            "/\\\\PC/" =>"<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
             // for all text like texttt textit textbf
             "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
             // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
@@ -90,7 +90,7 @@ class DsExerciseController extends Controller
             return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'>";
         }, $cleanedContent);
         } else {
-            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<div class='latex latex-center'><img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'></div>", $cleanedContent);
+            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<span class='latex latex-center'><img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'></span>", $cleanedContent);
         }
 
         $customCommands = [
