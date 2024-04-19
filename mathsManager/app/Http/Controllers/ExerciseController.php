@@ -91,6 +91,15 @@ class ExerciseController extends Controller
             "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width:'$1';'> </style>",
             "/\\\\hline/" => "<hr>",
             "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
+            // PA
+            "/\\\\PA/" => "<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
+            "/\\\\PA\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Première partie $1</span></div>",
+            // PB
+            "/\\\\PB/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
+            "/\\\\PB\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie $1</span></div>",
+            // PC
+            "/\\\\PC/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
+            "/\\\\PC\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie $1</span></div>",
             // for all text like texttt textit textbf
             "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
             // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
@@ -105,7 +114,7 @@ class ExerciseController extends Controller
         foreach ($patterns as $pattern => $replacement) {
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
-    
+
         // Convertir les commandes personnalisées en HTML
         $customCommands = [
             "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
@@ -179,7 +188,7 @@ class ExerciseController extends Controller
         return redirect()->route('subchapter.show', $exercise->subchapter_id);
     }
 
-        // public function store(Request $request)
+    // public function store(Request $request)
     // {
     //     $request->validate([
     //         'subchapter_id' => 'required',
