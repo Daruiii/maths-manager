@@ -87,10 +87,10 @@ class DsExerciseController extends Controller
             $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
             $imageIndex++;
             $percent = $matches[1]*100;
-            return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'>";
+            return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'></div>";
         }, $cleanedContent);
         } else {
-            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<span class='latex latex-center'><img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'></span>", $cleanedContent);
+            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
         }
 
         $customCommands = [
