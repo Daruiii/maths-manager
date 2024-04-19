@@ -90,9 +90,7 @@ class DsExerciseController extends Controller
             return "<img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'>";
         }, $cleanedContent);
         } else {
-            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<div class='latex latex-center'>
-            <img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>
-            </div>", $cleanedContent);
+            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<div class='latex latex-center'><img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'></div>", $cleanedContent);
         }
 
         $customCommands = [
