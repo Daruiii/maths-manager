@@ -5,7 +5,7 @@
 
         <div class="flex justify-between items-center pt-6">
             <div>
-                <h2 class="text-lg leading-6 font-medium text-gray-900">DS Exercices</h2>
+                <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices de DS </h2>
             </div>
             {{-- add  exercise button --}}
             <div>
@@ -24,8 +24,8 @@
                 <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-4">
                     <select name="multiple_chapter_id" class="form-select rounded-md shadow-sm mt-1 block">
                         <option value="">Tous les chapitres multiples</option>
-                        @foreach ($multipleChapters as $chapter)
-                            <option value="{{ $chapter->id }}">{{ $chapter->title }}</option>
+                        @foreach ($multipleChapters as $index => $chapter)
+                            <option value="{{ $chapter->id }}">{{ $chapter->title }} ({{ $index + 1 }})</option>
                         @endforeach
                     </select>
                     <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Filtrer</button>
