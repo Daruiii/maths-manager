@@ -144,17 +144,20 @@
         }
 
         // on reloading the page, the timer will be updated
-        window.addEventListener('beforeunload', function() {
+        window.addEventListener('beforeunload', function(event) {
+            event.preventDefault();
             updateTimerWithAjax();
         });
 
         // on going back to ohter page, the timer will be updated
-        window.addEventListener('popstate', function() {
+        window.addEventListener('popstate', function(event) {
+            event.preventDefault();
             updateTimerWithAjax();
         });
 
         // on click back button of the navigator, the timer will be updated
-        window.addEventListener('unload', function() {
+        window.addEventListener('unload', function(event) {
+            event.preventDefault();
             updateTimerWithAjax();
         });
     
