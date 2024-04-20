@@ -123,11 +123,8 @@
         var interval;
     
         function updateTimer() {
-            var timerValue = timer.textContent; // Utiliser textContent au lieu de innerText
-            window.location.href = "{{ route('ds.pause', ['id' => $ds->id, 'timer' => 'timerValue']) }}".replace(
-                'timerValue', timerValue);
-            // Retourner une chaîne non vide pour afficher une invite de confirmation
-            return "Êtes-vous sûr de vouloir quitter la page ? Votre progression sera perdue.";
+            updateTimerWithAjax();
+            window.location.href = "{{ route('ds.myDS', ['id' => $ds->id]) }}";
         }
 
         function updateTimerWithAjax() {
@@ -145,19 +142,16 @@
 
         // on reloading the page, the timer will be updated
         window.addEventListener('beforeunload', function(event) {
-            event.preventDefault();
             updateTimerWithAjax();
         });
 
         // on going back to ohter page, the timer will be updated
         window.addEventListener('popstate', function(event) {
-            event.preventDefault();
             updateTimerWithAjax();
         });
 
         // on click back button of the navigator, the timer will be updated
         window.addEventListener('unload', function(event) {
-            event.preventDefault();
             updateTimerWithAjax();
         });
     

@@ -137,4 +137,6 @@
             </div>
         @endforeach
     </div>
+    {{-- reload the page one time when we arrive on the page --}}
+
 @endsection
