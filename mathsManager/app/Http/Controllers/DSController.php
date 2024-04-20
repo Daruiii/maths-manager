@@ -24,9 +24,7 @@ class DSController extends Controller
     {
         // with chapters and exercisesDS
         $dsList = Auth::user()->ds;
-        /// sorted by most recent DS first
         $dsList = $dsList->sortByDesc('created_at');
-        // get the multipleChapters data foreach exerciseDS
         foreach ($dsList as $ds) {
             foreach ($ds->exercisesDS as $exerciseDS) {
                 $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
@@ -40,8 +38,75 @@ class DSController extends Controller
     public function show($id)
     {
         $ds = DS::find($id);
-        // get the exercisesDS data foreach exerciseDS
-        return view('ds.show', compact('ds'));
+        $timerFormatted = $this->formatTimer($ds->timer);
+        return view('ds.show', compact('ds', 'timerFormatted'));
+    }
+
+    private function formatTimer($timerInSeconds)
+    {
+        $hours = floor($timerInSeconds / 3600);
+        $minutes = floor(($timerInSeconds - $hours * 3600) / 60);
+        $seconds = $timerInSeconds - $hours * 3600 - $minutes * 60;
+        $timerFormatted = "";
+        if ($hours < 10) {
+            $timerFormatted .= "0" . $hours . ":";
+        } else {
+            $timerFormatted .= $hours . ":";
+        }
+        if ($minutes < 10) {
+            $timerFormatted .= "0" . $minutes . ":";
+        } else {
+            $timerFormatted .= $minutes . ":";
+        }
+        if ($seconds < 10) {
+            $timerFormatted .= "0" . $seconds;
+        } else {
+            $timerFormatted .= $seconds;
+        }
+        return $timerFormatted;
+    }
+
+    // Méthode pour démarrer un DS
+    public function start($id)
+    {
+        $ds = DS::find($id);
+        $timerFormatted = $this->formatTimer($ds->timer);
+        $ds->status = "ongoing";
+        $ds->save();
+        $timerAction = "start";
+
+        return view('ds.show', compact('ds', 'timerAction', 'timerFormatted'));
+    }
+
+    private function resetTimerToSeconds($timer)
+    {
+        $timerArray = explode(":", $timer);
+        // convert timer to seconds
+        $timerInSeconds = $timerArray[0] * 3600 + $timerArray[1] * 60 + $timerArray[2];
+        return $timerInSeconds;
+    }
+
+    // Méthode pour mettre en pause un DS
+    public function pause($id, $timer)
+    {
+        $timerInSeconds = $this->resetTimerToSeconds($timer);
+        $ds = DS::find($id);
+        $ds->timer = $timerInSeconds;
+        // timer = 0 means the DS is finished so set status to finished
+        if ($timerInSeconds == 0) {
+            $ds->status = "finished";
+        }
+        $ds->save();
+        $timerAction = "pause";
+        // get list of user's DS
+        $dsList = Auth::user()->ds;
+        $dsList = $dsList->sortByDesc('created_at');
+        foreach ($dsList as $ds) {
+            foreach ($ds->exercisesDS as $exerciseDS) {
+                $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
+            }
+        }
+        return view('ds.myDS', compact('ds', 'timerAction', 'dsList'));
     }
 
     // Méthode pour créer un DS
@@ -148,7 +213,7 @@ class DSController extends Controller
         $ds->exercises_number = $new_exercises_number ?? $request->exercises_number;
         $ds->harder_exercises = $request->has('harder_exercises') ? true : false;
         $ds->time = $TotalTime;
-        $ds->timer = $TotalTime;
+        $ds->timer = $TotalTime * 60; // timer in seconds
         $ds->chrono = "0";
         $ds->status = "not_started";
         $ds->user_id = Auth::id();

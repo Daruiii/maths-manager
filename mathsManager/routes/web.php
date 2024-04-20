@@ -116,6 +116,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/ds', [DSController::class, 'store'])->name('ds.store');
         Route::delete('/ds/{id}', [DSController::class, 'destroy'])->name('ds.destroy');      
         Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
+        Route::get('/ds/{id}/start', [DSController::class, 'start'])->name('ds.start');
+        Route::get('/ds/{id}/pause/{timer}', [DSController::class, 'pause'])->name('ds.pause');
     });
 });
 

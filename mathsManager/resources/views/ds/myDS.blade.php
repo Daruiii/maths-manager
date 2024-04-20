@@ -66,13 +66,25 @@
                             $hours++;
                             $time -= 60;
                         }
+                        // get the timer time hours:minutes:seconds
+                        $timerHours = 0;
+                        $timerMinutes = 0;
+                        $timer = $ds->timer;
+                        while ($timer > 3600) {
+                            $timerHours++;
+                            $timer -= 3600;
+                        }
+                        while ($timer > 60) {
+                            $timerMinutes++;
+                            $timer -= 60;
+                        }
                     @endphp
                     <h2 class="text-sm">{{ $ds->exercises_number }} exercice{{ $ds->exercises_number > 1 ? 's' : '' }} -
                         {{ $hours ? $hours . 'h' : '' }} {{ $time ? $time . 'min' : '' }}</h2>
                     {{--  si status break, ongoing, finish, finishedLate, correction_in_progress, corrected --}}
 
                     @if ($ds->status == 'not_started')
-                        <a href="{{ route('ds.show', $ds->id) }}"
+                        <a href="{{ route('ds.start', $ds->id) }}"
                             class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
                             Commencer
                         </a>
@@ -81,8 +93,8 @@
                             @if ($ds->chrono != 0)
                                 <h2 class="text-sm"> + {{ $ds->chrono }} secondes</h2>
                             @endif
-                            <h2 class="text-sm">{{ $ds->timer }} minutes restantes</h2>
-                            <a href="{{ route('ds.show', $ds->id) }}"
+                            <h2 class="text-sm">{{ $timerHours ? $timerHours . 'h' : '' }} {{ $timerMinutes ? $timerMinutes . 'min et' : '' }} {{ $timer ? $timer . 's restantes' : '' }}</h2> 
+                            <a href="{{ route('ds.start', $ds->id) }}"
                             class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
                             Continuer
                             </a>

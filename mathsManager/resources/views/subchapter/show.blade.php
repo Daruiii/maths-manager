@@ -152,6 +152,9 @@
                                 </div>
                             @endforeach --}}
                         </div>
+                        {{-- check if user verified = urue --}}
+                        @auth
+                            @if (Auth::user()->verified)
                         <div class="border-t w-full p-2 rounded-b-lg border-gray-300">
                             <div class="flex justify-between items-center">
                                 @if ($ex->clue)
@@ -212,6 +215,8 @@
                                 @endforeach --}}
                             </div>
                         </div>
+                        @endif
+                        @endauth
                     </div>
                 @endforeach
             </div>
