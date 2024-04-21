@@ -90,7 +90,7 @@
                             Veuillez envoyer votre copie à la fin pour correction.
                         </p>
                     </div>
-                @else
+                @elseif ($ds->harder_exercises)
                     <div class="flex items-center justify-center align-center">
                         <p class="cmu-ti text-sm text-center">Ce sujet est une simulation de devoir surveillé difficile pour
                             vous aider à maîtriser la gestion du<br>
@@ -101,6 +101,15 @@
                             Veuillez envoyer votre copie `a la fin pour correction.
                         </p>
                     </div>
+                @else
+                    <div class="flex items-center justify-center align-center">
+                        <p class="cmu-ti text-sm text-center">Ce sujet est une simulation de devoir surveillé de difficulté moyenne (niveau bac) pour vous aider<br>
+                            à maîtriser la gestion du temps et tester vos connaissances. Merci de traiter ce devoir avec<br>
+                            sérieux, en respectant le temps imparti et en soignant votre présentation. N'oubliez pas d'espacer<br>
+                            vos équations et d'encadrer vos résultats. La calculatrice est autorisée.<br>
+                            Veuillez envoyer votre copie à la fin pour correction.
+                            
+                        </p>
                 @endif
             </div>
             {{-- ici affichage de chaque exo à la suite --}}
