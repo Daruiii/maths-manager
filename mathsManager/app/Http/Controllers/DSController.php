@@ -39,7 +39,8 @@ class DSController extends Controller
     {
         $ds = DS::find($id);
         $timerFormatted = $this->formatTimer($ds->timer);
-        return view('ds.show', compact('ds', 'timerFormatted'));
+        $timerAction = "show";
+        return view('ds.show', compact('ds', 'timerFormatted', 'timerAction'));
     }
 
     private function formatTimer($timerInSeconds)

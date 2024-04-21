@@ -1,10 +1,15 @@
 export function loaderForm() {
-    var form = document.querySelector("#exerciseForm");
+    var form = document.querySelector("#dsForm");
     if (!form) {
         return;
     }
-    form.addEventListener("submit", function() {
+    form.addEventListener("submit", function(e){
+        e.preventDefault(); //sert a empecher le formulaire de se soumettre tant qu'on a pas fini de traiter les données
         document.getElementById("loadingPopup").style.display = "block";
+        // wait for 3 seconds
+        setTimeout(function(){
+            form.submit();
+        }, 3000);
     });
 }
 
