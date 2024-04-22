@@ -22,10 +22,43 @@
     font-size: 0.875rem;
 }
 
+.finish-btn {
+    position: fixed;
+    top: 10rem;
+    right: 1rem;
+    width: 5rem;
+    height: 2.5rem;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    background-color: #f56565;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.pause-btn {
+    position: fixed;
+    top: 6.5rem;
+    left: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #48bb78;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pause-btn:hover {
+    background-color: #2f855a;
+}
+
 @media (max-width: 768px) {
     .timer {
+        top: 3rem;
         right: 0rem;
-        width: 4rem;
+        width: 3.5rem;
         height: 2.5rem;
         padding: 0.5rem;
     }
@@ -33,6 +66,22 @@
         padding: 0.25rem;
     }
     .timer-text {
+        font-size: 0.5rem;
+    }
+
+    .pause-btn {
+        top : 3rem;
+        left : 0.1rem;
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .finish-btn {
+        top: 6rem;
+        right: 0rem;
+        width: 3rem;
+        height: 1rem;
+        padding: 0.25rem;
         font-size: 0.5rem;
     }
 }

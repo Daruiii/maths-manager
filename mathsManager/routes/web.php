@@ -118,6 +118,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
         Route::get('/ds/{id}/start', [DSController::class, 'start'])->name('ds.start');
         Route::get('/ds/{id}/pause/{timer}', [DSController::class, 'pause'])->name('ds.pause');
+        Route::get('/ds/{id}/finish', [DSController::class, 'finish'])->name('ds.finish');
     });
 });
 

@@ -110,6 +110,15 @@ class DSController extends Controller
         return view('ds.myDS', compact('ds', 'timerAction', 'dsList'));
     }
 
+    public function finish($id)
+    {
+        $ds = DS::find($id);
+        $ds->status = "finished";
+        $ds->timer = 0;
+        $ds->save();
+        return redirect()->route('ds.myDS');
+    }
+
     // Méthode pour créer un DS
     public function create()
     {

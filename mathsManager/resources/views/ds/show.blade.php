@@ -8,8 +8,9 @@
                 <p class="timer-text" id="timer">{{ $timerFormatted }}</p>
             </div>
         </div>
-        <div class="flex justify-between w-full mt-5 p-2 ms-8">
-            <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" id="pauseButton">
+
+        @if ($timerAction == 'start')
+            <button class="pause-btn" id="pauseButton">
                 <svg width="24px" height="24px" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg"
                     stroke="#ffffff">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -21,7 +22,15 @@
                     </g>
                 </svg>
             </button>
-        </div>
+        @endif
+        {{-- ask confirmation before redirecting the route --}}
+        @if ($ds->status == 'ongoing')
+            <button class="finish-btn" onclick="return confirm('Êtes-vous sûr de vouloir terminer ce DS ?');">
+                <a href="{{ route('ds.finish', ['id' => $ds->id]) }}">
+                    Terminer
+                </a>
+            </button>
+        @endif
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-white w-4/5 rounded-lg box-shadow shadow-xl">
             @auth
