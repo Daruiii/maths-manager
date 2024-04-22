@@ -56,8 +56,9 @@
 
 @media (max-width: 768px) {
     .timer {
-        top: 3rem;
-        right: 0rem;
+        position: absolute;
+        top: 6rem;
+        right: 1rem;
         width: 3.5rem;
         height: 2.5rem;
         padding: 0.5rem;
@@ -70,15 +71,17 @@
     }
 
     .pause-btn {
-        top : 3rem;
-        left : 0.1rem;
+        position: absolute;
+        top : 7rem;
+        left : 1.5rem;
         width: 2rem;
         height: 2rem;
     }
 
     .finish-btn {
-        top: 6rem;
-        right: 0rem;
+        position:absolute;
+        top: 9rem;
+        right: 1.5rem;
         width: 3rem;
         height: 1rem;
         padding: 0.25rem;

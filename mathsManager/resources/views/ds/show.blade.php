@@ -32,7 +32,7 @@
             </button>
         @endif
         <div
-            class="flex flex-col align-center items-center justify-center my-5 bg-white w-4/5 rounded-lg box-shadow shadow-xl">
+            class="flex flex-col align-center items-center justify-center my-5 bg-white w-11/12 md:w-4/5 rounded-lg box-shadow shadow-xl">
             @auth
                 @if (Auth::user()->role == 'admin')
                     <div class="flex items-center">
@@ -122,7 +122,7 @@
                 @endif
             </div>
             {{-- ici affichage de chaque exo à la suite --}}
-            <div class="w-2/3 flex flex-col items-start justify-center">
+            <div class="w-3/4 flex flex-col items-start justify-start">
                 @foreach ($ds->exercisesDS as $index => $exercise)
                     <div class="mb-16" id="exercise-{{ $index + 1 }}">
                         <div class="exercise-content text-sm px-4 cmu-serif">

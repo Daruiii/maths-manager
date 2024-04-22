@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mx-auto">
         <div
-            class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-4/5 rounded-lg box-shadow shadow-xl">
+            class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
             <div class="flex items-start justify-between w-full">
                 <div class="flex items-start justify-center align-start pr-12"
                     style="border-radius : 2rem 0 10rem 0 ; background-color: {{ $subchapter->chapter->theme }};">
@@ -25,9 +25,9 @@
             </div>
             <h2 class="text-xs px-4 py-1 w-full cmu-ti">{{ $subchapter->description }}</h2>
 
-            <div class=" p-5 flex flex-col align-center justify-start w-full">
+            <div class="p-1 md:p-4 flex flex-col align-center justify-start w-full">
                 @foreach ($exercises as $index => $ex)
-                    @php
+                    {{-- @php
                         $exerciseId = $ex->id;
                         $exerciseFiles = Storage::disk('public')->files("latex_output/exercise_{$exerciseId}/exercise");
                         $exercisePngFiles = array_filter($exerciseFiles, function ($file) {
@@ -39,7 +39,7 @@
                         $solutionPngFiles = array_filter($solutionFiles, function ($file) {
                             return Str::endsWith($file, '.png');
                         });
-                    @endphp
+                    @endphp --}}
                     <div x-data="{ showClue: false, showSolution: false }" class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full">
                         <div class="p-4">
                             @if ($ex->name)

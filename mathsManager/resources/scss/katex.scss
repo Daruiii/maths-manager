@@ -148,3 +148,12 @@ span .msupsub span .hide-tail { // bail de la racine
 // .katex span .msupsub span .vlist-r .vlist span { // + en indice
 //     // font-size: 0.55rem;
 // }
+
+@media (max-width: 768px) {
+    .latex-boxed {
+        border: 0.0625em solid #000;
+        // padding top-bottom to 0.05rem
+        padding: 0.30rem 0.30rem;
+        margin: 0.25rem 0;
+    }
+}

@@ -23,7 +23,7 @@
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md my-5 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg card">
+            <div class="w-11/12 sm:max-w-md m-5 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg card">
                 {{ $slot }}
             </div>
         </div>
