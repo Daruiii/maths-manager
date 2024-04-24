@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ds_multiple_chapters', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('ds_id')->constrained('DS')->onDelete('cascade');
-            $table->foreignId('multiple_chapter_id')->constrained('multiple_chapters')->onDelete('cascade');
-            $table->timestamps();
-        });
+        // Schema::create('ds_multiple_chapters', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('ds_id')->constrained('DS')->onDelete('cascade');
+        //     $table->foreignId('multiple_chapter_id')->constrained('multiple_chapters')->onDelete('cascade');
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ds_multiple_chapters');
+        // Schema::dropIfExists('ds_multiple_chapters');
     }
 };

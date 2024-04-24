@@ -142,7 +142,7 @@
     
         function updateTimer() {
             updateTimerWithAjax();
-            window.location.href = "{{ route('ds.myDS', ['id' => $ds->id]) }}";
+            window.location.href = "{{ route('ds.myDS', ['id' => Auth::user()->id]) }}";
         }
 
         function updateTimerWithAjax() {

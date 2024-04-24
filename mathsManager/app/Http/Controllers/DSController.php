@@ -8,26 +8,47 @@ use App\Models\DS;
 use App\Models\Chapter;
 use App\Models\DsExercise;
 use App\Models\MultipleChapter;
+use App\Models\CorrectionRequest;
 
 class DSController extends Controller
 {
     // Méthode pour afficher tous les DS
     public function index()
     {
-        // with chapters and exercisesDS
-        $dsList = DS::all();
+        // search func by user name 
+        if (request()->query('search')) {
+            $dsList = DS::where('type_bac', 'like', '%' . request()->query('search') . '%')
+                ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
+                ->orWhere('status', 'like', '%' . request()->query('search') . '%')
+                ->orWhereHas('user', function ($query) {
+                    $query->where('name', 'like', '%' . request()->query('search') . '%');
+                })
+                ->get();
+        }
+        else {
+            $dsList = DS::all();
+        }
         return view('ds.index', compact('dsList'));
     }
 
     // Méthode pour afficher les DS de l'utilisateur connecté
-    public function indexUser()
+    public function indexUser($id)
     {
         // with chapters and exercisesDS
-        $dsList = Auth::user()->ds;
+        $dsList = DS::where('user_id', $id)->get();
         $dsList = $dsList->sortByDesc('created_at');
         foreach ($dsList as $ds) {
             foreach ($ds->exercisesDS as $exerciseDS) {
                 $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
+            }
+        }
+        // get the corrections data, ds are linked to correction requests
+        $correctionRequests = CorrectionRequest::all();
+        foreach ($dsList as $ds) {
+            foreach ($correctionRequests as $correctionRequest) {
+                if ($ds->id == $correctionRequest->ds_id) {
+                    $ds->correctionRequest = $correctionRequest;
+                }
             }
         }
 
@@ -116,13 +137,13 @@ class DSController extends Controller
         $ds->status = "finished";
         $ds->timer = 0;
         $ds->save();
-        return redirect()->route('ds.myDS');
+        return redirect()->route('ds.myDS', Auth::id());
     }
 
     // Méthode pour créer un DS
     public function create()
     {
-        $chapters = MultipleChapter::all();
+        $chapters = MultipleChapter::where('title', 'not like', 'BONUS%')->get();
         return view('ds.create', compact('chapters'));
     }
 
@@ -130,7 +151,7 @@ class DSController extends Controller
     public function store(Request $request)
     {
         $ds = $this->generateDS($request);
-        return redirect()->route('ds.myDS');
+        return redirect()->route('ds.myDS', Auth::id());
     }
 
     // private function for générate DS like in store method
@@ -240,7 +261,8 @@ class DSController extends Controller
     public function edit($id)
     {
         $ds = DS::find($id);
-        $chapters = MultipleChapter::all();
+        // all chpaters but not them who start by BONUS
+        $chapters = MultipleChapter::where('title', 'not like', 'BONUS%')->get();
         return view('ds.edit', compact('ds', 'chapters'));
     }
 
@@ -249,14 +271,45 @@ class DSController extends Controller
     {
         $ds = DS::find($id);
         $ds = $this->generateDS($request, $ds);
-        return redirect()->route('ds.myDS');
+        return redirect()->route('ds.myDS', Auth::id());
+    }
+
+    private function destroyCorrectionFolder($id)
+    {
+        // there is a folder correction in the folder
+        // $path = public_path('storage/correctionRequests/' . $id . '/correction');
+        // $path2 = public_path('storage/correctionRequests/' . $id);
+        $path = file_exists(public_path('storage/correctionRequests/' . $id . '/correction')) ? public_path('storage/correctionRequests/' . $id . '/correction') : null;
+        $path2 = file_exists(public_path('storage/correctionRequests/' . $id)) ? public_path('storage/correctionRequests/' . $id) : null;
+         // foreach path != null, delete the content of the folder and the folder
+        if ($path != null) {
+            $files = glob($path . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            rmdir($path);
+        }
+        if ($path2 != null) {
+            $files = glob($path2 . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+            rmdir($path2);
+        }
     }
 
     // Méthode pour supprimer un DS
     public function destroy($id)
     {
+        // if correction exists, delete his pictures folder
+        $this->destroyCorrectionFolder($id);
         $ds = DS::find($id);
         $ds->delete();
-        return redirect()->route('ds.myDS');
+
+        return redirect()->route('ds.myDS', Auth::id());
     }
 }

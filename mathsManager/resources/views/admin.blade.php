@@ -34,6 +34,11 @@
         <a href="{{ route('ds.index') }}" class="p-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-center">
             Gérer les DS
         </a>
+
+        <!-- bouton pour les corrections -->
+        <a href="{{ route('correctionRequest.index') }}" class="p-4 bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded text-center">
+            Gérer les corrections
+        </a>
         
         <!-- Ajoutez plus de boutons pour d'autres entités si nécessaire -->
     </div>

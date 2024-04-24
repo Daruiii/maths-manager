@@ -33,8 +33,8 @@ class DS extends Model
         return $this->belongsTo(User::class);
     }
 
-    // public function correctionRequests()
-    // {
-    //     return $this->hasMany(CorrectionRequest::class);
-    // }
+    public function correctionRequest()
+    {
+        return $this->hasOne(CorrectionRequest::class);
+    }
 }

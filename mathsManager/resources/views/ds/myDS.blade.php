@@ -131,25 +131,29 @@
                         </div>
                     @elseif ($ds->status == 'finished')
                         <div class="flex justify-end items-center w-full">
-                            <a href="{{ route('ds.show', $ds->id) }}"
+                            <a href="{{ route('correctionRequest.showCorrectionRequestForm', $ds->id) }}"
                                 class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
                                 Envoyer pour correction
                             </a>
                         </div>
                     @elseif ($ds->status == 'sent')
                         <div class="flex justify-end items-center w-full">
-                            <h2
+                            <h2 class="text-sm">Correction en cours ... </h2>
+                            <a href="{{ route('correctionRequest.show', $ds->id) }}"
                                 class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
-                                Correction en cours ...
-                            </h2>
+                                Voir ma demande
+                            </a>
                         </div>
                     @elseif ($ds->status == 'corrected')
                         {{-- href="{{ route('ds.show', $ds->id) }}" --}}
                         <div class="flex justify-end items-center w-full gap-1">
-                            <h2 class="text-sm">
-                                note / 20
-                            </h2>
-                            <a href=""
+                            {{-- if grade <10 its red else green --}}
+                            @if ($ds->correctionRequest->grade < 10)
+                                <h2 class="text-sm text-red-500">{{ $ds->correctionRequest->grade }}/20</h2>
+                            @else
+                                <h2 class="text-sm text-green-500">{{ $ds->correctionRequest->grade }}/20</h2>
+                            @endif
+                            <a href="{{ route('correctionRequest.show', $ds->id) }}"
                                 class="bg-blue-100 rounded-lg p-2 link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
                                 Voir la correction
                             </a>

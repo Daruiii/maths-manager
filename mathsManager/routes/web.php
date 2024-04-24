@@ -14,6 +14,7 @@ use App\Http\Controllers\DsExerciseController;
 use App\Http\Controllers\MultipleChapterController;
 use App\Http\Controllers\DSController;
 use App\Http\Middleware\IsVerified;
+use App\Http\Controllers\CorrectionRequestController;
 
 
 Route::get('/', function () {
@@ -111,14 +112,30 @@ Route::middleware('auth')->group(function () {
         Route::patch('/ds/{id}', [DSController::class, 'update'])->name('ds.update');
     });
     Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/ds/myDS', [DSController::class, 'indexUser'])->name('ds.myDS');
         Route::get('/ds/create', [DSController::class, 'create'])->name('ds.create');
         Route::post('/ds', [DSController::class, 'store'])->name('ds.store');
+        Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');
         Route::delete('/ds/{id}', [DSController::class, 'destroy'])->name('ds.destroy');      
         Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
         Route::get('/ds/{id}/start', [DSController::class, 'start'])->name('ds.start');
         Route::get('/ds/{id}/pause/{timer}', [DSController::class, 'pause'])->name('ds.pause');
         Route::get('/ds/{id}/finish', [DSController::class, 'finish'])->name('ds.finish');
+    });
+});
+
+//CorrectionsRequest routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+    /// index
+    Route::get('/correctionRequest', [CorrectionRequestController::class, 'index'])->name('correctionRequest.index');
+    Route::get('/correctionRequest/correct/{ds_id}', [CorrectionRequestController::class, 'showCorrectionForm'])->name('correctionRequest.correctForm');
+    Route::post('/correctionRequest/correct/{ds_id}', [CorrectionRequestController::class, 'correctCorrectionRequest'])->name('correctionRequest.correct');
+    Route::delete('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'destroyCorrectionRequest'])->name('correctionRequest.destroy');
+    });
+    Route::middleware([IsVerified::class])->group(function () {
+    Route::get('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequestForm'])->name('correctionRequest.showCorrectionRequestForm');
+    Route::post('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'sendCorrectionRequest'])->name('correctionRequest.sendCorrectionRequest');
+    Route::get('/correctionRequest/show/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequest'])->name('correctionRequest.show');
     });
 });
 

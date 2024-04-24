@@ -57,4 +57,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(DS::class);
     }
+
+    public function correctionRequests()
+    {
+        return $this->hasMany(CorrectionRequest::class);
+    }
 }
