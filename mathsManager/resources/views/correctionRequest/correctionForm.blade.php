@@ -42,7 +42,7 @@
                 <input type="number" id="grade" class="form-control" name="grade" min="0" max="20" required value="{{ $correctionRequest->grade ?? '' }}">
             </div>
         
-            <button type="submit" class="submit-btn-form">Envoyer la demande</button>
+            <button type="submit" class="submit-btn-form">Envoyer la correction</button>
         </form>
     </div>
 </section>
