@@ -58,6 +58,9 @@
                         <div class="multiselect__dropdown">
                             <input type="text" class="multiselect__filter" placeholder="Rechercher...">
                             <div class="multiselect__options" style="max-height: 200px; overflow-y: auto;">
+                                  {{-- input tout selectionner --}}
+                                  <input type="checkbox" class="multiselect__checkbox" value="all" id="selectAll" name="all">
+                                  <span class="multiselect__label" id="selectAll">Tout sélectionner</span>
                                 @foreach ($chapters as $chapter)
                                 <label class="multiselect__option">
                                     <input type="checkbox" class="multiselect__checkbox" value="{{ $chapter->id }}" name="multiple_chapters[]" {{ $ds->multipleChapters->contains($chapter->id) ? 'checked' : '' }}>
@@ -77,11 +80,25 @@
     <script>
       document.addEventListener('DOMContentLoaded', function() {
             const chaptersCheckboxes = document.querySelectorAll('.multiselect__checkbox');
+            const exercises_number = document.getElementById('selectAll');
+
             if (document.getElementById('type_bac').checked) {
                 document.getElementById('dsFormWrapper').style.display = 'none';
                 exercises_number.value = 4;
                 harder_exercises.checked = false;
             }
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const chaptersCheckboxes = document.querySelectorAll('.multiselect__checkbox');
+            if (this.checked) {
+                chaptersCheckboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+            } else {
+                chaptersCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            }
+        });
         document.getElementById('type_bac').addEventListener('change', function() {
             const dsFormWrapper = document.getElementById('dsFormWrapper');
             if (this.checked) {
