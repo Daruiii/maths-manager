@@ -51,25 +51,28 @@
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $correctionRequest->status }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                        {{ $correctionRequest->ds_id }}</td>
+                                        <a href="{{ route('ds.show', $correctionRequest->ds_id) }}"
+                                            class="text-indigo-600 hover:text-indigo-900 underline">
+                                            DS n°{{ $correctionRequest->ds_id }}
+                                        </a>
                                     <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
                                         <div class="flex justify-center items-center gap-2">
                                             <a href="{{ route('correctionRequest.show', $correctionRequest->ds_id) }}"
-                                                class="text-indigo-600 hover:text-indigo-900">
-                                                Voir la demande
+                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                Voir
                                             </a>
-                                            <a href="{{ route('correctionRequest.correctForm', $correctionRequest->ds_id) }}"
+                                            {{-- <a href="{{ route('correctionRequest.correctForm', $correctionRequest->ds_id) }}"
                                                 class="text-indigo-600 hover:text-indigo-900">
                                                 Modifier la demande
-                                            </a>
+                                            </a> --}}
                                             <form action="{{ route('correctionRequest.destroy', $correctionRequest->ds_id) }}"
                                                 method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
                                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette demande de correction ?')"
-                                                    class="text-red-600 hover:text-red-900">
-                                                    Supprimer la demande
+                                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                 Rejeter
                                                 </button>
                                             </form>
                                         </div>

@@ -9,7 +9,7 @@ export function loaderForm() {
         // wait for 3 seconds
         setTimeout(function(){
             form.submit();
-        }, 3000);
+        }, 2000);
     });
 }
 
