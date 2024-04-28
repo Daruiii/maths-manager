@@ -2,31 +2,27 @@
 
 .form-title {
     color: $text-color;
-    font-size: $font-size-small; // Taille plus grande pour le titre
-    font-weight: bold; // Gras pour plus d'importance
-    line-height: 1.2; // Ajustement de l'espacement des lignes
-    text-transform: uppercase;
+    font-size: $font-size-small;
+    font-weight: bold;
+    line-height: 1.2;
+    // text-transform: uppercase;
     margin-bottom: 1rem;
-    // Un petit effet de texte si vous le souhaitez
-    // text-shadow: 1px 1px 0px rgba($text-gray, 0.5);
 }
 
 .form-explain {
     font-size : 0.65rem;
 }
 
-// pour les attributs disabled
 [disabled] {
     cursor: not-allowed;
     opacity: 0.1;
 }
 
-// Wrapper for the form to center it on the page
 .form-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; // This ensures that the form is vertically centered in the viewport
+    min-height: 100vh;
     padding: 2rem;
 
     .form {
@@ -35,8 +31,7 @@
         border-radius: 0.5rem;
         box-shadow: 0 2px 10px rgba($text-gray, 0.1);
         width: 100%;
-        max-width: 650px; // Adjust width as necessary
-
+        max-width: 650px;
         label {
             display: block;
             margin-bottom: 0.5rem;
@@ -107,7 +102,7 @@
 // Responsive
 @media (max-width: 768px) {
     .form-title {
-        font-size: $font-size-medium; // Taille de police plus petite sur les écrans mobiles
+        font-size: $font-size-medium;
         margin-bottom: 1rem;
     }
     .form-wrapper {
