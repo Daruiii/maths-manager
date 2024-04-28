@@ -12,7 +12,9 @@
 
     <section class="form-wrapper">
         <div class="form">
-            <h1 class="form-title">Générer un DS</h1>
+            <h1 class="cormorant form-title">Générer un DS</h1>
+            <p class="cormorant text-xs mb-5"> Ce générateur de DS vous permet de vous tester dans des conditions réelles d'examens. Vous avez un temps limité qui s'affichera alors soyez sur d'être prêt avant de commencer le devoir. Aucune aide ne sera donnée, vous pouvez faire pause et revenir sur le DS plus tard. Lorsque vous terminez le DS, vous pouvez prendre en photo votre travail et me l'envoyer pour obtenir une note et une correction de la copie.
+                Vous ne pouvez pas générer plusieurs DS en même temps, vous devrez me demander pour pouvoir générer à nouveau </p>  
 
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -28,8 +30,11 @@
                 @csrf
                 @method('POST')
                 <div class="form-group">
-                    <label for="type_bac">Type de bac :</label>
+                    <div class="flex items-center gap-1">
+                    <label>Type bac :</label>
                     <input type="checkbox" id="type_bac" name="type_bac" value="1">
+                    </div>
+                    <p class="cmu-ti text-xs">En cochant cette case, une simulation du bac aléatoire de 4 exercices se génère automatiquement, vous ne pouvez donc pas choisir les chapitres.</p>
                 </div>
 
                 <div id="dsFormWrapper">
@@ -44,8 +49,10 @@
                 </div>
 
                 <div class="form-group">
+                    <div class="flex items-center gap-1">
                     <label for="harder_exercises">Exercices plus difficiles :</label>
                     <input type="checkbox" id="harder_exercises" name="harder_exercises" value="1">
+                    </div>
                 </div>
 
                      {{-- chapitres associés --}}

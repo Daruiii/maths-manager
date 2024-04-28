@@ -3,13 +3,12 @@
 .form-title {
     color: $text-color;
     font-size: $font-size-small; // Taille plus grande pour le titre
-    margin-bottom: 1.5rem; // Espace sous le titre
     font-weight: bold; // Gras pour plus d'importance
     line-height: 1.2; // Ajustement de l'espacement des lignes
     text-transform: uppercase;
 
     // Un petit effet de texte si vous le souhaitez
-    text-shadow: 1px 1px 0px rgba($text-gray, 0.5);
+    // text-shadow: 1px 1px 0px rgba($text-gray, 0.5);
 }
 
 // pour les attributs disabled

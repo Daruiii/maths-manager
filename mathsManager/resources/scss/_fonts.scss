@@ -1,6 +1,14 @@
 // import and name all my font here 
 
 @font-face {
+    font-family: 'Cormorant Garamond';
+    src : url('../fonts/cormorant/CormorantGaramond-Regular.ttf') format('truetype');
+}
+.cormorant {
+    font-family: 'Cormorant Garamond', serif;
+}
+
+@font-face {
     font-family: 'CMU Serif';
     src: url('../fonts/cmunrm.ttf') format('truetype');
 }
