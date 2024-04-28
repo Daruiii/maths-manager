@@ -271,7 +271,7 @@ class DSController extends Controller
     {
         $ds = DS::find($id);
         $ds = $this->generateDS($request, $ds);
-        return redirect()->route('ds.myDS', Auth::id());
+        return redirect()->route('ds.show', $ds->id);
     }
 
     private function destroyCorrectionFolder($id)
