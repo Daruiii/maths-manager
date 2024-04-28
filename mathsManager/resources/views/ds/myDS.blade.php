@@ -7,7 +7,7 @@
         <div class="flex justify-start flex-col align-center w-full my-8 ms-12">
             <h1 class="text-xl cmu-bold">Mes devoirs</h1>
             <div class="flex row justify-start align-center">
-                <a href="{{ route('ds.create') }}" class="flex items-center justify-center mr-3">
+                {{-- <a href="{{ route('ds.create') }}" class="flex items-center justify-center mr-3">
                     <svg width="15px" height="15px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
                         fill="#000000">
@@ -28,10 +28,10 @@
                             </g>
                         </g>
                     </svg>
-                </a>
+                </a> --}}
                 <a href="{{ route('ds.create') }}"
                     class="bg-blue-100 rounded-lg p-2 link w-44 text-center hover:bg-blue-200 shadow-md transition duration-300">
-                    Générer un DS
+                    Générer un devoir
                 </a>
             </div>
         </div>
@@ -85,9 +85,9 @@
                     </form>
                 </div>
             @endif
-            <div class="flex justify-start flex-col items-center w-5/6 mb-3 bg-white shadow-md rounded-lg p-4">
+            <div class="flex justify-start flex-col items-center w-5/6 mb-3 bg-white shadow-md rounded-lg p-4 flex-shrink-0">
                 <div class="flex items-center w-full p-2">
-                    <h2 class="text-sm font-bold w-full">DS du {{ $ds->created_at->format('d/m/Y') }}.</h2>
+                    <h2 class="text-sm font-bold w-full">Devoir du {{ $ds->created_at->format('d/m/Y') }}.</h2>
                     @php
                         $hours = 0;
                         $time = $ds->time;
@@ -160,10 +160,10 @@
                         </div>
                     @endif
                 </div>
-                <div class="flex justify-between items-end w-full">
+                <div class="flex justify-between items-end w-full max-w-5xl">
                     <div class="flex gap-2 ">
                         @foreach ($ds->exercisesDS as $exercise)
-                            <h3 class="text-xs cmu font-bold p-1 rounded-lg w-auto text-center vertical-center hover:bg-blue-200 shadow-md transition duration-300 truncate"
+                            <h3 class="text-xs cmu font-bold p-1 rounded-lg w-auto text-center vertical-center hover:bg-blue-200 shadow-md transition duration-300 truncate max-w-1/2"
                                 style="background-color: {{ $exercise->multipleChapter->theme }};">
                                 {{ $exercise->multipleChapter->title }}</h3>
                         @endforeach

@@ -122,7 +122,7 @@
                 @endif
             </div>
             {{-- ici affichage de chaque exo à la suite --}}
-            <div class="w-3/4 flex flex-col items-start justify-start">
+            <div class="w-9/12 flex flex-col items-start justify-start">
                 @foreach ($ds->exercisesDS as $index => $exercise)
                     <div class="mb-16" id="exercise-{{ $index + 1 }}">
                         <div class="exercise-content text-sm px-4 cmu-serif">

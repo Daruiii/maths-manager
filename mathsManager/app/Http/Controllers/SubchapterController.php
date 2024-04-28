@@ -20,7 +20,11 @@ class SubchapterController extends Controller
     {
         $subchapter = Subchapter::findOrFail($id);
         $exercises = Exercise::where('subchapter_id', $id)->get();
-        return view('subchapter.show', compact('subchapter', 'exercises'));
+        // get classe lvl
+        $chapter_id = $subchapter->chapter_id;
+        $classe_id = Chapter::findOrFail($chapter_id)->class_id;
+        $classe = Classe::findOrFail($classe_id);
+        return view('subchapter.show', compact('subchapter', 'exercises', 'classe'));
     }
 
     public function create($id) // admin

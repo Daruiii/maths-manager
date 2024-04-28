@@ -179,13 +179,14 @@ class ExerciseController extends Controller
     public function destroy($id)
     {
         $exercise = Exercise::findOrFail($id);
+        $subchapterId = $exercise->subchapter_id;
         $exercise->delete();
         $exercises = Exercise::all();
         foreach ($exercises as $index => $exercise) {
             $exercise->id = $index + 1;
             $exercise->save();
         }
-        return redirect()->route('subchapter.show', $exercise->subchapter_id);
+        return redirect()->route('subchapter.show', $subchapterId);
     }
 
     // public function store(Request $request)
