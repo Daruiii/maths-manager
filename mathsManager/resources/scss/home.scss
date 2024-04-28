@@ -1,8 +1,10 @@
+@import "variables";
+
 .quote-box {
     width: 100%;
-    height: 2.5rem;
+    height: 2rem;
     display: flex;
-    padding: 5rem 5rem;
+    padding: 4rem 4rem;
     flex-direction: row;
     justify-content: center;
   }
@@ -10,13 +12,28 @@
   .quote-text {
     display: flex;
     align-items: flex-start;
-    font-size: $font-size-small;
+    font-size: $font-size-xsmall;
     color: $text-color;
   }
   
   .quote-author {
     display: flex;
-    align-items: flex-end;
-    font-size: $font-size-xsmall;
-    color: $text-gray;
+    align-items: flex-start;
+    margin : 1rem 0.3rem;
+    font-size: $font-size-xxsmall;
+    color: $text-color;
+  }
+
+  @media (max-width: 768px) {
+    .quote-box {
+      padding: 2rem 2rem;
+    }
+
+    .quote-text {
+      font-size: $font-size-xsmall;
+    }
+
+    .quote-author {
+      font-size: $font-size-xxsmall;
+    }
   }

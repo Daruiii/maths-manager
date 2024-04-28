@@ -6,27 +6,25 @@
             <p class="quote-text">“L'imagination est plus importante que le savoir”</p>
             <p class="quote-author">(Albert Einstein)</p>
         </div>
-        {{-- if auth --}}
         <div class="flex flex-col md:flex-row justify-center w-11/12 mx-auto p-6 rounded-lg gap-2 mb-8 ">
             @if (Auth::check())
-                {{-- div with users stats ... --}}
                 <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
-                    <h2 class="text-2xl font-bold text-center">Statistiques</h2>
-                    <div class="flex justify-between mt-4">
+                    <h2 class="text-base font-bold text-center">Tableau de bord</h2>
+                    {{-- <div class="flex justify-between mt-4">
                         <div class="flex flex-col items-center">
-                            <p class="text-lg font-bold">Mes dernières notes :</p>
+                            <p class="text-sm font-bold">Moyenne générale</p>
                         </div>
                         <div class="flex flex-col items-center">
-                            <p class="text-lg font-bold">Nombre de cours</p>
+                            <p class="text-sm font-bold">Exercices réussis</p>
                         </div>
-                    </div>
+                        <div class="flex flex-col items-center">
+                            <p class="text-sm font-bold">Exercices à faire</p>
+                        </div>
+                    </div> --}}
                 </div>
-                {{-- div with Présentation ... --}}
             @else
-                {{-- connectez vous pour ... --}}
                 <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
                     <h2 class="text-2xl font-bold text-center">Bienvenue sur Maths Manager</h2>
-                    {{-- Maths Manager à été conçu pour vous aider à vous exercer en mathématiques. --}}
                     <p class="mt-4 text-lg">Vous trouverez sur ce site des exercices, des quizz, des fiches récapitulatives de cours sur
                         tous les chapitres des classes de Première et Terminale.
                         Les exercices ne disposant pas de correction, vous aurez la possibilité d’envoyer
@@ -37,16 +35,14 @@
                         Un générateur de DS vous permet de concevoir de manière automatique et aléatoire
                         un contrôle personnalisé en fonction de la difficulté, du temps et des chapitres
                         sélectionnés.</p>
-                    {{-- Connectez-vous pour profiter pleinement de l'application. --}}
                     <p class="mt-4 text-sm"><a href="{{ route('register') }}" class="underline font-bold">Connectez-vous
                         </a> et contactez <a href="mailto:maxime@mathsmanager.fr" class="underline font-bold">Maxime</a> pour accéder
                         à toutes ces fonctionnalités !</p>
                 </div>
             @endif
-            {{-- div with Présentation ... --}}
             <div class="flex flex-col w-full md:w-1/4 bg-[#FBF7F0] p-6 rounded-lg">
-                <h2 class="text-2xl font-bold text-center">Qui suis-je ?</h2>
-                <p class="mt-4 text-lg">Après deux années de classes
+                <h2 class="text-base font-bold text-center">Qui suis-je ?</h2>
+                <p class="mt-4 text-sm">Après deux années de classes
                     préparatoires MPSI, MP*
                     j’ai intégré l’école d’ingénieur
                     ENSEEIHT. 

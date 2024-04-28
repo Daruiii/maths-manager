@@ -1,11 +1,27 @@
 // import and name all my font here 
 
 @font-face {
-    font-family: 'Cormorant Garamond';
-    src : url('../fonts/cormorant/CormorantGaramond-Regular.ttf') format('truetype');
+    font-family: 'Comfortaa';
+    src: url('../fonts/comfortaa/Comfortaa-Regular.ttf') format('truetype');
 }
-.cormorant {
-    font-family: 'Cormorant Garamond', serif;
+.comfortaa {
+    font-family: 'Comfortaa', sans-serif;
+}
+
+@font-face {
+    font-family: 'Comfortaa Bold';
+    src: url('../fonts/comfortaa/Comfortaa-Bold.ttf') format('truetype');
+}
+.comfortaa-bold {
+    font-family: 'Comfortaa Bold', sans-serif;
+}
+
+@font-face {
+    font-family: 'Comfortaa Light';
+    src: url('../fonts/comfortaa/Comfortaa-Light.ttf') format('truetype');
+}
+.comfortaa-italic {
+    font-family: 'Comfortaa Light', sans-serif;
 }
 
 @font-face {

@@ -5,7 +5,7 @@
         <div class="flex header">
             <div>
                 <h1 class="title">{{ $classe->name }}</h1>
-                <h2 class="cmu-serif subtitle">Chapitres</h2>
+                <h2 class="subtitle">Chapitres</h2>
             </div>
             @auth
                 @if (Auth::user()->role === 'admin')
@@ -79,7 +79,7 @@
                         <div class="flex items-start space-x-2 mb-4">
                             <div class="flex flex-col w-2/3 bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
-                                    <h3 class="text-lg font-semibold truncate">Exercices par thème :</h3>
+                                    <p class="comfortaa text-sm truncate">Exercices par thème :</p>
                                     @auth
                                         @if (Auth::user()->role === 'admin')
                                             <a href="{{ route('subchapter.create', ['id' => $chapter->id]) }}"
@@ -98,7 +98,7 @@
                                         <div class="flex items-center justify-between px-2 border-b border-gray-200">
                                             <a href="{{ route('subchapter.show', $subchapter->id) }}"
                                                 class="my-2 flex w-full items-center justify-between space-x-2 truncate hover:underline border-l-2 border-black pl-2">
-                                                <span>{{ $indexChap + 1 }}.{{ $index + 1 }} -
+                                                <span class="text-sm">{{ $indexChap + 1 }}.{{ $index + 1 }} -
                                                     {{ $subchapter->title }}</span>
                                                 <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg" stroke="#000000">

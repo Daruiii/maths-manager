@@ -20,12 +20,19 @@ html {
     background-color: $primary-color;
 }
 
-h1{
-    font-family: 'Caudex Bold';
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Comfortaa Bold', sans-serif;
+}
+
+p, a, label, input, select, textarea, button {
+    font-family: 'Comfortaa Light', sans-serif;
+
 }
 
 nav {
-    font-family: 'CMU Serif roman';
+    font-family: 'Comfortaa Light', sans-serif;
+
+
 }
 
 .container {

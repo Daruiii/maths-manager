@@ -23,7 +23,7 @@
                     @endif
                 @endauth
             </div>
-            <h2 class="text-xs px-4 py-1 w-full cmu-ti">{{ $subchapter->description }}</h2>
+            <p class="text-xs px-4 py-1 w-full">{{ $subchapter->description }}</p>
 
             <div class="p-1 md:p-4 flex flex-col align-center justify-start w-full">
                 @foreach ($exercises as $index => $ex)

@@ -6,9 +6,13 @@
     font-weight: bold; // Gras pour plus d'importance
     line-height: 1.2; // Ajustement de l'espacement des lignes
     text-transform: uppercase;
-
+    margin-bottom: 1rem;
     // Un petit effet de texte si vous le souhaitez
     // text-shadow: 1px 1px 0px rgba($text-gray, 0.5);
+}
+
+.form-explain {
+    font-size : 0.65rem;
 }
 
 // pour les attributs disabled
