@@ -125,7 +125,7 @@
             <div class="w-9/12 flex flex-col items-start justify-start">
                 @foreach ($ds->exercisesDS as $index => $exercise)
                     <div class="mb-16" id="exercise-{{ $index + 1 }}">
-                        <div class="exercise-content text-sm px-4 cmu-serif">
+                        <div class="exercise-content text-sm cmu-serif">
                             <span class="truncate font-bold text-sm exercise-title"> Exercice {{ $index + 1 }}.</span>
                             {!! $exercise->statement !!}
                         </div>
