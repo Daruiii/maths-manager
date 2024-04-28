@@ -11,9 +11,9 @@ use App\Models\Exercise;
 class ChapterController extends Controller
 {
     protected $themeColors = [
-        'analyse1' => '#87CBEA',
-        'analyse2' => '#6CAAEE',
-        'suites' => '#7CE6D0',
+        'analyse1' => '#318CE7',
+        'analyse2' => '#CCA9DD',
+        'suites' => '#80CEE1',
         'geometrie' => '#E6D07C',
         'probabilites' => '#E67C7C',
         'trigonometrie' => '#E6AA74',
@@ -21,17 +21,6 @@ class ChapterController extends Controller
         'arithmetique' => '#CF8FE6',
         'matrices' => '#EC9CDB',
     ];
-    
-    public function changeAnalyse1Color() // admin
-    {
-        $chapters = Chapter::where('theme', '#87CBEA')->get();
-        foreach ($chapters as $chapter) {
-            $chapter->theme = '#318CE7';
-            $chapter->save();
-        }
-
-        return redirect()->route('classe.show', 2);
-    }
 
     public function index() // students
     {
