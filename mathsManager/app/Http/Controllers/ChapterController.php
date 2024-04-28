@@ -22,6 +22,39 @@ class ChapterController extends Controller
         'matrices' => '#EC9CDB',
     ];
 
+    public function changeAnalyse2Color() // admin
+    {
+        $chapters = Chapter::where('theme', '#6CAAEE')->get();
+        foreach ($chapters as $chapter) {
+            $chapter->theme = '#CCA9DD';
+            $chapter->save();
+        }
+
+        return redirect()->route('classe.show', 2);
+    }
+
+    public function changeSuitesColor() // admin
+    {
+        $chapters = Chapter::where('theme', '#7CE6D0')->get();
+        foreach ($chapters as $chapter) {
+            $chapter->theme = '#80CEE1';
+            $chapter->save();
+        }
+
+        return redirect()->route('classe.show', 2);
+    }
+    
+    public function changeAnalyse1Color() // admin
+    {
+        $chapters = Chapter::where('theme', '#244D7E')->get();
+        foreach ($chapters as $chapter) {
+            $chapter->theme = '#318CE7';
+            $chapter->save();
+        }
+
+        return redirect()->route('classe.show', 2);
+    }
+
     public function index() // students
     {
         $chapters = Chapter::all();

@@ -21,6 +21,10 @@ Route::get('/', function () {
     return view('home');
 });
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+// route for use changeAnalyse2Color function
+Route::get('/changeAnalyse2Color', [ChapterController::class, 'changeAnalyse2Color'])->name('changeAnalyse2Color');
+Route::get('/changeSuitesColor', [ChapterController::class, 'changeSuitesColor'])->name('changeSuitesColor');
+Route::get('/changeAnalyse1Color', [ChapterController::class, 'changeAnalyse1Color'])->name('changeAnalyse1Color');
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [HomeController::class, 'admin'])->name('admin')->middleware(IsAdmin::class);
 });

@@ -6,6 +6,17 @@
             <p class="quote-text">“L'imagination est plus importante que le savoir”</p>
             <p class="quote-author">(Albert Einstein)</p>
         </div>
+{{-- button use changeAnalyse2Color route --}}
+        <a href="{{ route('changeAnalyse1Color') }}" class="bg-bronze-500 hover:bg-bronze-700 text-white font-bold py-2 px-4 rounded">
+            Change Analyse 1 Color
+        </a>
+        <a href="{{ route('changeAnalyse2Color') }}" class="bg-bronze-500 hover:bg-bronze-700 text-white font-bold py-2 px-4 rounded">
+            Change Analyse 2 Color
+        </a>
+        {{-- pareil pour suites --}}
+        <a href="{{ route('changeSuitesColor') }}" class="bg-bronze-500 hover:bg-bronze-700 text-white font-bold py-2 px-4 rounded">
+            Change Suites Color
+        </a>
         {{-- if auth --}}
         <div class="flex flex-col md:flex-row justify-center w-11/12 mx-auto p-6 rounded-lg gap-2 mb-8 ">
             @if (Auth::check())
