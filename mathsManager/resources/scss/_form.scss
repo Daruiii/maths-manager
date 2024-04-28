@@ -2,15 +2,14 @@
 
 .form-title {
     color: $text-color;
-    font-size: $font-size-small;
-    font-weight: bold;
+    font-size: $font-size-sm;
     line-height: 1.2;
     // text-transform: uppercase;
     margin-bottom: 1rem;
 }
 
 .form-explain {
-    font-size : 0.65rem;
+    font-size: 0.65rem;
 }
 
 [disabled] {
@@ -35,8 +34,9 @@
         label {
             display: block;
             margin-bottom: 0.5rem;
-            color: $text-gray;
+            color: $text-color;
             font-size: $font-size-small;
+            // font-family: "Comfortaa", sans-serif;
         }
 
         input,
@@ -49,7 +49,7 @@
             border-radius: 0.25rem;
             background-color: $primary-color;
             color: $text-color;
-            font-size: $font-size-small;
+            font-size: $font-size-xsmall;
 
             &:focus {
                 outline: none;
@@ -96,6 +96,21 @@
             color: $success-color;
             font-size: $font-size-xxsmall;
         }
+    }
+}
+
+// edit scroll bar in multiselect_options
+.multiselect__options::-webkit-scrollbar {
+    width: 6px;
+    background-color: $primary-color;
+    border-radius: 10px;
+}
+
+.multiselect__options::-webkit-scrollbar-thumb {
+    background-color: $text-gray;
+    border-radius: 10px;
+    &:hover {
+        background: darken($text-gray, 10%);
     }
 }
 
