@@ -218,7 +218,7 @@ class DsExerciseController extends Controller
         $dsExercise->save();
 
         // $dsExercise->chapters()->sync($request->chapters);
-        return redirect()->route('ds_exercises.index');
+        return redirect()->route('ds_exercise.show', $dsExercise->id);
     }
 
     public function destroy(string $id)
