@@ -32,7 +32,7 @@
             </button>
         @endif
         <div
-            class="flex flex-col align-center items-center justify-center my-5 bg-white w-11/12 md:w-4/5 rounded-lg box-shadow shadow-xl">
+            class="flex flex-col align-center items-center justify-center my-5 bg-white w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
             @auth
                 @if (Auth::user()->role == 'admin')
                     <div class="flex items-center">
