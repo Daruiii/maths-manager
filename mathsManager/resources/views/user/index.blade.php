@@ -47,7 +47,15 @@
                             @foreach ($users as $user)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
-                                        {{ $user->name }}</td>
+                                        <div class="flex items-center gap-1">
+                                        @if (Str::startsWith($user->avatar, 'http'))
+                                        <img src="{{ $user->avatar }}" class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300  "alt="Profile Picture">
+                                    @else
+                                        <img src="{{ asset('storage/images/' . $user->avatar) }}" class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300" alt="Profile Picture">
+                                    @endif
+                                        {{ $user->name }}
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $user->email }}</td>
                                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
