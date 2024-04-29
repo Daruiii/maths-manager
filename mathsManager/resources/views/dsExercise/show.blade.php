@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mx-auto">
     {{-- bouton a gauche pour retour au index des dsexercises --}}
-    <div class="flex justify-start w-full ms-12 mt-5">
+    <div class="w-full ms-12 mt-5">
     <x-back-btn path="{{ route('ds_exercises.index') }}" />
     @if ($previousExercise)
         <a href="{{ route('ds_exercise.show', ['id' => $previousExercise->id, 'filter' => $filter ]) }}"
