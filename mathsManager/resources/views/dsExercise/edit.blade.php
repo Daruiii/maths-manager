@@ -19,6 +19,8 @@
                 @csrf
                 @method('PATCH')
 
+                {{-- hidden input for give the filter true or false --}}
+                <input type="hidden" name="filter" value="{{$filter}}">
                 <div class="form-group">
                     <label for="name">Nom de l'Exercice DS:</label>
                     <input type="text" class="form-control" id="name" name="name" value="{{ $dsExercise->name }}" placeholder="Nom de l'exercice DS">

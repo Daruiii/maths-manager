@@ -181,11 +181,11 @@ class DsExerciseController extends Controller
         return view('dsExercise.show', compact('dsExercise', 'multipleChapter', 'nextExercise', 'filter', 'previousExercise'));
     }
 
-    public function edit(string $id)
+    public function edit(string $id, string $filter)
     {
         $dsExercise = DsExercise::findOrFail($id);
         $multipleChapters = MultipleChapter::all();
-        return view('dsExercise.edit', compact('dsExercise', 'multipleChapters'));
+        return view('dsExercise.edit', compact('dsExercise', 'multipleChapters', 'filter'));
     }
 
     public function update(Request $request, string $id)
@@ -199,6 +199,7 @@ class DsExerciseController extends Controller
             'latex_statement' => 'nullable',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'filter' => 'nullable|string',
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
         ]);
@@ -234,7 +235,7 @@ class DsExerciseController extends Controller
         $dsExercise->save();
 
         // $dsExercise->chapters()->sync($request->chapters);
-        return redirect()->route('ds_exercise.show', $dsExercise->id);
+        return redirect()->route('ds_exercise.show', ['id' => $dsExercise->id, 'filter' => $request->filter]);
     }
 
     public function destroy(string $id)

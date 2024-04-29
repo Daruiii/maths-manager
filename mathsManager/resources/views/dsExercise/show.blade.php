@@ -3,11 +3,11 @@
 @section('content')
     <div class="container mx-auto">
     {{-- bouton a gauche pour retour au index des dsexercises --}}
-    <div class="w-full ms-12 mt-5">
+    <div class="flex row items-center w-full ms-12 mt-5">
     <x-back-btn path="{{ route('ds_exercises.index') }}" />
     @if ($previousExercise)
         <a href="{{ route('ds_exercise.show', ['id' => $previousExercise->id, 'filter' => $filter ]) }}"
-            class="flex row items-center gap-1 text-xs md:absolute md:top-32 md:left-4 md:black md:font-bold md:p-2 md:rounded mt-4 p-2 black rounded hover:bg-gray-200 transition-colors duration-300 ease-in-out">
+            class="previous-btn">
             <svg width="16px" height="16px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -25,7 +25,7 @@
     @endif
     @if ($nextExercise)
         <a href="{{ route('ds_exercise.show', ['id' => $nextExercise->id, 'filter' => $filter ]) }}"
-            class="flex row items-center gap-1 text-xs md:absolute md:top-32 md:right-4 md:black md:font-bold md:p-2 md:rounded mt-4 p-2 black rounded hover:bg-gray-200 transition-colors duration-300 ease-in-out">
+            class="next-btn">
             <span>Exercice suivant</span>
             <svg width="16px" height="16px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -60,7 +60,7 @@
                                         </svg>
                                     </button>
                                 </form>
-                                <form action="{{ route('ds_exercise.edit', ['id' => $dsExercise->id]) }}" method="GET"
+                                <form action="{{ route('ds_exercise.edit', ['id' => $dsExercise->id, 'filter' => $filter]) }}"
                                     class="inline">
                                     <button type="submit" class="p-2 rounded-full text-red-500 hover:text-red-600">
                                         <svg fill="#000000" class="h-3 w-3" version="1.1" id="Capa_1"
