@@ -23,12 +23,15 @@ class DsExerciseController extends Controller
 
         if ($request->filled('multiple_chapter_id')) {
             $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
+            $filterActivated = true;
         }
-
+        else {
+            $filterActivated = false;
+        }
         $dsExercises = $dsExercises->get();
         $multipleChapters = MultipleChapter::all();
 
-        return view('dsExercise.index', compact('dsExercises', 'multipleChapters'));
+        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated'));
     }
 
     protected function convertCustomLatexToHtml($latexContent, $images = [])
@@ -157,12 +160,25 @@ class DsExerciseController extends Controller
         return redirect()->route('ds_exercises.index');
     }
 
-    public function show(string $id)
+    public function show(string $id, string $filter)
     {
         $dsExercise = DsExercise::findOrFail($id);
         // multiple_chapter_id 
         $multipleChapter = MultipleChapter::findOrFail($dsExercise->multiple_chapter_id);
-        return view('dsExercise.show', compact('dsExercise', 'multipleChapter'));
+        if ($filter == 'true') {
+            $dsExercises = DsExercise::where('multiple_chapter_id', $dsExercise->multiple_chapter_id)->get();
+        }
+        else {
+            $dsExercises = DsExercise::with('chapters')->orderBy('id')->get();
+        }
+        $nextExercise = $dsExercises->filter(function ($exercise) use ($dsExercise) {
+            return $exercise->id > $dsExercise->id;
+        })->first();
+        $previousExercise = $dsExercises->filter(function ($exercise) use ($dsExercise) {
+            return $exercise->id < $dsExercise->id;
+        })->last();
+
+        return view('dsExercise.show', compact('dsExercise', 'multipleChapter', 'nextExercise', 'filter', 'previousExercise'));
     }
 
     public function edit(string $id)

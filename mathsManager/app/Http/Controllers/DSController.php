@@ -250,6 +250,7 @@ class DSController extends Controller
             }
             }
             $ds = new DS;
+            $ds->user_id = Auth::id();
         }
         $ds->type_bac =  $request->has('type_bac') ? true : false;
         $ds->exercises_number = $new_exercises_number ?? $request->exercises_number;
@@ -258,7 +259,6 @@ class DSController extends Controller
         $ds->timer = $TotalTime * 60; // timer in seconds
         $ds->chrono = "0";
         $ds->status = "not_started";
-        $ds->user_id = Auth::id();
         $ds->save();
 
         // $ds->chapters()->attach($request->chapters);

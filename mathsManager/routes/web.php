@@ -88,8 +88,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/ds_exercise/create', [DsExerciseController::class, 'create'])->name('ds_exercise.create');
         Route::post('/ds_exercise', [DsExerciseController::class, 'store'])->name('ds_exercise.store');
         Route::get('/ds_exercises', [DsExerciseController::class, 'index'])->name('ds_exercises.index');
-        Route::get('/ds_exercise/{id}', [DsExerciseController::class, 'show'])->name('ds_exercise.show');
         Route::get('/ds_exercise/{id}/edit', [DsExerciseController::class, 'edit'])->name('ds_exercise.edit');
+        Route::get('/ds_exercise/{id}/filter/{filter}', [DsExerciseController::class, 'show'])->name('ds_exercise.show');
         Route::patch('/ds_exercise/{id}', [DsExerciseController::class, 'update'])->name('ds_exercise.update');
         Route::delete('/ds_exercise/{id}', [DsExerciseController::class, 'destroy'])->name('ds_exercise.destroy');
     });

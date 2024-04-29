@@ -39,7 +39,7 @@
             {{-- grade int with min 0 max 20 --}}
             <div class="form-group">
                 <label for="grade">Note /20</label>
-                <input type="number" id="grade" class="form-control" name="grade" min="0" max="20" required value="{{ $correctionRequest->grade ?? '' }}">
+                <input type="float" id="grade" class="form-control" name="grade" min="0" max="20" required value="{{ $correctionRequest->grade ?? '' }}">
             </div>
         
             <button type="submit" class="submit-btn-form">Envoyer la correction</button>
