@@ -22,6 +22,8 @@
                     </g>
                 </svg>
             </button>
+        @else
+        <x-back-btn path="{{ route('correctionRequest.show' , ['ds_id' => $ds->id]) }}" />
         @endif
         {{-- ask confirmation before redirecting the route --}}
         @if ($ds->status == 'ongoing')
