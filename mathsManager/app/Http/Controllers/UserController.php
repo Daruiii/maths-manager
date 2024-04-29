@@ -121,4 +121,13 @@ class UserController extends Controller
 
         return redirect()->route('users.index');
     }
+
+    public function resetLastDSGeneratedAt($id)
+    {
+        $user = User::findOrFail($id);
+        $user->last_ds_generated_at = null;
+        $user->save();
+
+        return redirect()->route('users.index');
+    }
 }

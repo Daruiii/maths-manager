@@ -65,6 +65,7 @@ class CorrectionRequestController extends Controller
     public function sendCorrectionRequest(Request $request, $ds_id)
     {
         $request->validate([
+            'pictures' => 'required|array|min:1',
             'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -77,10 +78,6 @@ class CorrectionRequestController extends Controller
         $correctionRequest->ds_id = $ds->id;
         $correctionRequest->status = 'pending';
         $correctionRequest->pictures = 'null'; // to avoid 'Array to string conversion' error
-        // set grade to null
-        if ($ds->grade) {
-            $correctionRequest->grade = $ds->grade;
-        }
         $correctionRequest->grade = 0;
         $correctionRequest->save();
 

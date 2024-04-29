@@ -156,6 +156,8 @@ Route::middleware('auth')->group(function () {
         // verify et unverify
         Route::patch('/user/{id}/verify', [UserController::class, 'verify'])->name('user.verify');
         Route::patch('/user/{id}/unverify', [UserController::class, 'unverify'])->name('user.unverify');
+        // reset last_ds_generated_at
+        Route::patch('/user/{id}/resetLastDSGeneratedAt', [UserController::class, 'resetLastDSGeneratedAt'])->name('user.resetLastDSGeneratedAt');
     });
 });
 

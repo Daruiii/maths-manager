@@ -26,7 +26,6 @@
 
         <form action="{{ route('correctionRequest.sendCorrectionRequest', ['ds_id' => $ds->id]) }}" method="POST" id="correctionRequestForm" enctype="multipart/form-data">
             @csrf
-
             <div class="form-group">
                 <x-multiple-file-input-carousel type="file" name="pictures[]" id="images" />
             </div>

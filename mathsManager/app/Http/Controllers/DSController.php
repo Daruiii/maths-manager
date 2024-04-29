@@ -237,7 +237,18 @@ class DSController extends Controller
             return $exercise['id'];
         }, $exercisesDS);
 
-        if ($ds == null) {
+        $user = Auth::user();
+
+        if ($ds == null) { // if we are creating a new DS
+          
+            // check if user last_ds_generated_at was today
+            if ($user->last_ds_generated_at != null ){
+                $last_ds_generated_at = new \DateTime($user->last_ds_generated_at);
+                $today = new \DateTime();
+                if ($last_ds_generated_at->format('Y-m-d') == $today->format('Y-m-d')) {
+                return redirect()->route('ds.create')->with('error', 'Vous avez déjà généré un DS aujourd\'hui');
+            }
+            }
             $ds = new DS;
         }
         $ds->type_bac =  $request->has('type_bac') ? true : false;
@@ -253,6 +264,9 @@ class DSController extends Controller
         // $ds->chapters()->attach($request->chapters);
         $ds->multipleChapters()->attach($multiple_chapters);
         $ds->exercisesDS()->attach($exercisesDS);
+
+        $user->last_ds_generated_at = now();
+        $user->save();
 
         return $ds;
     }
@@ -310,6 +324,6 @@ class DSController extends Controller
         $ds = DS::find($id);
         $ds->delete();
 
-        return redirect()->route('ds.myDS', Auth::id());
+        return redirect()->route('ds.index');
     }
 }

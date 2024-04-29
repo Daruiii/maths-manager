@@ -29,12 +29,30 @@
                         </g>
                     </svg>
                 </a> --}}
-                <a href="{{ route('ds.create') }}"
-                    class="bg-blue-100 rounded-lg p-2 link w-44 text-center hover:bg-blue-200 shadow-md transition duration-300">
-                    Générer un devoir
-                </a>
+                @php
+                $last_ds = new DateTime(Auth::user()->last_ds_generated_at);
+                @endphp
+                @if (Auth::user()->last_ds_generated_at == null || date('Y-m-d') != $last_ds->format('Y-m-d'))
+                    <a href="{{ route('ds.create') }}"
+                        class="bg-blue-100 rounded-lg p-2 link w-44 text-center hover:bg-blue-200 shadow-md transition duration-300">
+                        Générer un devoir
+                    </a>
+                @else
+                 {{-- bouton disabled --}}
+                    <button
+                        class="bg-blue-100 rounded-lg p-2 link w-44 text-center hover:bg-blue-200 shadow-md transition duration-300"
+                        disabled>
+                        Générer un devoir
+                    </button>
+                @endif
             </div>
         </div>
+        {{-- error session display in the middle --}}
+        @if (session('error'))
+            <div class="flex justify-center items-center w-8/12 h-10 bg-red-100 rounded-lg p-2 my-3">
+                <h2 class="text-red-600">{{ session('error') }}</h2>
+            </div>
+        @endif
         @foreach ($dsList as $ds)
             {{-- admin --}}
             @if (Auth::user()->role == 'admin')
