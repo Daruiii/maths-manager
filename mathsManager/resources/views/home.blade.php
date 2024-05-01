@@ -24,8 +24,8 @@
                 </div>
             @else
                 <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
-                    <h2 class="text-2xl font-bold text-center">Bienvenue sur Maths Manager</h2>
-                    <p class="mt-4 text-lg">Vous trouverez sur ce site des exercices, des quizz, des fiches récapitulatives de cours sur
+                    <h2 class="text-base font-bold text-center">Bienvenue sur Maths Manager</h2>
+                    <p class="mt-4 text-sm">Vous trouverez sur ce site des exercices, des quizz, des fiches récapitulatives de cours sur
                         tous les chapitres des classes de Première et Terminale.
                         Les exercices ne disposant pas de correction, vous aurez la possibilité d’envoyer
                         votre travail afin d’obtenir une correction de ma part.
@@ -40,7 +40,7 @@
                         à toutes ces fonctionnalités !</p>
                 </div>
             @endif
-            <div class="flex flex-col w-full md:w-1/4 bg-[#FBF7F0] p-6 rounded-lg">
+            <div class="flex flex-col w-full md:w-1/5 bg-[#FBF7F0] p-6 rounded-lg">
                 <h2 class="text-base font-bold text-center">Qui suis-je ?</h2>
                 <p class="mt-4 text-sm">Après deux années de classes
                     préparatoires MPSI, MP*

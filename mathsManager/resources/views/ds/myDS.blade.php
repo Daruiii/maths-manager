@@ -53,6 +53,7 @@
                 <h2 class="text-red-600">{{ session('error') }}</h2>
             </div>
         @endif
+        <div class="flex row justify-center align-center flex-wrap gap-8 w-8/12">
         @foreach ($dsList as $ds)
             {{-- admin --}}
             @if (Auth::user()->role == 'admin')
@@ -103,98 +104,15 @@
                     </form>
                 </div>
             @endif
-            <div class="flex justify-start flex-col items-center w-5/6 mb-3 bg-white shadow-md rounded-lg p-4 flex-shrink-0">
-                <div class="flex items-center w-full p-2">
-                    <h2 class="text-sm font-bold w-full">Devoir du {{ $ds->created_at->format('d/m/Y') }}.</h2>
-                    @php
-                        $hours = 0;
-                        $time = $ds->time;
-                        while ($time > 60) {
-                            $hours++;
-                            $time -= 60;
-                        }
-                        // get the timer time hours:minutes:seconds
-                        $timerHours = 0;
-                        $timerMinutes = 0;
-                        $timer = $ds->timer;
-                        while ($timer > 3600) {
-                            $timerHours++;
-                            $timer -= 3600;
-                        }
-                        while ($timer > 60) {
-                            $timerMinutes++;
-                            $timer -= 60;
-                        }
-                    @endphp
-                    <h2 class="flex text-sm w-full flex-start">{{ $ds->exercises_number }} exercice{{ $ds->exercises_number > 1 ? 's' : '' }} -
-                        {{ $hours ? $hours . 'h' : '' }} {{ $time ? $time . 'min' : '' }}</h2>
-                    {{--  si status break, ongoing, finish, finishedLate, correction_in_progress, corrected --}}
-
-                    @if ($ds->status == 'not_started')
-                        <div class="flex justify-end items-center w-full">
-                            <a href="{{ route('ds.start', $ds->id) }}"
-                                class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300 truncate">
-                                Commencer
-                            </a>
-                        </div>
-                    @elseif ($ds->status == 'ongoing')
-                        <div class="flex justify-end items-center w-full gap-1">
-                            <h2 class="text-sm">{{ $timerHours ? $timerHours . 'h' : '' }}
-                                {{ $timerMinutes ? $timerMinutes . 'min et' : '' }}
-                                {{ $timer ? $timer . 's restantes' : '' }}</h2>
-                            <a href="{{ route('ds.start', $ds->id) }}"
-                                class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300 truncate">
-                                Continuer
-                            </a>
-                        </div>
-                    @elseif ($ds->status == 'finished')
-                        <div class="flex justify-end items-center w-full">
-                            <a href="{{ route('correctionRequest.showCorrectionRequestForm', $ds->id) }}"
-                                class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
-                                Envoyer pour correction
-                            </a>
-                        </div>
-                    @elseif ($ds->status == 'sent')
-                        <div class="flex justify-end items-center w-full">
-                            <h2 class="text-sm">Correction en cours ... </h2>
-                            <a href="{{ route('correctionRequest.show', $ds->id) }}"
-                                class="bg-blue-100 rounded-lg p-2 text-sm link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
-                                Voir ma demande
-                            </a>
-                        </div>
-                    @elseif ($ds->status == 'corrected')
-                        {{-- href="{{ route('ds.show', $ds->id) }}" --}}
-                        <div class="flex justify-end items-center w-full gap-1">
-                            {{-- if grade <10 its red else green --}}
-                            @if ($ds->correctionRequest->grade < 10)
-                                <h2 class="text-sm text-red-500">{{ $ds->correctionRequest->grade }}/20</h2>
-                            @else
-                                <h2 class="text-sm text-green-500">{{ $ds->correctionRequest->grade }}/20</h2>
-                            @endif
-                            <a href="{{ route('correctionRequest.show', $ds->id) }}"
-                                class="bg-blue-100 rounded-lg p-2 link w-auto text-center hover:bg-blue-200 shadow-md transition duration-300">
-                                Voir la correction
-                            </a>
-                        </div>
-                    @endif
+            <div class="ds-card">
+                <div class="ds-card-image"></div>
+                  <div class="ds-card-description">
+                    <p class="ds-text-title"> Card Title</p>
+                    <p class="ds-text-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+                  </div>
                 </div>
-                <div class="flex justify-between items-end w-full max-w-5xl">
-                    <div class="flex gap-2 ">
-                        @foreach ($ds->exercisesDS as $exercise)
-                            <h3 class="text-xs cmu font-bold p-1 rounded-lg w-auto text-center vertical-center hover:bg-blue-200 shadow-md transition duration-300 truncate max-w-1/2"
-                                style="background-color: {{ $exercise->multipleChapter->theme }};">
-                                {{ $exercise->multipleChapter->title }}</h3>
-                        @endforeach
-                    </div>
-                    @if ($ds->type_bac)
-                        <h2 class="text-xs font-bold">Type Bac </h2>
-                    @endif
-                    @if ($ds->harder_exercises)
-                        <h2 class="text-xs font-bold">Approfondissement</h2>
-                    @endif
-                </div>
-            </div>
         @endforeach
+        </div>
     </div>
     {{-- reload the page one time when we arrive on the page --}}
 @endsection
