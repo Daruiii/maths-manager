@@ -35,7 +35,7 @@
                         Un générateur de DS vous permet de concevoir de manière automatique et aléatoire
                         un contrôle personnalisé en fonction de la difficulté, du temps et des chapitres
                         sélectionnés.</p>
-                    <p class="mt-4 text-sm"><a href="{{ route('register') }}" class="underline font-bold">Connectez-vous
+                    <p class="mt-4 text-sm"><a href="{{ route('login') }}" class="underline font-bold">Connectez-vous
                         </a> et contactez <a href="mailto:maxime@mathsmanager.fr" class="underline font-bold">Maxime</a> pour accéder
                         à toutes ces fonctionnalités !</p>
                 </div>
