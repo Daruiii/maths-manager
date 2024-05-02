@@ -93,9 +93,18 @@
                             </div>
                         @elseif ($ds->status == 'ongoing')
                             <div class="flex justify-center items-center w-full">
-                                <x-button-arrow-continue href="{{ route('ds.start', $ds->id) }}">
+                                {{-- <x-button-arrow-continue href="{{ route('ds.start', $ds->id) }}">
                                     {{ __('Continuer') }}
-                                </x-button-arrow-continue>
+                                </x-button-arrow-continue> --}}
+                                <a href="{{ route('ds.start', $ds->id) }}"
+                                    class=" flex justify-between items-center bg-[#fda054] px-3 py-3 rounded-lg mb-2 text-white tracking-wider hover:bg-[#dcb470] hover:scale-105 duration-500 w-[150px] text-xs">
+                                    {{ __('Continuer') }}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" class="w-5 h-5 animate-bounce">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"></path>
+                                    </svg>
+                                </a>
                             </div>
                         @elseif ($ds->status == 'finished')
                             <div class="flex justify-end items-center w-full">
@@ -152,14 +161,17 @@
                         {{ $ds->status == 'finished' ? 'bg-blue-50' : '' }}
                         {{ $ds->status == 'sent' ? 'bg-gray-200' : '' }}
                         {{ $ds->status == 'corrected' ? 'bg-gray-200' : '' }}">
-                        <p class="text-xs text-center font-bold"> {{ $ds->type_bac ? 'Type Bac' : 'Devoir' }} n° {{ $index + 1 }}</p>
+                        <p class="text-xs text-center font-bold"> {{ $ds->type_bac ? 'Type Bac' : 'Devoir' }} n°
+                            {{ $index + 1 }}</p>
                         <div class="ds-text-body">
                             @if ($ds->status == 'corrected')
                                 <div class="flex row justify-center items-center gap-1 border-y border-gray-300 mb-1">
                                     @if ($ds->correctionRequest->grade < 10)
-                                        <h2 class="text-base text-red-500 sign-painter">{{ $ds->correctionRequest->grade }}/20</h2>
+                                        <h2 class="text-base text-red-500 sign-painter">
+                                            {{ $ds->correctionRequest->grade }}/20</h2>
                                     @else
-                                        <h2 class="text-base text-green-500 sign-painter">{{ $ds->correctionRequest->grade }}/20</h2>
+                                        <h2 class="text-base text-green-500 sign-painter">
+                                            {{ $ds->correctionRequest->grade }}/20</h2>
                                     @endif
                                 </div>
                             @elseif ($ds->status == 'sent')
