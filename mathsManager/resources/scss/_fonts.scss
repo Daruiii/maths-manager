@@ -1,6 +1,15 @@
 // import and name all my font here 
 
 @font-face {
+    font-family: 'sign painter';
+    src: url('../fonts/sign-painter/signpainter_housescript.ttf') format('truetype');
+}
+
+.sign-painter {
+    font-family: 'sign painter', sans-serif;
+}
+
+@font-face {
     font-family: 'Comfortaa';
     src: url('../fonts/comfortaa/Comfortaa-Regular.ttf') format('truetype');
 }

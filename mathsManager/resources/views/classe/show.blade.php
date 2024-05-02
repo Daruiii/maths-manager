@@ -77,7 +77,7 @@
                     </div>
                     <div x-show="open" x-cloak class="px-4 pt-2 pb-4">
                         <div class="flex items-start space-x-2 mb-4">
-                            <div class="flex flex-col w-2/3 bg-gray-100 p-4 rounded-lg">
+                            <div class="flex flex-col w-11/12 bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
                                     <p class="comfortaa text-sm truncate">Exercices par thème :</p>
                                     @auth
@@ -158,7 +158,7 @@
                                 </div>
                             </div>
                             {{-- Boutons Quiz et Récap ici --}}
-                            <div class="flex flex-col space-y-2 w-1/3">
+                            <div class="flex flex-col space-y-2 w-auto">
                                 <a href="#quiz"
                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
                                     Quiz
