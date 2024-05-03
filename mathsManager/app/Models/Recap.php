@@ -14,5 +14,9 @@ class Recap extends Model
         return $this->belongsTo(Chapter::class);
     }
 
+    public function recapParts()
+    {
+        return $this->hasMany(RecapPart::class);
+    }
     use HasFactory;
 }

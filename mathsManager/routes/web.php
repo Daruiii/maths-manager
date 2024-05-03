@@ -85,6 +85,23 @@ Route::middleware('auth')->group(function () {
 
 // Récap routes
 Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/recap/create/{id}', [RecapController::class, 'create'])->name('recap.create');
+        Route::post('/recap', [RecapController::class, 'store'])->name('recap.store');
+        Route::delete('/recap/{id}', [RecapController::class, 'destroy'])->name('recap.destroy');
+        //  routes récap part
+        Route::get('/recap/{id}/createPart', [RecapController::class, 'createPart'])->name('recap.createPart');
+        Route::post('/recapPart', [RecapController::class, 'storePart'])->name('recapPart.store');
+        Route::get('/recapPart/{id}/edit', [RecapController::class, 'editPart'])->name('recapPart.edit');
+        Route::patch('/recapPart/{id}', [RecapController::class, 'updatePart'])->name('recapPart.update');
+        Route::delete('/recapPart/{id}', [RecapController::class, 'destroyPart'])->name('recapPart.destroy');
+        // route récap block part
+        Route::get('/recapPart/{id}/createBlock', [RecapController::class, 'createPartBlock'])->name('recapPartBlock.createBlock');
+        Route::post('/recapPartBlock', [RecapController::class, 'storePartBlock'])->name('recapPartBlock.store');
+        Route::get('/recapPartBlock/{id}/edit', [RecapController::class, 'editPartBlock'])->name('recapPartBlock.edit');
+        Route::patch('/recapPartBlock/{id}', [RecapController::class, 'updatePartBlock'])->name('recapPartBlock.update');
+        Route::delete('/recapPartBlock/{id}', [RecapController::class, 'destroyPartBlock'])->name('recapPartBlock.destroy');
+    });
     Route::middleware([IsVerified::class])->group(function () {
     Route::get('/recap/{id}', [RecapController::class, 'show'])->name('recap.show');
     });

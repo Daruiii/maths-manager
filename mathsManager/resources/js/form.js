@@ -14,6 +14,21 @@ export function loaderForm() {
 }
 
 export function renderCodeMirror() {
+
+    var contentID = document.getElementById('content');
+    if (contentID) {
+        var content = CodeMirror.fromTextArea(contentID, {
+            lineNumbers: true,
+            mode: 'stex',
+            theme: 'ttcn',
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
+            }
+        });
+    }
+
     var statementID = document.getElementById('statement');
     if (statementID) {
         var statement = CodeMirror.fromTextArea(statementID, {
