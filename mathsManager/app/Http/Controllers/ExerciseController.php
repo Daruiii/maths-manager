@@ -15,12 +15,14 @@ class ExerciseController extends Controller
     public function index()
     {
         $search = request()->get('search');
+                
+        $exercises = Exercise::orderBy('created_at', 'desc')->get();
         if ($search) {
             $exercises = Exercise::where('name', 'like', '%' . $search . '%')
                 ->orWhere('id', 'like', '%' . $search . '%')
                 ->get();
         } else {
-            $exercises = Exercise::all();
+            $exercises = Exercise::orderBy('created_at', 'desc')->get();
         }
         $subchapters = Subchapter::all();
         return view('exercise.index', compact('exercises', 'subchapters'));

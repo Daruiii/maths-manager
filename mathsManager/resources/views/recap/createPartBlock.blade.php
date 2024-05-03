@@ -29,8 +29,25 @@
 
                 {{-- color picker for theme --}}
                 <div class="form-group">
-                    <label for="theme" class="block text-sm font-medium mb-2 dark:text-white">Thème du bloc :</label>
+                    {{-- <label for="theme" class="block text-sm font-medium mb-2 dark:text-white">Thème du bloc :</label>
                     <input type="color" class="p-1 h-10 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700" id="theme" name="theme">
+                     --}}
+                    <label for="theme" class="block text-sm font-medium mb-2 dark:text-white">Thème du bloc :</label>
+                    <select class="form-control text-white font-bold
+                    " id="theme" name="theme" style="background-color: white;" onchange="changeBackground(this)">
+                        <option value="">Sélectionner une couleur</option>
+                        <option value="#ff6961">Théorèmes</option>
+                        <option value="#A9CBD7">Définitions</option>
+                        <option value="#B0F2B6">lemme</option>
+                        <option value="#CFCFC4">remarque</option>
+                    </select>
+                    <script>
+                        function changeBackground(select) {
+                            var selectedOption = select.options[select.selectedIndex];
+                            select.style.backgroundColor = selectedOption.value;
+                        }
+                    </script>
+                    </select>
                 </div>
 
                 <div class="form-group">
