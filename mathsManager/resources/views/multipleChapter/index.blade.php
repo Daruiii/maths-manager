@@ -5,9 +5,10 @@
     <h1 class="text-xl font-bold mb-4">Gestion des Chapitres</h1>
     
     <div class="mb-4">
-        <a href="{{ route('multiple_chapter.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        {{-- <a href="{{ route('multiple_chapter.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Ajouter un Chapitre
-        </a>
+        </a> --}}
+        <x-button-add href="{{ route('multiple_chapter.create') }}">Chapitre</x-button-add>
     </div>
 
     <div class="bg-white shadow-md rounded my-6">

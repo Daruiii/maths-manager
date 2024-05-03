@@ -16,7 +16,7 @@
             <a href="{{ route('ds.myDS', Auth::user()->id) }}" class="link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
             
                 @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('admin') }}" class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
+                    <a href="{{ route('admin') }}" class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">admin</a>
                 @endif
             @endauth
         </div>
@@ -56,7 +56,7 @@
         <a href="{{ route('ds.myDS', Auth::user()->id) }}" class="block link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
         
             @if (Auth::user()->role === 'admin')
-                <a href="{{ route('admin') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">Admin</a>
+                <a href="{{ route('admin') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">admin</a>
             @endif
             <a href="{{ route('profile.edit') }}" class="block bg-blue-100 rounded-lg p-3 link {{ request()->is("profile") ? 'active' : '' }}">Mon profil</a>
             <a href="{{ route('logout') }}" class="block bg-red-100 rounded-lg p-3 link" onclick="event.preventDefault(); document.getElementById('logout-form-small').submit();">Se déconnecter</a>

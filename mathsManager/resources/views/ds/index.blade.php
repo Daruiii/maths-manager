@@ -16,12 +16,13 @@
         </div>
         {{-- search bar --}}
         <div class="flex justify-between items-center mt-6">
-                <form method="GET" action="{{ route('ds.index') }}" class="flex space-x-4">
+                {{-- <form method="GET" action="{{ route('ds.index') }}" class="flex space-x-4">
                     <input type="text" name="search" class="form-input rounded-md shadow-sm mt-1 block w-full"
                         placeholder="Rechercher un DS...">
                     <button type="submit"
                         class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Rechercher</button>
-                </form>
+                </form> --}}
+                <x-search-bar-admin action="{{ route('ds.index') }}" placeholder="Rechercher un DS..." name="search" />
             </div>
          
 

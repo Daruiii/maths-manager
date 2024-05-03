@@ -15,6 +15,7 @@ use App\Http\Controllers\MultipleChapterController;
 use App\Http\Controllers\DSController;
 use App\Http\Middleware\IsVerified;
 use App\Http\Controllers\CorrectionRequestController;
+use App\Http\Controllers\RecapController;
 
 
 Route::get('/', function () {
@@ -79,6 +80,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/exercise/{id}/edit', [ExerciseController::class, 'edit'])->name('exercise.edit');
         Route::patch('/exercise/{id}', [ExerciseController::class, 'update'])->name('exercise.update');
         Route::delete('/exercise/{id}', [ExerciseController::class, 'destroy'])->name('exercise.destroy');
+    });
+});
+
+// Récap routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsVerified::class])->group(function () {
+    Route::get('/recap/{id}', [RecapController::class, 'show'])->name('recap.show');
     });
 });
 

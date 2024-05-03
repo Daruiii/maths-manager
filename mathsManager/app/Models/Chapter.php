@@ -13,7 +13,7 @@ class Chapter extends Model
 
     public function classe()
     {
-        return $this->belongsTo(Classe::class);
+        return $this->hasOne(Classe::class, 'id', 'class_id');
     }
 
     public function subchapters()
@@ -23,11 +23,16 @@ class Chapter extends Model
 
     public function quizzes()
     {
-        return $this->hasMany(Quizz::class);
+        return $this->hasMany(Quizze::class);
     }
 
     public function dsExercises()
     {
         return $this->belongsToMany(DsExercise::class, 'chapters_exercises_ds', 'chapter_id', 'exercise_ds_id');
+    }
+
+    public function recaps()
+    {
+        return $this->hasMany(Recap::class);
     }
 }

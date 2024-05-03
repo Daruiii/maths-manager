@@ -4,7 +4,7 @@
     {{-- Titre de la page un peu sur la gauche avec ecrit "Mes devoirs" --}}
     {{-- un bouton pour générer un nouveau DS --}}
     <div class="container mx-auto mb-8">
-        <div class="flex justify-start flex-col align-center w-9/12 mt-6 mb-2 ms-12">
+        <div class="flex justify-start flex-col align-center w-9/12 mt-6 mb-4 ms-12">
             <h1 class="text-xl cmu-bold">Mes devoirs</h1>
             <div class="flex row justify-start align-center">
                 @php
@@ -93,10 +93,10 @@
                             </div>
                         @elseif ($ds->status == 'ongoing')
                             <div class="flex justify-center items-center w-full">
-                                {{-- <x-button-arrow-continue href="{{ route('ds.start', $ds->id) }}">
+                                <x-button-arrow-continue href="{{ route('ds.start', $ds->id) }}">
                                     {{ __('Continuer') }}
-                                </x-button-arrow-continue> --}}
-                                <a href="{{ route('ds.start', $ds->id) }}"
+                                </x-button-arrow-continue>
+                                {{-- <a href="{{ route('ds.start', $ds->id) }}" btn qui bouge mais bug en prod
                                     class=" flex justify-between items-center bg-[#fda054] px-3 py-3 rounded-lg mb-2 text-white tracking-wider hover:bg-[#dcb470] hover:scale-105 duration-500 w-[150px] text-xs">
                                     {{ __('Continuer') }}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -104,7 +104,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"></path>
                                     </svg>
-                                </a>
+                                </a> --}}
                             </div>
                         @elseif ($ds->status == 'finished')
                             <div class="flex justify-end items-center w-full">

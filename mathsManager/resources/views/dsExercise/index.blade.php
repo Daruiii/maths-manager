@@ -8,18 +8,18 @@
                 <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices de DS ({{$dsExercises->count()}})</h2>
             </div>
             <div>
-                <a href="{{ route('ds_exercise.create') }}"
-                    class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Ajouter un exercice</a>
+                    <x-button-add href="{{ route('ds_exercise.create') }}">Exercice</x-button-add>
             </div>
         </div>
                {{-- Search form --}}
                <div class="flex justify-between items-center py-2">
-                <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-4">
+                {{-- <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-4">
                     <input type="text" name="search" class="form-input rounded-md shadow-sm mt-1 block w-full"
                         placeholder="Rechercher un exercice...">
                     <button type="submit"
                         class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Rechercher</button>
-                </form>
+                </form> --}}
+                <x-search-bar-admin action="{{ route('ds_exercises.index') }}" placeholder="Rechercher un exercice..." name="search" />
                 <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-4">
                     <select name="multiple_chapter_id" class="form-select rounded-md shadow-sm mt-1 block">
                         <option value="">Tous les chapitres duo</option>

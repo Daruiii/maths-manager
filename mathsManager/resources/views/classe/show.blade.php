@@ -9,10 +9,9 @@
             </div>
             @auth
                 @if (Auth::user()->role === 'admin')
-                    <a href= "{{ route('chapter.create', $classe->id) }}"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
-                        Ajouter un Chapitre
-                    </a>
+                    <x-button-add href="{{ route('chapter.create', $classe->id) }}">
+                        {{ __('Chapitre') }}
+                    </x-button-add>
                 @endif
             @endauth
         </div>
@@ -76,20 +75,27 @@
                         @endauth
                     </div>
                     <div x-show="open" x-cloak class="px-4 pt-2 pb-4">
-                        <div class="flex items-start space-x-2 mb-4">
-                            <div class="flex flex-col w-11/12 bg-gray-100 p-4 rounded-lg">
+                        <div class="flex flex-col items-start space-x-2 mb-4">
+                            <div class="flex items-center space-x-3 p-2 flex-wrap">
+                            @foreach ($chapter->recaps as $index => $recap)
+                                <x-button-recap href="{{ route('recap.show', $recap->id) }}">
+                                    {{ __('Récap') }}
+                                </x-button-recap>
+                            @endforeach
+                            @foreach ($chapter->quizzes as $index => $quiz)
+                                <x-button-quiz href="#quiz">
+                                    {{ __('Quiz') }}
+                                </x-button-quiz>
+                            @endforeach
+                            </div>
+                            <div class="flex flex-col w-full bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
                                     <p class="comfortaa text-sm truncate">Exercices par thème :</p>
                                     @auth
                                         @if (Auth::user()->role === 'admin')
-                                            <a href="{{ route('subchapter.create', ['id' => $chapter->id]) }}"
-                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                </svg>
-                                            </a>
+                                            <x-button-add href="{{ route('subchapter.create', ['id' => $chapter->id]) }}">
+                                                {{ __('Sous-chap') }}
+                                            </x-button-add>
                                         @endif
                                     @endauth
                                 </div>
@@ -156,17 +162,6 @@
                                         </div>
                                     @endforeach
                                 </div>
-                            </div>
-                            {{-- Boutons Quiz et Récap ici --}}
-                            <div class="flex flex-col space-y-2 w-auto">
-                                <a href="#quiz"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
-                                    Quiz
-                                </a>
-                                <a href="#recap"
-                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
-                                    Récap
-                                </a>
                             </div>
                         </div>
                     </div>

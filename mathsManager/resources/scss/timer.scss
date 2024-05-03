@@ -40,19 +40,19 @@
     position: fixed;
     top: 6.5rem;
     left: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: #48bb78;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    // width: 2.5rem;
+    // height: 2.5rem;
+    // padding: 0.5rem;
+    // border-radius: 0.5rem;
+    // background-color: #48bb78;
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
 }
 
-.pause-btn:hover {
-    background-color: #2f855a;
-}
+// .pause-btn:hover {
+//     background-color: #2f855a;
+// }
 
 .return-btn {
     display: flex;
@@ -182,8 +182,8 @@
         position: absolute;
         top : 7rem;
         left : 1.5rem;
-        width: 2rem;
-        height: 2rem;
+        // width: 2rem;
+        // height: 2rem;
     }
 
     .finish-btn {

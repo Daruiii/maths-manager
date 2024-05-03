@@ -42,7 +42,7 @@
             @endif
             <div class="flex flex-col w-full md:w-1/5 bg-[#FBF7F0] p-6 rounded-lg">
                 <h2 class="text-base font-bold text-center">Qui suis-je ?</h2>
-                <p class="mt-4 text-sm">Après deux années de classes
+                <p class="mt-4 text-xs">Après deux années de classes
                     préparatoires MPSI, MP*
                     j’ai intégré l’école d’ingénieur
                     ENSEEIHT. 
