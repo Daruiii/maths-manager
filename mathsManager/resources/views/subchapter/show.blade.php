@@ -51,20 +51,8 @@
                                     @auth @if (Auth::user()->role === 'admin')
                                             <div class="flex items-center space-x-2">
                                                 <x-button-edit href="{{ route('exercise.edit', ['id' => $ex->id]) }}" />
-                                                <form action="{{ route('exercise.destroy', $ex->id) }}" method="POST"
-                                                    class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="p-2 rounded-full text-red-500 hover:text-red-600"
-                                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet exercice ?');">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                </form>
+                                                <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}"
+                                                    entity="cet exercice" />
                                             </div>
                                         @endif @endauth
                                 </div>
@@ -79,19 +67,7 @@
                                     @if (Auth::user()->role === 'admin')
                                         <div class="flex row justify-end items-center h-2">
                                             <x-button-edit href="{{ route('exercise.edit', ['id' => $ex->id]) }}" />
-                                            <form action="{{ route('exercise.destroy', $ex->id) }}" method="POST"
-                                                class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="p-2 rounded-full text-red-500 hover:text-red-600"
-                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet exercice ?');">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}" entity="cet exercice" />
                                         </div>
                                     @endif
                                 @endauth

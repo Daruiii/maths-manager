@@ -65,16 +65,7 @@
                                                 class="text-indigo-600 hover:text-indigo-900">
                                                 Modifier la demande
                                             </a> --}}
-                                            <form action="{{ route('correctionRequest.destroy', $correctionRequest->ds_id) }}"
-                                                method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette demande de correction ?')"
-                                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                                 Rejeter
-                                                </button>
-                                            </form>
+                                            <x-button-delete href="{{ route('correctionRequest.destroy', $correctionRequest->ds_id) }}" entity="cette demande de correction" />
                                         </div>
                                     </td>
                                 </tr>

@@ -27,19 +27,7 @@
                                         Bloc
                                     </x-button-add>
                                     <x-button-edit href="{{ route('recapPart.edit', $recapPart->id) }}" />
-                                    <form method="POST" action="{{ route('recapPart.destroy', $recapPart->id) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce chapitre ?')"
-                                            class="p-2 rounded-full text-red-500 hover:text-red-600">
-                                            {{-- Icône de Suppression --}}
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    <x-button-delete href="{{ route('recapPart.destroy', $recapPart->id) }}" entity="cette partie" />
                                 </div>
                             @endif @endauth
                         </div>
@@ -63,20 +51,8 @@
                                         {{ $recapPartBlock->title }}</h5>
                                     @auth @if (Auth::user()->role === 'admin')
                                         <x-button-edit href="{{ route('recapPartBlock.edit', $recapPartBlock->id) }}" />
-                                        <form method="POST"
-                                            action="{{ route('recapPartBlock.destroy', $recapPartBlock->id) }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce bloc ?')"
-                                                class="p-2 rounded-full text-red-500 hover:text-red-600">
-                                                {{-- Icône de Suppression --}}
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </form>
+                                        <x-button-delete href="{{ route('recapPartBlock.destroy', $recapPartBlock->id) }}"
+                                            entity="ce bloc" />
                                     @endif @endauth
                                 </div>
                                 <div class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full"
