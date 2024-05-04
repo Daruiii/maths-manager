@@ -28,7 +28,7 @@
             </div>
             <p class="text-xs px-4 py-1 w-full">{{ $subchapter->description }}</p>
 
-            <div class="p-1 md:p-4 flex flex-col align-center justify-start w-full">
+            <div class=" md:p-4 flex flex-col items-center justify-center w-full">
                 @foreach ($exercises as $index => $ex)
                     {{-- @php
                         $exerciseId = $ex->id;
@@ -43,7 +43,7 @@
                             return Str::endsWith($file, '.png');
                         });
                     @endphp --}}
-                    <div x-data="{ showClue: false, showSolution: false }" class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full">
+                    <div x-data="{ showClue: false, showSolution: false }" class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-10/12">
                         <div class="p-4">
                             @if ($ex->name)
                                 <div class="flex row justify-end items-center h-2">
@@ -132,13 +132,13 @@
 
                                     <div x-show="showClue" class="bg-[#D4D68D] w-full p-2 rounded-lg">
                                         {{-- <h3 class="exercise-cc font-bold">Indice:</h3> --}}
-                                        <div class="clue-content text-sm p-4 cmu-ti">
+                                        <div class="clue-content text-sm p-4 cmu-serif">
                                             {!! $ex->clue !!}
                                         </div>
                                     </div>
                                     <div x-show="showSolution" class="exercise-cc bg-[#D68D8D] w-full p-2 rounded-lg">
                                         {{-- <h3 class="exercise-cc font-bold">Correction:</h3> --}}
-                                        <div class="solution-content text-sm p-4">
+                                        <div class="solution-content text-sm p-4 cmu-serif">
                                             {!! $ex->solution !!}
                                         </div>
                                         {{-- @foreach ($solutionPngFiles as $pngFile)
