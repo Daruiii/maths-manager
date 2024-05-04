@@ -31,12 +31,22 @@
             @endauth
         @endif
                 @if ($ds->status == 'ongoing')
-                    <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}" >
-                        @csrf
-                        <button type="submit" onclick="if (!confirm('Êtes-vous sûr de vouloir terminer ce DS ?')) return false;" class="btn btn-primary">
-                            Terminer
-                        </button>
-                    </form> 
+                <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}" >
+                    @csrf
+                    <button type="button" class="btn btn-primary" onclick="showConfirmation()">
+                        Terminer
+                    </button>
+                </form>
+                
+                <script>
+                    function showConfirmation() {
+                        // Afficher une boîte de dialogue personnalisée
+                        if (confirm('Êtes-vous sûr de vouloir terminer ce DS ?')) {
+                            // Si l'utilisateur confirme, soumettre le formulaire
+                            document.querySelector('.finish-btn').submit();
+                        }
+                    }
+                </script>
                 @endif
                 <div
                     class="flex flex-col align-center items-center justify-center my-5 bg-white w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
