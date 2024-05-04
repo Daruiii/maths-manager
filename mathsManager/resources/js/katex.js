@@ -1,5 +1,5 @@
 export function renderKatex() {
-    const elements = document.querySelectorAll('.solution-content, .clue-content, .exercise-content');
+    const elements = document.querySelectorAll('.solution-content, .clue-content, .exercise-content, .example-content, .bloc-content');
     if (elements.length === 0) {
         return;
     }

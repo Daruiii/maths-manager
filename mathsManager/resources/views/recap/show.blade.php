@@ -64,8 +64,8 @@
                         @endif @endauth
                             </div>
                         <div class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full" style="border : 2px solid {{ $recapPartBlock->theme }}">
-                            <div class="flex flex-col justify-center w-full p-2 my-2 exercise-content">
-                                <p class=" ms-12 text-sm md:text-sm w-2/3 break-words"> {!! $recapPartBlock->content !!}</p>
+                            <div class="flex flex-col justify-center w-full p-2 my-2 bloc-content">
+                                <p class="p-2 cmu-serif text-base w-2/3 break-words"> {!! $recapPartBlock->content !!}</p>
                             </div>
 
                             {{-- Exemple --}}
@@ -73,7 +73,7 @@
                                     <div class="flex justify-between items-center">
                                         @if ($recapPartBlock->example)
                                             <button @click="showExample = !showExample" class="dropdownCC flex row text-xs font-bold">
-                                                Voir l'exemple
+                                                Exemple
                                                 <svg :class="{ 'rotate-180': !showExample }" class="transition-transform"
                                                     width="15px" height="15px" viewBox="0 0 24 24" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +92,7 @@
                                     </div>
                                     <div x-show="showExample" class="bg-gray-200 w-full p-2 rounded-lg">
                                         {{-- <h3 class="exercise-cc font-bold">Exemple :</h3> --}}
-                                        <div class="clue-content text-sm p-4 cmu-ti">
+                                        <div class="example-content  text-base p-4 cmu-ti">
                                             {!! $recapPartBlock->example !!}
                                         </div>
                                     </div>

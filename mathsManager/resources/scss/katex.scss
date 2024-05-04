@@ -15,8 +15,12 @@
     font-weight: 100;
 }
 
-.exercise-content span, .solution-content span {
+.exercise-content span, .solution-content span, .clue-content span {
     font-size: 0.875rem;
+}
+
+.bloc-content span, .example-content span {
+    font-size : 1rem;
 }
 
 .textup {
