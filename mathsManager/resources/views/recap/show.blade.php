@@ -8,7 +8,7 @@
                 .p6 {
                     padding: 1.5rem;
                 }
-                @media (min-width: 768px) {
+                @media (max-width: 768px) {
                     .p6 {
                         padding: 0;
                     }
