@@ -114,7 +114,7 @@
                                 <div class="border-t w-full p-2 rounded-b-lg border-gray-300">
                                     <div class="flex justify-between items-center">
                                         @if ($ex->clue)
-                                            <button @click="showClue = !showClue" class="dropdownCC flex row text-xs font-bold">
+                                            <button @click="showClue = !showClue" class=" flex row text-xs font-bold">
                                                 Indice
                                                 <svg :class="{ 'rotate-180': !showClue }" class="transition-transform"
                                                     width="15px" height="15px" viewBox="0 0 24 24" fill="none"
@@ -135,7 +135,7 @@
                                         @endif
                                         @if ($ex->solution)
                                             <button @click="showSolution = !showSolution"
-                                                class="dropdownCC flex row text-xs font-bold">
+                                                class=" flex row text-xs font-bold">
                                                 Correction
                                                 <svg :class="{ 'rotate-180': !showSolution }" class="transition-transform"
                                                     width="15px" height="15px" viewBox="0 0 24 24" fill="none"
