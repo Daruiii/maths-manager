@@ -72,7 +72,7 @@
                                 <div class="border-t w-full p-2 rounded-b-lg border-gray-300">
                                     <div class="flex justify-between items-center">
                                         @if ($recapPartBlock->example)
-                                            <button @click="showExample = !showExample" class="dropdownCC flex row text-xs font-bold">
+                                            <button @click="showExample = !showExample" class=" flex row text-xs font-bold">
                                                 Exemple
                                                 <svg :class="{ 'rotate-180': !showExample }" class="transition-transform"
                                                     width="15px" height="15px" viewBox="0 0 24 24" fill="none"
