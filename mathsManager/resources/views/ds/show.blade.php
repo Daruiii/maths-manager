@@ -32,11 +32,12 @@
         @endif
                 {{-- ask confirmation before redirecting the route --}}
                 @if ($ds->status == 'ongoing')
-                    <button class="finish-btn" onclick="return confirm('Êtes-vous sûr de vouloir terminer ce DS ?');">
-                        <a href="{{ route('ds.finish', ['id' => $ds->id]) }}">
+                    <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir terminer ce DS ?');">
+                        @csrf
+                        <button type="submit">
                             Terminer
-                        </a>
-                    </button>
+                        </button>
+                    </form> 
                 @endif
                 <div
                     class="flex flex-col align-center items-center justify-center my-5 bg-white w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
