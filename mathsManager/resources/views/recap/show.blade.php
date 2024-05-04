@@ -3,7 +3,17 @@
 @section('content')
     <div class="container mx-auto">
         <x-back-btn path="{{ route('classe.show', $recap->chapter->classe->level) }}" />
-        <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-0 md:p-6 rounded-lg my-8">
+        <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p6 rounded-lg my-8">
+            <style>
+                .p6 {
+                    padding: 1.5rem;
+                }
+                @media (min-width: 768px) {
+                    .p6 {
+                        padding: 0;
+                    }
+                }
+            </style>
             {{-- adm btn --}}
             @auth @if (Auth::user()->role === 'admin')
                 <x-button-add href="{{ route('recap.createPart', $recap->id) }}">
@@ -15,9 +25,9 @@
                     {{ $recap->chapter->title }}</h2>
             </div>
 
-            <div class="flex flex-col aligns-center p-0 md:p-2 my-2 w-full">
+            <div class="flex flex-col aligns-center md:p-2 my-2 w-full">
                 @foreach ($recap->recapParts as $index => $recapPart)
-                    <div class="flex flex-col justify-center w-full p-0 md:p-2 my-2 ">
+                    <div class="flex flex-col justify-center w-full md:p-2 my-2 ">
                         <div class="flex justify-between items-center">
                             <h3 class="ms-12 text-xl md:text-2xl font-bold break-words"> {{ $index + 1 }}.
                                 {{ $recapPart->title }}</h3>
