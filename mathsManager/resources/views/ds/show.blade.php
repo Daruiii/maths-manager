@@ -31,7 +31,7 @@
             @endauth
         @endif
                 @if ($ds->status == 'ongoing')
-                <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}" >
+                <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}">
                     @csrf
                     <button type="button" class="btn btn-primary" onclick="showConfirmation()">
                         Terminer
@@ -40,11 +40,18 @@
                 
                 <script>
                     function showConfirmation() {
-                        // Afficher une boîte de dialogue personnalisée
-                        if (confirm('Êtes-vous sûr de vouloir terminer ce DS ?')) {
-                            // Si l'utilisateur confirme, soumettre le formulaire
-                            document.querySelector('.finish-btn').submit();
-                        }
+                        Swal.fire({
+                            title: 'Êtes-vous sûr de vouloir terminer ce DS ?',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Oui',
+                            cancelButtonText: 'Non'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Si l'utilisateur confirme, soumettre le formulaire
+                                document.querySelector('.finish-btn').submit();
+                            }
+                        });
                     }
                 </script>
                 @endif
