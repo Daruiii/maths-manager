@@ -31,7 +31,19 @@
                 {{-- color picker for theme --}}
                 <div class="form-group">
                     <label for="theme" class="block text-sm font-medium mb-2 dark:text-white">Thème du bloc :</label>
-                    <input type="color" class="p-1 h-10 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700" id="theme" name="theme" value="{{ $recapPartBlock->theme }}">
+                    <select class="form-control text-white font-bold" id="theme" name="theme" onchange="changeBackground(this)" style="background-color: {{ $recapPartBlock->theme }};">
+                        <option value="">Sélectionner un thème</option>
+                        <option value="#ff6961" {{ $recapPartBlock->theme == '#ff6961' ? 'selected' : '' }}>Théorèmes</option>
+                        <option value="#A9CBD7" {{ $recapPartBlock->theme == '#A9CBD7' ? 'selected' : '' }}>Définitions</option>
+                        <option value="#B0F2B6" {{ $recapPartBlock->theme == '#B0F2B6' ? 'selected' : '' }}>lemme</option>
+                        <option value="#CFCFC4" {{ $recapPartBlock->theme == '#CFCFC4' ? 'selected' : '' }}>remarque</option>
+                    </select>
+                    <script>
+                        function changeBackground(select) {
+                            var selectedOption = select.options[select.selectedIndex];
+                            select.style.backgroundColor = selectedOption.value;
+                        }
+                    </script>
                 </div>
 
                 <div class="form-group">

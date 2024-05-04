@@ -35,7 +35,7 @@
                     <label for="theme" class="block text-sm font-medium mb-2 dark:text-white">Thème du bloc :</label>
                     <select class="form-control text-white font-bold
                     " id="theme" name="theme" style="background-color: white;" onchange="changeBackground(this)">
-                        <option value="">Sélectionner une couleur</option>
+                        <option value="">Sélectionner un thème</option>
                         <option value="#ff6961">Théorèmes</option>
                         <option value="#A9CBD7">Définitions</option>
                         <option value="#B0F2B6">lemme</option>

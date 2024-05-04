@@ -16,6 +16,7 @@ class DSController extends Controller
     public function index()
     {
         // search func by user name 
+        $dsList = DS::orderBy('created_at', 'desc')->get();
         if (request()->query('search')) {
             $dsList = DS::where('type_bac', 'like', '%' . request()->query('search') . '%')
                 ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
@@ -26,7 +27,7 @@ class DSController extends Controller
                 ->get();
         }
         else {
-            $dsList = DS::all();
+            $dsList = DS::orderBy('created_at', 'desc')->get();
         }
         return view('ds.index', compact('dsList'));
     }

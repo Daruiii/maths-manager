@@ -16,7 +16,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('recapPartBlock.createBlock') }}" method="POST" id="exerciseForm">
+            <form action="{{ route('exercise.store') }}" method="POST" id="exerciseForm">
                 @csrf
                 <div class="form-group">
                     <label for="name">Nom de l'Exercice (optionnel):</label>
