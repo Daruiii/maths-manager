@@ -195,15 +195,18 @@ class RecapController extends Controller
             'title' => 'required',
             'theme' => 'nullable',
             'content' => 'nullable',
+            'example' => 'nullable',
             'recap_part_id' => 'required'
         ]);
 
         // Création du bloc de partie de récap
         $recapPartBlock = new RecapPartBlock();
         $recapPartBlock->title = $request->title;
-        $recapPartBlock->theme = $request->theme;
+        $recapPartBlock->theme = $request->theme ?? 'grey';
         $recapPartBlock->latex_content = $request->content;
+        $recapPartBlock->latex_example = $request->example;
         $recapPartBlock->content = $this->convertCustomLatexToHtml($request->content);
+        $recapPartBlock->example = $this->convertCustomLatexToHtml($request->example);
         $recapPartBlock->recap_part_id = $request->recap_part_id;
         $recapPartBlock->save();
 
@@ -224,6 +227,8 @@ class RecapController extends Controller
         $request->validate([
             'title' => 'required',
             'theme' => 'nullable',
+            'example' => 'nullable',
+            'latex_example' => 'nullable',
             'content' => 'nullable',
             'latex_content' => 'nullable'
         ]);
@@ -231,7 +236,9 @@ class RecapController extends Controller
         // Mise à jour du bloc de partie de récap
         $recapPartBlock = RecapPartBlock::find($id);
         $recapPartBlock->title = $request->title;
-        $recapPartBlock->theme = $request->theme;
+        $recapPartBlock->theme = $request->theme ?? 'grey';
+        $recapPartBlock->latex_example = $request->example;
+        $recapPartBlock->example = $this->convertCustomLatexToHtml($request->example);
         $recapPartBlock->latex_content = $request->content;
         $recapPartBlock->content = $this->convertCustomLatexToHtml($request->content);
         $recapPartBlock->save();

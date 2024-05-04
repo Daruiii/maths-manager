@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class RecapPartBlock extends Model
 {
-    protected $fillable = ['recap_part_id', 'title', 'theme', 'content', 'latex-content'];
+    protected $fillable = ['recap_part_id', 'title', 'theme', 'content', 'latex-content', 'example', 'latex_example'];
 
     public function recapPart()
     {

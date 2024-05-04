@@ -20,7 +20,7 @@
             @method('PATCH')
             <div class="form-group">
                 <label for="title">Titre </label>
-                <input type="text" class="form-control" id="title" name="title" value="{{ $recapPart->title }}">
+                <input type="text" class="form-control" id="title" name="title" value="{{ $recapPart->title }}" required>
             </div>
 
             {{-- desc --}}

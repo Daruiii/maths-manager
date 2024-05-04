@@ -20,7 +20,7 @@
                 @csrf
                 <div class="form-group">
                     <label for="title">Titre du bloc :</label>
-                    <input type="text" class="form-control" id="title" name="title"
+                    <input type="text" class="form-control" id="title" name="title" required
                         placeholder="Nom de l'exercice">
                 </div>
 
@@ -53,6 +53,11 @@
                 <div class="form-group">
                     <label for="content">Contenu du bloc (LaTeX):</label>
                     <textarea class="form-control" id="content" name="content" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="example">Exemple (LaTeX/optionnel) :</label>
+                    <textarea class="form-control" id="clue" name="example" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn-form">Ajouter le bloc</button>

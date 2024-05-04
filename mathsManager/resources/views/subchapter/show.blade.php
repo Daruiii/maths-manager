@@ -30,19 +30,6 @@
 
             <div class="p-1 md:p-4 flex flex-col align-center justify-start w-full">
                 @foreach ($exercises as $index => $ex)
-                    {{-- @php
-                        $exerciseId = $ex->id;
-                        $exerciseFiles = Storage::disk('public')->files("latex_output/exercise_{$exerciseId}/exercise");
-                        $exercisePngFiles = array_filter($exerciseFiles, function ($file) {
-                            return Str::endsWith($file, '.png');
-                        });
-                        $solutionFiles = Storage::disk('public')->files(
-                            "latex_output/exercise_{$exerciseId}/correction",
-                        );
-                        $solutionPngFiles = array_filter($solutionFiles, function ($file) {
-                            return Str::endsWith($file, '.png');
-                        });
-                    @endphp --}}
                     <div x-data="{ showClue: false, showSolution: false }" class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full">
                         <div class="p-4">
                             @if ($ex->name)
@@ -100,15 +87,6 @@
                                         {{ $ex->id }}.</span> {!! $ex->statement !!}
                                 </div>
                             @endif
-
-                            {{-- @foreach ($exercisePngFiles as $pngFile)
-                                <div class="pdf-container">
-                                    <img src="{{ asset('storage/' . $pngFile) }}" alt="Exercice image" class="png"
-                                        style="width: 500px; height: auto;">
-                                </div>
-                            @endforeach --}}
-                        </div>
-                        {{-- check if user verified = urue --}}
                         @auth
                             @if (Auth::user()->verified)
                                 <div class="border-t w-full p-2 rounded-b-lg border-gray-300">

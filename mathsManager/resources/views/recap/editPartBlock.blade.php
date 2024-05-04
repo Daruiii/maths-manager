@@ -21,7 +21,7 @@
                 @method('PATCH')
                 <div class="form-group">
                     <label for="title">Titre du bloc :</label>
-                    <input type="text" class="form-control" id="title" name="title"
+                    <input type="text" class="form-control" id="title" name="title" required
                         placeholder="Nom de l'exercice" value="{{ $recapPartBlock->title }}">
                 </div>
 
@@ -49,6 +49,11 @@
                 <div class="form-group">
                     <label for="content">Contenu du bloc (LaTeX):</label>
                     <textarea class="form-control" id="content" name="content" rows="4" placeholder="Insérer le LaTeX ici...">{{ $recapPartBlock->latex_content }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="example">Exemple (LaTeX/optionnel) :</label>
+                    <textarea class="form-control" id="clue" name="example" rows="4" placeholder="Insérer le LaTeX ici...">{{ $recapPartBlock->latex_example }}</textarea>
                 </div>
 
                 <button type="submit" class="submit-btn-form">Modifier le bloc</button>
