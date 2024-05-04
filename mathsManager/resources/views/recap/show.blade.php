@@ -56,7 +56,7 @@
                             @endphp
                             <div x-data="{ showExample: false }" class="flex flex-col justify-center items-center w-full">
                                 <div class="flex flex-row items-center w-full justify-start gap-1">
-                                    <h5 class="text-xs md:text-sm font-bold text-white text-center p-1 w-auto rounded-lg my-2"
+                                    <h5 class="recap-bloc-title text-xs md:text-sm font-bold text-white text-center p-1 w-auto rounded-lg my-2"
                                         style="background-color: {{ $recapPartBlock->theme }};">
                                         {{ $recapPartBlock->title }}</h5>
                                     @auth @if (Auth::user()->role === 'admin')
@@ -97,7 +97,7 @@
                                         </div>
                                         <div x-show="showExample" class="bg-gray-200 w-full p-2 rounded-lg">
                                             {{-- <h3 class="exercise-cc font-bold">Exemple :</h3> --}}
-                                            <div class="example-content  text-base p-4 cmu-ti">
+                                            <div class="example-content  text-sm p-4 cmu-ti">
                                                 {!! $recapPartBlock->example !!}
                                             </div>
                                         </div>

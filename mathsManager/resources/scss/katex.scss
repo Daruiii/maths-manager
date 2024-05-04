@@ -10,16 +10,17 @@
 
 }
 
-.exercise-content, .solution-content, .dropdownCC {
+.exercise-content, .solution-content, .dropdownCC, .bloc-content, .example-content {
     font-family: "CMU Serif";
     font-weight: 100;
 }
 
-.exercise-content span, .solution-content span, .clue-content span {
+.exercise-content span, .solution-content span, .clue-content span,.example-content span  {
     font-size: 0.875rem;
+    font-family: "CMU Serif";
 }
 
-.bloc-content span, .example-content span {
+.bloc-content span{
     font-size : 1rem;
 }
 
