@@ -60,7 +60,8 @@
                                         </svg>
                                     </button>
                                 </form> --}}
-                                <x-button-delete href="{{ route('ds_exercise.destroy', $dsExercise->id) }}" entity="cet exercice" />
+                                <x-button-edit href="{{ route('ds_exercise.edit', ['id' => $dsExercise->id, 'filter' => $filter]) }}" />
+                                <x-button-delete href="{{ route('ds_exercise.destroy', $dsExercise->id) }}" entity="cet exercice" entityId="ds_exercise{{ $dsExercise->id }}" />
                                 {{-- <form action="{{ route('ds_exercise.edit', ['id' => $dsExercise->id, 'filter' => $filter]) }}"
                                     class="inline">
                                     <button type="submit" class="p-2 rounded-full text-red-500 hover:text-red-600">
@@ -82,7 +83,6 @@
                                         </svg>
                                     </button>
                                 </form> --}}
-                                <x-button-edit href="{{ route('ds_exercise.edit', ['id' => $dsExercise->id, 'filter' => $filter]) }}" />
                             </div>
                         @endif
                     @endauth
@@ -96,8 +96,8 @@
                 @auth
                     @if (Auth::user()->role === 'admin')
                         <div class="flex row justify-end items-center h-2">
-                            <x-button-delete href="{{ route('ds_exercise.destroy', $dsExercise->id) }}" entity="cet exercice" />
                             <x-button-edit href="{{ route('ds_exercise.edit', ['id' => $dsExercise->id, 'filter' => $filter]) }}" />
+                            <x-button-delete href="{{ route('ds_exercise.destroy', $dsExercise->id) }}" entity="cet exercice" entityId="ds_exercise{{ $dsExercise->id }}" />
                         </div>
                     @endif
                 @endauth

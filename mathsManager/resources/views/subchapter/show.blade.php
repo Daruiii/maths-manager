@@ -52,7 +52,7 @@
                                             <div class="flex items-center space-x-2">
                                                 <x-button-edit href="{{ route('exercise.edit', ['id' => $ex->id]) }}" />
                                                 <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}"
-                                                    entity="cet exercice" />
+                                                    entity="cet exercice" entityId="exercise{{ $ex->id }}" />
                                             </div>
                                         @endif @endauth
                                 </div>
@@ -67,7 +67,7 @@
                                     @if (Auth::user()->role === 'admin')
                                         <div class="flex row justify-end items-center h-2">
                                             <x-button-edit href="{{ route('exercise.edit', ['id' => $ex->id]) }}" />
-                                            <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}" entity="cet exercice" />
+                                            <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}" entity="cet exercice" entityId="exercise{{ $ex->id }}" />
                                         </div>
                                     @endif
                                 @endauth

@@ -111,7 +111,7 @@
                                                 </form>
                                             @endif
                                             <x-button-edit href="{{ route('user.edit', $user->id) }}" />
-                                            <x-button-delete href="{{ route('user.destroy', $user->id) }}" entity="cet utilisateur" />
+                                            <x-button-delete href="{{ route('user.destroy', $user->id) }}" entity="cet utilisateur" entityId="user{{ $user->id }}" />
                                         </div>
                                     </td>
                                 </tr>

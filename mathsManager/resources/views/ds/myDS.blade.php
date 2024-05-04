@@ -38,7 +38,7 @@
                         {{-- @if (Auth::user()->role == 'admin')
                             <div class="flex justify-end px-3 flex-row-reverse items-center w-5/6 gap-2 ">
                                 <x-button-edit href="{{ route('ds.edit', $ds->id) }}" />
-                                <x-button-delete href="{{ route('ds.destroy', $ds->id) }}" entity="ce DS" />
+                                <x-button-delete href="{{ route('ds.destroy', $ds->id) }}" entity="ce DS" entityId="ds{{ $ds->id }}" />
                             </div>
                         @endif --}}
                         @if ($ds->status == 'not_started')
@@ -83,7 +83,7 @@
                             </div>
                         @endif
 
-                        <div class="flex flex-wrap gap-2 justify-center items-center mb-2 p-2">
+                        <div class="flex flex-wrap gap-1 justify-center items-center mb-2 p-2">
                             @foreach ($ds->exercisesDS as $exercise)
                                 <h3 class="text-xs cmu font-bold p-1 rounded-full text-center vertical-center hover:bg-blue-200 shadow-md transition duration-300 truncate max-w-1/2"
                                     style="background-color: {{ $exercise->multipleChapter->theme }};">

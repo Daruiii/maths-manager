@@ -38,7 +38,7 @@
                             @if (Auth::user()->role === 'admin')
                                 <div class="flex items-center space-x-2">
                                     <x-button-edit href="{{ route('chapter.edit', $chapter->id) }}" />
-                                    <x-button-delete href="{{ route('chapter.destroy', $chapter->id) }}" entity="ce chapitre" />
+                                    <x-button-delete href="{{ route('chapter.destroy', $chapter->id) }}" entity="ce chapitre" entityId="chapitre{{$chapter->id}}" />
                                 </div>
                             @endif
                         @endauth
@@ -65,7 +65,7 @@
                                 </x-button-recap>
                                 @auth 
                                 @if (Auth::user()->role === 'admin')
-                                <x-button-delete href="{{ route('recap.destroy', $recap->id) }}" entity="ce récap" />
+                                <x-button-delete href="{{ route('recap.destroy', $recap->id) }}" entity="ce récap" entityId="recap{{$recap->id}}" />
                                 @endif
                                 @endauth
                             @endforeach
@@ -109,7 +109,7 @@
                                                 @if (Auth::user()->role === 'admin')
                                                     <x-button-edit href="{{ route('subchapter.edit', $subchapter->id) }}" />
                                                     <x-button-delete href="{{ route('subchapter.destroy', $subchapter->id) }}"
-                                                        entity="ce sous-chapitre" />
+                                                        entity="ce sous-chapitre" entityId="subchapter{{$subchapter->id}}" />
                                                 @endif
                                             @endauth
                                         </div>

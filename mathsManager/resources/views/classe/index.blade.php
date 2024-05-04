@@ -25,7 +25,7 @@
                         <td class="py-4 px-6 border-b border-grey-light">{{ $classe->name }}</td>
                         <td class="py-4 px-6 border-b border-grey-light flex justify-center align-start gap-2">
                             <x-button-edit href="{{ route('classe.edit', $classe->id) }}"></x-button-edit>
-                            <x-button-delete href="{{ route('classe.destroy', $classe->id) }}" entity="cette classe"></x-button-delete>
+                            <x-button-delete href="{{ route('classe.destroy', $classe->id) }}" entity="cette classe" entityId="classe{{ $classe->id }}"/>
                         </td>
                     </tr>
                 @endforeach

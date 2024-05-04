@@ -37,7 +37,7 @@
                                         Bloc
                                     </x-button-add>
                                     <x-button-edit href="{{ route('recapPart.edit', $recapPart->id) }}" />
-                                    <x-button-delete href="{{ route('recapPart.destroy', $recapPart->id) }}" entity="cette partie" />
+                                    <x-button-delete href="{{ route('recapPart.destroy', $recapPart->id) }}" entity="cette partie" entityId="part{{$recapPart->id}}" />
                                 </div>
                             @endif @endauth
                         </div>
@@ -62,7 +62,7 @@
                                     @auth @if (Auth::user()->role === 'admin')
                                         <x-button-edit href="{{ route('recapPartBlock.edit', $recapPartBlock->id) }}" />
                                         <x-button-delete href="{{ route('recapPartBlock.destroy', $recapPartBlock->id) }}"
-                                            entity="ce bloc" />
+                                            entity="ce bloc" entityId="block{{$recapPartBlock->id}}" />
                                     @endif @endauth
                                 </div>
                                 <div class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full"

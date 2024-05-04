@@ -105,7 +105,7 @@
                                                 </svg>
                                             </a>
                                             <x-button-edit href="{{ route('ds_exercise.edit', ['id' => $ex->id, 'filter' => $filterActivated ? 'true' : 'false']) }}" />
-                                            <x-button-delete href="{{ route('ds_exercise.destroy', $ex->id) }}" entity="cet exercice" />
+                                            <x-button-delete href="{{ route('ds_exercise.destroy', $ex->id) }}" entity="cet exercice" entityId="ds_exercise{{ $ex->id }}" />
                                         </div>
                                     </td>
                                 </tr>

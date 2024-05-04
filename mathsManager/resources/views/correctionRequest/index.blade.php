@@ -65,7 +65,7 @@
                                                 class="text-indigo-600 hover:text-indigo-900">
                                                 Modifier la demande
                                             </a> --}}
-                                            <x-button-delete href="{{ route('correctionRequest.destroy', $correctionRequest->ds_id) }}" entity="cette demande de correction" />
+                                            <x-button-delete href="{{ route('correctionRequest.destroy', $correctionRequest->ds_id) }}" entity="cette demande de correction" entityId="correctionRequest{{ $correctionRequest->ds_id }}" />
                                         </div>
                                     </td>
                                 </tr>

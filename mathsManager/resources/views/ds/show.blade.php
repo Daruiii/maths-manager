@@ -61,7 +61,7 @@
                         @if (Auth::user()->role == 'admin')
                             <div class="flex items-center">
                                 <x-button-edit href="{{ route('ds.edit', ['id' => $ds->id]) }}" />
-                                <x-button-delete href="{{ route('ds.destroy', $ds->id) }}" entity="ce DS" />
+                                <x-button-delete href="{{ route('ds.destroy', $ds->id) }}" entity="ce DS" entityId="ds{{ $ds->id }}" />
                             </div>
                         @endif
                     @endauth

@@ -31,7 +31,7 @@
                         </td>
                         <td class="py-4 px-6 border-b border-grey-light flex justify-center align-start gap-2">
                             <x-button-edit href="{{ route('multiple_chapter.edit', $multipleChapters->id) }}" />
-                            <x-button-delete href="{{ route('multiple_chapter.destroy', $multipleChapters->id) }}" entity="ce chapitre" />
+                            <x-button-delete href="{{ route('multiple_chapter.destroy', $multipleChapters->id) }}" entity="ce chapitre" entityId="duo_chapter_{{ $multipleChapters->id }}" />
                         </td>
                     </tr>
                 @endforeach

@@ -84,7 +84,7 @@
                                                 </svg>
                                             </a>
                                             <x-button-edit href="{{ route('ds.edit', $ds->id) }}" />
-                                            <x-button-delete href="{{ route('ds.destroy', $ds->id) }}" entity="ce DS" />
+                                            <x-button-delete href="{{ route('ds.destroy', $ds->id) }}" entity="ce DS" entityId="ds{{ $ds->id }}" />
                                         </div>
                                     </td>
                                 </tr>
