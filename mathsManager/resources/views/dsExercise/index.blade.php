@@ -5,7 +5,7 @@
 
         <div class="flex justify-between items-center pt-6">
             <div>
-                <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices de DS ({{$dsExercises->count()}})</h2>
+                <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices de DS ({{ $dsExercises->total() }})</h2>
             </div>
             <div>
                     <x-button-add href="{{ route('ds_exercise.create') }}">Exercice</x-button-add>
@@ -13,12 +13,6 @@
         </div>
                {{-- Search form --}}
                <div class="flex justify-between items-center py-2">
-                {{-- <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-4">
-                    <input type="text" name="search" class="form-input rounded-md shadow-sm mt-1 block w-full"
-                        placeholder="Rechercher un exercice...">
-                    <button type="submit"
-                        class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Rechercher</button>
-                </form> --}}
                 <x-search-bar-admin action="{{ route('ds_exercises.index') }}" placeholder="Rechercher un exercice..." name="search" />
                 <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-4">
                     <select name="multiple_chapter_id" class="form-select rounded-md shadow-sm mt-1 block">
@@ -30,7 +24,9 @@
                     <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Filtrer</button>
                 </form>
             </div>
-        <div class="flex flex-col my-8 items-cente justify-center">
+                            <!-- Pagination links -->
+                                {{ $dsExercises->links('vendor.pagination.tailwind') }}
+        <div class="flex flex-col mb-8 mt-2 items-cente justify-center">
             <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
                 <div
                     class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
