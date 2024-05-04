@@ -30,11 +30,10 @@
                 @endif
             @endauth
         @endif
-                {{-- ask confirmation before redirecting the route --}}
                 @if ($ds->status == 'ongoing')
-                    <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir terminer ce DS ?');">
+                    <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}" >
                         @csrf
-                        <button type="submit">
+                        <button type="submit" onclick="if (!confirm('Êtes-vous sûr de vouloir terminer ce DS ?')) return false;" class="btn btn-primary">
                             Terminer
                         </button>
                     </form> 
