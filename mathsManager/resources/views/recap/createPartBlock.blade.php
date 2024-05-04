@@ -36,14 +36,25 @@
                     <select class="form-control text-white font-bold
                     " id="theme" name="theme" style="background-color: white;" onchange="changeBackground(this)">
                         <option value="">Sélectionner un thème</option>
-                        <option value="#ff6961">Théorèmes</option>
-                        <option value="#A9CBD7">Définitions</option>
-                        <option value="#B0F2B6">lemme</option>
-                        <option value="#CFCFC4">remarque</option>
+                        <option value="Théorèmes">Théorèmes</option>
+                        <option value="Définitions">Définitions</option>
+                        <option value="Lemme">Lemme</option>
+                        <option value="Remarque">Remarque</option>
                     </select>
                     <script>
                         function changeBackground(select) {
                             var selectedOption = select.options[select.selectedIndex];
+                            if (selectedOption.value === 'Théorèmes') {
+                                select.style.backgroundColor = '#E35F53';
+                            } else if (selectedOption.value === 'Définitions') {
+                                select.style.backgroundColor = '#4896ac';
+                            } else if (selectedOption.value === 'Lemme') {
+                                select.style.backgroundColor = '#65a986';
+                            } else if (selectedOption.value === 'Remarque') {
+                                select.style.backgroundColor = '#bababa';
+                            } else {
+                                select.style.backgroundColor = 'white';
+                            }
                             select.style.backgroundColor = selectedOption.value;
                         }
                     </script>

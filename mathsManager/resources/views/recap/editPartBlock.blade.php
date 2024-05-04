@@ -33,15 +33,28 @@
                     <label for="theme" class="block text-sm font-medium mb-2 dark:text-white">Thème du bloc :</label>
                     <select class="form-control text-white font-bold" id="theme" name="theme" onchange="changeBackground(this)" style="background-color: {{ $recapPartBlock->theme }};">
                         <option value="">Sélectionner un thème</option>
-                        <option value="#ff6961" {{ $recapPartBlock->theme == '#ff6961' ? 'selected' : '' }}>Théorèmes</option>
-                        <option value="#A9CBD7" {{ $recapPartBlock->theme == '#A9CBD7' ? 'selected' : '' }}>Définitions</option>
-                        <option value="#B0F2B6" {{ $recapPartBlock->theme == '#B0F2B6' ? 'selected' : '' }}>lemme</option>
-                        <option value="#CFCFC4" {{ $recapPartBlock->theme == '#CFCFC4' ? 'selected' : '' }}>remarque</option>
+                        <option value="Théorèmes" {{ $recapPartBlock->theme == 'Théorèmes' ? 'selected' : '' }}>Théorèmes</option>
+                        <option value="Définitions" {{ $recapPartBlock->theme == 'Définitions' ? 'selected' : '' }}>Définitions</option>
+                        <option value="Lemme" {{ $recapPartBlock->theme == 'Lemme' ? 'selected' : '' }}>Lemme</option>
+                        <option value="Remarque" {{ $recapPartBlock->theme == 'Remarque' ? 'selected' : '' }}>Remarque</option>
                     </select>
                     <script>
+                        onload = function() {
+                            changeBackground(document.getElementById('theme'));
+                        }
                         function changeBackground(select) {
                             var selectedOption = select.options[select.selectedIndex];
-                            select.style.backgroundColor = selectedOption.value;
+                            if (selectedOption.value === 'Théorèmes') {
+                                document.getElementById('theme').style.backgroundColor = '#E35F53';
+                            } else if (selectedOption.value === 'Définitions') {
+                                document.getElementById('theme').style.backgroundColor = '#4896ac';
+                            } else if (selectedOption.value === 'Lemme') {
+                                document.getElementById('theme').style.backgroundColor = '#65a986';
+                            } else if (selectedOption.value === 'Remarque') {
+                                document.getElementById('theme').style.backgroundColor = '#bababa';
+                            } else {
+                                document.getElementById('theme').style.backgroundColor = 'white';
+                            }
                         }
                     </script>
                 </div>
