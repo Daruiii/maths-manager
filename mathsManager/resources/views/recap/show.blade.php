@@ -29,7 +29,7 @@
                 @foreach ($recap->recapParts as $index => $recapPart)
                     <div class="flex flex-col justify-center w-full md:p-2 my-2 ">
                         <div class="flex justify-between items-center">
-                            <h3 class="ms-12 text-xl md:text-2xl font-bold break-words"> {{ $index + 1 }}.
+                            <h3 class="ms-12 text-base md:text-lg font-bold break-words"> {{ $index + 1 }}.
                                 {{ $recapPart->title }}</h3>
                             @auth @if (Auth::user()->role === 'admin')
                                 <div class="flex items-center">
@@ -42,6 +42,7 @@
                             @endif @endauth
                         </div>
                         <p class="ms-12 text-xs md:text-sm w-2/3 break-words"> {{ $recapPart->description }}</p>
+                        <div class="flex flex-col justify-center items-center w-full ">
                         @foreach ($recapPart->recapPartBlocks as $recapPartBlock)
                             @php
                                 if ($recapPartBlock->theme === 'Théorèmes') {
@@ -54,9 +55,9 @@
                                     $recapPartBlock->theme = '#bababa';
                                 }
                             @endphp
-                            <div x-data="{ showExample: false }" class="flex flex-col justify-center items-center w-full">
+                            <div x-data="{ showExample: false }" class="flex flex-col justify-center items-center w-full md:w-10/12">
                                 <div class="flex flex-row items-center w-full justify-start gap-1">
-                                    <h5 class="text-xs md:text-sm font-bold text-white text-center p-1 w-auto rounded-lg my-2"
+                                    <h5 class="recap-title text-xs md:text-sm font-bold text-white text-center p-1 w-auto rounded-lg my-2"
                                         style="background-color: {{ $recapPartBlock->theme }};">
                                         {{ $recapPartBlock->title }}</h5>
                                     @auth @if (Auth::user()->role === 'admin')
@@ -67,8 +68,8 @@
                                 </div>
                                 <div class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full"
                                     style="border : 2px solid {{ $recapPartBlock->theme }}">
-                                    <div class="flex flex-col justify-center w-full p-2 my-2 bloc-content">
-                                        <p class="p-2 cmu-serif text-base w-full break-words"> {!! $recapPartBlock->content !!}</p>
+                                    <div class="flex flex-col justify-center w-full p-2 my-2 bloc-content text-sm">
+                                        <p class="p-2 cmu-serif text-sm w-full break-words"> {!! $recapPartBlock->content !!}</p>
                                     </div>
 
                                     {{-- Exemple --}}
@@ -97,7 +98,7 @@
                                         </div>
                                         <div x-show="showExample" class="bg-gray-200 w-full p-2 rounded-lg">
                                             {{-- <h3 class="exercise-cc font-bold">Exemple :</h3> --}}
-                                            <div class="example-content  text-base p-4 cmu-ti">
+                                            <div class="example-content  text-sm p-4 cmu-serif">
                                                 {!! $recapPartBlock->example !!}
                                             </div>
                                         </div>
@@ -105,6 +106,7 @@
                                 </div>
                             </div>
                         @endforeach
+                        </div>
                     </div>
                 @endforeach
             </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\DsExercise;
 use App\Models\Chapter;
 use App\Models\MultipleChapter;
+use Illuminate\Pagination\Paginator;
 
 class DsExerciseController extends Controller
 {
@@ -28,7 +29,7 @@ class DsExerciseController extends Controller
         else {
             $filterActivated = false;
         }
-        $dsExercises = $dsExercises->get();
+        $dsExercises = $dsExercises->paginate(10);
         $multipleChapters = MultipleChapter::all();
 
         return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated'));

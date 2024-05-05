@@ -5,23 +5,23 @@
     font-family: "CMU Exercise Bold";
 }
 
-.solution-content, .dropdownCC, .exercise-cc {
-    font-family: "CMU TI" !important;
+// .solution-content, .dropdownCC, .exercise-cc {
+//     font-family: "CMU TI" !important;
 
-}
+// }
 
-.exercise-content, .solution-content, .dropdownCC {
+.exercise-content, .solution-content, .dropdownCC, .bloc-content {
     font-family: "CMU Serif";
     font-weight: 100;
 }
 
-.exercise-content span, .solution-content span, .clue-content span {
+.exercise-content span, .solution-content span, .clue-content span,.example-content span, .bloc-content span  {
     font-size: 0.875rem;
 }
 
-.bloc-content span, .example-content span {
-    font-size : 1rem;
-}
+// .bloc-content span{
+//     font-size : 1rem;
+// }
 
 .textup {
     font-family: "CMU Serif";
