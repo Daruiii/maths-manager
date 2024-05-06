@@ -15,7 +15,7 @@
         <div class="flex justify-between items-center py-2 w-full flex-wrap gap-2">
             <x-search-bar-admin action="{{ route('ds_exercises.index') }}" placeholder="Rechercher un exercice..."
                 name="search" />
-            <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex space-x-1">
+            <form method="GET" action="{{ route('ds_exercises.index') }}" class="space-x-1">
                 @csrf
                 <div class="relative group rounded-lg w-72 bg-gray-200 overflow-hidden">
                     <svg y="0" xmlns="http://www.w3.org/2000/svg" x="0" width="100" viewBox="0 0 100 100"
