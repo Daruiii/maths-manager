@@ -58,6 +58,7 @@
                             <div x-data="{ showExample: false }" class="flex flex-col justify-center items-center w-full md:w-10/12">
                                 <div class="flex flex-row items-center w-full justify-start gap-1">
                                     <h5 class="recap-title text-xs md:text-sm font-bold text-white text-center p-1 w-auto rounded-lg my-2"
+
                                         style="background-color: {{ $recapPartBlock->theme }};">
                                         {{ $recapPartBlock->title }}</h5>
                                     @auth @if (Auth::user()->role === 'admin')
