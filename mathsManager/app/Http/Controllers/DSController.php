@@ -9,6 +9,8 @@ use App\Models\Chapter;
 use App\Models\DsExercise;
 use App\Models\MultipleChapter;
 use App\Models\CorrectionRequest;
+use Illuminate\Pagination\Paginator;
+
 
 class DSController extends Controller
 {
@@ -16,19 +18,17 @@ class DSController extends Controller
     public function index()
     {
         // search func by user name 
-        $dsList = DS::orderBy('created_at', 'desc')->get();
+        $dsList = DS::orderBy('created_at', 'desc');
         if (request()->query('search')) {
-            $dsList = DS::where('type_bac', 'like', '%' . request()->query('search') . '%')
-                ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
-                ->orWhere('status', 'like', '%' . request()->query('search') . '%')
-                ->orWhereHas('user', function ($query) {
-                    $query->where('name', 'like', '%' . request()->query('search') . '%');
-                })
-                ->get();
+            $dsList = $dsList->where('type_bac', 'like', '%' . request()->query('search') . '%')
+            ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
+            ->orWhere('status', 'like', '%' . request()->query('search') . '%')
+            ->orWhereHas('user', function ($query) {
+                $query->where('name', 'like', '%' . request()->query('search') . '%');
+            });
         }
-        else {
-            $dsList = DS::orderBy('created_at', 'desc')->get();
-        }
+        $dsList = $dsList->paginate(10);
+
         return view('ds.index', compact('dsList'));
     }
 
@@ -36,8 +36,7 @@ class DSController extends Controller
     public function indexUser($id)
     {
         // with chapters and exercisesDS
-        $dsList = DS::where('user_id', $id)->get();
-        $dsList = $dsList->sortByDesc('created_at');
+        $dsList = DS::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
         foreach ($dsList as $ds) {
             foreach ($ds->exercisesDS as $exerciseDS) {
                 $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);

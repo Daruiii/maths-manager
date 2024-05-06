@@ -7,7 +7,7 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    // Affiche la liste des utilisateurs
+    // Affiche la liste paginée des utilisateurs
     public function index(Request $request)
     {
         $search = $request->get('search');
@@ -15,9 +15,9 @@ class UserController extends Controller
             $users = User::where('name', 'like', '%' . $search . '%')
                 ->orWhere('email', 'like', '%' . $search . '%')
                 ->orWhere('role', 'like', '%' . $search . '%')
-                ->get();
+                ->paginate(15);
         } else {
-            $users = User::all();
+            $users = User::paginate(10)->withQueryString();
         }
 
         return view('user.index', compact('users'));

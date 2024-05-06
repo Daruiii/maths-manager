@@ -25,7 +25,9 @@
             <x-search-bar-admin action="{{ route('users.index') }}" placeholder="Rechercher un utilisateur..."
                 name="search" />
         </div>
-        <div class="flex flex-col mb-8">
+        {{-- Pagination links --}}
+        {{ $users->links('vendor.pagination.tailwind') }}
+        <div class="flex flex-col mb-8 mt-5">
             <div class="my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
                 <div
                     class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">

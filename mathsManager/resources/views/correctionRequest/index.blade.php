@@ -9,18 +9,14 @@
             </div>
           
         </div>
+        <div class="flex justify-between items-center py-3 flex-wrap gap-2">
         {{-- search bar --}}
-        <div class="flex justify-between items-center mt-6">
-            <form method="GET" action="{{ route('correctionRequest.index') }}" class="flex space-x-4">
-                <input type="text" name="search" class="form-input rounded-md shadow-sm mt-1 block w-full"
-                    placeholder="Rechercher une demande de correction...">
-                <button type="submit"
-                    class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Rechercher</button>
-            </form>
+        <x-search-bar-admin action="{{ route('correctionRequest.index') }}" placeholder="Rechercher un élève ..." name="search" />
+        {{-- Pagination links --}}
+        {{ $correctionRequests->links('vendor.pagination.tailwind') }}
         </div>
-
         {{-- Correction request list --}}
-        <div class="flex flex-col my-8">
+        <div class="flex flex-col mb-8 mt-5">
             <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
                 <div
                     class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">

@@ -16,14 +16,13 @@ class ExerciseController extends Controller
     {
         $search = request()->get('search');
                 
-        $exercises = Exercise::orderBy('created_at', 'desc')->get();
+        $exercises = Exercise::orderBy('created_at', 'desc');
         if ($search) {
-            $exercises = Exercise::where('name', 'like', '%' . $search . '%')
-                ->orWhere('id', 'like', '%' . $search . '%')
-                ->get();
-        } else {
-            $exercises = Exercise::orderBy('created_at', 'desc')->get();
+            $exercises = $exercises->where('name', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%');
         }
+        $exercises = $exercises->paginate(10);
+        
         $subchapters = Subchapter::all();
         return view('exercise.index', compact('exercises', 'subchapters'));
     }

@@ -31,7 +31,7 @@
                 <h2 class="text-red-600">{{ session('error') }}</h2>
             </div>
         @endif
-        <div class="flex row justify-center align-center flex-wrap gap-5 w-8/12">
+        <div class="flex row justify-center align-center flex-wrap gap-5 w-8/12 mb-5">
             @foreach ($dsList as $index => $ds)
                 <div class="ds-card">
                     <div class="ds-card-image"> {{-- admin --}}
@@ -118,7 +118,7 @@
                         {{ $ds->status == 'sent' ? 'bg-gray-200' : '' }}
                         {{ $ds->status == 'corrected' ? 'bg-gray-200' : '' }}">
                         <p class="text-xs text-center font-bold"> {{ $ds->type_bac ? 'Type Bac' : 'Devoir' }} n°
-                            {{ $index + 1 }}</p>
+                            {{ $dsList->total() - ($index + ($dsList->currentPage() - 1) * $dsList->perPage()) }}</p>
                         <div class="ds-text-body">
                             @if ($ds->status == 'corrected')
                                 <div class="flex row justify-center items-center gap-1 border-y border-gray-300 mb-1">
@@ -201,5 +201,7 @@
                 </div>
             @endforeach
         </div>
+             <!-- Pagination links -->
+             {{ $dsList->links('vendor.pagination.simple-tailwind') }}
     </div>
 @endsection
