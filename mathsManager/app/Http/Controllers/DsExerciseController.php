@@ -25,14 +25,16 @@ class DsExerciseController extends Controller
         if ($request->filled('multiple_chapter_id')) {
             $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
             $filterActivated = true;
+            $chapterActivated = MultipleChapter::findOrFail($request->multiple_chapter_id);
         }
         else {
             $filterActivated = false;
+            $chapterActivated = null;
         }
         $dsExercises = $dsExercises->paginate(10);
         $multipleChapters = MultipleChapter::all();
 
-        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated'));
+        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated'));
     }
 
     protected function convertCustomLatexToHtml($latexContent, $images = [])
