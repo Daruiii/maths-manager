@@ -265,7 +265,11 @@ class DSController extends Controller
         $ds->multipleChapters()->attach($multiple_chapters);
         $ds->exercisesDS()->attach($exercisesDS);
 
-        $user->last_ds_generated_at = now();
+        if ($user->role == 'admin' || $user->role == 'teacher') {
+            $user->last_ds_generated_at = null;
+        } else {
+            $user->last_ds_generated_at = now();
+        }   
         $user->save();
 
         return $ds;

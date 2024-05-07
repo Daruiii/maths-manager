@@ -69,8 +69,8 @@
                                 </div>
                                 <div class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full"
                                     style="border : 2px solid {{ $recapPartBlock->theme }}">
-                                    <div class="flex flex-col justify-center w-full p-2 my-2 bloc-content text-sm">
-                                        <p class="p-2 cmu-serif text-sm w-full break-words"> {!! $recapPartBlock->content !!}</p>
+                                    <div class="w-full py-2 px-4 my-2 bloc-content text-sm cmu-serif break-words">
+                                       {!! $recapPartBlock->content !!}
                                     </div>
 
                                     {{-- Exemple --}}
