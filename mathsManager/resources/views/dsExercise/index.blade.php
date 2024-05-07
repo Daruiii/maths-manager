@@ -13,21 +13,15 @@
         </div>
         {{-- Search form --}}
         <div class="flex justify-between items-center py-2 w-full flex-wrap gap-2">
-            <x-search-bar-admin action="{{ route('ds_exercises.index') }}" placeholder="Rechercher un exercice..."
-                name="search" />
-            <form method="GET" action="{{ route('ds_exercises.index') }}" class="space-x-1">
+            <div>
+                <x-search-bar-admin action="{{ route('ds_exercises.index') }}" placeholder="Rechercher un exercice..."
+                    name="search" />
+            </div>
+            <form method="GET" action="{{ route('ds_exercises.index') }}" class=" flex-grow">
                 @csrf
-                <div class="relative group rounded-lg w-72 bg-gray-200 overflow-hidden">
-                    <svg y="0" xmlns="http://www.w3.org/2000/svg" x="0" width="100" viewBox="0 0 100 100"
-                        preserveAspectRatio="xMidYMid meet" height="100"
-                        class="w-8 h-8 absolute right-0 -rotate-45 stroke-blue-300 top-1.5 group-hover:rotate-0 duration-300">
-                        <path stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none"
-                            d="M60.7,53.6,50,64.3m0,0L39.3,53.6M50,64.3V35.7m0,46.4A32.1,32.1,0,1,1,82.1,50,32.1,32.1,0,0,1,50,82.1Z"
-                            class="svg-stroke-primary"></path>
-                    </svg>
+                <div class="relative group rounded-lg  overflow-hidden flex items-center justify-end">
                     <select name="multiple_chapter_id" onchange="this.form.submit()"
-                        class="bg-none hover:placeholder-shown:bg-green-500 relative text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        style="appearance: none;">
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
                         @if ($filterActivated)
                             <option value="{{ $chapterActivated->id }}" selected>
                                 {{  $chapterActivated->title }}
@@ -46,13 +40,21 @@
                         @endforeach
                     </select>
                     @if ($filterActivated)
-                        <a href="{{ route('ds_exercises.index') }}" class="absolute right-8 top-3 hover:rotate-180 duration-300">
-                            <svg width="24px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.30958 3.54424C7.06741 2.56989 8.23263 2 9.46699 2H20.9997C21.8359 2 22.6103 2.37473 23.1614 2.99465C23.709 3.61073 23.9997 4.42358 23.9997 5.25V18.75C23.9997 19.5764 23.709 20.3893 23.1614 21.0054C22.6103 21.6253 21.8359 22 20.9997 22H9.46699C8.23263 22 7.06741 21.4301 6.30958 20.4558L0.687897 13.2279C0.126171 12.5057 0.126169 11.4943 0.687897 10.7721L6.30958 3.54424ZM10.2498 7.04289C10.6403 6.65237 11.2734 6.65237 11.664 7.04289L14.4924 9.87132L17.3208 7.04289C17.7113 6.65237 18.3445 6.65237 18.735 7.04289L19.4421 7.75C19.8327 8.14052 19.8327 8.77369 19.4421 9.16421L16.6137 11.9926L19.4421 14.8211C19.8327 15.2116 19.8327 15.8448 19.4421 16.2353L18.735 16.9424C18.3445 17.3329 17.7113 17.3329 17.3208 16.9424L14.4924 14.114L11.664 16.9424C11.2734 17.3329 10.6403 17.3329 10.2498 16.9424L9.54265 16.2353C9.15212 15.8448 9.15212 15.2116 9.54265 14.8211L12.3711 11.9926L9.54265 9.16421C9.15212 8.77369 9.15212 8.14052 9.54265 7.75L10.2498 7.04289Z" fill="#000000"></path> </g></svg>
+                        <a href="{{ route('ds_exercises.index') }}" class="ml-2 hover:rotate-180 duration-300">
+                            <svg width="24px" height="18px" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M6.30958 3.54424C7.06741 2.56989 8.23263 2 9.46699 2H20.9997C21.8359 2 22.6103 2.37473 23.1614 2.99465C23.709 3.61073 23.9997 4.42358 23.9997 5.25V18.75C23.9997 19.5764 23.709 20.3893 23.1614 21.0054C22.6103 21.6253 21.8359 22 20.9997 22H9.46699C8.23263 22 7.06741 21.4301 6.30958 20.4558L0.687897 13.2279C0.126171 12.5057 0.126169 11.4943 0.687897 10.7721L6.30958 3.54424ZM10.2498 7.04289C10.6403 6.65237 11.2734 6.65237 11.664 7.04289L14.4924 9.87132L17.3208 7.04289C17.7113 6.65237 18.3445 6.65237 18.735 7.04289L19.4421 7.75C19.8327 8.14052 19.8327 8.77369 19.4421 9.16421L16.6137 11.9926L19.4421 14.8211C19.8327 15.2116 19.8327 15.8448 19.4421 16.2353L18.735 16.9424C18.3445 17.3329 17.7113 17.3329 17.3208 16.9424L14.4924 14.114L11.664 16.9424C11.2734 17.3329 10.6403 17.3329 10.2498 16.9424L9.54265 16.2353C9.15212 15.8448 9.15212 15.2116 9.54265 14.8211L12.3711 11.9926L9.54265 9.16421C9.15212 8.77369 9.15212 8.14052 9.54265 7.75L10.2498 7.04289Z"
+                                    fill="#000000"></path>
+                            </svg>
                         </a>
                     @endif
                 </div>
             </form>
         </div>
+        
+        
+        
         <!-- Pagination links -->
         {{ $dsExercises->links('vendor.pagination.tailwind') }}
         <div class="flex flex-col mb-8 mt-2 items-cente justify-center">
