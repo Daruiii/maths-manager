@@ -24,11 +24,7 @@
             </button> --}}
             <x-button-pause />
         @else
-            @auth
-                @if (Auth::user()->role == 'student')
                     <x-back-btn path="{{ route('correctionRequest.show', ['ds_id' => $ds->id]) }}" />
-                @endif
-            @endauth
         @endif
                 @if ($ds->status == 'ongoing')
                 <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}">
