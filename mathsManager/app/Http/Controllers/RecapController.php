@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Recap;
 use App\Models\RecapPart;
 use App\Models\RecapPartBlock;
+use App\Models\Chapter;
 
 class RecapController extends Controller
 {
@@ -184,7 +185,9 @@ class RecapController extends Controller
     public function createPartBlock($id)
     {
         $recapPart_id = $id;
-        return view('recap.createPartBlock', compact('recapPart_id'));
+        $chapter_id = RecapPart::find($recapPart_id)->recap->chapter_id;
+        $subchapters = Chapter::find($chapter_id)->subchapters;
+        return view('recap.createPartBlock', compact('recapPart_id', 'subchapters'));
     }
 
     // Méthode pour stocker un bloc de partie de récap
@@ -196,7 +199,8 @@ class RecapController extends Controller
             'theme' => 'nullable',
             'content' => 'nullable',
             'example' => 'nullable',
-            'recap_part_id' => 'required'
+            'recap_part_id' => 'required',
+            'subchapter_id' => 'nullable'
         ]);
 
         // Création du bloc de partie de récap
@@ -208,6 +212,7 @@ class RecapController extends Controller
         $recapPartBlock->content = $this->convertCustomLatexToHtml($request->content);
         $recapPartBlock->example = $this->convertCustomLatexToHtml($request->example);
         $recapPartBlock->recap_part_id = $request->recap_part_id;
+        $recapPartBlock->subchapter_id = $request->subchapter_id;
         $recapPartBlock->save();
 
         return redirect()->route('recap.show', $recapPartBlock->recapPart->recap_id);
@@ -217,7 +222,9 @@ class RecapController extends Controller
     public function editPartBlock($id)
     {
         $recapPartBlock = RecapPartBlock::find($id);
-        return view('recap.editPartBlock', compact('recapPartBlock'));
+        $subchapters = Chapter::find($recapPartBlock->recapPart->recap->chapter_id)->subchapters;
+
+        return view('recap.editPartBlock', compact('recapPartBlock', 'subchapters'));
     }
 
     // Méthode pour mettre à jour un bloc de partie de récap
@@ -230,7 +237,8 @@ class RecapController extends Controller
             'example' => 'nullable',
             'latex_example' => 'nullable',
             'content' => 'nullable',
-            'latex_content' => 'nullable'
+            'latex_content' => 'nullable',
+            'subchapter_id' => 'nullable'
         ]);
 
         // Mise à jour du bloc de partie de récap
@@ -241,6 +249,7 @@ class RecapController extends Controller
         $recapPartBlock->example = $this->convertCustomLatexToHtml($request->example);
         $recapPartBlock->latex_content = $request->content;
         $recapPartBlock->content = $this->convertCustomLatexToHtml($request->content);
+        $recapPartBlock->subchapter_id = $request->subchapter_id;
         $recapPartBlock->save();
 
         return redirect()->route('recap.show', $recapPartBlock->recapPart->recap_id);

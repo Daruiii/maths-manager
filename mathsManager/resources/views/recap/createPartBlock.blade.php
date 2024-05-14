@@ -62,6 +62,17 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="clue">Sous-chapitre lié (optionnel) :</label>
+                    {{-- selectionner un sous chap --}}
+                    <select class="form-control" id="subchapter_id" name="subchapter_id">
+                        <option value="">Sélectionner un sous-chapitre</option>
+                        @foreach ($subchapters as $subchapter)
+                            <option value="{{ $subchapter->id }}">{{ $subchapter->title }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label for="content">Contenu du bloc (LaTeX):</label>
                     <textarea class="form-control" id="content" name="content" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>

@@ -95,6 +95,13 @@
                                                         </g>
                                                     </svg>
                                                 </button>
+                                            @else
+                                                <p class="text-xs font-bold"></p>
+                                            @endif
+                                            @if ($recapPartBlock->subchapter_id)
+                                                <x-button-training href="{{ route('subchapter.show', $recapPartBlock->subchapter_id) }}">
+                                                    S'entraîner
+                                                </x-button-training>
                                             @endif
                                         </div>
                                         <div x-show="showExample" class="bg-gray-200 w-full p-2 rounded-lg">
