@@ -167,7 +167,7 @@ class QuizzController extends Controller
 
         if ($search) {
             $quizzQuestions->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
+                $query->where('question', 'like', '%' . $search . '%')
                     ->orWhere('id', 'like', '%' . $search . '%');
             });
         }
