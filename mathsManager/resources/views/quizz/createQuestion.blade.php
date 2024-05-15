@@ -24,11 +24,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="explication">Explication (optionnel) :</label>
-                    <textarea class="form-control" id="explication" name="explanation" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
-                </div>
-
-                <div class="form-group">
                     <label for="chapter_id">Chapitre lié :</label>
                     <select class="form-control" id="chapter_id" name="chapter_id" required>
                         <option value="">Sélectionner un chapitre</option>

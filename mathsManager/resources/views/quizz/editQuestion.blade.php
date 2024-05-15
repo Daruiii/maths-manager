@@ -19,16 +19,11 @@
             <form action="{{ route('quizz.update', $question->id) }}" method="POST">
                 @csrf
                 @method('PUT')
-                
+
                 <input type="hidden" name="filter" value="{{ $filter }}">
                 <div class="form-group">
                     <label for="question">Question :</label>
                     <textarea class="form-control" id="question" name="question" required placeholder="Insérer le LaTeX ici...">{{ $question->latex_question }}</textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="explication">Explication (optionnel) :</label>
-                    <textarea class="form-control" id="explication" name="explanation" rows="4" placeholder="Insérer le LaTeX ici...">{{ $question->latex_explanation }}</textarea>
                 </div>
 
                 <div class="form-group">

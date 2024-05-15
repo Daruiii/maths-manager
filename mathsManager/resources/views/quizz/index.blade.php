@@ -88,7 +88,7 @@
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                                         {{ $qq->id }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 max-w-xs truncate">
-                                        {{ $qq->question }}</td>
+                                        {!! $qq->question !!}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $qq->chapter->title }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
@@ -119,7 +119,7 @@
                                                 </svg>
                                             </a>
                                             <x-button-edit href="{{ route('quizz.edit', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}" />
-                                            <x-button-delete href="{{ route('quizz.destroy', $qq->id) }}"
+                                            <x-button-delete href="{{ route('quizz.destroy', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}"
                                                 entity="cette question" entityId="quizzQuestion{{ $qq->id }}" />
                                         </div>
                                     </td>

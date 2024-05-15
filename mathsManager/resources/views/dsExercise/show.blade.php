@@ -4,7 +4,11 @@
     <div class="container mx-auto">
     {{-- bouton a gauche pour retour au index des dsexercises --}}
     <div class="flex row items-center w-full ms-12 mt-5">
-    <x-back-btn path="{{ route('ds_exercises.index') }}" />
+    @if ($filter === 'true')
+        <x-back-btn path="{{ route('ds_exercises.index', ['multiple_chapter_id' => $multipleChapter->id ?? null]) }}" />
+    @else
+        <x-back-btn path="{{ route('ds_exercises.index') }}" />
+    @endif
     @if ($previousExercise)
         <a href="{{ route('ds_exercise.show', ['id' => $previousExercise->id, 'filter' => $filter ]) }}"
             class="previous-btn">

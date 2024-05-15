@@ -88,11 +88,11 @@ class QuizzController extends Controller
             ->unique('subchapter_id')
             ->shuffle()
             ->take(10);
-    
+
         session(['questions' => $questions]);
         session(['currentQuestion' => 0]);
         session(['score' => 0]);
-    
+
         return redirect()->route('show_question');
     }
 
@@ -101,14 +101,14 @@ class QuizzController extends Controller
     {
         $questions = session('questions');
         $currentQuestion = session('currentQuestion');
-    
+
         if ($currentQuestion >= count($questions)) {
             return redirect()->route('show_result');
         }
-    
+
         $question = $questions[$currentQuestion];
         $answers = $question->answers->shuffle();
-    
+
         return view('quizz.showQuestion', compact('question', 'answers'));
     }
 
@@ -119,11 +119,11 @@ class QuizzController extends Controller
         $currentQuestion = session('currentQuestion');
         $question = $questions[$currentQuestion];
         $answer = QuizzAnswer::find($request->answer_id);
-    
+
         if ($answer->quizz_question_id == $question->id && $answer->is_correct) {
             session(['score' => session('score') + 1]);
         }
-    
+
         return redirect()->route('show_answer', ['answer_id' => $request->answer_id]);
     }
 
@@ -131,11 +131,11 @@ class QuizzController extends Controller
     public function showAnswer($answer_id)
     {
         $answer = QuizzAnswer::find($answer_id);
-        $explanation = $answer->question->explanation;
+        $explanation = $answer->explanation;
         $answerContent = $answer->answer;
-    
+
         session(['currentQuestion' => session('currentQuestion') + 1]);
-    
+
         return view('quizz.showAnswer', compact('explanation', 'answerContent'));
     }
 
@@ -145,7 +145,7 @@ class QuizzController extends Controller
         $score = session('score');
         $questions = session('questions');
         $totalQuestions = count($questions);
-    
+
         return view('quizz.showResult', compact('score', 'totalQuestions'));
     }
 
@@ -164,183 +164,199 @@ class QuizzController extends Controller
     {
         $search = $request->get('search');
         $quizzQuestions = QuizzQuestion::with('answers', 'chapter', 'subchapter')->orderBy('created_at', 'desc');
-    
+
         if ($search) {
             $quizzQuestions->where(function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('id', 'like', '%' . $search . '%');
             });
         }
-    
+
         if ($request->filled('chapter_id')) {
             $quizzQuestions->where('chapter_id', $request->chapter_id);
             $filterActivated = true;
             $chapterActivated = Chapter::findOrFail($request->chapter_id);
-        }
-        else {
+        } else {
             $filterActivated = false;
             $chapterActivated = null;
         }
+
         $quizzQuestions = $quizzQuestions->paginate(10);
         $chapters = Chapter::all();
-    
+
         return view('quizz.index', compact('quizzQuestions', 'chapters', 'filterActivated', 'chapterActivated'));
     }
 
-     // Méthode pour afficher une question et ses réponses
-     public function show($id, Request $request)
-     {
-         $question = QuizzQuestion::find($id);
-         if (!$question) {
-             return redirect()->route('home');
-         }
-     
-         $filter = $request->get('filter');
-         if ($filter == 'true') {
-             $quizzQuestions = QuizzQuestion::where('chapter_id', $question->chapter_id)->get();
-         } else {
-             $quizzQuestions = QuizzQuestion::all();
-         }
-     
-         // Récupérer la question précédente et suivante pour la navigation
-         $previousQuestion = $quizzQuestions->filter(function ($value, $key) use ($question) {
-             return $value->id < $question->id;
-         })->last();
-         $nextQuestion = $quizzQuestions->filter(function ($value, $key) use ($question) {
-             return $value->id > $question->id;
-         })->first();
-     
-         $answers = $question->answers;
-         return view('quizz.show', compact('question', 'answers', 'quizzQuestions', 'previousQuestion', 'nextQuestion', 'filter'));
-     }
- 
-     // Méthode pour afficher le formulaire de création de question
-     public function createQuestion()
-     {
+    // Méthode pour afficher une question et ses réponses
+    public function show($id, Request $request)
+    {
+        $question = QuizzQuestion::find($id);
+        if (!$question) {
+            return redirect()->route('home');
+        }
+
+        $filter = $request->get('filter');
+        if ($filter == 'true') {
+            $quizzQuestions = QuizzQuestion::where('chapter_id', $question->chapter_id)->get();
+        } else {
+            $quizzQuestions = QuizzQuestion::all();
+        }
+
+        // Récupérer la question précédente et suivante pour la navigation
+        $previousQuestion = $quizzQuestions->filter(function ($value, $key) use ($question) {
+            return $value->id < $question->id;
+        })->last();
+        $nextQuestion = $quizzQuestions->filter(function ($value, $key) use ($question) {
+            return $value->id > $question->id;
+        })->first();
+
+        $answers = $question->answers;
+        return view('quizz.show', compact('question', 'answers', 'quizzQuestions', 'previousQuestion', 'nextQuestion', 'filter'));
+    }
+
+    // Méthode pour afficher le formulaire de création de question
+    public function createQuestion()
+    {
         $chapters = Chapter::all();
         $subchapters = Subchapter::all();
         return view('quizz.createQuestion', compact('chapters', 'subchapters'));
-     }
- 
-     // Méthode pour stocker une nouvelle question
-     public function storeQuestion(Request $request)
-     {
-         $request->validate([
-             'question' => 'required',
-             'explanation' => 'nullable',
-             'chapter_id' => 'required',
-             'subchapter_id' => 'nullable'
-         ]);
- 
-         $question = new QuizzQuestion();
-         $question->latex_question = $request->question;
-         $question->latex_explanation = $request->explanation;
-         $question->explanation = $this->convertCustomLatexToHtml($request->explanation);
-         $question->question = $this->convertCustomLatexToHtml($request->question);
-         $question->chapter_id = $request->chapter_id;
-         $question->subchapter_id = $request->subchapter_id;
-         $question->save();
- 
-         return redirect()->route('quizz.index');
-     }
- 
-        // Méthode pour form d'édition de question
-        public function editQuestion($id, Request $request)
-        {
-            $question = QuizzQuestion::find($id);
-            $chapters = Chapter::all();
-            $subchapters = Subchapter::all();
-            $filter = $request->get('filter');
+    }
 
-            return view('quizz.editQuestion', compact('question', 'chapters', 'subchapters', 'filter'));
-        }
+    // Méthode pour stocker une nouvelle question
+    public function storeQuestion(Request $request)
+    {
+        $request->validate([
+            'question' => 'required',
+            'chapter_id' => 'required',
+            'subchapter_id' => 'nullable'
+        ]);
 
-        // Méthode pour mettre à jour une question
-        public function updateQuestion(Request $request, $id)
-        {
-            $request->validate([
-                'question' => 'required',
-                'explanation' => 'nullable',
-                'chapter_id' => 'required',
-                'subchapter_id' => 'nullable'
-            ]);
+        $question = new QuizzQuestion();
+        $question->latex_question = $request->question;
+        $question->question = $this->convertCustomLatexToHtml($request->question);
+        $question->chapter_id = $request->chapter_id;
+        $question->subchapter_id = $request->subchapter_id;
+        $question->save();
 
-            $question = QuizzQuestion::find($id);
-            $question->latex_question = $request->question;
-            $question->latex_explanation = $request->explanation;
-            $question->explanation = $this->convertCustomLatexToHtml($request->explanation);
-            $question->question = $this->convertCustomLatexToHtml($request->question);
-            $question->chapter_id = $request->chapter_id;
-            $question->subchapter_id = $request->subchapter_id;
-            $question->save();
+        return redirect()->route('quizz.index');
+    }
 
-            $filter = $request->get('filter');
+    // Méthode pour form d'édition de question
+    public function editQuestion($id, Request $request)
+    {
+        $question = QuizzQuestion::find($id);
+        $chapters = Chapter::all();
+        $subchapters = Subchapter::all();
+        $filter = $request->get('filter');
 
-            return redirect()->route('quizz.show', ['id' => $id, 'filter' => $filter]);
-        }
+        return view('quizz.editQuestion', compact('question', 'chapters', 'subchapters', 'filter'));
+    }
 
-        // Méthode pour supprimer une question
-        public function destroyQuestion($id)
-        {
-            $question = QuizzQuestion::find($id);
-            $question->delete();
-            return redirect()->route('quizz.index');
-        }
+    // Méthode pour mettre à jour une question
+    public function updateQuestion(Request $request, $id)
+    {
+        $request->validate([
+            'question' => 'required',
+            'chapter_id' => 'required',
+            'subchapter_id' => 'nullable'
+        ]);
 
-        // Méthode pour afficher le formulaire de création de réponse
-        public function createAnswer($id)
-        {
-            $question = QuizzQuestion::find($id);
-            return view('quizz.createAnswer', compact('question'));
-        }
+        $question = QuizzQuestion::find($id);
+        $question->latex_question = $request->question;
+        $question->question = $this->convertCustomLatexToHtml($request->question);
+        $question->chapter_id = $request->chapter_id;
+        $question->subchapter_id = $request->subchapter_id;
+        $question->save();
 
-        // Méthode pour stocker une nouvelle réponse
-        public function storeAnswer(Request $request, $id)
-        {
-            $request->validate([
-                'answer' => 'required',
-                'is_correct' => 'required'
-            ]);
+        $filter = $request->get('filter');
 
-            $answer = new QuizzAnswer();
-            $answer->latex_answer = $request->answer;
-            $answer->answer = $this->convertCustomLatexToHtml($request->answer);
-            $answer->is_correct = $request->is_correct;
-            $answer->quizz_question_id = $id;
-            $answer->save();
+        return redirect()->route('quizz.show', ['id' => $id, 'filter' => $filter]);
+    }
 
-            return redirect()->route('quizz.index');
-        }
+    // Méthode pour supprimer une question
+    public function destroyQuestion($id, Request $request)
+    {
+        $question = QuizzQuestion::find($id);
+        $question->delete();
 
-        // Méthode pour form d'édition de réponse
-        public function editAnswer($id)
-        {
-            $answer = QuizzAnswer::find($id);
-            return view('quizz.editAnswer', compact('answer'));
-        }
+        $filter = $request->get('filter');
 
-        // Méthode pour mettre à jour une réponse
-        public function updateAnswer(Request $request, $id)
-        {
-            $request->validate([
-                'answer' => 'required',
-                'is_correct' => 'required'
-            ]);
-
-            $answer = QuizzAnswer::find($id);
-            $answer->latex_answer = $request->answer;
-            $answer->answer = $this->convertCustomLatexToHtml($request->answer);
-            $answer->is_correct = $request->is_correct;
-            $answer->save();
-
-            return redirect()->route('quizz.index');
-        }
-
-        // Méthode pour supprimer une réponse
-        public function destroyAnswer($id)
-        {
-            $answer = QuizzAnswer::find($id);
-            $answer->delete();
+        if ($filter == 'true') {
+            return redirect()->route('quizz.index', ['chapter_id' => $question->chapter_id]);
+        } else {
             return redirect()->route('quizz.index');
         }
     }
+
+    // Méthode pour afficher le formulaire de création de réponse
+    public function createAnswer($id, Request $request)
+    {
+        $question = QuizzQuestion::find($id);
+        $filter = $request->get('filter');
+        return view('quizz.createAnswer', compact('question', 'filter'));
+    }
+
+    // Méthode pour stocker une nouvelle réponse
+    public function storeAnswer(Request $request, $id)
+    {
+        $request->validate([
+            'answer' => 'required',
+            'explanation' => 'nullable',
+            'is_correct' => 'required'
+        ]);
+
+        $answer = new QuizzAnswer();
+        $answer->latex_answer = $request->answer;
+        $answer->latex_explanation = $request->explanation;
+        $answer->explanation = $this->convertCustomLatexToHtml($request->explanation);
+        $answer->answer = $this->convertCustomLatexToHtml($request->answer);
+        $answer->is_correct = $request->is_correct;
+        $answer->quizz_question_id = $id;
+        $answer->save();
+
+        $filter = $request->get('filter');
+
+        return redirect()->route('quizz.show', ['id' => $id, 'filter' => $filter]);
+    }
+
+    // Méthode pour form d'édition de réponse
+    public function editAnswer($id, Request $request)
+    {
+        $answer = QuizzAnswer::find($id);
+        $filter = $request->get('filter');
+        return view('quizz.editAnswer', compact('answer', 'filter'));
+    }
+
+    // Méthode pour mettre à jour une réponse
+    public function updateAnswer(Request $request, $id)
+    {
+        $request->validate([
+            'answer' => 'required',
+            'explanation' => 'nullable',
+            'is_correct' => 'required'
+        ]);
+
+        $answer = QuizzAnswer::find($id);
+        $answer->latex_answer = $request->answer;
+        $answer->latex_explanation = $request->explanation;
+        $answer->explanation = $this->convertCustomLatexToHtml($request->explanation);
+        $answer->answer = $this->convertCustomLatexToHtml($request->answer);
+        $answer->is_correct = $request->is_correct;
+        $answer->save();
+
+        $filter = $request->get('filter');
+
+        return redirect()->route('quizz.show', ['id' => $answer->quizz_question_id, 'filter' => $filter]);
+    }
+
+    // Méthode pour supprimer une réponse
+    public function destroyAnswer($id, Request $request)
+    {
+        $answer = QuizzAnswer::find($id);
+        $answer->delete();
+
+        $filter = $request->get('filter');
+
+        return redirect()->route('quizz.show', ['id' => $answer->quizz_question_id, 'filter' => $filter]);
+    }
+}
