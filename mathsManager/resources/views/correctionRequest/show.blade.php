@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mx-auto">
-        <x-back-btn path="{{ route('ds.myDS', Auth::user()->id) }}" />
+        <x-back-btn path="" />
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-white w-11/12 md:w-4/5 rounded-lg box-shadow shadow-xl">
             {{-- titre demande de correction --}}

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mx-auto">
-        <x-back-btn path="{{ route('classe.show', $recap->chapter->classe->level) }}" />
+        <x-back-btn path="" />
         <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p6 rounded-lg my-8">
             <style>
                 .p6 {

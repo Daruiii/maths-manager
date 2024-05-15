@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mx-auto">
-        <x-back-btn path="{{ route('classe.show', ['level' => $classe->level]) }}"
+        <x-back-btn path=""
             theme="{{ $subchapter->chapter->theme }}" />
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-full md:w-4/5 rounded-lg box-shadow shadow-xl">

@@ -87,7 +87,7 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                                         {{ $qq->id }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 truncate">
+                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 max-w-xs truncate">
                                         {{ $qq->question }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $qq->chapter->title }}</td>
@@ -97,7 +97,7 @@
                                         {{ $qq->answers->count() }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
                                         <div class="flex justify-center items-center">
-                                            <a href="{{ route('quizz.show', $qq->id) }}"
+                                            <a href="{{ route('quizz.show', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}"
                                                 class="text-indigo-600 hover:text-indigo-900 mr-3">
                                                 <svg version="1.1" id="Uploaded to svgrepo.com"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +118,7 @@
                                                     </g>
                                                 </svg>
                                             </a>
-                                            <x-button-edit href="{{ route('quizz.edit', $qq->id) }}" />
+                                            <x-button-edit href="{{ route('quizz.edit', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}" />
                                             <x-button-delete href="{{ route('quizz.destroy', $qq->id) }}"
                                                 entity="cette question" entityId="quizzQuestion{{ $qq->id }}" />
                                         </div>

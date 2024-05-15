@@ -188,14 +188,30 @@ class QuizzController extends Controller
     }
 
      // Méthode pour afficher une question et ses réponses
-     public function show($id)
+     public function show($id, Request $request)
      {
          $question = QuizzQuestion::find($id);
          if (!$question) {
              return redirect()->route('home');
          }
+     
+         $filter = $request->get('filter');
+         if ($filter == 'true') {
+             $quizzQuestions = QuizzQuestion::where('chapter_id', $question->chapter_id)->get();
+         } else {
+             $quizzQuestions = QuizzQuestion::all();
+         }
+     
+         // Récupérer la question précédente et suivante pour la navigation
+         $previousQuestion = $quizzQuestions->filter(function ($value, $key) use ($question) {
+             return $value->id < $question->id;
+         })->last();
+         $nextQuestion = $quizzQuestions->filter(function ($value, $key) use ($question) {
+             return $value->id > $question->id;
+         })->first();
+     
          $answers = $question->answers;
-         return view('quizz.show', compact('question', 'answers'));
+         return view('quizz.show', compact('question', 'answers', 'quizzQuestions', 'previousQuestion', 'nextQuestion', 'filter'));
      }
  
      // Méthode pour afficher le formulaire de création de question
@@ -229,10 +245,14 @@ class QuizzController extends Controller
      }
  
         // Méthode pour form d'édition de question
-        public function editQuestion($id)
+        public function editQuestion($id, Request $request)
         {
             $question = QuizzQuestion::find($id);
-            return view('quizz.editQuestion', compact('question'));
+            $chapters = Chapter::all();
+            $subchapters = Subchapter::all();
+            $filter = $request->get('filter');
+
+            return view('quizz.editQuestion', compact('question', 'chapters', 'subchapters', 'filter'));
         }
 
         // Méthode pour mettre à jour une question
@@ -254,7 +274,9 @@ class QuizzController extends Controller
             $question->subchapter_id = $request->subchapter_id;
             $question->save();
 
-            return redirect()->route('quizz.index');
+            $filter = $request->get('filter');
+
+            return redirect()->route('quizz.show', ['id' => $id, 'filter' => $filter]);
         }
 
         // Méthode pour supprimer une question

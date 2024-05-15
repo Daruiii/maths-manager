@@ -10,33 +10,6 @@ use Illuminate\Pagination\Paginator;
 
 class DsExerciseController extends Controller
 {
-    public function index(Request $request)
-    {
-        $search = $request->get('search');
-        $dsExercises = DsExercise::with('chapters')->orderBy('created_at', 'desc');
-
-        if ($search) {
-            $dsExercises->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('id', 'like', '%' . $search . '%');
-            });
-        }
-
-        if ($request->filled('multiple_chapter_id')) {
-            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
-            $filterActivated = true;
-            $chapterActivated = MultipleChapter::findOrFail($request->multiple_chapter_id);
-        }
-        else {
-            $filterActivated = false;
-            $chapterActivated = null;
-        }
-        $dsExercises = $dsExercises->paginate(10);
-        $multipleChapters = MultipleChapter::all();
-
-        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated'));
-    }
-
     protected function convertCustomLatexToHtml($latexContent, $images = [])
     {
         // Nettoyage initial du contenu et remplacement des espaces non sécables
@@ -113,6 +86,33 @@ class DsExerciseController extends Controller
         }
 
         return $cleanedContent;
+    }
+    
+    public function index(Request $request)
+    {
+        $search = $request->get('search');
+        $dsExercises = DsExercise::with('chapters')->orderBy('created_at', 'desc');
+
+        if ($search) {
+            $dsExercises->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('id', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($request->filled('multiple_chapter_id')) {
+            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
+            $filterActivated = true;
+            $chapterActivated = MultipleChapter::findOrFail($request->multiple_chapter_id);
+        }
+        else {
+            $filterActivated = false;
+            $chapterActivated = null;
+        }
+        $dsExercises = $dsExercises->paginate(10);
+        $multipleChapters = MultipleChapter::all();
+
+        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated'));
     }
 
     public function create()

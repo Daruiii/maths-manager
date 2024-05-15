@@ -4,7 +4,7 @@
 
     <section class="form-wrapper">
         <div class="form">
-            <h1 class="form-title">Ajouter une Question</h1>
+            <h1 class="form-title">Modifier une Question</h1>
 
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -16,24 +16,26 @@
                 </div>
             @endif
 
-            <form action="{{ route('quizz.store') }}" method="POST">
+            <form action="{{ route('quizz.update', $question->id) }}" method="POST">
                 @csrf
+                @method('PUT')
+                
+                <input type="hidden" name="filter" value="{{ $filter }}">
                 <div class="form-group">
                     <label for="question">Question :</label>
-                    <textarea class="form-control" id="question" name="question" required placeholder="Insérer le LaTeX ici..."></textarea>
+                    <textarea class="form-control" id="question" name="question" required placeholder="Insérer le LaTeX ici...">{{ $question->latex_question }}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="explication">Explication (optionnel) :</label>
-                    <textarea class="form-control" id="explication" name="explanation" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
+                    <textarea class="form-control" id="explication" name="explanation" rows="4" placeholder="Insérer le LaTeX ici...">{{ $question->latex_explanation }}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="chapter_id">Chapitre lié :</label>
                     <select class="form-control" id="chapter_id" name="chapter_id" required>
-                        <option value="">Sélectionner un chapitre</option>
                         @foreach ($chapters as $chapter)
-                            <option value="{{ $chapter->id }}">{{ $chapter->title }}</option>
+                            <option value="{{ $chapter->id }}" {{ $chapter->id == $question->chapter_id ? 'selected' : '' }}>{{ $chapter->title }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -41,14 +43,13 @@
                 <div class="form-group">
                     <label for="subchapter_id">Sous-chapitre lié (optionnel) :</label>
                     <select class="form-control" id="subchapter_id" name="subchapter_id">
-                        <option value="">Sélectionner un sous-chapitre</option>
                         @foreach ($subchapters as $subchapter)
-                            <option value="{{ $subchapter->id }}">{{ $subchapter->title }}</option>
+                            <option value="{{ $subchapter->id }}" {{ $subchapter->id == $question->subchapter_id ? 'selected' : '' }}>{{ $subchapter->title }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <button type="submit" class="submit-btn-form">Ajouter la question</button>
+                <button type="submit" class="submit-btn-form">Mettre à jour la question</button>
             </form>
         </div>
     </section>
@@ -56,9 +57,11 @@
         // Convertir les sous-chapitres PHP en un tableau JavaScript
         var subchapters = @json($subchapters);
     
-        document.getElementById('chapter_id').addEventListener('change', function() {
-            var selectedChapterId = this.value;
-            var subchapterSelect = document.getElementById('subchapter_id');
+        var chapterSelect = document.getElementById('chapter_id');
+        var subchapterSelect = document.getElementById('subchapter_id');
+    
+        function updateSubchapters() {
+            var selectedChapterId = chapterSelect.value;
     
             // Effacer les options existantes
             subchapterSelect.innerHTML = '';
@@ -78,6 +81,15 @@
                     subchapterSelect.add(option);
                 }
             });
+        }
+    
+        // Mettre à jour les sous-chapitres lorsque le chapitre sélectionné change
+        chapterSelect.addEventListener('change', updateSubchapters);
+    
+        // Mettre à jour les sous-chapitres lorsque la page est chargée
+        window.addEventListener('load', function() {
+            updateSubchapters();
+            subchapterSelect.value = '{{ $question->subchapter_id }}';
         });
     </script>
 @endsection
