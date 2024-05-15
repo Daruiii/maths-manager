@@ -69,11 +69,6 @@
                                 @endif
                                 @endauth
                             @endforeach
-                            @foreach ($chapter->quizzes as $index => $quiz)
-                                <x-button-quiz href="#quiz">
-                                    {{ __('Quiz') }}
-                                </x-button-quiz>
-                            @endforeach
                             </div>
                             <div class="flex flex-col w-full bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">

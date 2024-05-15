@@ -16,7 +16,7 @@ use App\Http\Controllers\DSController;
 use App\Http\Middleware\IsVerified;
 use App\Http\Controllers\CorrectionRequestController;
 use App\Http\Controllers\RecapController;
-
+use App\Http\Controllers\QuizzController;
 
 Route::get('/', function () {
     return view('home');
@@ -165,6 +165,33 @@ Route::middleware('auth')->group(function () {
     Route::get('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequestForm'])->name('correctionRequest.showCorrectionRequestForm');
     Route::post('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'sendCorrectionRequest'])->name('correctionRequest.sendCorrectionRequest');
     Route::get('/correctionRequest/show/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequest'])->name('correctionRequest.show');
+    });
+});
+
+// Quizzes routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/quizz', [QuizzController::class, 'index'])->name('quizz.index');
+        Route::get('/quizz/create', [QuizzController::class, 'createQuestion'])->name('quizz.create');
+        Route::post('/quizz', [QuizzController::class, 'storeQuestion'])->name('quizz.store');
+        Route::get('/quizz/edit/{id}', [QuizzController::class, 'editQuestion'])->name('quizz.edit');
+        Route::put('/quizz/{id}', [QuizzController::class, 'updateQuestion'])->name('quizz.update');
+        Route::delete('/quizz/{id}', [QuizzController::class, 'destroyQuestion'])->name('quizz.destroy');
+        Route::get('/quizz/{id}/answer/create', [QuizzController::class, 'createAnswer'])->name('quizz.answer.create');
+        Route::post('/quizz/{id}/answer', [QuizzController::class, 'storeAnswer'])->name('quizz.answer.store');
+        Route::get('/quizz/answer/edit/{id}', [QuizzController::class, 'editAnswer'])->name('quizz.answer.edit');
+        Route::put('/quizz/answer/{id}', [QuizzController::class, 'updateAnswer'])->name('quizz.answer.update');
+        Route::delete('/quizz/answer/{id}', [QuizzController::class, 'destroyAnswer'])->name('quizz.answer.destroy');
+        Route::get('/quizz/{id}', [QuizzController::class, 'show'])->name('quizz.show');
+    });
+
+    Route::middleware([IsVerified::class])->group(function () {
+        Route::get('/quizz/start/{chapter_id}', [QuizzController::class, 'startQuizz'])->name('start_quizz');
+        Route::get('/quizz/question', [QuizzController::class, 'showQuestion'])->name('show_question');
+        Route::post('/quizz/check', [QuizzController::class, 'checkAnswer'])->name('check_answer');
+        Route::get('/quizz/answer/{answer_id}', [QuizzController::class, 'showAnswer'])->name('show_answer');
+        Route::get('/quizz/result', [QuizzController::class, 'showResult'])->name('show_result');
+        Route::get('/quizz/end', [QuizzController::class, 'endQuizz'])->name('end_quizz');
     });
 });
 

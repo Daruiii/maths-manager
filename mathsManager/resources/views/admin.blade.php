@@ -39,6 +39,11 @@
         <a href="{{ route('correctionRequest.index') }}" class="p-4 bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded text-center">
             Gérer les corrections
         </a>
+
+        <!-- button pour les quizz -->
+        <a href="{{ route('quizz.index') }}" class="p-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center">
+            Gérer les quizz
+        </a>
         
         <!-- Ajoutez plus de boutons pour d'autres entités si nécessaire -->
     </div>
