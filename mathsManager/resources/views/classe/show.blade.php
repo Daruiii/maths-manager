@@ -65,9 +65,11 @@
                                 @endif
                                 @endauth
                             @endforeach
+                            @if ($chapter->quizzQuestions->count() > 5)
                             <x-button-quizz href="{{ route('start_quizz', $chapter->id) }}">
                                 {{ __('Quizz') }}
                             </x-button-quizz>
+                            @endif
                             </div>
                             <div class="flex flex-col w-full bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
