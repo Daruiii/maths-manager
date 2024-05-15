@@ -186,12 +186,12 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/quizz/start/{chapter_id}', [QuizzController::class, 'startQuizz'])->name('start_quizz');
-        Route::get('/quizz/question', [QuizzController::class, 'showQuestion'])->name('show_question');
+        Route::get('/myQuizz', [QuizzController::class, 'showQuestion'])->name('show_question');
         Route::post('/quizz/check', [QuizzController::class, 'checkAnswer'])->name('check_answer');
-        Route::get('/quizz/answer/{answer_id}', [QuizzController::class, 'showAnswer'])->name('show_answer');
-        Route::get('/quizz/result', [QuizzController::class, 'showResult'])->name('show_result');
-        Route::get('/quizz/end', [QuizzController::class, 'endQuizz'])->name('end_quizz');
+        Route::get('/quizzResult', [QuizzController::class, 'showResult'])->name('show_result');
+        Route::get('/quizzEnd', [QuizzController::class, 'endQuizz'])->name('end_quizz');
+        Route::get('/quizz/start/{chapter_id}', [QuizzController::class, 'startQuizz'])->name('start_quizz');
+        Route::get('/quizz/answer/{answer_id}/{correct_answer}', [QuizzController::class, 'showAnswer'])->name('show_answer');
     });
 });
 

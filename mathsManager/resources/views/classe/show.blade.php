@@ -51,10 +51,6 @@
                                 <x-button-add href="{{ route('recap.create', ['id' => $chapter->id]) }}">
                                         {{ __('Récap') }}
                                     </x-button-add>
-                                    {{-- {{ route('quiz.create', ['id' => $chapter->id]) }} --}}
-                                    <x-button-add href="#quiz">
-                                        {{ __('Quiz') }}
-                                    </x-button-add>
                                 </div>
                                 @endif
                             @endauth
@@ -69,6 +65,9 @@
                                 @endif
                                 @endauth
                             @endforeach
+                            <x-button-quizz href="{{ route('start_quizz', $chapter->id) }}">
+                                {{ __('Quizz') }}
+                            </x-button-quizz>
                             </div>
                             <div class="flex flex-col w-full bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
