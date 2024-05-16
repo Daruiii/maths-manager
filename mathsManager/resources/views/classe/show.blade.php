@@ -65,7 +65,7 @@
                                 @endif
                                 @endauth
                             @endforeach
-                            @if ($chapter->quizzQuestions->count() > 5)
+                            @if ($chapter->quizzQuestions->count() >= 10)
                             <x-button-quizz href="{{ route('start_quizz', $chapter->id) }}">
                                 {{ __('Quizz') }}
                             </x-button-quizz>

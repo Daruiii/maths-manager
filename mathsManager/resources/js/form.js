@@ -69,4 +69,46 @@ export function renderCodeMirror() {
             }
         });
     }
+
+    var answerID = document.getElementById('answer');
+    if (answerID) {
+        var answer = CodeMirror.fromTextArea(answerID, {
+            lineNumbers: true,
+            mode: 'stex',
+            theme: 'ttcn',
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
+            }
+        });
+    }
+
+    var explanationID = document.getElementById('explanation');
+    if (explanationID) {
+        var explanation = CodeMirror.fromTextArea(explanationID, {
+            lineNumbers: true,
+            mode: 'stex',
+            theme: 'ttcn',
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
+            }
+        });
+    }
+
+    var questionID = document.getElementById('question');
+    if (questionID) {
+        var question = CodeMirror.fromTextArea(questionID, {
+            lineNumbers: true,
+            mode: 'stex',
+            theme: 'ttcn',
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete',
+            }
+        });
+    }
 }

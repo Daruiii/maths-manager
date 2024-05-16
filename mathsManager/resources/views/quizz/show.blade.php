@@ -58,13 +58,13 @@
                     @endif
                 @endauth
             </div>
-            <div class="exercise-content text-sm px-4 cmu-serif text-center">
+            <div class="exercise-content text-sm px-4 text-center">
                 <h1 class="font-bold text-lg my-2">{{ $question->chapter->title }}</h1>
                 <h2 class="truncate font-bold text-sm exercise-title my-2">Sous-chapitre: {{ $question->subchapter->title }}
                 </h2>
                 <div class="flex flex-col items-center">
                     <h2 class="truncate font-bold text-sm exercise-title my-2">Question: </h2>
-                    <p class="w-full break-words">{!! $question->question !!}</p>
+                    <p class="cmu-serif w-full break-words">{!! $question->question !!}</p>
                 </div>
 
                 <div class="w-full flex justify-between items-center">
@@ -83,12 +83,12 @@
                                         entity="cette réponse" entityId="quizz{{ $question->id }}{{ $answer->id }}" />
                                 </div>
                                 <div class="p-2 w-full break-words mb-2 border border-1 border-green-300 rounded-lg ">
-                                    <li class="w-full break-words border border-1 rounded-lg mb-2 bg-green-100">
+                                    <li class="cmu-serif clue-content w-full break-words border border-1 rounded-lg mb-2 bg-green-100">
                                         {!! $answer->answer !!}
                                     </li>
                                     @if ($answer->explanation)
                                         <p class="font-bold text-xs">Explication:</p>
-                                        <p>{!! $answer->explanation !!}</p>
+                                        <p class="clue-content cmu-serif">{!! $answer->explanation !!}</p>
                                     @endif
                                 </div>
                             @endif
@@ -99,7 +99,7 @@
                                 <x-button-edit href="{{ route('quizz.answer.edit', ['id' => $answer->id, 'filter' => $filter]) }}" />
                                 <x-button-delete href="{{ route('quizz.answer.destroy', $answer->id) }}" entity="cette réponse" entityId="quizz{{ $question->id }}{{ $answer->id }}" />
                             </div>
-                                <li class="w-full break-words border border-1 bg-red-100 rounded-lg mb-2">
+                                <li class="cmu-serif clue-content w-full break-words border border-1 bg-red-100 rounded-lg mb-2">
                                     {!! $answer->answer !!} </li>
                             @endif
                         @endforeach

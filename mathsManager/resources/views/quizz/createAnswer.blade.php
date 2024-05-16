@@ -23,7 +23,7 @@
 
                 <div class="form-group">
                     <label for="answer">Réponse :</label>
-                    <textarea class="form-control" id="answer" name="answer" required placeholder="Insérer le LaTeX ici..."></textarea>
+                    <textarea class="form-control" id="answer" name="answer" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>
 
                 <div class="form-group">

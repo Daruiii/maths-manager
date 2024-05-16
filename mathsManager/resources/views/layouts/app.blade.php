@@ -29,7 +29,7 @@
 <body>
     @include('layouts.header')
     
-    <main>
+    <main class="fade-in">
         @yield('content')
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>

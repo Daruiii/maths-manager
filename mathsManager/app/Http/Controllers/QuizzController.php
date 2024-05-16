@@ -79,14 +79,27 @@ class QuizzController extends Controller
     public function startQuizz($chapter_id)
     {
         $questions = QuizzQuestion::where('chapter_id', $chapter_id)
-            ->inRandomOrder()
             ->get()
-            ->unique('subchapter_id')
-            ->shuffle();
+            ->groupBy('subchapter_id')
+            ->map(function ($subchapterQuestions) {
+                return $subchapterQuestions->shuffle();
+            })
+            ->flatten(1);
 
-        if (count($questions) > 10) {
-            $questions = $questions->take(10);
+        if ($questions->count() < 10) {
+            return redirect()->route('classe.show', ['level' => $questions[0]->chapter->classe->level]);
         }
+        
+        $selectedQuestions = collect();
+        for ($i = 0; $i < 10; $i++) {
+            foreach ($questions->chunk(10) as $chunk) {
+                if ($selectedQuestions->count() < 10 && isset($chunk[$i])) {
+                    $selectedQuestions->push($chunk[$i]);
+                }
+            }
+        }
+
+        $questions = $selectedQuestions;
 
         session(['questions' => $questions]);
         session(['currentQuestion' => 0]);
@@ -101,13 +114,13 @@ class QuizzController extends Controller
         $questions = session('questions');
         $currentQuestion = session('currentQuestion');
         $score = session('score');
-    
+
         if ($currentQuestion >= count($questions)) {
             return redirect()->route('show_result');
         }
-    
+
         $question = $questions[$currentQuestion];
-    
+
         // Get one correct answer
         $correctAnswers = $question->answers->where('is_correct', true);
         if ($correctAnswers->isEmpty()) {
@@ -115,7 +128,7 @@ class QuizzController extends Controller
             return redirect()->route('classe.show', ['level' => $question->chapter->classe->level]);
         }
         $correctAnswer = $correctAnswers->random(1);
-    
+
         // Get three incorrect answers
         $incorrectAnswers = $question->answers->where('is_correct', false);
         if ($incorrectAnswers->count() < 3) {
@@ -123,10 +136,10 @@ class QuizzController extends Controller
             return redirect()->route('classe.show', ['level' => $question->chapter->classe->level]);
         }
         $incorrectAnswers = $incorrectAnswers->random(min(3, $incorrectAnswers->count()));
-    
+
         // Merge and shuffle the answers
         $answers = $correctAnswer->merge($incorrectAnswers)->shuffle();
-    
+
         return view('quizz.showQuestion', compact('question', 'answers', 'currentQuestion', 'questions', 'score', 'correctAnswer'));
     }
 
@@ -141,19 +154,18 @@ class QuizzController extends Controller
         if ($answer->quizz_question_id == $question->id && $answer->is_correct) {
             session()->increment('score');
         }
-    
+
         return redirect()->route('show_answer', ['answer_id' => $request->answer, 'correct_answer' => $correctAnswer]);
     }
-    
+
     public function showAnswer(int $answer_id, int $correctAnswer)
     {
         $answer = QuizzAnswer::findOrFail($answer_id);
         $correctAnswer = QuizzAnswer::findOrFail($correctAnswer);
-        $explanation = $correctAnswer->explanation;
-    
+
         session()->increment('currentQuestion');
-    
-        return view('quizz.showAnswer', compact('answer', 'explanation'));
+
+        return view('quizz.showAnswer', compact('answer', 'correctAnswer'));
     }
 
     // Méthode pour afficher le résultat du quizz

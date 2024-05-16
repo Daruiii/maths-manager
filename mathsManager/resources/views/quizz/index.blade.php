@@ -87,7 +87,7 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                                         {{ $qq->id }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 max-w-xs truncate">
+                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 max-w-52 truncate">
                                         {!! $qq->question !!}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $qq->chapter->title }}</td>
