@@ -255,7 +255,7 @@ class QuizzController extends Controller
         $question->subchapter_id = $request->subchapter_id;
         $question->save();
 
-        return redirect()->route('quizz.index');
+        return redirect()->route('quizz.show', $question->id);
     }
 
     // Méthode pour form d'édition de question
