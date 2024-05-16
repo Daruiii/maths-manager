@@ -14,6 +14,9 @@
             @csrf
 
             @foreach ($answers as $answer)
+
+                <input type="hidden" name="correct_answer" value="{{ $correctAnswer }}">
+
                 <x-radio-btn name="answer" id="answer{{ $answer->id }}" value="{{ $answer->id }}" required class="w-full sm:w-1/2 p-2">
                     {!! $answer->answer !!}
                 </x-radio-btn>

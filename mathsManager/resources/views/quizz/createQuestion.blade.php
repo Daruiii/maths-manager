@@ -20,7 +20,7 @@
                 @csrf
                 <div class="form-group">
                     <label for="question">Question :</label>
-                    <textarea class="form-control" id="question" name="question" required placeholder="Insérer le LaTeX ici..."></textarea>
+                    <textarea class="form-control" id="question" name="question" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>
 
                 <div class="form-group">
