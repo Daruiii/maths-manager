@@ -38,9 +38,9 @@
                                 {!! $correctAnswer->answer !!}
                             </x-radio-btn>
                     </div>
-                    <div class="bg-gray-100 p-4 rounded-md mb-4 w-full md:w-8/12 mx-auto ">
+                    <div class="bg-gray-100 p-4 rounded-md mb-4 w-full md:w-7/12 mx-auto ">
                         <p class="w-full text-start text-sm mb-2">Explication :</p>
-                        <p class="w-10/12 text-start cmu-serif clue-content break-words mb-4">{!! $correctAnswer->explanation !!}</p>
+                        <p class="text-start cmu-serif clue-content break-words mb-4">{!! $correctAnswer->explanation !!}</p>
                     </div>
                     @if(session('currentQuestion') == count(session('questions')))
                     <div class="flex justify-center items-center w-full">
