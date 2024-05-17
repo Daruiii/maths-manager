@@ -20,6 +20,11 @@
                 @csrf
                 @method('PUT')
 
+                <div class="form-group">
+                    <label for="name">Nom de la question :</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ $question->name }}" required>
+                </div>
+
                 <input type="hidden" name="filter" value="{{ $filter }}">
                 <div class="form-group">
                     <label for="question">Question :</label>

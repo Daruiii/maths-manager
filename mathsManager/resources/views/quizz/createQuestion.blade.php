@@ -18,6 +18,12 @@
 
             <form action="{{ route('quizz.store') }}" method="POST">
                 @csrf
+
+                <div class="form-group">
+                    <label for="name">Nom de la question :</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Nom de la question" required>
+                </div>
+
                 <div class="form-group">
                     <label for="question">Question :</label>
                     <textarea class="form-control" id="question" name="question" placeholder="Insérer le LaTeX ici..."></textarea>

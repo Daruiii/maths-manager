@@ -1,8 +1,8 @@
-@props(['id', 'name', 'value', 'required'])
+@props(['id', 'name', 'value', 'required'=> false, 'disabled' => false])
 
 <div class="radio-input">
-    <input type="radio" id="{{ $id }}" name="{{ $name }}" value="{{ $value }}" required="{{ $required }}" />
-    <label for="{{ $id }}" class="clue-content cmu-serif">
+    <input type="radio" id="{{ $id }}" name="{{ $name }}" value="{{ $value }}" required="{{ $required }}" {{ $disabled ? 'disabled' : '' }}>
+    <label for="{{ $id }}" class="clue-content cmu-serif text-sm  @if($disabled && $name == 'correct_answer') correct-answer @endif">
         {!! $slot !!}
     </label>
   </div>
@@ -11,9 +11,7 @@
 .radio-input {
   display: flex;
   flex-direction: row;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
   color: #212121;
   margin-bottom: 10px;
 }
@@ -60,6 +58,15 @@
   color: #212121;
   border-color: #f44336; /* Changed from royalblue to red */
   animation: radio-translate 0.5s ease-in-out;
+}
+
+.radio-input input[type="radio"]:disabled + label {
+  background-color: rgb(220 38 38); /* Change the background color when disabled */
+  color: #fff;
+}
+
+.radio-input input[type="radio"]:disabled + label.correct-answer {
+  background-color:  rgb(101 163 13); /* Change the background color to green when disabled and the name is correct_answer */
 }
 
 @keyframes radio-translate {

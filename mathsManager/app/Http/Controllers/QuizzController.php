@@ -162,10 +162,11 @@ class QuizzController extends Controller
     {
         $answer = QuizzAnswer::findOrFail($answer_id);
         $correctAnswer = QuizzAnswer::findOrFail($correctAnswer);
+        $question = $answer->question;
 
         session()->increment('currentQuestion');
 
-        return view('quizz.showAnswer', compact('answer', 'correctAnswer'));
+        return view('quizz.showAnswer', compact('answer', 'correctAnswer', 'question'));
     }
 
     // Méthode pour afficher le résultat du quizz
@@ -255,12 +256,14 @@ class QuizzController extends Controller
     public function storeQuestion(Request $request)
     {
         $request->validate([
+            'name' => 'nullable',
             'question' => 'required',
             'chapter_id' => 'required',
             'subchapter_id' => 'nullable'
         ]);
 
         $question = new QuizzQuestion();
+        $question->name = $request->name;
         $question->latex_question = $request->question;
         $question->question = $this->convertCustomLatexToHtml($request->question);
         $question->chapter_id = $request->chapter_id;
@@ -301,12 +304,14 @@ class QuizzController extends Controller
     public function updateQuestion(Request $request, $id)
     {
         $request->validate([
+            'name' => 'nullable',
             'question' => 'required',
             'chapter_id' => 'required',
             'subchapter_id' => 'nullable'
         ]);
 
         $question = QuizzQuestion::find($id);
+        $question->name = $request->name;
         $question->latex_question = $request->question;
         $question->question = $this->convertCustomLatexToHtml($request->question);
         $question->chapter_id = $request->chapter_id;

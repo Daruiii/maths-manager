@@ -5,7 +5,7 @@
 <x-progress-bar currentQuestion="{{$currentQuestion + 1 }}" totalQuestions="{{ count($questions) }}" />
 <section class="container mx-auto slide-left">
 <div class="text-center mt-4">
-    Question n°{{ $currentQuestion + 1 }}
+    <p class="text-sm mb-4">Question n°{{ $currentQuestion + 1 }}</p>
 </div>
     <div class="p-6">
         <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md">{!! $question->question !!}</h1>
@@ -17,7 +17,7 @@
 
                 <input type="hidden" name="correct_answer" value="{{ $correctAnswer }}">
 
-                <x-radio-btn name="answer" id="answer{{ $answer->id }}" value="{{ $answer->id }}" required class="w-full sm:w-1/2 p-2">
+                <x-radio-btn name="answer" id="answer{{ $answer->id }}" value="{{ $answer->id }}" required class="w-full text-sm clue-content cmu-serif sm:w-1/2 p-2">
                     {!! $answer->answer !!}
                 </x-radio-btn>
             @endforeach
