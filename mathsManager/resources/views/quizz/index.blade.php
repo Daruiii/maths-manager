@@ -87,7 +87,8 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                                         {{ $qq->id }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 max-w-52 truncate">
+                                    <td
+                                        class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 max-w-52 truncate">
                                         {!! $qq->question !!}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $qq->chapter->title }}</td>
@@ -118,8 +119,28 @@
                                                     </g>
                                                 </svg>
                                             </a>
-                                            <x-button-edit href="{{ route('quizz.edit', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}" />
-                                            <x-button-delete href="{{ route('quizz.destroy', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}"
+                                            <!-- Bouton Dupliquer -->
+                                            <form method="POST" action="{{ route('duplicate_question', $qq->id) }}"
+                                                style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                                    <svg fill="#000000" width="15px" height="15px"
+                                                        viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+                                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                            stroke-linejoin="round"></g>
+                                                        <g id="SVGRepo_iconCarrier">
+                                                            <path
+                                                                d="M1468.183 451.76v1468.184H0V451.76h1468.183ZM777.203 800h-112l-.001 318.041H333v112h332.202V1580h112v-349.959H1113v-112H777.202V800ZM1920 0v1468.296h-338.812V338.812H451.704V0H1920Z"
+                                                                fill-rule="evenodd"></path>
+                                                        </g>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                            <x-button-edit
+                                                href="{{ route('quizz.edit', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}" />
+                                            <x-button-delete
+                                                href="{{ route('quizz.destroy', ['id' => $qq->id, 'filter' => $filterActivated ? 'true' : 'false']) }}"
                                                 entity="cette question" entityId="quizzQuestion{{ $qq->id }}" />
                                         </div>
                                     </td>

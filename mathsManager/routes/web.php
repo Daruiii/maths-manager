@@ -183,6 +183,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/quizz/answer/{id}', [QuizzController::class, 'updateAnswer'])->name('quizz.answer.update');
         Route::delete('/quizz/answer/{id}', [QuizzController::class, 'destroyAnswer'])->name('quizz.answer.destroy');
         Route::get('/quizz/{id}', [QuizzController::class, 'show'])->name('quizz.show');
+        Route::post('/questions/{id}/duplicate', [QuizzController::class, 'duplicateQuestion'])->name('duplicate_question');
     });
 
     Route::middleware([IsVerified::class])->group(function () {

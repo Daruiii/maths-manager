@@ -89,7 +89,7 @@ class QuizzController extends Controller
         if ($questions->count() < 10) {
             return redirect()->route('classe.show', ['level' => $questions[0]->chapter->classe->level]);
         }
-        
+
         $selectedQuestions = collect();
         for ($i = 0; $i < 10; $i++) {
             foreach ($questions->chunk(10) as $chunk) {
@@ -268,6 +268,22 @@ class QuizzController extends Controller
         $question->save();
 
         return redirect()->route('quizz.show', $question->id);
+    }
+
+    // Méthode pour dupliquer une question
+    public function duplicateQuestion(int $id)
+    {
+        $question = QuizzQuestion::findOrFail($id);
+        $newQuestion = $question->replicate();
+        $newQuestion->save();
+
+        foreach ($question->answers as $answer) {
+            $newAnswer = $answer->replicate();
+            $newAnswer->quizz_question_id = $newQuestion->id;
+            $newAnswer->save();
+        }
+
+        return redirect()->back()->with('success', 'Question dupliquée avec succès');
     }
 
     // Méthode pour form d'édition de question
