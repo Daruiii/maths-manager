@@ -17,7 +17,7 @@
             </svg>
         </div>
     </div>
-
+    <x-back-btn path="">Retour</x-back-btn>
     <section class="form-wrapper">
         <div class="form">
             <h1 class="form-title">Générer un devoir</h1>

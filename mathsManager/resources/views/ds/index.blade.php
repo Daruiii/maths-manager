@@ -1,28 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<x-back-btn path="{{ route('admin') }}"> Retour</x-back-btn>
 
-        <div class="flex justify-between items-center pt-6">
-            <div>
-                <h2 class="text-lg leading-6 font-medium text-gray-900">DS</h2>
-            </div>
-            {{-- Add DS button --}}
-            <div>
-                <a href="{{ route('ds.create') }}"
-                    class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Générer
-                    un DS</a>
-            </div>
-        </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- search bar --}}
-        <div class="flex justify-between items-center mt-6">
-                {{-- <form method="GET" action="{{ route('ds.index') }}" class="flex space-x-4">
-                    <input type="text" name="search" class="form-input rounded-md shadow-sm mt-1 block w-full"
-                        placeholder="Rechercher un DS...">
-                    <button type="submit"
-                        class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Rechercher</button>
-                </form> --}}
+        <div class="flex justify-between items-center mt-16">
                 <x-search-bar-admin action="{{ route('ds.index') }}" placeholder="Rechercher un DS..." name="search" />
+                <h2 class="text-lg leading-6 font-medium text-gray-900">DS</h2>
+                <a href="{{ route('ds.create') }}"
+                class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Générer
+                un DS</a>
             </div>
          
      <!-- Pagination links -->

@@ -2,6 +2,8 @@
 
 @section('content')
 <div class="container mx-auto p-4">
+<x-back-btn path="{{ route('admin') }}"> Retour</x-back-btn>
+
     <h1 class="text-xl font-bold mb-4">Gestion des Chapitres</h1>
     
     <div class="mb-4">

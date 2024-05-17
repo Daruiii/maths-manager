@@ -24,7 +24,7 @@
             </button> --}}
             <x-button-pause />
         @else
-            <x-back-btn path="" />
+            <x-back-btn path=""> Retour</x-back-btn>
         @endif
         @if ($ds->status == 'ongoing')
             <form method="GET" class="finish-btn" action="{{ route('ds.finish', ['id' => $ds->id]) }}">

@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mx-auto">
         <x-back-btn path=""
-            theme="{{ $subchapter->chapter->theme }}" />
+            theme="{{ $subchapter->chapter->theme }}" > Retour</x-back-btn>
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
             <div class="flex items-start justify-between w-full">

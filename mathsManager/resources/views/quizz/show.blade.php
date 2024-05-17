@@ -5,9 +5,9 @@
         {{-- bouton a gauche pour retour au index des dsexercises --}}
         <div class="flex row items-center w-full ms-12 mt-5">
             @if ($filter === 'true')
-                <x-back-btn path="{{ route('quizz.index', ['chapter_id' => $question->chapter->id ?? null]) }}" />
+                <x-back-btn path="{{ route('quizz.index', ['chapter_id' => $question->chapter->id ?? null]) }}" > Retour</x-back-btn>
             @else
-                <x-back-btn path="{{ route('quizz.index') }}" />
+                <x-back-btn path="{{ route('quizz.index') }}" > Retour</x-back-btn>
             @endif
             @if ($previousQuestion)
                 <a href="{{ route('quizz.show', ['id' => $previousQuestion->id, 'filter' => $filter]) }}"

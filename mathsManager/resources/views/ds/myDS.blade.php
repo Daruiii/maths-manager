@@ -4,17 +4,20 @@
     {{-- Titre de la page un peu sur la gauche avec ecrit "Mes devoirs" --}}
     {{-- un bouton pour générer un nouveau DS --}}
     <div class="container mx-auto mb-8">
-        <div class="flex justify-start flex-col align-center w-9/12 mt-6 mb-4 ms-12">
-            <h1 class="text-xl cmu-bold">Mes devoirs</h1>
-            <div class="flex row justify-start align-center">
+        <div class="flex justify-start flex-col items-start w-9/12 mt-6 mb-4">
+            <h1 class="text-xl">Mes devoirs</h1>
+            <div class="w-full flex row justify-start items-start mb-4">
                 @php
                     $last_ds = new DateTime(Auth::user()->last_ds_generated_at);
                 @endphp
                 @if (Auth::user()->last_ds_generated_at == null || date('Y-m-d') != $last_ds->format('Y-m-d'))
-                    <a href="{{ route('ds.create') }}"
+                    {{-- <a href="{{ route('ds.create') }}"
                         class="bg-blue-100 rounded-lg p-2 link w-44 text-center hover:bg-blue-200 shadow-md transition duration-300">
                         Générer un devoir
-                    </a>
+                    </a> --}}
+                    <x-button-generate href="{{ route('ds.create') }}">
+                        {{ __('Générer un devoir') }}
+                    </x-button-generate>
                 @else
                     {{-- bouton disabled --}}
                     <button

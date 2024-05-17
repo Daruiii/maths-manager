@@ -2,8 +2,9 @@
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <x-back-btn path="{{ route('admin') }}"> Retour</x-back-btn>
 
-        <div class="flex justify-between items-center pt-6">
+        <div class="flex justify-center items-center pt-6">
             <div>
                 <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices de DS ({{ $dsExercises->total() }})</h2>
             </div>
