@@ -193,7 +193,7 @@ class QuizzController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $quizzQuestions = QuizzQuestion::with('answers', 'chapter', 'subchapter')->orderBy('created_at', 'desc');
+        $quizzQuestions = QuizzQuestion::with('answers', 'chapter', 'subchapter');
 
         if ($search) {
             $quizzQuestions->where(function ($query) use ($search) {
@@ -211,10 +211,19 @@ class QuizzController extends Controller
             $chapterActivated = null;
         }
 
+        if ($request->filled('sort_by_subchapter')) {
+            $quizzQuestions->orderBy('subchapter_id', 'asc')->orderBy('created_at', 'desc');
+            $sort_by_subchapter = true;
+        } else {
+            $quizzQuestions->orderBy('created_at', 'desc');
+            $sort_by_subchapter = false;
+        }
+
         $quizzQuestions = $quizzQuestions->paginate(10);
+        
         $chapters = Chapter::all();
 
-        return view('quizz.index', compact('quizzQuestions', 'chapters', 'filterActivated', 'chapterActivated'));
+        return view('quizz.index', compact('quizzQuestions', 'chapters', 'filterActivated', 'chapterActivated', 'sort_by_subchapter'));
     }
 
     // Méthode pour afficher une question et ses réponses

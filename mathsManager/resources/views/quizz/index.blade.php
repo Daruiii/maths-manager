@@ -74,8 +74,18 @@
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Chapitre associé</th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Sous-chapitre associé</th>
+                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider flex row items-center">
+                                    Sous-chapitre associé
+                                    @if ($sort_by_subchapter)
+                                        <a href="{{ route('quizz.index', ['chapter_id' => $chapterActivated->id ?? null]) }}">
+                                            <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(180)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M8.24499 13.1858L11.111 9.39582C11.2877 9.14748 11.5737 9 11.8785 9C12.1833 9 12.4693 9.14748 12.646 9.39582L15.779 13.1858C16.0355 13.5064 16.0955 13.942 15.9351 14.32C15.7747 14.698 15.4198 14.9575 15.011 14.9958H9.01099C8.60251 14.9569 8.24826 14.6971 8.08834 14.3192C7.92841 13.9413 7.98856 13.5062 8.24499 13.1858Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('quizz.index', ['sort_by_subchapter' => 'true', 'chapter_id' => $chapterActivated->id ?? null]) }}">
+                                            <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M8.24499 13.1858L11.111 9.39582C11.2877 9.14748 11.5737 9 11.8785 9C12.1833 9 12.4693 9.14748 12.646 9.39582L15.779 13.1858C16.0355 13.5064 16.0955 13.942 15.9351 14.32C15.7747 14.698 15.4198 14.9575 15.011 14.9958H9.01099C8.60251 14.9569 8.24826 14.6971 8.08834 14.3192C7.92841 13.9413 7.98856 13.5062 8.24499 13.1858Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                                        </a>
+                                    @endif
+                                </th> 
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Nombre de réponses</th>
