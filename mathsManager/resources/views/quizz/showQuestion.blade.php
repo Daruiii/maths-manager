@@ -7,8 +7,8 @@
 <div class="text-center mt-4">
     <p class="text-sm mb-4">Question n°{{ $currentQuestion + 1 }}</p>
 </div>
-    <div class="mt-4">
-        <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-8/12 mx-auto break-words">{!! $question->question !!}</h1>
+    <div class="mt-4 flex flex-col items-center justify-center">
+        <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-7/12 break-words">{!! $question->question !!}</h1>
         <form action="{{ route('check_answer') }}" method="POST" class="mt-6 flex flex-wrap justify-center items-center gap-4 space-x-4">
             @csrf
 

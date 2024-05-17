@@ -28,8 +28,8 @@
                 <p class="text-sm mb-4">Question n°{{ session('currentQuestion') }}</p>
                 <h1 class="text-base font-bold text-red-500">Désolé, votre réponse est incorrecte.</h1>
             </div>
-            <div class="mt-4">
-                <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-8/12 mx-auto break-words">{!! $question->question !!}</h1>
+            <div class="mt-4 flex flex-col items-center justify-center">
+                <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-7/12 break-words">{!! $question->question !!}</h1>
                     <div class="mt-6 flex flex-wrap justify-center items-center gap-4 space-x-4">            
                             <x-radio-btn name="answer" id="answer{{ $answer->id }}" value="{{ $answer->id }}" disabled class="w-full text-sm clue-content cmu-serif sm:w-1/2 p-2">
                                 {!! $answer->answer !!}
