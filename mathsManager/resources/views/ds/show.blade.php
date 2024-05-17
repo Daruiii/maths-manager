@@ -121,6 +121,7 @@
                     </div>
                 @endforeach
             </div>
+            <x-button-back-top />
         </div>
     </div>
     @if ($timerAction == 'start')
