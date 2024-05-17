@@ -5,12 +5,12 @@
 <x-progress-bar currentQuestion="{{$currentQuestion + 1 }}" totalQuestions="{{ count($questions) }}" />
 <section class="container mx-auto slide-left">
 <div class="text-center mt-4">
-    Score : {{ $score }}/ {{ count($questions )}}
+    Question n°{{ $currentQuestion + 1 }}
 </div>
-    <div class="p-6 shadow-md rounded-md">
+    <div class="p-6">
         <h1 class="text-xl font-bold mb-4 clue-content cmu-serif bg-white p-4 rounded-md">{!! $question->question !!}</h1>
 
-        <form action="{{ route('check_answer') }}" method="POST" class="flex flex-wrap justify-between">
+        <form action="{{ route('check_answer') }}" method="POST" class="mt-6 flex flex-wrap justify-center items-center gap-4 space-x-4">
             @csrf
 
             @foreach ($answers as $answer)
@@ -22,7 +22,10 @@
                 </x-radio-btn>
             @endforeach
 
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md mt-4 w-full">Confirmer</button>
+            {{-- <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md mt-4 w-full">Confirmer</button> --}}
+            <div class="mt-6 flex justify-center items-center w-full">
+            <x-button-confirm />
+            </div>
         </form>
     </div>
 </section>

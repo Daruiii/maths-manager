@@ -3,11 +3,24 @@
 @section('content')
 <x-back-btn path="{{ route('end_quizz') }}">Quitter</x-back-btn>
 
-    <section class="flex items-center justify-center h-screen slide-left">
-        <div class="p-6 bg-white shadow-md rounded-md">
-            <h1 class="text-xl font-bold mb-4">Résultat du quizz</h1>
-            <p class="mb-4">Vous avez obtenu un score de {{ $score }} / {{ $totalQuestions }}.</p>
-            <a href="{{ route('start_quizz', $chapter->id) }}" class="px-4 py-2 bg-blue-500 text-white rounded-md">Recommencer un quizz</a>
+    <section class="container mx-auto slide-left mb-8">
+        <div class="bg-white shadow-md rounded-md flex flex-col items-center justify-center mt-8 relative px-16 py-4">
+            @if ($score >= 5)
+            <h1 class="text-xl font-bold mb-4">Résultat du quizz</h1> {{-- image de fin de quizz positif --}}
+            <img src="{{ asset('storage/images/quizzGood.png') }}" alt="image de fin de quizz positif" width="200px" height="200px" class="absolute z-10" style="bottom: 60.75%; transform: translateY(50%);">
+            <div class="flex flex-col items-center justify-center bg-emerald-950 border-4 border-amber-950 w-80 relative z-0 py-14 mt-32 mb-2">
+                <p class="w-full text-center text-2xl text-white chalkabout">{{ $score }} / {{ $totalQuestions }}</p>
+            </div>
+            @else
+            <h1 class="text-xl font-bold mb-4">Résultat du quizz</h1> {{-- image de fin de quizz négatif --}}
+            <img src="{{ asset('storage/images/quizzBad.png') }}" alt="image de fin de quizz négatif" width="200px" height="200px" class="absolute z-10" style="bottom: 65%; transform: translateY(50%);">
+            <div class="flex flex-col items-center justify-center bg-emerald-950 border-4 border-amber-950 w-80 relative z-0 py-14 mt-24 mb-2">
+                <p class="w-full text-center text-2xl text-white chalkabout">{{ $score }} / {{ $totalQuestions }}</p>
+            </div>
+            @endif
+            <x-button-next href="{{ route('start_quizz', $chapter->id) }}">
+                Recommencer un quizz
+            </x-button-next>
         </div>
     </section>
 

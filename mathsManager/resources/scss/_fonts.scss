@@ -1,6 +1,15 @@
 // import and name all my font here 
 
 @font-face {
+    font-family: 'Chalkabout';
+    src: url('../fonts/chalka/Chalkabout.ttf') format('truetype');
+}
+
+.chalkabout {
+    font-family: 'Chalkabout', sans-serif;
+}
+
+@font-face {
     font-family: 'sign painter';
     src: url('../fonts/sign-painter/signpainter_housescript.ttf') format('truetype');
 }

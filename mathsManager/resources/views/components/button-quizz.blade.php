@@ -9,7 +9,8 @@
   padding: 8.5px 20px;
   border: 0;
   border-radius: 100px;
-  background-color: #ffd700;
+  /* équivalent de red-100 */
+  background-color: rgb(239 68 68);
   color: #ffffff;
   font-weight: Bold;
   transition: all 0.5s;
@@ -17,13 +18,13 @@
 }
 
 .quiz-button:hover {
-  background-color: #ffec8b;
+  background-color: rgb(239 68 68);
   box-shadow: 0 0 20px #ffec8b50;
   transform: scale(1.1);
 }
 
 .quiz-button:active {
-  background-color: #ffd700;
+  background-color: rgb(239 68 68);
   transition: all 0.25s;
   -webkit-transition: all 0.25s;
   box-shadow: none;
