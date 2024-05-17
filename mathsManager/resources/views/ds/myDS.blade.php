@@ -206,5 +206,6 @@
         </div>
              <!-- Pagination links -->
              {{ $dsList->links('vendor.pagination.simple-tailwind') }}
+             <x-button-back-top/>
     </div>
 @endsection

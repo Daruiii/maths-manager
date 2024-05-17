@@ -1,4 +1,4 @@
-<header class="bg-secondary-color text-text-color shadow">
+<header class="bg-secondary-color text-text-color shadow" id="top">
     <nav class="px-4 py-2 flex items-center justify-between">
         <a href="{{ route('home') }}" class="logo">{{ config('app.name') }}</a>
         <!-- Menu Toggle Button -->

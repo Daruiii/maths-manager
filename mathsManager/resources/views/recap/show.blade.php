@@ -118,6 +118,9 @@
                     </div>
                 @endforeach
             </div>
+                     <!-- Bouton "Back to the top" -->
+        <x-button-back-top />
         </div>
     </div>
 @endsection
+

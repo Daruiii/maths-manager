@@ -12,3 +12,15 @@ document.addEventListener("DOMContentLoaded", function() {
     loaderForm();
     renderCodeMirror();
 });
+
+window.addEventListener('scroll', function() {
+    var backToTopButton = document.getElementById('back-to-top');
+    if (!backToTopButton) {
+        return;
+    }
+    if (window.pageYOffset > 200) { // Affiche le bouton après avoir défilé de 200px
+        backToTopButton.style.display = 'flex';
+    } else {
+        backToTopButton.style.display = 'none';
+    }
+});

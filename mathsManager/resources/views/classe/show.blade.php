@@ -117,5 +117,6 @@
                 </div>
             @endforeach
         </div>
+        <x-button-back-top />
     </div>
 @endsection
