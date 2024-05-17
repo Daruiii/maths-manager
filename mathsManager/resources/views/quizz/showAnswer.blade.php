@@ -4,7 +4,7 @@
 <x-back-btn path="{{ route('end_quizz') }}">Quitter</x-back-btn>
 <x-progress-bar currentQuestion="{{ session('currentQuestion') }}" totalQuestions="{{ count(session('questions')) }}" />
 
-    <section class="container mx-auto @if($answer->is_correct) slide-left @endif">
+    <section class="container mx-auto @if($answer->is_correct) slide-left @endif mb-8">
         
             @if($answer->is_correct)
             <div class="p-6 bg-white shadow-md rounded-md flex flex-col items-center justify-center mt-8">
@@ -28,9 +28,8 @@
                 <p class="text-sm mb-4">Question n°{{ session('currentQuestion') }}</p>
                 <h1 class="text-base font-bold text-red-500">Désolé, votre réponse est incorrecte.</h1>
             </div>
-                <div class="p-2">
-                    <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md">{!! $question->question !!}</h1>
-            
+            <div class="mt-4">
+                <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-8/12 mx-auto break-words">{!! $question->question !!}</h1>
                     <div class="mt-6 flex flex-wrap justify-center items-center gap-4 space-x-4">            
                             <x-radio-btn name="answer" id="answer{{ $answer->id }}" value="{{ $answer->id }}" disabled class="w-full text-sm clue-content cmu-serif sm:w-1/2 p-2">
                                 {!! $answer->answer !!}
@@ -39,7 +38,7 @@
                                 {!! $correctAnswer->answer !!}
                             </x-radio-btn>
                     </div>
-                    <div class="bg-gray-100 p-4 rounded-md mb-4">
+                    <div class="bg-gray-100 p-4 rounded-md mb-4 w-full md:w-8/12 mx-auto ">
                         <p class="w-full text-start text-sm mb-2">Explication :</p>
                         <p class="w-10/12 text-start cmu-serif clue-content break-words mb-4">{!! $correctAnswer->explanation !!}</p>
                     </div>
