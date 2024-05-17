@@ -8,7 +8,7 @@
     Question n°{{ $currentQuestion + 1 }}
 </div>
     <div class="p-6">
-        <h1 class="text-xl font-bold mb-4 clue-content cmu-serif bg-white p-4 rounded-md">{!! $question->question !!}</h1>
+        <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md">{!! $question->question !!}</h1>
 
         <form action="{{ route('check_answer') }}" method="POST" class="mt-6 flex flex-wrap justify-center items-center gap-4 space-x-4">
             @csrf
