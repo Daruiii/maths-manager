@@ -1,4 +1,4 @@
-<header class="bg-secondary-color text-text-color shadow" id="top">
+<header class="bg-secondary-color text-text-color" id="top">
     <nav class="px-4 py-2 flex items-center justify-between">
         <a href="{{ route('home') }}" class="logo">{{ config('app.name') }}</a>
         <!-- Menu Toggle Button -->
@@ -24,11 +24,7 @@
             @auth
                 <div class="relative" id="profile-dropdown">
                     <button id="profile-toggle" class="flex items-center focus:outline-none">
-                        @if (Auth::user()->role === 'admin')
-                            <span class="text-blue-500 font-bold text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
-                        @else
                             <span class="text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
-                        @endif
                         @if (Str::startsWith(Auth::user()->avatar, 'http'))
                             <img src="{{ Auth::user()->avatar }}" class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300  "alt="Profile Picture">
                         @else

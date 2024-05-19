@@ -99,7 +99,7 @@ class QuizzController extends Controller
             }
         }
 
-        $questions = $selectedQuestions;
+        $questions = $selectedQuestions->shuffle();
 
         session(['questions' => $questions]);
         session(['currentQuestion' => 0]);

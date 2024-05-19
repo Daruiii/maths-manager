@@ -3,13 +3,16 @@
 @section('content')
 <x-back-btn path="{{ route('end_quizz') }}">Quitter</x-back-btn>
 <x-progress-bar currentQuestion="{{$currentQuestion + 1 }}" totalQuestions="{{ count($questions) }}" />
-<section class="container mx-auto slide-left">
+<section class="container mx-auto slide-left mb-8">
 <div class="text-center mt-4">
-    <p class="text-sm mb-4">Question n°{{ $currentQuestion + 1 }}</p>
+    <p class="text-sm mb-2">Question n°{{ $currentQuestion + 1 }}</p>
+    <p class="text-xs"> {{ $question->subchapter->title }} </p>
+
 </div>
-    <div class="mt-4 flex flex-col items-center justify-center md:p-4">
-        <h1 class="text-sm mb-4 clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-7/12 break-words">{!! $question->question !!}</h1>
-        <form action="{{ route('check_answer') }}" method="POST" class="mt-6 flex flex-wrap justify-center items-center gap-4 space-x-4">
+    <div class="w-full mb-2 flex flex-col items-center justify-center md:p-4">
+        <h1 class="text-center text-sm clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-1/2 break-words">{!! $question->question !!}</h1>
+    </div>
+        <form action="{{ route('check_answer') }}" method="POST" class="flex flex-col flex-wrap justify-center items-center">
             @csrf
 
             @foreach ($answers as $answer)
@@ -26,7 +29,6 @@
             <x-button-confirm />
             </div>
         </form>
-    </div>
 </section>
 
 @endsection
