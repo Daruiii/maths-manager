@@ -3,7 +3,7 @@
 
 <div class="radio-input">
   <input type="radio" id="{{ $id }}" name="{{ $name }}" value="{{ $value }}" required="{{ $required }}" {{ $disabled ? 'disabled' : '' }}>
-  <label for="{{ $id }}" class="clue-content cmu-serif text-sm {{ $my_answer ? 'bg-red-500' : ($correct_answer ? 'bg-green-500' : 'bg-gray-200') }}">
+  <label for="{{ $id }}" class="clue-content cmu-serif text-sm {{ $my_answer ? 'bg-red-400' : ($correct_answer ? 'bg-green-400' : 'bg-white') }}">
       <div class="clue-content cmu-serif text-sm"> {!! $slot !!} </div>
   </label>
 </div>
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   padding: 10px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 5px;
   margin-right: 12px;
   cursor: pointer;
@@ -34,7 +34,7 @@
   transition: all 0.3s ease-in-out;
 }
 
-.radio-input label:before {
+/* .radio-input label:before {
   content: "";
   display: block;
   position: absolute;
@@ -44,20 +44,19 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: #f44336; /* Changed from dark to red */
+  background-color: #8d3a7c; 
   border: 2px solid #ccc;
   transition: all 0.3s ease-in-out;
 }
 
 .radio-input input[type="radio"]:checked + label:before {
-  background-color: #f44336; /* Changed from royalblue to red */
+  background-color: #f4e736; 
   top: 0;
-}
+} */
 
 .radio-input input[type="radio"]:checked + label {
-  background-color: #9e9e9e; /* Changed from light green to grey */
+  background-color: #d7d7d7; /* Changed from light green to grey */
   color: #212121;
-  border-color: #f44336; /* Changed from royalblue to red */
   animation: radio-translate 0.5s ease-in-out;
 }
 

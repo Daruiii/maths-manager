@@ -24,13 +24,13 @@
             </div>
         @else
         <div class="text-center mt-4">
-            <p class="text-sm mb-2">Question n°{{ session('currentQuestion') }}</p>
-            <p class="text-xs"> {{ $question->subchapter->title }} </p>
+            <p class="text-sm">Question n°{{ session('currentQuestion') }}</p>
+            {{-- <p class="text-xs"> {{ $question->subchapter->title }} </p> --}}
         </div>
-            <div class="w-full mb-2 flex flex-col items-center justify-center md:p-4">
-                <p class="text-center text-sm clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-1/2 break-words">{!! $question->question !!}</p>
-            </div>
-                <section class="flex flex-col flex-wrap justify-start items-start">
+        <div class="w-full mb-2 flex flex-col items-center justify-center md:p-4">
+            <h1 class="text-center text-sm text-white clue-content cmu-serif px-4 py-8 bg-[#1d5945] border-4 border-[#664729] w-full md:w-1/2 break-words">{!! $question->question !!}</h1>
+        </div>
+                <section class="flex flex-col flex-wrap justify-center items-center">
                     @foreach ($answers as $answersAnswer)        
                         @if ($answersAnswer->id == $answer->id)
                         <x-radio-btn name="answer" id="answer{{ $answersAnswer->id }}" value="{{ $answersAnswer->id }}" my_answer disabled class="w-full text-sm clue-content cmu-serif sm:w-1/2 p-2">
@@ -48,9 +48,9 @@
                     @endforeach
                 </section>
             <h1 class="text-base font-bold text-red-500">Dommage, votre réponse est incorrecte !</h1> 
-            <div class="w-1/2 mb-2 flex flex-col items-center justify-start bg-green-100 p-4 rounded-md">
-                <h1 class="text-start w-full text-xs font-bold">Explication :</h1>
-                <p class="text-center text-sm clue-content cmu-serif w-full md:w-1/2 break-words">{!! $correctAnswer->explanation !!}</p>
+            <div class="w-full mb-2 flex flex-col items-center justify-start md:p-4 rounded-md">
+                <h1 class="text-start w-full md:w-1/2 text-xs">Explication :</h1>
+                <p class="text-center text-sm clue-content cmu-serif w-full md:w-1/2 break-word bg-gray-100 p-4">{!! $correctAnswer->explanation !!}</p>
             </div>
                 <div class="my-2 flex justify-center items-center w-full">
                     @if (session('currentQuestion') == count(session('questions')))
