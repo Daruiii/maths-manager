@@ -21,11 +21,11 @@ class DSController extends Controller
         $dsList = DS::orderBy('created_at', 'desc');
         if (request()->query('search')) {
             $dsList = $dsList->where('type_bac', 'like', '%' . request()->query('search') . '%')
-            ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
-            ->orWhere('status', 'like', '%' . request()->query('search') . '%')
-            ->orWhereHas('user', function ($query) {
-                $query->where('name', 'like', '%' . request()->query('search') . '%');
-            });
+                ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
+                ->orWhere('status', 'like', '%' . request()->query('search') . '%')
+                ->orWhereHas('user', function ($query) {
+                    $query->where('name', 'like', '%' . request()->query('search') . '%');
+                });
         }
         $dsList = $dsList->paginate(10);
 
@@ -163,8 +163,6 @@ class DSController extends Controller
             'harder_exercises' => 'boolean',
             'multiple_chapters' => 'required|array',
             'multiple_chapters.*' => 'exists:multiple_chapters,id',
-            // 'chapters' => 'required|array',
-            // 'chapters.*' => 'exists:chapters,id', 
         ]);
 
         if ($ds != null) {
@@ -172,32 +170,17 @@ class DSController extends Controller
             $ds->exercisesDS()->detach();
         }
 
-        // we will select "exercices_number" ds_exercises randomly from the chapters selected
+        // Select all exercises from the selected chapters
         $exercisesDS = [];
-        // for each chapter selected, we will find all the exercises from the chapter
         foreach ($request->multiple_chapters as $multiple_chapter) {
-            // find all the exercises from the chapter
             $exercises = MultipleChapter::find($multiple_chapter)->dsExercises;
-            // if harder_exercises is not checked, we will select only the exercises with harder_exercise = 0
-            if (!$request->harder_exercises) {
-                $exercises = $exercises->where('harder_exercise', 0);
-            }
-            // if harder_exercises is checked, we will select only the exercises with harder_exercise = 1
-            else {
-                $exercises = $exercises->where('harder_exercise', 1);
-            }
+            $exercises = $request->harder_exercises ? $exercises->where('harder_exercise', 1) : $exercises->where('harder_exercise', 0);
             $exercisesDS = array_merge($exercisesDS, $exercises->toArray());
         }
-        // shuffle the exercisesDS
+        // Shuffle the exercisesDS and remove duplicates
         shuffle($exercisesDS);
-        // supprimer les exercisesDS qui ont le même id
-        foreach ($exercisesDS as $key => $exercise) {
-            foreach ($exercisesDS as $key2 => $exercise2) {
-                if ($key != $key2 && $exercise['id'] == $exercise2['id']) {
-                    unset($exercisesDS[$key]);
-                }
-            }
-        }
+        $exercisesDS = array_unique($exercisesDS, SORT_REGULAR);
+
         if ($request->type_bac) {
             foreach ($exercisesDS as $key => $exercise) {
                 $exercisesDS[$key]['multipleChapter'] = MultipleChapter::find($exercise['multiple_chapter_id']);
@@ -210,50 +193,64 @@ class DSController extends Controller
                     }
                 }
             }
-        }
-        // si on a moins d'exercises que le nombre d'exercises, on va sélectionner le nombre d'exercises qu'on a et réduire le nombre d'exercises
-        if (count($exercisesDS) < $request->exercises_number) {
-            $new_exercises_number = count($exercisesDS);
-        }
-        // selectionner soit $new_exercises_number soit $request->exercises_number
-        $exercisesDS = array_slice($exercisesDS, 0, $new_exercises_number ?? $request->exercises_number);
+        } else {
+            // Créez un tableau pour stocker les id des chapitres déjà sélectionnés
+            $selectedChapters = [];
+            $selectedExercises = [];
 
-        // somme de time de tous les exercisesDS pour avoir le temps total du DS
-        $TotalTime = 0;
-        foreach ($exercisesDS as $exercise) {
-            $TotalTime += $exercise['time'];
+            // Récupérez tous les chapitres en une seule requête
+            $allChapters = MultipleChapter::all();
+
+            foreach ($exercisesDS as $key => $exercise) {
+                $multipleChapter = $allChapters->firstWhere('id', $exercise['multiple_chapter_id']);
+                if ($multipleChapter) {
+                    // Si le chapitre n'a pas encore été sélectionné, ajoutez l'exercice
+                    if (!in_array($multipleChapter->id, $selectedChapters)) {
+                        $selectedChapters[] = $multipleChapter->id;
+                        $selectedExercises[] = $exercise;
+                        unset($exercisesDS[$key]);
+                    }
+                } else {
+                    throw new \Exception("Le chapitre de l'exercice n'a pas été trouvé");
+                }
+            }
+            // Si nous n'avons pas encore atteint le nombre d'exercices demandé, ajoutez des exercices supplémentaires
+            while (count($selectedExercises) < $request->exercises_number && count($exercisesDS) > 0) {
+                $selectedExercises[] = array_shift($exercisesDS);
+            }
+            $exercisesDS = $selectedExercises;
         }
+
+        // If there are fewer exercises than the number of exercises, select the number of exercises we have and reduce the number of exercises
+        $exercisesDS = array_slice($exercisesDS, 0, min(count($exercisesDS), $request->exercises_number));
+
+        // Calculate the total time of all exercises
+        $TotalTime = array_sum(array_column($exercisesDS, 'time'));
 
         // il y aura la plus part du temps plus de multiple_chapters que nécessaire
         // on va donc sélectionner seulement les multiple_chapters des exos sélectionnés
-        $multiple_chapters = [];
-        foreach ($exercisesDS as $exercise) {
-            $multiple_chapters[] = $exercise['multiple_chapter_id'];
-        }
-        $multiple_chapters = array_unique($multiple_chapters);
+        $multiple_chapters = array_unique(array_column($exercisesDS, 'multiple_chapter_id'));
 
-        // we will store only the id of the exercisesDS
-        $exercisesDS = array_map(function ($exercise) {
-            return $exercise['id'];
-        }, $exercisesDS);
+        // Store only the id of the exercisesDS
+        $exercisesDS = array_column($exercisesDS, 'id');
 
         $user = Auth::user();
 
         if ($ds == null) { // if we are creating a new DS
-          
+
             // check if user last_ds_generated_at was today
-            if ($user->last_ds_generated_at != null ){
+            if ($user->last_ds_generated_at != null) {
                 $last_ds_generated_at = new \DateTime($user->last_ds_generated_at);
                 $today = new \DateTime();
                 if ($last_ds_generated_at->format('Y-m-d') == $today->format('Y-m-d')) {
-                return redirect()->route('ds.create')->with('error', 'Vous avez déjà généré un DS aujourd\'hui');
-            }
+                    return redirect()->route('ds.create')->with('error', 'Vous avez déjà généré un DS aujourd\'hui');
+                }
             }
             $ds = new DS;
             $ds->user_id = Auth::id();
         }
         $ds->type_bac =  $request->has('type_bac') ? true : false;
-        $ds->exercises_number = $new_exercises_number ?? $request->exercises_number;
+        $ds->exercises_number = count($exercisesDS);
         $ds->harder_exercises = $request->has('harder_exercises') ? true : false;
         $ds->time = $TotalTime;
         $ds->timer = $TotalTime * 60; // timer in seconds
@@ -261,15 +258,12 @@ class DSController extends Controller
         $ds->status = "not_started";
         $ds->save();
 
-        // $ds->chapters()->attach($request->chapters);
+        // Attach the multiple chapters and exercises to the DS
         $ds->multipleChapters()->attach($multiple_chapters);
         $ds->exercisesDS()->attach($exercisesDS);
 
-        if ($user->role == 'admin' || $user->role == 'teacher') {
-            $user->last_ds_generated_at = null;
-        } else {
-            $user->last_ds_generated_at = now();
-        }   
+        // Update the user's last_ds_generated_at property and save the user
+        $user->last_ds_generated_at = ($user->role == 'admin' || $user->role == 'teacher') ? null : now();
         $user->save();
 
         return $ds;
@@ -299,7 +293,7 @@ class DSController extends Controller
         // $path2 = public_path('storage/correctionRequests/' . $id);
         $path = file_exists(public_path('storage/correctionRequests/' . $id . '/correction')) ? public_path('storage/correctionRequests/' . $id . '/correction') : null;
         $path2 = file_exists(public_path('storage/correctionRequests/' . $id)) ? public_path('storage/correctionRequests/' . $id) : null;
-         // foreach path != null, delete the content of the folder and the folder
+        // foreach path != null, delete the content of the folder and the folder
         if ($path != null) {
             $files = glob($path . '/*');
             foreach ($files as $file) {
