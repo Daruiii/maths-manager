@@ -4,7 +4,7 @@
 <div class="radio-input">
   <input type="radio" id="{{ $id }}" name="{{ $name }}" value="{{ $value }}" required="{{ $required }}" {{ $disabled ? 'disabled' : '' }}>
   <label for="{{ $id }}" class="clue-content cmu-serif text-sm {{ $my_answer ? 'bg-red-400' : ($correct_answer ? 'bg-green-400' : 'bg-white') }}">
-      <div class="clue-content cmu-serif text-sm"> {!! $slot !!} </div>
+      <div class="w-full text-center clue-content cmu-serif text-sm"> {!! $slot !!} </div>
   </label>
 </div>
 
@@ -26,6 +26,7 @@
   display: flex;
   align-items: center;
   padding: 10px;
+  min-width: 200px;
   /* border: 1px solid #ccc; */
   border-radius: 5px;
   margin-right: 12px;

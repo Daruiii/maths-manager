@@ -47,9 +47,8 @@
                         @endif
                     @endforeach
                 </section>
-            <h1 class="text-base font-bold text-red-500">Dommage, votre réponse est incorrecte !</h1> 
             <div class="w-full mb-2 flex flex-col items-center justify-start md:p-4 rounded-md">
-                <h1 class="text-start w-full md:w-1/2 text-xs">Explication :</h1>
+                <h1 class="text-center w-full md:w-1/2 text-xs mb-2">Explication</h1>
                 <p class="text-center text-sm clue-content cmu-serif w-full md:w-1/2 break-word bg-gray-100 p-4">{!! $correctAnswer->explanation !!}</p>
             </div>
                 <div class="my-2 flex justify-center items-center w-full">
