@@ -89,6 +89,7 @@ class QuizzController extends Controller
             $subchapterQuestions = $subchapterQuestions->shuffle();
             if (!$subchapterQuestions->isEmpty()) {
                 $selectedQuestions->push($subchapterQuestions->pop());
+                $questions[$subchapterId] = $subchapterQuestions;
             }
         }
 
@@ -99,6 +100,7 @@ class QuizzController extends Controller
                 }
                 if (!$subchapterQuestions->isEmpty()) {
                     $selectedQuestions->push($subchapterQuestions->pop());
+                    $questions[$subchapterId] = $subchapterQuestions;
                 } else {
                     $questions->forget($subchapterId);
                 }
