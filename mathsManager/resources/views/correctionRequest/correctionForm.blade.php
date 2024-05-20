@@ -42,7 +42,8 @@
                 <input type="float" id="grade" class="form-control" name="grade" min="0" max="20" required value="{{ $correctionRequest->grade ?? '' }}">
             </div>
         
-            <button type="submit" class="submit-btn-form">Envoyer la correction</button>
+            {{-- <button type="submit" class="submit-btn-form">Envoyer la correction</button> --}}
+            <x-btn-send />            
         </form>
     </div>
 </section>
