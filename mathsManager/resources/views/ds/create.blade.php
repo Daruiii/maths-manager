@@ -79,7 +79,7 @@
                                 <i class="fas fa-caret-down"></i>
                             </div>
                             <div class="multiselect__dropdown">
-                                <input type="text" class="multiselect__filter" placeholder="Rechercher...">
+                                <input type="text" id="search"class="multiselect__filter" placeholder="Rechercher...">
                                 <div class="multiselect__options" style="max-height: 500px; overflow-y: auto;">
                                     {{-- input tout selectionner --}}
                                     <input type="checkbox" class="multiselect__checkbox" value="all" id="selectAll"
@@ -105,6 +105,21 @@
         </div>
     </section>
     <script>
+              document.getElementById('search').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+
+            const options = document.querySelectorAll('.multiselect__option');
+
+            options.forEach(option => {
+                const label = option.querySelector('.multiselect__label').textContent.toLowerCase();
+
+                if (label.includes(searchValue)) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
         document.addEventListener('DOMContentLoaded', function() {
             const chaptersCheckboxes = document.querySelectorAll('.multiselect__checkbox');
             const selectAll = document.getElementById('selectAll');

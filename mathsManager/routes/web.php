@@ -137,6 +137,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('/ds', [DSController::class, 'index'])->name('ds.index');
+        Route::get('/ds/assign', [DSController::class, 'assignDS'])->name('ds.assign');
+        Route::post('/ds/assign', [DSController::class, 'assignDS'])->name('ds.assign.store'); 
         Route::get('/ds/{id}/edit', [DSController::class, 'edit'])->name('ds.edit');
         Route::patch('/ds/{id}', [DSController::class, 'update'])->name('ds.update');
     });

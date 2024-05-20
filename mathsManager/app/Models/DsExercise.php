@@ -24,6 +24,6 @@ class DsExercise extends Model
 
     public function multipleChapter()
     {
-        return $this->belongsTo(MultipleChapter::class)->onDelete('cascade');
+        return $this->belongsTo(MultipleChapter::class, 'multiple_chapter_id');
     }
 }

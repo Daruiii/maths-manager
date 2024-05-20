@@ -8,8 +8,8 @@
         <div class="flex justify-between items-center mt-16">
                 <x-search-bar-admin action="{{ route('ds.index') }}" placeholder="Rechercher un DS..." name="search" />
                 <h2 class="text-lg leading-6 font-medium text-gray-900">DS</h2>
-                <a href="{{ route('ds.create') }}"
-                class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Générer
+                <a href="{{ route('ds.assign') }}"
+                class="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">Assigner
                 un DS</a>
             </div>
          

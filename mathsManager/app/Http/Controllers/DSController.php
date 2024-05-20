@@ -9,6 +9,7 @@ use App\Models\Chapter;
 use App\Models\DsExercise;
 use App\Models\MultipleChapter;
 use App\Models\CorrectionRequest;
+use App\Models\User;
 use Illuminate\Pagination\Paginator;
 
 
@@ -267,6 +268,62 @@ class DSController extends Controller
         $user->save();
 
         return $ds;
+    }
+
+    // méthode pour créer un ds manuellement et l'assigner à un élève
+    public function assignDS(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'type_bac' => 'boolean',
+                'exercises_number' => 'required|integer|min:1|max:4',
+                'harder_exercises' => 'boolean',
+                'exercisesDS' => 'required|array',
+                'exercisesDS.*' => 'exists:exercises,id',
+                'user_id' => 'required|exists:users,id',
+            ]);
+
+            // Récupérez les IDs des exercices sélectionnés
+            $exercisesDSIds = $request->input('exercisesDS');
+
+            if (count($exercisesDSIds) < $request->input('exercises_number')) {
+                return redirect()->route('ds.assign')->with('error', 'Vous avez sélectionné moins d\'exercices que le nombre choisi');
+            } else if (count($exercisesDSIds) > $request->input('exercises_number')) {
+                return redirect()->route('ds.assign')->with('error', 'Vous avez sélectionné plus d\'exercices que le nombre choisi');
+            }
+
+            // Récupérez les exercices correspondants de la base de données
+            $exercises = DsExercise::findMany($exercisesDSIds);
+
+            // récupérez les multiple_chapters_id des exercices sélectionnés
+            $multiple_chapters = array_unique(array_column($exercises->toArray(), 'multiple_chapter_id'));
+            // Calculez la somme de leur temps
+            $time = $exercises->sum('time');
+
+            // Créez un nouveau DS avec les exercices sélectionnés
+            $ds = new DS;
+            $ds->user_id = $request->input('user_id');
+            $ds->type_bac = $request->has('type_bac') ? true : false;
+            $ds->exercises_number = $request->input('exercises_number');
+            $ds->harder_exercises = $request->has('harder_exercises') ? true : false;
+            $ds->time = $time; // Ajoutez cette ligne
+            $ds->timer = $time * 60; // timer in seconds
+            $ds->chrono = "0";
+            $ds->status = "not_started";
+            $ds->save();
+
+            $ds->multipleChapters()->attach($multiple_chapters);
+            $ds->exercisesDS()->attach($exercisesDSIds);
+
+            return redirect()->route('ds.index')->with('success', 'DS assigned successfully');
+        }
+
+        // Récupérez tous les exercices et tous les utilisateurs
+        $exercises = DsExercise::with('multipleChapter')->get();
+        $users = User::all();
+
+        // Passez les données à la vue
+        return view('ds.assign', compact('exercises', 'users'));
     }
 
     // Méthode pour éditer un DS
