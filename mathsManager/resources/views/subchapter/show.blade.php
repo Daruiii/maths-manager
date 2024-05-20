@@ -130,13 +130,13 @@
                                         @endif
                                     </div>
 
-                                    <div x-show="showClue" class="bg-[#D4D68D] w-full p-2 rounded-lg">
+                                    <div x-show="showClue" class="bg-yellow-100 w-full p-2 rounded-lg">
                                         {{-- <h3 class="exercise-cc font-bold">Indice:</h3> --}}
                                         <div class="clue-content text-sm p-4 cmu-serif">
                                             {!! $ex->clue !!}
                                         </div>
                                     </div>
-                                    <div x-show="showSolution" class="exercise-cc bg-[#D68D8D] w-full p-2 rounded-lg">
+                                    <div x-show="showSolution" class="exercise-cc bg-red-100 w-full p-2 rounded-lg">
                                         {{-- <h3 class="exercise-cc font-bold">Correction:</h3> --}}
                                         <div class="solution-content text-sm p-4 cmu-serif">
                                             {!! $ex->solution !!}
