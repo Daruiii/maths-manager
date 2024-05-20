@@ -12,7 +12,7 @@
     <div class="w-full mb-2 flex flex-col items-center justify-center md:p-4">
         <h1 class="text-center text-sm clue-content cmu-serif bg-white p-4 rounded-md w-full md:w-1/2 break-words">{!! $question->question !!}</h1>
     </div>
-        <form action="{{ route('check_answer') }}" method="POST" class="flex flex-col flex-wrap justify-center items-center">
+        <form action="{{ route('check_answer') }}" method="POST" class="flex flex-col flex-wrap justify-start items-start">
             @csrf
 
             @foreach ($answers as $answer)

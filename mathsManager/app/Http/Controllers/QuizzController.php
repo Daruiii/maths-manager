@@ -81,29 +81,37 @@ class QuizzController extends Controller
         $questions = QuizzQuestion::where('chapter_id', $chapter_id)
             ->get()
             ->groupBy('subchapter_id')
-            ->map(function ($subchapterQuestions) {
-                return $subchapterQuestions->shuffle();
-            })
-            ->flatten(1);
-
-        if ($questions->count() < 10) {
-            return redirect()->route('classe.show', ['level' => $questions[0]->chapter->classe->level]);
-        }
+            ->shuffle();
 
         $selectedQuestions = collect();
-        for ($i = 0; $i < 10; $i++) {
-            foreach ($questions->chunk(10) as $chunk) {
-                if ($selectedQuestions->count() < 10 && isset($chunk[$i])) {
-                    $selectedQuestions->push($chunk[$i]);
+
+        foreach ($questions as $subchapterId => $subchapterQuestions) {
+            $subchapterQuestions = $subchapterQuestions->shuffle();
+            if (!$subchapterQuestions->isEmpty()) {
+                $selectedQuestions->push($subchapterQuestions->pop());
+            }
+        }
+
+        while ($selectedQuestions->count() < 10 && !$questions->isEmpty()) {
+            foreach ($questions as $subchapterId => $subchapterQuestions) {
+                if ($selectedQuestions->count() >= 10) {
+                    break;
+                }
+                if (!$subchapterQuestions->isEmpty()) {
+                    $selectedQuestions->push($subchapterQuestions->pop());
+                } else {
+                    $questions->forget($subchapterId);
                 }
             }
         }
 
-        $questions = $selectedQuestions->shuffle();
+        $selectedQuestions = $selectedQuestions->shuffle();
 
-        session(['questions' => $questions]);
+        session(['questions' => $selectedQuestions]);
         session(['currentQuestion' => 0]);
         session(['score' => 0]);
+
+        // dd($selectedQuestions->pluck('subchapter_id'));
 
         return redirect()->route('show_question');
     }
@@ -138,7 +146,9 @@ class QuizzController extends Controller
         $incorrectAnswers = $incorrectAnswers->random(min(3, $incorrectAnswers->count()));
 
         // Merge and shuffle the answers
+        session()->forget('answers');
         $answers = $correctAnswer->merge($incorrectAnswers)->shuffle();
+        session(['answers' => $answers]);
 
         return view('quizz.showQuestion', compact('question', 'answers', 'currentQuestion', 'questions', 'score', 'correctAnswer'));
     }
@@ -160,13 +170,14 @@ class QuizzController extends Controller
 
     public function showAnswer(int $answer_id, int $correctAnswer)
     {
+        $answers = session('answers');
         $answer = QuizzAnswer::findOrFail($answer_id);
         $correctAnswer = QuizzAnswer::findOrFail($correctAnswer);
         $question = $answer->question;
 
         session()->increment('currentQuestion');
 
-        return view('quizz.showAnswer', compact('answer', 'correctAnswer', 'question'));
+        return view('quizz.showAnswer', compact('answer', 'correctAnswer', 'question', 'answers'));
     }
 
     // Méthode pour afficher le résultat du quizz
@@ -220,7 +231,7 @@ class QuizzController extends Controller
         }
 
         $quizzQuestions = $quizzQuestions->paginate(10);
-        
+
         $chapters = Chapter::all();
 
         return view('quizz.index', compact('quizzQuestions', 'chapters', 'filterActivated', 'chapterActivated', 'sort_by_subchapter'));
