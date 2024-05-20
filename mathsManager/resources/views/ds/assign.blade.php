@@ -50,31 +50,6 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="flex items-center gap-1">
-                        <label>Type bac :</label>
-                        <input type="checkbox" id="type_bac" name="type_bac" value="1">
-                    </div>
-                    <p class="form-explain">En cochant cette case, une simulation du bac aléatoire de 4 exercices se génère
-                        automatiquement, vous ne pouvez donc pas choisir les chapitres.</p>
-                </div>
-
-                <div class="form-group">
-                    <label for="exercises_number">Nombre d'exercices :</label>
-                    <select name="exercises_number" id="exercises_number">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4" selected>4</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <div class="flex items-center gap-1">
-                        <label for="harder_exercises">Mode difficile :</label>
-                        <input type="checkbox" id="harder_exercises" name="harder_exercises" value="1">
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="exercises">Sélectionner des exercices :</label>
                     <div class="multiselect">
                         <div class="multiselect__selected" tabindex="0">
@@ -84,15 +59,11 @@
                             <input type="text" id="search" class="multiselect__filter" placeholder="Rechercher...">
                             <div class="multiselect__options" style="max-height: 500px; overflow-y: auto;">
                                 {{-- input tout selectionner --}}
-                                <input type="checkbox" class="multiselect__checkbox" value="all" id="selectAllExercises"
-                                    name="all">
-                                <span class="multiselect__label comfortaa-light text-sm" id="selectAllExercises">Tout
-                                    sélectionner</span>
                                 @foreach ($exercises as $exercise)
                                     <div class="multiselect__option m-0">
                                         <input type="checkbox" class="multiselect__checkbox" value="{{ $exercise->id }}"
                                             name="exercisesDS[]">
-                                        <span class="multiselect__label comfortaa-light text-sm"
+                                        <span class="multiselect__label comfortaa-light text-sm p-2 rounded"
                                             style="background-color: {{ $exercise->multipleChapter->theme }};">{{ $exercise->name }}
                                             #{{ $exercise->id }}</span>
                                     </div>
@@ -122,38 +93,6 @@
                 }
             });
         });
-        document.addEventListener('DOMContentLoaded', function() {
-            const exercisesCheckboxes = document.querySelectorAll('.multiselect__checkbox');
-            const selectAllExercises = document.getElementById('selectAllExercises');
 
-            // if select all is checked, select all checkboxes
-            document.getElementById('selectAllExercises').addEventListener('change', function() {
-                if (this.checked) {
-                    exercisesCheckboxes.forEach(checkbox => {
-                        checkbox.checked = true;
-                    });
-                } else {
-                    exercisesCheckboxes.forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                }
-            });
-            document.getElementById('type_bac').addEventListener('change', function() {
-                const dsFormWrapper = document.getElementById('dsFormWrapper');
-                if (this.checked) {
-                    exercisesCheckboxes.forEach(checkbox => {
-                        checkbox.checked = true;
-                    });
-                    exercises_number.value = 4;
-                    harder_exercises.checked = false;
-                    dsFormWrapper.style.display = 'none';
-                } else {
-                    exercisesCheckboxes.forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                    dsFormWrapper.style.display = 'block';
-                }
-            });
-        });
     </script>
 @endsection

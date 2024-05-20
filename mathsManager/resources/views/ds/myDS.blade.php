@@ -120,8 +120,13 @@
                         {{ $ds->status == 'finished' ? 'bg-blue-50' : '' }}
                         {{ $ds->status == 'sent' ? 'bg-gray-200' : '' }}
                         {{ $ds->status == 'corrected' ? 'bg-gray-200' : '' }}">
+                        @if ($ds->chrono == 10)
+                        <p class="text-xs text-center font-bold"> Devoir du professeur n°
+                            {{ $dsList->total() - ($index + ($dsList->currentPage() - 1) * $dsList->perPage()) }}</p>
+                        @else
                         <p class="text-xs text-center font-bold"> {{ $ds->type_bac ? 'Type Bac' : 'Devoir' }} n°
                             {{ $dsList->total() - ($index + ($dsList->currentPage() - 1) * $dsList->perPage()) }}</p>
+                        @endif
                         <div class="ds-text-body">
                             @if ($ds->status == 'corrected')
                                 <div class="flex row justify-center items-center gap-1 border-y border-gray-300 mb-1">
