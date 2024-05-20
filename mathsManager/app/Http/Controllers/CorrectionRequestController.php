@@ -98,7 +98,7 @@ class CorrectionRequestController extends Controller
         $ds->status = 'sent';
         $ds->save();
 
-        return redirect()->route('ds.myDS', Auth::user()->id);
+        return redirect()->route('ds.myDS', Auth::user()->id)->with('success', 'Votre demande de correction a été envoyée avec succès');
     }
 
     // Méthode for show the correction request

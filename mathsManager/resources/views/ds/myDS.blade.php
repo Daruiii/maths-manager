@@ -207,13 +207,36 @@
                 <div class="flex justify-center flex-col items-center w-full h-20 ">
                     <h2 class="text-gray-500">Vous n'avez pas encore de devoir</h2>
                     <div class="flex justify-center items-center w-1/2">
-                        <p class="text-center text-gray-500 text-xs">Générez jusqu'a 1 devoir par jour pour vous entrainer ! Choisissez les chapitres que vous voulez travailler et lancez le chrono !</p>
+                        <p class="text-center text-gray-500 text-xs">Générez jusqu'a 1 devoir par jour pour vous entrainer !
+                            Choisissez les chapitres que vous voulez travailler et lancez le chrono !</p>
                     </div>
                 </div>
             @endif
         </div>
-             <!-- Pagination links -->
-             {{ $dsList->links('vendor.pagination.simple-tailwind') }}
-             <x-button-back-top/>
+        <!-- Pagination links -->
+        {{ $dsList->links('vendor.pagination.simple-tailwind') }}
+        <x-button-back-top />
     </div>
+    @if (session('success'))
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        toastr.success("{{ session('success') }}");
+    </script>
+@endif
 @endsection
