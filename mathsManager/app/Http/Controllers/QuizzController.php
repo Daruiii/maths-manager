@@ -189,8 +189,66 @@ class QuizzController extends Controller
         $questions = session('questions');
         $chapter = QuizzQuestion::find($questions[0]->id)->chapter;
         $totalQuestions = count($questions);
+        $messagesUnder02 = [
+            "T'étais malade pendant ce chapitre ?",
+            "Outch, j'en ai mal au cerveau",
+            "J'ai connu mieux, mais jamais pire ...",
+            "J'en connais un(e) qui aura pas son bac",
+            "On est le premier avril ?",
+            "Les classes de 6ème ne sont pas encore disponible sur le site",
+            "Le bac c'est dans moins d'un mois au cas ou"
+        ];
+        $messagesUnder35 = [
+            "Aie aie aie...",
+            "Tu as encore du boulot",
+            "Il serait temps d'ouvrir un cahier",
+            "Le bac c'est dans moins d'un mois au cas ou",
+            "C'était facile alors imagine quand c'est dur"
+        ];
+        $messagesUnder67 = [
+            "Bon aller, on avance !",
+            "Pas mal, mais tu peux mieux faire",
+            "Mouais...",
+            "Pas excellent mais potable",
+            "T'as eu de la chance alors ressaisi toi",
+            "Ça vva ça va"
+        ];
+        $messagesUnder89 = [
+            "C'est bien mais pas parfait",
+            "Oui on y est allez !",
+            "On avance bien là",
+            "Ah là, on est bien",
+            "Bah voila c'était dur ?",
+            "Ça y est, nous y est",
+            "Ça y est les bonnes notes arrivent",
+            "Bien joué !"
+        ];
 
-        return view('quizz.showResult', compact('score', 'totalQuestions', 'chapter'));
+        $messages10 = [
+            "Merci ChatGPT hein",
+            "Excellent travail !",
+            "Une grande carrière s'annonce",
+            "Même moi j'aurais pas fait mieux",
+            "T'as changé",
+            "Toutes mes félicitations",
+            "Refais en un pour voir ...",
+        ];
+
+        if ($score < 2) {
+            $message = $messagesUnder02[array_rand($messagesUnder02)];
+        } elseif ($score < 5) {
+            $message = $messagesUnder35[array_rand($messagesUnder35)];
+        } elseif ($score < 7) {
+            $message = $messagesUnder67[array_rand($messagesUnder67)];
+        } elseif ($score < 9) {
+            $message = $messagesUnder89[array_rand($messagesUnder89)];
+        } else {
+            $message = $messages10[array_rand($messages10)];
+        }
+
+        
+
+        return view('quizz.showResult', compact('score', 'totalQuestions', 'chapter', 'message'));
     }
 
     // méthode pour mettre fin à un quizz

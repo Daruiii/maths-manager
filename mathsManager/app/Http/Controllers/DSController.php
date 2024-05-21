@@ -36,6 +36,9 @@ class DSController extends Controller
     // Méthode pour afficher les DS de l'utilisateur connecté
     public function indexUser($id)
     {
+        if (Auth::id() != $id) {
+            return redirect()->route('ds.myDS', Auth::id());
+        }
         // with chapters and exercisesDS
         $dsList = DS::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
         foreach ($dsList as $ds) {

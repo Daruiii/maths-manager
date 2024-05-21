@@ -20,7 +20,7 @@ $font-size-xxlarge: 4rem;
 // SCROLLBAR
 /* This will affect the scrollbar in the whole page */
 ::-webkit-scrollbar {
-    width: 10px; /* Width of the scrollbar */
+    width: 3px; /* Width of the scrollbar */
 }
 
 ::-webkit-scrollbar-track {
@@ -34,3 +34,30 @@ $font-size-xxlarge: 4rem;
 ::-webkit-scrollbar-thumb:hover {
     background: #555; /* Color of the scroll thumb on hover */
 }
+
+// speech bubble
+  .speech-bubble {
+        position: relative;
+        background: #808080;
+        border-radius: .4em;
+        color: white;
+        padding: 1em;
+        font-size: 0.58rem;
+        text-align: center;
+        max-height: 42px;
+    }
+
+    .speech-bubble:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border: 20px solid transparent;
+        border-top-color: #808080;
+        border-bottom: 0;
+        border-left: 0;
+        margin-left: -10px;
+        margin-bottom: -20px;
+    }
