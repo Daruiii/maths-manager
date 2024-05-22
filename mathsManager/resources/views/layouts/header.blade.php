@@ -16,6 +16,7 @@
             <a href="{{ route('ds.myDS', Auth::user()->id) }}" class="link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
             
                 @if (Auth::user()->role === 'admin')
+                <a href="{{ route('students.show') }}" class="link {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes élèves</a>
                     <a href="{{ route('admin') }}" class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is("admin") ? 'active' : '' }}">admin</a>
                 @endif
             @endauth

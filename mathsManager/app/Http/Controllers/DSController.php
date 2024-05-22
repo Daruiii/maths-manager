@@ -311,15 +311,16 @@ class DSController extends Controller
             $ds->multipleChapters()->attach($multiple_chapters);
             $ds->exercisesDS()->attach($exercisesDSIds);
 
-            return redirect()->route('ds.index')->with('success', 'DS assigned successfully');
+            return redirect()->route('students.show')->with('success', 'DS assigned successfully');
         }
 
         // Récupérez tous les exercices et tous les utilisateurs
         $exercises = DsExercise::with('multipleChapter')->get();
         $users = User::all();
+        $student = $request->input('student_id');
 
         // Passez les données à la vue
-        return view('ds.assign', compact('exercises', 'users'));
+        return view('ds.assign', compact('exercises', 'users', 'student'));
     }
 
     // Méthode pour éditer un DS

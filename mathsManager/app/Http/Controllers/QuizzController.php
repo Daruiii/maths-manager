@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\QuizzQuestion;
 use App\Models\QuizzAnswer;
+use App\Models\Quizze;
+use App\Models\QuizzDetail;
 use App\Models\Chapter;
 use App\Models\Subchapter;
 
@@ -155,6 +157,61 @@ class QuizzController extends Controller
         return view('quizz.showQuestion', compact('question', 'answers', 'currentQuestion', 'questions', 'score', 'correctAnswer'));
     }
 
+    protected function createOrUpdateQuiz($currentQuestion, $score, $question, $questions, $answer) 
+    {
+        // Check if it's the first question
+        if ($currentQuestion == 0) {
+            // Get the count of quizzes for the student
+            $quizzesCount = Quizze::where('student_id', auth()->id())->count();
+
+            // If the student already has 10 quizzes, delete the oldest one
+            if ($quizzesCount >= 10) {
+                $oldestQuiz = Quizze::where('student_id', auth()->id())
+                    ->oldest()
+                    ->first();
+
+                // Delete the associated QuizzDetails
+                $oldestQuiz->details()->delete();
+
+                // Delete the Quizze
+                $oldestQuiz->delete();
+            }
+
+            // Create a new quizz
+            $quizz = Quizze::create([
+                'student_id' => auth()->id(),
+                'chapter_id' => $question->chapter_id,
+                'score' => $score
+            ]);
+
+            // Create QuizzDetails for all questions
+            foreach ($questions as $quizQuestion) {
+                $quizzDetail = new QuizzDetail();
+                $quizzDetail->quizz_id = $quizz->id;
+                $quizzDetail->question_id = $quizQuestion->id;
+                $quizzDetail->chosen_answer_id = null; // or some default value
+                $quizzDetail->save();
+            }
+
+            // Store the quiz ID in the session
+            session(['quizz_id' => $quizz->id]);
+        } else {
+            // Update the existing quizz
+            $quizz = Quizze::where('id', session('quizz_id'))->first();
+            $quizz->score = $score;
+            $quizz->save();
+
+            // Update the QuizzDetail when the user answers a question
+            $quizzDetail = QuizzDetail::where('quizz_id', $quizz->id)
+                ->where('question_id', $question->id)
+                ->first();
+            $quizzDetail->chosen_answer_id = $answer;
+            $quizzDetail->save();
+        }
+
+        return $quizz;
+    }
+
     // Méthode pour vérifier la réponse donnée par l'utilisateur
     public function checkAnswer(Request $request)
     {
@@ -166,6 +223,8 @@ class QuizzController extends Controller
         if ($answer->quizz_question_id == $question->id && $answer->is_correct) {
             session()->increment('score');
         }
+
+        $quizz = $this->createOrUpdateQuiz($currentQuestion, session('score'), $question, $questions, $answer->id);
 
         return redirect()->route('show_answer', ['answer_id' => $request->answer, 'correct_answer' => $correctAnswer]);
     }
@@ -246,7 +305,7 @@ class QuizzController extends Controller
             $message = $messages10[array_rand($messages10)];
         }
 
-        
+
 
         return view('quizz.showResult', compact('score', 'totalQuestions', 'chapter', 'message'));
     }

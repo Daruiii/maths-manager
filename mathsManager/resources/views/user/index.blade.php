@@ -9,21 +9,11 @@
                 <h2 class="text-lg leading-6 font-medium text-gray-900">Utilisateurs ({{ $users->total() }})</h2>
             </div>
             <div>
-                {{-- <a href="{{ route('user.create') }}"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green active:bg-green-700 transition ease-in-out duration-150">
-                    Ajouter un utilisateur
-                </a> --}}
                 <x-button-add href="{{ route('user.create') }}">Utilisateur</x-button-add>
             </div>
         </div>
         {{-- Search form --}}
         <div class="flex justify-between items-center py-3">
-            {{-- <form method="GET" action="{{ route('users.index') }}" class="flex space-x-4">
-                <input type="text" name="search" class="form-input rounded-md shadow-sm mt-1 block w-full"
-                    placeholder="Rechercher un utilisateur...">
-                <button type="submit"
-                    class="px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Rechercher</button>
-            </form> --}}
             <x-search-bar-admin action="{{ route('users.index') }}" placeholder="Rechercher un utilisateur..."
                 name="search" />
         </div>

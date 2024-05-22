@@ -23,6 +23,15 @@ class UserController extends Controller
         return view('user.index', compact('users'));
     }
 
+    // Affiche la liste paginée des students
+    public function showStudents()
+    {
+        // Get all students
+        $students = User::where('role', 'student')->paginate(10);
+
+        // Return the view
+        return view('user.showStudents', compact('students'));
+    }
 
     // Affiche le formulaire de création d'un nouvel utilisateur
     public function create()
@@ -62,9 +71,9 @@ class UserController extends Controller
             'password' => 'sometimes|min:6',
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
-    
+
         $user = User::findOrFail($id);
-    
+
         if ($request->hasFile('avatar')) {
             // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
             if ($user->avatar && $user->avatar != 'default.jpg') {
@@ -73,7 +82,7 @@ class UserController extends Controller
                     unlink($oldAvatarPath);
                 }
             }
-    
+
             // Stocke le nouvel avatar
             $newAvatar = $request->file('avatar');
             $destinationPath = public_path('/storage/images');
@@ -81,11 +90,11 @@ class UserController extends Controller
             $newAvatar->move($destinationPath, $avatarName);
             $user->avatar = basename($avatarName);
         }
-    
+
         $user->update($validatedData);
         return redirect()->route('users.index');
     }
-    
+
 
     // Supprime un utilisateur de la base de données par un admin
     public function destroy($id)
@@ -110,7 +119,7 @@ class UserController extends Controller
         $user->verified = true;
         $user->save();
 
-        return redirect()->route('users.index');
+        return redirect()->route('students.show');
     }
 
     public function unverify($id)
@@ -119,7 +128,7 @@ class UserController extends Controller
         $user->verified = false;
         $user->save();
 
-        return redirect()->route('users.index');
+        return redirect()->route('students.show');
     }
 
     public function resetLastDSGeneratedAt($id)
@@ -128,6 +137,6 @@ class UserController extends Controller
         $user->last_ds_generated_at = null;
         $user->save();
 
-        return redirect()->route('users.index');
+        return redirect()->route('students.show');
     }
 }
