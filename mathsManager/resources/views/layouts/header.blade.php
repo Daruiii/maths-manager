@@ -53,6 +53,7 @@
         <a href="{{ route('ds.myDS', Auth::user()->id) }}" class="block link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
         
             @if (Auth::user()->role === 'admin')
+                <a href="{{ route('students.show') }}" class="block link {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes élèves</a>
                 <a href="{{ route('admin') }}" class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is("admin") ? 'active' : '' }}">admin</a>
             @endif
             <a href="{{ route('profile.edit') }}" class="block bg-blue-100 rounded-lg p-3 link {{ request()->is("profile") ? 'active' : '' }}">Mon profil</a>
