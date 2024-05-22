@@ -34,7 +34,12 @@
             @endforeach
         </div>
     @else
-        <p>Aucun quiz trouvé.</p>
+    <div class="flex justify-center flex-col items-center w-full h-20 ">
+        <h2 class="text-gray-500">Aucun quizz disponible</h2>
+        <div class="flex justify-center items-center w-1/2">
+            <p class="text-center text-gray-500 text-xs">Veuillez revenir plus tard</p>
+        </div>
+    </div>
     @endif
     </div>
     {{ $quizzes->links()}}

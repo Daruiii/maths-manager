@@ -159,6 +159,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         /// index
         Route::get('/correctionRequest', [CorrectionRequestController::class, 'index'])->name('correctionRequest.index');
+        Route::get('/myCorrections', [CorrectionRequestController::class, 'myCorrections'])->name('correctionRequest.myCorrections');
         Route::get('/correctionRequest/correct/{ds_id}', [CorrectionRequestController::class, 'showCorrectionForm'])->name('correctionRequest.correctForm');
         Route::post('/correctionRequest/correct/{ds_id}', [CorrectionRequestController::class, 'correctCorrectionRequest'])->name('correctionRequest.correct');
         Route::delete('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'destroyCorrectionRequest'])->name('correctionRequest.destroy');

@@ -54,6 +54,23 @@ class CorrectionRequestController extends Controller
         return view('correctionRequest.index', compact('correctionRequests'));
     }
 
+    // Méthode qui affichent les corrections en attente dans la page myCorrections
+    public function myCorrections(Request $request)
+    {
+        $search = $request->get('search');
+    
+        $correctionRequests = CorrectionRequest::where('status', 'pending')
+            ->when($search, function ($query, $search) {
+                $query->whereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'LIKE', "%{$search}%");
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+    
+        return view('correctionRequest.myCorrections', compact('correctionRequests'));
+    }
+
     // Méthode to display the correction request form
     public function showCorrectionRequestForm($ds_id)
     {

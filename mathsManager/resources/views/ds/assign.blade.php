@@ -42,9 +42,10 @@
                 @csrf
                 <div class="form-group">
                     <label>User :</label>
-                    <select id="user" name="user_id">
+                    <select id="user" name="user_id" style="width: 100%;">
                         @foreach ($users as $user)
-                            <option value="{{ $user->id }}" @if ($user->id == $student) selected @endif>{{ $user->name }}</option>
+                            <option value="{{ $user->id }}" @if ($user->id == $student) selected @endif>
+                                {{ $user->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -78,6 +79,9 @@
         </div>
     </section>
     <script>
+        $(document).ready(function() {
+            $('#user').select2();
+        });
         document.getElementById('search').addEventListener('input', function() {
             const searchValue = this.value.toLowerCase();
 
@@ -93,6 +97,5 @@
                 }
             });
         });
-
     </script>
 @endsection
