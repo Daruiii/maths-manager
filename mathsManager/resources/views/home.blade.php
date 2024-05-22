@@ -22,7 +22,7 @@
                                     <div class="bg-[#fda054] p-2 rounded">
                                         <p class="text-xs">En cours : {{ $inProgressDS }}</p>
                                     </div>
-                                    <div class="bg-gray-500 p-2 rounded">
+                                    <div class="bg-[#318CE7] p-2 rounded">
                                         <p class="text-xs">Envoyés : {{ $sentDS }}</p>
                                     </div>
                                     <div class="bg-red-200 p-2 rounded">
@@ -43,7 +43,7 @@
                             </div>
                         </div>
                         <div class="flex flex-col w-full md:w-56 bg-[#F0EAD6] p-4 rounded-lg">
-                            <h3 class="text-sm font-bold">Quizz</h3>
+                            <h3 class="text-sm font-bold">Quizz (10 derniers)</h3>
                             <p class="text-xs">Résultat moyen : {{$scores ?? 'N/A' }} / 10</p>
                             <div class="flex flex-col gap-2 mt-2 p-2 rounded w-full justify-between items-center">
                                 <x-progress-circle goodAnswers={{$goodAnswers}} badAnswers={{$badAnswers}} />

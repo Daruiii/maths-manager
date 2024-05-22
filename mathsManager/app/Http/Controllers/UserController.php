@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Quizze;
 
 class UserController extends Controller
 {
@@ -24,13 +25,49 @@ class UserController extends Controller
     }
 
     // Affiche la liste paginée des students
-    public function showStudents()
+    public function showStudents(Request $request)
     {
-        // Get all students
-        $students = User::where('role', 'student')->paginate(10);
-
+        $search = $request->get('search');
+    
+        $students = User::where('role', 'student')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->paginate(10);
+    
         // Return the view
         return view('user.showStudents', compact('students'));
+    }
+
+    // Affiche la liste des quizzes d'un étudiant
+    public function showQuizzes($student_id)
+    {
+        // Get all quizzes of the student
+        $quizzes = Quizze::where('student_id', $student_id)->latest()->paginate(10);
+        $student = User::findOrFail($student_id);
+
+        // Return the view
+        return view('user.userQuizzes.show', compact('quizzes', 'student'));
+    }
+
+    // Affiche les détails d'un quiz spécifique
+    public function showQuizDetails($quiz_id)
+    {
+        // Get the quiz
+        $quiz = Quizze::find($quiz_id);
+
+        // Get the details of the quiz
+        $quizDetails = $quiz->details;
+        // get his chosenAnswer
+        foreach ($quizDetails as $detail) {
+            $detail->chosenAnswer;
+        }
+
+        // Return the view
+        return view('user.userQuizzes.details', compact('quiz', 'quizDetails'));
     }
 
     // Affiche le formulaire de création d'un nouvel utilisateur

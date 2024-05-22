@@ -189,7 +189,7 @@ class QuizzController extends Controller
                 $quizzDetail = new QuizzDetail();
                 $quizzDetail->quizz_id = $quizz->id;
                 $quizzDetail->question_id = $quizQuestion->id;
-                $quizzDetail->chosen_answer_id = null; // or some default value
+                $quizzDetail->chosen_answer_id = $answer ?? null;
                 $quizzDetail->save();
             }
 
@@ -270,7 +270,7 @@ class QuizzController extends Controller
             "Mouais...",
             "Pas excellent mais potable",
             "T'as eu de la chance alors ressaisi toi",
-            "Ça vva ça va"
+            "Ça va ça va"
         ];
         $messagesUnder89 = [
             "C'est bien mais pas parfait",
@@ -293,13 +293,13 @@ class QuizzController extends Controller
             "Refais en un pour voir ...",
         ];
 
-        if ($score < 2) {
+        if ($score <= 2) {
             $message = $messagesUnder02[array_rand($messagesUnder02)];
-        } elseif ($score < 5) {
+        } elseif ($score <= 5) {
             $message = $messagesUnder35[array_rand($messagesUnder35)];
-        } elseif ($score < 7) {
+        } elseif ($score <= 7) {
             $message = $messagesUnder67[array_rand($messagesUnder67)];
-        } elseif ($score < 9) {
+        } elseif ($score <= 9) {
             $message = $messagesUnder89[array_rand($messagesUnder89)];
         } else {
             $message = $messages10[array_rand($messages10)];

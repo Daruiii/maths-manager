@@ -38,9 +38,9 @@ class HomeController extends Controller
 
         // dd($goodAnswers, $badAnswers, $totalQUestions);
 
-        // Get moyenne des 10 derniers scores ( score = note /10)
+        // Get moyenne des 10 derniers scores 
         if ($quizzes->count() > 0) {
-            $scores = $goodAnswers / $quizzes->count();
+            $scores = round($goodAnswers / $quizzes->count(), 1);
         } else {
             $scores = "N/A";
         }

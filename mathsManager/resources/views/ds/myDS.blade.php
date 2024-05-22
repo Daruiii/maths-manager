@@ -133,6 +133,9 @@
                                     @if ($ds->correctionRequest->grade < 10)
                                         <h2 class="text-base text-red-500 sign-painter">
                                             {{ $ds->correctionRequest->grade }}/20</h2>
+                                    @elseif ($ds->correctionRequest->grade < 15)
+                                        <h2 class="text-base text-orange-500 sign-painter">
+                                            {{ $ds->correctionRequest->grade }}/20</h2>
                                     @else
                                         <h2 class="text-base text-green-500 sign-painter">
                                             {{ $ds->correctionRequest->grade }}/20</h2>

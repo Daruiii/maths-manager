@@ -31,6 +31,7 @@
 .see-btn svg {
   transform: translateX(-8px);
   transition: all 0.3s ease;
+  margin-bottom : 3px;
 }
 
 .see-btn:hover svg {

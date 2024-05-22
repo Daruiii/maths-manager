@@ -8,7 +8,7 @@
             @if ($score >= 5)
                 <p class="speech-bubble text-center ms-12 mb-4">{{ $message }}</p>
                 <img src="{{ asset('storage/images/quizzGood.png') }}" alt="image de fin de quizz positif" width="200px"
-                    height="200px" class="absolute z-10" style="bottom: 63.30%; transform: translateY(50%);">
+                    height="200px" class="absolute z-10" style="bottom: 64.30%; transform: translateY(50%);">
                 <div
                     class="flex flex-col items-center justify-center bg-emerald-950 border-4 border-amber-950 w-80 relative z-0 py-14 mt-32 mb-2">
                     <p class="w-full text-center text-2xl text-white chalkabout">{{ $score }} / {{ $totalQuestions }}

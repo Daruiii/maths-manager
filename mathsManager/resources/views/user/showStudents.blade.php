@@ -3,7 +3,11 @@
 @section('content')
     <div class="container mx-auto mb-8">
         <div class="flex justify-start flex-col items-start w-9/12 mt-6 mb-4">
-            <h1 class="text-xl mb-4">Liste des élèves</h1>
+            <h1 class="text-xl mb-2">Liste des élèves</h1>
+            <div class="flex justify-between items-center py-3">
+                <x-search-bar-admin action="{{ route('students.show') }}" placeholder="Rechercher un utilisateur..."
+                    name="search" />
+            </div>
             <div class="flex row justify-center items-center flex-wrap gap-5 w-full mb-5">
                 @foreach ($students as $student)
                     <div class="bg-white rounded-lg p-2 w-84 min-w-80 shadow-md transition duration-300 mb-4 hover:shadow-lg flex flex-col items-center">
@@ -21,10 +25,17 @@
                         <p class="text-xs"> {{ $student->email }}</p>
                         </div>
                         </div>
-                        <div class="gap-2 flex flex-col justify-center items-center">
+                        <div class="w-full gap-2 flex flex-col justify-center items-center">
+                            <x-button-generate href="{{ route('ds.assign', ['student_id' => $student->id]) }}">
+                                {{ __('Assigner un DS') }}
+                            </x-button-generate>
+                            <x-button-quizz href="{{ route('student.quizzes', ['student_id' => $student->id]) }}">
+                                {{ __('Voir les quizz') }}
+                            </x-button-quizz>
                             @php
                                 $last_ds = new DateTime($student->last_ds_generated_at);
                             @endphp
+                            <div class="flex flex-row justify-between w-full items-center">
                             @if ($student->last_ds_generated_at == null || date('Y-m-d') != $last_ds->format('Y-m-d'))
                                 <button type="submit"
                                     class="text-white bg-gray-500 rounded-full px-2 py-1 cursor-not-allowed">
@@ -51,9 +62,7 @@
                                     <button type="submit" class="text-xs text-green-600 hover:text-green-900 p-2 border border-green-600 rounded-full bg-green-100">Activer</button>
                                 </form>
                             @endif
-                            <x-button-generate href="{{ route('ds.assign', ['student_id' => $student->id]) }}">
-                                {{ __('Assigner un DS') }}
-                            </x-button-generate>
+                            </div>
                         </div>
                     </div>
                 @endforeach
