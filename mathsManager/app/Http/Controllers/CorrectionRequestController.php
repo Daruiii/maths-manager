@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CorrectionRequestMail;
+use App\Mail\CorrectionCorrectedMail;
 
 class CorrectionRequestController extends Controller
 {
@@ -190,6 +191,11 @@ class CorrectionRequestController extends Controller
         $ds = DS::where('id', $ds_id)->firstOrFail();
         $ds->status = 'corrected';
         $ds->save();
+
+        //send email to user
+        $mail = new CorrectionCorrectedMail($correctionRequest);
+        Mail::to(User::find($correctionRequest->user_id)->email)->send($mail);
+
         // with search user_name
         return redirect()->route('correctionRequest.index', ['search' => $ds->user->name]);
     }

@@ -11,7 +11,8 @@ use App\Models\MultipleChapter;
 use App\Models\CorrectionRequest;
 use App\Models\User;
 use Illuminate\Pagination\Paginator;
-
+use App\Mail\AssignDSMail;
+use Illuminate\Support\Facades\Mail;
 
 class DSController extends Controller
 {
@@ -310,6 +311,10 @@ class DSController extends Controller
 
             $ds->multipleChapters()->attach($multiple_chapters);
             $ds->exercisesDS()->attach($exercisesDSIds);
+
+            // Envoyez un e-mail à l'élève
+            $student = User::find($request->input('user_id'));
+            Mail::to($student->email)->send(new AssignDSMail($ds));
 
             return redirect()->route('students.show')->with('success', 'DS assigned successfully');
         }

@@ -57,6 +57,8 @@ class HomeController extends Controller
 
         if ($averageGrade == null) {
             $averageGrade = "N/A";
+        } else {
+            $averageGrade = round($averageGrade, 1);
         }
 
         return view('home', compact('averageGrade', 'totalDS', 'notStartedDS', 'inProgressDS', 'sentDS', 'correctedDS', 
