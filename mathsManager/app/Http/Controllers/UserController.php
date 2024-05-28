@@ -36,7 +36,7 @@ class UserController extends Controller
                           ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->paginate(10);
+            ->paginate(10)->withQueryString();
     
         // Return the view
         return view('user.showStudents', compact('students'));
@@ -46,7 +46,7 @@ class UserController extends Controller
     public function showQuizzes($student_id)
     {
         // Get all quizzes of the student
-        $quizzes = Quizze::where('student_id', $student_id)->latest()->paginate(10);
+        $quizzes = Quizze::where('student_id', $student_id)->latest()->paginate(10)->withQueryString();
         $student = User::findOrFail($student_id);
 
         // Return the view

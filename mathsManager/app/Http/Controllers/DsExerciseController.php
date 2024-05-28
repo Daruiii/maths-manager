@@ -109,7 +109,7 @@ class DsExerciseController extends Controller
             $filterActivated = false;
             $chapterActivated = null;
         }
-        $dsExercises = $dsExercises->paginate(10);
+        $dsExercises = $dsExercises->paginate(10)->withQueryString();
         $multipleChapters = MultipleChapter::all();
 
         return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated'));

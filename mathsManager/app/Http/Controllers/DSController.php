@@ -28,7 +28,7 @@ class DSController extends Controller
                     $query->where('name', 'like', '%' . request()->query('search') . '%');
                 });
         }
-        $dsList = $dsList->paginate(10);
+        $dsList = $dsList->paginate(10)->withQueryString();
 
         return view('ds.index', compact('dsList'));
     }
@@ -40,7 +40,7 @@ class DSController extends Controller
             return redirect()->route('ds.myDS', Auth::id());
         }
         // with chapters and exercisesDS
-        $dsList = DS::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
+        $dsList = DS::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         foreach ($dsList as $ds) {
             foreach ($ds->exercisesDS as $exerciseDS) {
                 $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);

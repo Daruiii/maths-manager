@@ -21,7 +21,7 @@ class ExerciseController extends Controller
             $exercises = $exercises->where('name', 'like', '%' . $search . '%')
                 ->orWhere('id', 'like', '%' . $search . '%');
         }
-        $exercises = $exercises->paginate(10);
+        $exercises = $exercises->paginate(10)->withQueryString();
         
         $subchapters = Subchapter::all();
         return view('exercise.index', compact('exercises', 'subchapters'));

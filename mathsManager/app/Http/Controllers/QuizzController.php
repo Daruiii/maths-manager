@@ -342,14 +342,14 @@ class QuizzController extends Controller
         }
 
         if ($request->filled('sort_by_subchapter')) {
-            $quizzQuestions->orderBy('subchapter_id', 'asc')->orderBy('created_at', 'desc');
+            $quizzQuestions = $quizzQuestions->orderBy('subchapter_id', 'asc')->orderBy('created_at', 'desc');
             $sort_by_subchapter = true;
         } else {
-            $quizzQuestions->orderBy('created_at', 'desc');
+            $quizzQuestions = $quizzQuestions->orderBy('created_at', 'desc');
             $sort_by_subchapter = false;
         }
-
-        $quizzQuestions = $quizzQuestions->paginate(10);
+        
+        $quizzQuestions = $quizzQuestions->paginate(10)->withQueryString();
 
         $chapters = Chapter::all();
 

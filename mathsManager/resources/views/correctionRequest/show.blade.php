@@ -5,9 +5,6 @@
         <x-back-btn path=""> Retour</x-back-btn>
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-white w-11/12 md:w-4/5 rounded-lg box-shadow shadow-xl">
-            {{-- titre demande de correction --}}
-            {{-- studen name on left --}}
-            {{-- student name --}}
             <div class="flex items-center w-full justify-between p-0.5 md:p-2">
                 <div class="bg-gray-200 rounded-lg p-0.5 md:p-2">
                     <h1 class="text-xs md:text-sm font-semibold">{{ $correctionRequest->created_at->format('d/m/Y') }}</h1>
@@ -21,7 +18,7 @@
                         <h1 class="text-xs md:text-sm font-semibold text-center">Demande en attente</h1>
                     </div>
                 @endif
-                <a href="#" class="flex flex-row items-center gap-1 hover:brightness-50 transition duration-300  ">
+                <a href="#" class="flex flex-row items-center gap-1 hover:brightness-50 transition duration-300">
                     @if (Str::startsWith($correctionRequest->user->avatar, 'http'))
                         <img src="{{ $correctionRequest->user->avatar }}"
                             class="w-6 h-6 md:w-8 md:h-8 rounded-full border border-black object-cover"alt="Profile Picture">

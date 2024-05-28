@@ -46,10 +46,10 @@ class CorrectionRequestController extends Controller
                 $query->whereHas('user', function ($query) use ($search) {
                     $query->where('name', 'LIKE', "%{$search}%");
                 });
-            })->orderBy('status', 'asc')->orderBy('created_at', 'desc')->paginate(10);
+            })->orderBy('status', 'asc')->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         } else {
             // status pending first
-            $correctionRequests = CorrectionRequest::orderBy('status', 'asc')->orderBy('created_at', 'desc')->paginate(10);
+            $correctionRequests = CorrectionRequest::orderBy('status', 'asc')->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         }
         return view('correctionRequest.index', compact('correctionRequests'));
     }
@@ -66,7 +66,7 @@ class CorrectionRequestController extends Controller
                 });
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)->withQueryString();
     
         return view('correctionRequest.myCorrections', compact('correctionRequests'));
     }

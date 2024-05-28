@@ -93,7 +93,7 @@
                 </div>
                 <div class="exercise-content text-sm px-4 cmu-serif">
                     <h2 class="truncate font-bold text-sm exercise-title">Exercice from {{ $multipleChapter->title }} :
-                        {{ $dsExercise->name }}</h2>
+                        {{ $dsExercise->name }} #{{ $dsExercise->id }}</h2>
                     {!! $dsExercise->statement !!}
                 </div>
             @else
@@ -108,7 +108,7 @@
                 <div class="exercise-content text-sm px-4 cmu-serif">
                     <div>{!! $dsExercise->header !!}</div>
                     <span class="truncate font-bold text-sm exercise-title"> Exercice from
-                        {{ $multipleChapter->title }} :</span> {!! $dsExercise->statement !!}
+                        {{ $multipleChapter->title }} : #{{ $dsExercise->id }}</span> {!! $dsExercise->statement !!}
                 </div>
             @endif
         </div>
