@@ -5,13 +5,9 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Mettez à jour les informations de votre profil et votre adresse e-mail.") }}
+            {{ __('Mettez à jour les informations de votre profil et votre adresse e-mail.') }}
         </p>
     </header>
-
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
 
     <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
@@ -21,19 +17,27 @@
             @if (Str::startsWith($user->avatar, 'http'))
                 <img src="{{ $user->avatar }}" alt="Avatar" class="absolute inset-0 w-full h-full object-cover"
                     id="imagePreview">
-                <label for="avatar" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 cursor-pointer transition duration-300 ease-in-out text-white" style="pointer-events: none;">
+                <label for="avatar"
+                    class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 cursor-pointer transition duration-300 ease-in-out text-white"
+                    style="pointer-events: none;">
                     <span class="text-white font-semibold">EDIT</span>
-                    <input type="file" id="avatar" name="avatar" class="hidden" onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])">
+                    <input type="file" id="avatar" name="avatar" class="hidden"
+                        onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])">
                 </label>
             @else
-                <img src="{{ asset('storage/images/' . $user->avatar) }}" alt="Avatar" class="absolute inset-0 w-full h-full object-cover" id="imagePreview">
-                <label for="avatar" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 cursor-pointer transition duration-300 ease-in-out text-white">
+                <img src="{{ asset('storage/images/' . $user->avatar) }}" alt="Avatar"
+                    class="absolute inset-0 w-full h-full object-cover" id="imagePreview">
+                <label for="avatar"
+                    class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 cursor-pointer transition duration-300 ease-in-out text-white">
                     <span class="text-white font-semibold">EDIT</span>
-                    <input type="file" id="avatar" name="avatar" class="hidden" onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])">
+                    <input type="file" id="avatar" name="avatar" class="hidden"
+                        onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])">
                 </label>
             @endif
         </div>
-        <button type="button" class="mt-2 text-sm bg-red-500 text-white py-1 px-3 rounded hover:bg-red-700 transition-colors" onclick="removeAvatar()">Supprimer l'image</button>
+        <button type="button"
+            class="mt-2 text-sm bg-red-500 text-white py-1 px-3 rounded hover:bg-red-700 transition-colors"
+            onclick="removeAvatar()">Supprimer l'image</button>
         <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
 
         {{-- Name --}}
@@ -80,6 +84,19 @@
             @endif
         </div>
     </form>
+    @auth
+    <div class="flex items-center mt-4">
+        @if (auth()->user()->hasVerifiedEmail())
+            <p class="text-xs mr-4">{{ __('Votre adresse e-mail a été vérifiée.') }}</p>
+        @else
+            <p class="text-xs mr-4">{{ __('Votre adresse e-mail n\'a pas encore été vérifiée.') }}</p>
+            <form class="d-inline" method="POST" action="{{ route('verification.send') }}">
+                @csrf
+                <button type="submit" class="p-2 bg-blue-500 text-xs text-white rounded">{{ __('Renvoyer un email de vérification') }}</button>
+            </form>
+        @endif
+    </div>
+@endauth
 </section>
 
 <script>
