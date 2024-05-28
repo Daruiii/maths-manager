@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\CorrectionRequest;
 use App\Models\DS;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CorrectionRequestMail;
 
 class CorrectionRequestController extends Controller
 {
@@ -115,6 +118,13 @@ class CorrectionRequestController extends Controller
         $ds->status = 'sent';
         $ds->save();
 
+        // envoyer un mail à tous les admin et les professeurs 
+        $adminsTeachers = User::where('role', 'admin')->orWhere('role', 'teacher')->get();
+        foreach ($adminsTeachers as $adminTeacher) {
+            $mail = new CorrectionRequestMail($correctionRequest);
+            Mail::to($adminTeacher->email)->send($mail);
+        }
+
         return redirect()->route('ds.myDS', Auth::user()->id)->with('success', 'Votre demande de correction a été envoyée avec succès');
     }
 
@@ -189,6 +199,6 @@ class CorrectionRequestController extends Controller
 
         $this->destroyCorrectionFolder($ds_id);
 
-        return redirect()->route('ds.myDS', Auth::user()->id);
+        return redirect()->route('correctionRequest.index')->with('success', 'La demande de correction a été supprimée avec succès');
     }
 }
