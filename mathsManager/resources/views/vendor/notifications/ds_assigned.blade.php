@@ -13,7 +13,7 @@
                 <div class="inner-body">
                     <h2>@lang("Bonjour") {{ $userName }}</h2>
                     <p>@lang("Vous avez reçu un nouveau devoir.")</p>
-                    <p>@lang("Vous pouvez consulter cette demande de correction en vous connectant à votre compte.")</p>
+                    <p>@lang("Vous pouvez consulter ce devoir en vous connectant à votre compte.")</p>
                     <div class="subcopy">
                         <p>@lang('Cordialement'),<br>{{ config('app.name') }}</p>
                     </div>
