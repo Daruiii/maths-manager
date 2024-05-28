@@ -119,7 +119,10 @@ class CorrectionRequestController extends Controller
         $ds->save();
 
         // envoyer un mail à tous les admin et les professeurs 
-        $adminsTeachers = User::where('role', 'admin')->orWhere('role', 'teacher')->get();
+        $adminsTeachers = User::where('role', 'admin')
+        ->orWhere('role', 'teacher')
+        ->whereNotNull('email_verified_at')
+        ->get();
         foreach ($adminsTeachers as $adminTeacher) {
             $mail = new CorrectionRequestMail($correctionRequest);
             Mail::to($adminTeacher->email)->send($mail);
