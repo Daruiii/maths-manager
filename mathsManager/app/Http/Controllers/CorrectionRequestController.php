@@ -83,7 +83,7 @@ class CorrectionRequestController extends Controller
     {
         $request->validate([
             'pictures' => 'required|array|min:1',
-            'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
         $ds = DS::where('id', $ds_id)->firstOrFail();
