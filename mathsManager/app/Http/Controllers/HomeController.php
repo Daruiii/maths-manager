@@ -19,7 +19,7 @@ class HomeController extends Controller
             return view('home');
         }
   
-        Auth::user()->refresh();
+        try {
         $user = auth()->user();
 
         // Get the last 10 quizzes
@@ -65,6 +65,9 @@ class HomeController extends Controller
 
         return view('home', compact('averageGrade', 'totalDS', 'notStartedDS', 'inProgressDS', 'sentDS', 'correctedDS', 
         'goodAnswers', 'badAnswers', 'scores'));
+        } catch (\Exception $e) {
+            return redirect()->route('login');
+        }
     }
 
     // method for redirect to error isntValid
