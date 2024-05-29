@@ -15,24 +15,24 @@
                             <h3 class="text-sm font-bold">Devoirs</h3>
                             <div class="flex-row flex justify-between">
                                 <div class="flex flex-col gap-2 mt-2 bg-gray-200 p-2 rounded w-2/3">
-                                    <p class="text-xs">Total : {{ $totalDS }}</p>
+                                    <p class="text-xs">Total : {{ $totalDS ?? 'N/A' }}</p>
                                     <div class="bg-[#019875] p-2 rounded">
-                                        <p class="text-xs">À faire : {{ $notStartedDS }}</p>
+                                        <p class="text-xs">À faire : {{ $notStartedDS ?? 'N/A' }}</p>
                                     </div>
                                     <div class="bg-[#fda054] p-2 rounded">
-                                        <p class="text-xs">En cours : {{ $inProgressDS }}</p>
+                                        <p class="text-xs">En cours : {{ $inProgressDS ?? 'N/A' }}</p>
                                     </div>
                                     <div class="bg-[#318CE7] p-2 rounded">
-                                        <p class="text-xs">Envoyés : {{ $sentDS }}</p>
+                                        <p class="text-xs">Envoyés : {{ $sentDS ?? 'N/A' }}</p>
                                     </div>
                                     <div class="bg-red-200 p-2 rounded">
-                                        <p class="text-xs">Corrigés : {{ $correctedDS }}</p>
+                                        <p class="text-xs">Corrigés : {{ $correctedDS ?? 'N/A' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-2 mt-2 p-2 rounded w-1/2 justify-between items-center">
                                     <div class="bg-gray-200 p-2 rounded flex flex-col justify-center items-center w-full">
                                         <p class="text-xs mb-2">Moyenne </p>
-                                        <p class="text-xl font-bold">{{ $averageGrade }}</p>
+                                        <p class="text-xl font-bold">{{ $averageGrade ?? 'N/A' }}</p>
                                         <div class="w-1/6 h-0.5 bg-black"></div>
                                         <p class="text-xl font-bold">20 </p>
                                     </div>
