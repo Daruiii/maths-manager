@@ -20,6 +20,10 @@ class HomeController extends Controller
   
         $user = auth()->user();
 
+        if (!$user) {
+            return view('login');
+        }
+
         // Get the last 10 quizzes
         $quizzes = Quizze::where('student_id', $user->id)->latest()->take(10)->get();
 
