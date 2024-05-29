@@ -7,6 +7,7 @@
             <p class="quote-author">(Albert Einstein)</p>
         </div>
         <div class="flex flex-col md:flex-row justify-center w-11/12 mx-auto p-6 rounded-lg gap-2 mb-8 ">
+            @auth
             @if (Auth::check())
                 <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
                     <h2 class="text-base font-bold text-center">Tableau de bord</h2>
@@ -46,7 +47,7 @@
                             <h3 class="text-sm font-bold">Quizz (10 derniers)</h3>
                             <p class="text-xs">Résultat moyen : {{$scores ?? 'N/A' }} / 10</p>
                             <div class="flex flex-col gap-2 mt-2 p-2 rounded w-full justify-between items-center">
-                                <x-progress-circle goodAnswers={{$goodAnswers ?? intval(50)}} badAnswers={{$badAnswers ?? intval(50)}} />
+                                <x-progress-circle goodAnswers={{$goodAnswers}} badAnswers={{$badAnswers}} />
                             </div>
                         </div>
                         {{-- <div class="flex flex-col w-full md:w-56 bg-[#F0EAD6] p-4 rounded-lg">
@@ -59,6 +60,7 @@
                         </div> --}}
                     </div>
                 </div>
+                @endauth
             @else
                 <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
                     <h2 class="text-base font-bold text-center">Bienvenue sur Maths Manager</h2>
