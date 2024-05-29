@@ -141,9 +141,10 @@ class CorrectionRequestController extends Controller
     {
         $ds = DS::where('id', $ds_id)->firstOrFail();
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
+        $corrector = User::where('id', $correctionRequest->corrector_id)->first() ?? User::where('role', 'admin')->first();
         $pictures = json_decode($correctionRequest->pictures) ?? null;
         $correctedPictures = json_decode($correctionRequest->correction_pictures) ?? null;   
-        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures'));
+        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector'));
     }
 
     // Méthode pour formulaire de correction
@@ -167,6 +168,7 @@ class CorrectionRequestController extends Controller
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
         $correctionRequest->status = 'corrected';
         $correctionRequest->grade = $request->grade;
+        $correctionRequest->corrector_id = auth()->user()->id;
         $correctionRequest->correction_message = $request->correction_message;
 
         $correctionsImagesPaths = [];

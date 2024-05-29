@@ -90,4 +90,6 @@
                 </p>
             </div>
         </div>
+        {{-- cookies --}}
+        {{-- <x-cookies /> --}}
     @endsection
