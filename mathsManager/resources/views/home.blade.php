@@ -44,9 +44,9 @@
                         </div>
                         <div class="flex flex-col w-full md:w-56 bg-[#F0EAD6] p-4 rounded-lg">
                             <h3 class="text-sm font-bold">Quizz (10 derniers)</h3>
-                            <p class="text-xs">Résultat moyen : {{ $scores ?? 'N/A' }} / 10</p>
+                            <p class="text-xs">Résultat moyen : {{$scores ?? 'N/A' }} / 10</p>
                             <div class="flex flex-col gap-2 mt-2 p-2 rounded w-full justify-between items-center">
-                                    <x-progress-circle goodAnswers={{ $goodAnswers ?? 50}} badAnswers={{ $badAnswers ?? 50 }} />
+                                <x-progress-circle goodAnswers={{$goodAnswers ?? 50}} badAnswers={{$badAnswers ?? 0}} />
                             </div>
                         </div>
                         {{-- <div class="flex flex-col w-full md:w-56 bg-[#F0EAD6] p-4 rounded-lg">
