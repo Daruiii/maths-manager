@@ -31,7 +31,7 @@ class HomeController extends Controller
         });
 
         $badAnswers = $totalQUestions - $goodAnswers;
-        if ($totalQUestions == 0) {
+        if ($totalQUestions == 0 || $totalQUestions == null || $totalQUestions == "") {
             $goodAnswers = 100;
             $badAnswers = 0;
         }

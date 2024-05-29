@@ -7,7 +7,6 @@
             <p class="quote-author">(Albert Einstein)</p>
         </div>
         <div class="flex flex-col md:flex-row justify-center w-11/12 mx-auto p-6 rounded-lg gap-2 mb-8 ">
-            @auth
             @if (Auth::check())
                 <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
                     <h2 class="text-base font-bold text-center">Tableau de bord</h2>
@@ -60,7 +59,6 @@
                         </div> --}}
                     </div>
                 </div>
-                @endauth
             @else
                 <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
                     <h2 class="text-base font-bold text-center">Bienvenue sur Maths Manager</h2>
