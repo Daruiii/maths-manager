@@ -15,7 +15,9 @@ class HomeController extends Controller
     {
         // si on est pas co
         if (!auth()->check()) {
-            return view('home');
+            $goodAnswers = 100;
+            $badAnswers = 0;
+            return view('home', compact('goodAnswers', 'badAnswers'));
         }
   
         $user = auth()->user();
