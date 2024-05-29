@@ -16,7 +16,7 @@ class HomeController extends Controller
     {
         // si on est pas co
         if (!auth()->check()) {
-            return view('login');
+            return view('home');
         }
   
         try {
