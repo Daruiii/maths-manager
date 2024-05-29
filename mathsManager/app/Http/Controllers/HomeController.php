@@ -61,15 +61,6 @@ class HomeController extends Controller
             $averageGrade = round($averageGrade, 1);
         }
 
-        // if totalDS is undefined set all to N/A
-        if ($totalDS == 0) {
-            $averageGrade = "N/A";
-            $notStartedDS = "N/A";
-            $inProgressDS = "N/A";
-            $sentDS = "N/A";
-            $correctedDS = "N/A";
-        }
-
         return view('home', compact('averageGrade', 'totalDS', 'notStartedDS', 'inProgressDS', 'sentDS', 'correctedDS', 
         'goodAnswers', 'badAnswers', 'scores'));
     }
