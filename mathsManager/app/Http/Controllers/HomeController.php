@@ -8,6 +8,7 @@ use App\Models\Classe;
 use App\Models\CorrectionRequest;
 use App\Models\DS;
 use App\Models\Quizze;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -15,16 +16,11 @@ class HomeController extends Controller
     {
         // si on est pas co
         if (!auth()->check()) {
-            $goodAnswers = 100;
-            $badAnswers = 0;
-            return view('home', compact('goodAnswers', 'badAnswers'));
+            return view('home');
         }
   
+        Auth::user()->refresh();
         $user = auth()->user();
-
-        if (!$user) {
-            return view('login');
-        }
 
         // Get the last 10 quizzes
         $quizzes = Quizze::where('student_id', $user->id)->latest()->take(10)->get();
