@@ -137,21 +137,28 @@
         </div>
         <script>
             document.getElementById('reorder-button').addEventListener('click', function() {
-                new Sortable(document.getElementById('exercises-container'), {
+                var exercisesContainer = document.getElementById('exercises-container');
+                new Sortable(exercisesContainer, {
                     animation: 150,
+                    // Store the initial order of the exercises
+                    onStart: function(evt) {
+                        this.oldOrder = [...exercisesContainer.children].map(function(exercise) {
+                            return exercise.id.replace('exercise-', '');
+                        });
+                    },
                     // Update the order in the database when an item is moved
                     onEnd: function(evt) {
                         // Send AJAX request to update order
-                        var order = [];
+                        var newOrder = [];
                         var exercises = document.querySelectorAll('.exercise');
 
                         for (var i = 0; i < exercises.length; i++) {
                             var id = exercises[i].id.replace('exercise-',
-                                ''); // Remove the 'exercise-' prefix
-                            order.push({
+                            ''); // Remove the 'exercise-' prefix
+                            newOrder.push({
                                 id: id,
-                                order: i + 1
-                            }); // Add 1 to the index because order starts at 1
+                                order: this.oldOrder.indexOf(id) + 1
+                            }); // Use the initial order
                         }
 
                         fetch('{{ route('exercises.updateOrder') }}', {
@@ -162,7 +169,7 @@
                                     .getAttribute('content')
                             },
                             body: JSON.stringify({
-                                order: order
+                                order: newOrder
                             })
                         });
                     }
