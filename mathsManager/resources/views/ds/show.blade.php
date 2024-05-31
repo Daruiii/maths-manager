@@ -115,7 +115,7 @@
                     <div class="mb-16 w-full" id="exercise-{{ $index + 1 }}">
                         <div class="exercise-content text-sm cmu-serif min-w-full">
                             <span class="truncate font-bold text-sm exercise-title"> Exercice
-                                {{ $index + 1 }}.</span>
+                                {{ $index + 1 }}. @auth @if (Auth::user()->role == 'admin') #{{ $exercise->id }} @endif @endauth
                             {!! $exercise->statement !!}
                         </div>
                     </div>
