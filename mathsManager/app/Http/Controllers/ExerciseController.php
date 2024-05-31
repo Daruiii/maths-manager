@@ -6,9 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Exercise;
 use Illuminate\Http\Request;
 use App\Models\Subchapter;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Contracts\Filesystem\InvalidArgumentException;
-use Illuminate\Support\Facades\File;
+use App\Models\Classe;
 use Illuminate\Support\Facades\Log;
 
 class ExerciseController extends Controller
@@ -220,21 +218,28 @@ class ExerciseController extends Controller
     {
         $exercise = Exercise::findOrFail($id);
         $exercise->delete();
-
-        // Reorder all exercises
-        $subchapters = Subchapter::orderBy('id')->get();
+    
+        // Reorder all remaining exercises
+        $classes = Classe::orderBy('id')->get();
         $order = 1;
-
-        foreach ($subchapters as $subchapter) {
-            $exercises = $subchapter->exercises()->orderBy('id')->get();
-
-            foreach ($exercises as $exercise) {
-                $exercise->order = $order++;
-                $exercise->save();
+    
+        foreach ($classes as $class) {
+            $chapters = $class->chapters()->orderBy('id')->get();
+    
+            foreach ($chapters as $chapter) {
+                $subchapters = $chapter->subchapters()->orderBy('id')->get();
+    
+                foreach ($subchapters as $subchapter) {
+                    $remainingExercises = $subchapter->exercises()->orderBy('id')->get();
+    
+                    foreach ($remainingExercises as $remainingExercise) {
+                        $remainingExercise->order = $order++;
+                        $remainingExercise->save();
+                    }
+                }
             }
         }
 
-        return redirect()->route('exercises.index')
-            ->with('success', 'Exercise deleted successfully');
+        return redirect()->route('subchapter.show', $exercise->subchapter_id);
     }
 }

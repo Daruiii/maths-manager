@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Subchapter;
+use App\Models\Chapter;
+use App\Models\Classe;
 
 return new class extends Migration
 {
@@ -12,19 +14,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('exercises', function (Blueprint $table) {
-            $table->integer('order')->default(0);
-        });
+        if (!Schema::hasColumn('exercises', 'order')) {
+            Schema::table('exercises', function (Blueprint $table) {
+                $table->integer('order')->default(0);
+            });
+        }
     
-        $subchapters = Subchapter::orderBy('id')->get();
+        $classes = Classe::orderBy('id')->get();
         $order = 1;
     
-        foreach ($subchapters as $subchapter) {
-            $exercises = $subchapter->exercises()->orderBy('id')->get();
+        foreach ($classes as $class) {
+            $chapters = $class->chapters()->orderBy('id')->get();
     
-            foreach ($exercises as $exercise) {
-                $exercise->order = $order++;
-                $exercise->save();
+            foreach ($chapters as $chapter) {
+                $subchapters = $chapter->subchapters()->orderBy('id')->get();
+    
+                foreach ($subchapters as $subchapter) {
+                    $exercises = $subchapter->exercises()->orderBy('id')->get();
+    
+                    foreach ($exercises as $exercise) {
+                        $exercise->order = $order++;
+                        $exercise->save();
+                    }
+                }
             }
         }
     }
@@ -34,8 +46,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('exercises', function (Blueprint $table) {
-            $table->dropColumn('order');
-        });
+        if (Schema::hasColumn('exercises', 'order')) {
+            Schema::table('exercises', function (Blueprint $table) {
+                $table->dropColumn('order');
+            });
+        }
     }
 };

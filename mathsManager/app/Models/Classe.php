@@ -13,6 +13,6 @@ class Classe extends Model
 
     public function chapters()
     {
-        return $this->hasMany(Chapter::class);
+        return $this->hasMany(Chapter::class, 'class_id');
     }
 }
