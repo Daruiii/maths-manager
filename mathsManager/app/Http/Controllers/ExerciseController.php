@@ -217,29 +217,15 @@ class ExerciseController extends Controller
     public function destroy($id)
     {
         $exercise = Exercise::findOrFail($id);
+        $deletedOrder = $exercise->order;
+        $subchapterId = $exercise->subchapter_id;
+        // Delete the exercise
         $exercise->delete();
     
-        // Reorder all remaining exercises
-        $classes = Classe::orderBy('id')->get();
-        $order = 1;
+        // Decrement the order of all following exercises
+        Exercise::where('order', '>', $deletedOrder)
+            ->decrement('order');
     
-        foreach ($classes as $class) {
-            $chapters = $class->chapters()->orderBy('id')->get();
-    
-            foreach ($chapters as $chapter) {
-                $subchapters = $chapter->subchapters()->orderBy('id')->get();
-    
-                foreach ($subchapters as $subchapter) {
-                    $remainingExercises = $subchapter->exercises()->orderBy('id')->get();
-    
-                    foreach ($remainingExercises as $remainingExercise) {
-                        $remainingExercise->order = $order++;
-                        $remainingExercise->save();
-                    }
-                }
-            }
-        }
-
-        return redirect()->route('subchapter.show', $exercise->subchapter_id);
+        return redirect()->route('subchapter.show', $subchapterId);
     }
 }
