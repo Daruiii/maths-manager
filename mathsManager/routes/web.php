@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/exercise/{id}/create', [ExerciseController::class, 'create'])->name('exercise.create');
         Route::post('/exercise', [ExerciseController::class, 'store'])->name('exercise.store');
         Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
+        Route::post('/exercises/update-order', [ExerciseController::class, 'updateOrder'])->name('exercises.updateOrder');
         Route::get('/exercise/{id}', [ExerciseController::class, 'show'])->name('exercise.show');
         Route::get('/exercise/{id}/edit', [ExerciseController::class, 'edit'])->name('exercise.edit');
         Route::patch('/exercise/{id}', [ExerciseController::class, 'update'])->name('exercise.update');

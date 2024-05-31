@@ -15,4 +15,9 @@ class Subchapter extends Model
     {
         return $this->belongsTo(Chapter::class);
     }
+
+    public function exercises()
+    {
+        return $this->hasMany(Exercise::class);
+    }
 }

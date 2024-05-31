@@ -19,7 +19,7 @@ class SubchapterController extends Controller
     public function show($id) // students
     {
         $subchapter = Subchapter::findOrFail($id);
-        $exercises = Exercise::where('subchapter_id', $id)->get();
+        $exercises = Exercise::where('subchapter_id', $id)->orderBy('order', 'asc')->get();
         // get classe lvl
         $chapter_id = $subchapter->chapter_id;
         $classe_id = Chapter::findOrFail($chapter_id)->class_id;

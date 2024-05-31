@@ -2,8 +2,14 @@
 
 @section('content')
     <div class="container mx-auto">
-        <x-back-btn path=""
-            theme="{{ $subchapter->chapter->theme }}" > Retour</x-back-btn>
+        @auth
+            @if (Auth::user()->role === 'admin')
+                <x-back-btn path="{{ route('classe.show', $subchapter->chapter->classe->level) }}"
+                    theme="{{ $subchapter->chapter->theme }}"> Retour</x-back-btn>
+            @else
+                <x-back-btn path="" theme="{{ $subchapter->chapter->theme }}"> Retour</x-back-btn>
+            @endif
+        @endauth
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
             <div class="flex items-start justify-between w-full">
@@ -13,52 +19,38 @@
                 </div>
                 @auth
                     @if (Auth::user()->role === 'admin')
-                             {{--   <div class="bg-green-500 hover:bg-green-700 text-white font-bold m-2 p-2 rounded">
-                                 <a href="{{ route('exercise.create', ['id' => $subchapter->id]) }}" class="btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                            </a> 
-                            </div> --}}
                         <x-button-add href="{{ route('exercise.create', ['id' => $subchapter->id]) }}">Exercice</x-button-add>
                     @endif
                 @endauth
             </div>
             <p class="text-xs px-4 py-1 w-full">{{ $subchapter->description }}</p>
-
-            <div class=" md:p-4 flex flex-col items-center justify-center w-full">
+            @auth
+                @if (Auth::user()->role === 'admin')
+                    <button id="reorder-button"
+                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none">Réorganiser</button>
+                @endif
+            @endauth
+            <div class=" md:p-4 flex flex-col items-center justify-center w-full" id="exercises-container">
                 @foreach ($exercises as $index => $ex)
-                    {{-- @php
-                        $exerciseId = $ex->id;
-                        $exerciseFiles = Storage::disk('public')->files("latex_output/exercise_{$exerciseId}/exercise");
-                        $exercisePngFiles = array_filter($exerciseFiles, function ($file) {
-                            return Str::endsWith($file, '.png');
-                        });
-                        $solutionFiles = Storage::disk('public')->files(
-                            "latex_output/exercise_{$exerciseId}/correction",
-                        );
-                        $solutionPngFiles = array_filter($solutionFiles, function ($file) {
-                            return Str::endsWith($file, '.png');
-                        });
-                    @endphp --}}
-                    <div x-data="{ showClue: false, showSolution: false }" class="mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-10/12">
+                    <div x-data="{ showClue: false, showSolution: false }"
+                        class="exercise mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-10/12"
+                        id="exercise-{{ $ex->id }}">
                         <div class="p-4">
+                            <div class="drag-handle hidden mr-2 cursor-move">☰</div>
                             @if ($ex->name)
                                 <div class="flex row justify-end items-center h-2">
                                     {{-- <h2> #{{ $ex->id }}{{ $index + 1 }}</h2> --}}
                                     @auth @if (Auth::user()->role === 'admin')
-                                            <div class="flex items-center space-x-2">
-                                                <x-button-edit href="{{ route('exercise.edit', ['id' => $ex->id]) }}" />
-                                                <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}"
-                                                    entity="cet exercice" entityId="exercise{{ $ex->id }}" />
-                                            </div>
-                                        @endif @endauth
+                                        <div class="flex items-center space-x-2">
+                                            <x-button-edit href="{{ route('exercise.edit', ['id' => $ex->id]) }}" />
+                                            <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}"
+                                                entity="cet exercice" entityId="exercise{{ $ex->id }}" />
+                                        </div>
+                                    @endif @endauth
                                 </div>
 
                                 <div class="exercise-content text-sm px-4 cmu-serif">
-                                    <h2 class="truncate font-bold text-sm exercise-title">Exercice {{ $ex->id }}.
+                                    <h2 class="truncate font-bold text-sm exercise-title">Exercice {{ $ex->order }}.
                                         {{ $ex->name }}</h2>
                                     {!! $ex->statement !!}
                                 </div>
@@ -67,22 +59,16 @@
                                     @if (Auth::user()->role === 'admin')
                                         <div class="flex row justify-end items-center h-2">
                                             <x-button-edit href="{{ route('exercise.edit', ['id' => $ex->id]) }}" />
-                                            <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}" entity="cet exercice" entityId="exercise{{ $ex->id }}" />
+                                            <x-button-delete href="{{ route('exercise.destroy', $ex->id) }}"
+                                                entity="cet exercice" entityId="exercise{{ $ex->id }}" />
                                         </div>
                                     @endif
                                 @endauth
                                 <div class="exercise-content text-sm px-4 cmu-serif">
                                     <span class="truncate font-bold text-sm exercise-title"> Exercice
-                                        {{ $ex->id }}.</span> {!! $ex->statement !!}
+                                        {{ $ex->order }}.</span> {!! $ex->statement !!}
                                 </div>
                             @endif
-
-                            {{-- @foreach ($exercisePngFiles as $pngFile)
-                                <div class="pdf-container">
-                                    <img src="{{ asset('storage/' . $pngFile) }}" alt="Exercice image" class="png"
-                                        style="width: 500px; height: auto;">
-                                </div>
-                            @endforeach --}}
                         </div>
                         {{-- check if user verified = urue --}}
                         @auth
@@ -110,8 +96,7 @@
                                             <div class=""></div>
                                         @endif
                                         @if ($ex->solution)
-                                            <button @click="showSolution = !showSolution"
-                                                class=" flex row text-xs font-bold">
+                                            <button @click="showSolution = !showSolution" class=" flex row text-xs font-bold">
                                                 Correction
                                                 <svg :class="{ 'rotate-180': !showSolution }" class="transition-transform"
                                                     width="15px" height="15px" viewBox="0 0 24 24" fill="none"
@@ -141,12 +126,6 @@
                                         <div class="solution-content text-sm p-4 cmu-serif">
                                             {!! $ex->solution !!}
                                         </div>
-                                        {{-- @foreach ($solutionPngFiles as $pngFile)
-                                    <div class="pdf-container">
-                                        <img src="{{ asset('storage/' . $pngFile) }}" alt="Solution image"
-                                            class="png" style="width: 500px; height: auto;">
-                                    </div>
-                                @endforeach --}}
                                     </div>
                                 </div>
                             @endif
@@ -156,4 +135,47 @@
             </div>
             <x-button-back-top />
         </div>
+        <script>
+            document.getElementById('reorder-button').addEventListener('click', function() {
+                new Sortable(document.getElementById('exercises-container'), {
+                    animation: 150,
+                    // Update the order in the database when an item is moved
+                    onEnd: function(evt) {
+                        // Send AJAX request to update order
+                        var order = [];
+                        var exercises = document.querySelectorAll('.exercise');
+
+                        for (var i = 0; i < exercises.length; i++) {
+                            var id = exercises[i].id.replace('exercise-',
+                                ''); // Remove the 'exercise-' prefix
+                            order.push({
+                                id: id,
+                                order: i + 1
+                            }); // Add 1 to the index because order starts at 1
+                        }
+
+                        fetch('{{ route('exercises.updateOrder') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                order: order
+                            })
+                        });
+                    }
+                });
+            });
+            document.getElementById('reorder-button').addEventListener('click', function() {
+                this.classList.toggle('bg-blue-700');
+                this.classList.toggle('bg-green-500');
+                this.textContent = this.textContent === 'Réorganiser' ? 'Terminer' : 'Réorganiser';
+                document.querySelectorAll('.drag-handle').forEach(handle => handle.classList.toggle('hidden'));
+                if (this.textContent === 'Réorganiser') {
+                    location.reload();
+                }
+            });
+        </script>
     @endsection
