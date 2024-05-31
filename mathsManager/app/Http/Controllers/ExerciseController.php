@@ -70,6 +70,7 @@ class ExerciseController extends Controller
             'clue' => 'nullable',
             'solution' => 'nullable',
             'name' => 'nullable',
+            'difficulty' => 'required|numeric|min:1|max:5',
         ]);
 
         // Convertir les commandes LaTeX personnalisées en HTML
@@ -99,6 +100,7 @@ class ExerciseController extends Controller
         $exercise->solution = $solutionHtml;
         $exercise->latex_solution = $request->solution;
         $exercise->order = $maxOrder + 1;
+        $exercise->difficulty = $request->difficulty;
         $exercise->save();
 
         return redirect()->route('subchapter.show', $request->subchapter_id);
@@ -192,6 +194,7 @@ class ExerciseController extends Controller
             'name' => 'nullable',
             'clue' => 'nullable',
             'latex_clue' => 'nullable',
+            'difficulty' => 'required|numeric|min:1|max:5'
         ]);
 
         $statementHtml = $this->convertCustomLatexToHtml($request->statement);
@@ -199,8 +202,10 @@ class ExerciseController extends Controller
         $clueHtml = $this->convertCustomLatexToHtml($request->clue);
 
         $exercise = Exercise::findOrFail($id);
+        // dd the request all for see if difficulty is here
         $exercise->update([
             'subchapter_id' => $request->subchapter_id,
+            'difficulty' => $request->difficulty,
             'latex_statement' => $request->statement,
             'latex_solution' => $request->solution,
             'latex_clue' => $request->clue,
@@ -208,7 +213,6 @@ class ExerciseController extends Controller
             'solution' => $solutionHtml,
             'name' => $request->name,
             'clue' => $clueHtml,
-
         ]);
 
         return redirect()->route('subchapter.show', $request->subchapter_id);

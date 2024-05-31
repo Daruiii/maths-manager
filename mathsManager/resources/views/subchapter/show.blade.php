@@ -50,7 +50,9 @@
                                 </div>
 
                                 <div class="exercise-content text-sm px-4 cmu-serif">
-                                    <h2 class="truncate font-bold text-sm exercise-title">Exercice {{ $ex->order }}.
+                                    <h2 class="truncate font-bold text-sm exercise-title">
+                                        <x-stars-difficulty starsActive="{{ $ex->difficulty }}" id="rating{{ $ex->id }}" />
+                                        Exercice {{ $ex->order }}.
                                         {{ $ex->name }}</h2>
                                     {!! $ex->statement !!}
                                 </div>
@@ -65,7 +67,8 @@
                                     @endif
                                 @endauth
                                 <div class="exercise-content text-sm px-4 cmu-serif">
-                                    <span class="truncate font-bold text-sm exercise-title"> Exercice
+                                    <x-stars-difficulty starsActive="{{ $ex->difficulty }}" id="rating{{ $ex->id }}" />
+                                    <span class="truncate font-bold text-sm exercise-title">Exercice
                                         {{ $ex->order }}.</span> {!! $ex->statement !!}
                                 </div>
                             @endif

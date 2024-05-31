@@ -52,6 +52,15 @@
                 <textarea class="form-control" id="clue" name="clue" rows="3" placeholder="Insérer le LaTeX ici...">{{ $exercise->latex_clue }}</textarea>
             </div>
             
+            <div class="form-group">
+                <label for="difficulty">Difficulté de l'Exercice :</label>
+                <select class="form-control" id="difficulty" name="difficulty">
+                    @for ($i = 1; $i <= 5; $i++)
+                        <option value="{{ $i }}" @if($i == $exercise->difficulty) selected @endif>{{ $i }}</option>
+                    @endfor
+                </select>
+            </div>
+
             <button type="submit" class="submit-btn-form">Mettre à jour l'Exercice</button>
         </form>
     </div>
