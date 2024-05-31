@@ -34,7 +34,7 @@
                 @foreach ($exercises as $index => $ex)
                     <div x-data="{ showClue: false, showSolution: false }"
                         class="exercise mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-10/12"
-                        id="exercise-{{ $ex->id }}">
+                        id="exercise-{{ $ex->id }}" data-order="{{ $ex->order }}">
                         <div class="p-4">
                             <div class="drag-handle hidden mr-2 cursor-move">☰</div>
                             @if ($ex->name)
@@ -137,28 +137,25 @@
         </div>
         <script>
             document.getElementById('reorder-button').addEventListener('click', function() {
-                var exercisesContainer = document.getElementById('exercises-container');
-                new Sortable(exercisesContainer, {
+                var exercises = document.querySelectorAll('.exercise');
+                var minOrder = parseInt(exercises[0].dataset.order);
+                new Sortable(document.getElementById('exercises-container'), {
                     animation: 150,
-                    // Store the initial order of the exercises
-                    onStart: function(evt) {
-                        this.oldOrder = [...exercisesContainer.children].map(function(exercise) {
-                            return exercise.id.replace('exercise-', '');
-                        });
-                    },
                     // Update the order in the database when an item is moved
                     onEnd: function(evt) {
-                        // Send AJAX request to update order
-                        var newOrder = [];
+                        // Get the exercises again to reflect the new order
                         var exercises = document.querySelectorAll('.exercise');
+
+                        // Send AJAX request to update order
+                        var order = [];
 
                         for (var i = 0; i < exercises.length; i++) {
                             var id = exercises[i].id.replace('exercise-',
                             ''); // Remove the 'exercise-' prefix
-                            newOrder.push({
+                            order.push({
                                 id: id,
-                                order: this.oldOrder.indexOf(id) + 1
-                            }); // Use the initial order
+                                order: minOrder + i
+                            }); // Start from the smallest order value
                         }
 
                         fetch('{{ route('exercises.updateOrder') }}', {
@@ -169,7 +166,7 @@
                                     .getAttribute('content')
                             },
                             body: JSON.stringify({
-                                order: newOrder
+                                order: order
                             })
                         });
                     }
