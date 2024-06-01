@@ -78,6 +78,7 @@ class CorrectionRequestController extends Controller
         ->where('status', 'not_started')
         ->orWhere('status', 'ongoing')
         ->orwhere('status', 'finished')
+        ->select('DS.*', 'users.name')
         ->orderBy('users.name', 'asc')
         ->orderBy('status', 'asc')
         ->get();
