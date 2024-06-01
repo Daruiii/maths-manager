@@ -24,6 +24,6 @@
 
 /* Change the color of the label when the input is checked */
 .rating input:checked ~ label:before {
-  color: #ae3d00;
+  color: #FF0000;
 }
 </style>
