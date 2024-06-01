@@ -33,7 +33,7 @@
             <div class=" md:p-4 flex flex-col items-center justify-center w-full" id="exercises-container">
                 @foreach ($exercises as $index => $ex)
                     <div x-data="{ showClue: false, showSolution: false }"
-                        class="exercise mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-9/12"
+                        class="exercise mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-4/5"
                         id="exercise-{{ $ex->id }}" data-order="{{ $ex->order }}">
                         <div class="p-4">
                             <div class="drag-handle hidden mr-2 cursor-move">☰</div>
