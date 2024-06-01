@@ -4,7 +4,7 @@
     <div class="option-filter">
       <input class="appearance-none outline-none option-filter-input" {{ $status == 'pending' ? 'checked' : '' }} value="pending" name="status" type="radio" onclick="this.form.submit();" />
       <div class="option-filter-btn">
-        <span class="option-filter-span">En attente</span>
+        <span class="option-filter-span">En attentes</span>
       </div>
     </div>
     <div class="option-filter">
@@ -22,7 +22,7 @@
   --bg-color: #fff;
   --main-color: #323232;
   position: relative;
-  width: 170px;
+  width: 210px;
   height: 36px;
   background-color: var(--bg-color);
   border: 2px solid var(--main-color);
@@ -33,7 +33,7 @@
 }
 
 .option-filter {
-  width: 80.5px;
+  width: 100px;
   height: 28px;
   position: relative;
   top: 2px;
