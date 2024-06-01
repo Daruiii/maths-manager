@@ -17,6 +17,13 @@ $font-size-large: 2rem;
 $font-size-xlarge: 3rem;
 $font-size-xxlarge: 4rem;
 
+.font-size-xxsmall {
+    font-size: $font-size-xxsmall;
+}
+.font-size-xsmall {
+    font-size: $font-size-xsmall;
+}
+
 // SCROLLBAR
 /* This will affect the scrollbar in the whole page */
 ::-webkit-scrollbar {

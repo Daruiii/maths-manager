@@ -62,8 +62,9 @@ class CorrectionRequestController extends Controller
     public function myCorrections(Request $request)
     {
         $search = $request->get('search');
+        $status = $request->get('status', 'pending'); // Par défaut, le statut est 'pending'
     
-        $correctionRequests = CorrectionRequest::where('status', 'pending')
+        $correctionRequests = CorrectionRequest::where('status', $status)
             ->when($search, function ($query, $search) {
                 $query->whereHas('user', function ($query) use ($search) {
                     $query->where('name', 'LIKE', "%{$search}%");
@@ -71,8 +72,17 @@ class CorrectionRequestController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10)->withQueryString();
+
+        // get all ds not_started and ongoing
+        $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
+        ->where('status', 'not_started')
+        ->orWhere('status', 'ongoing')
+        ->orwhere('status', 'finished')
+        ->orderBy('users.name', 'asc')
+        ->orderBy('status', 'asc')
+        ->get();
     
-        return view('correctionRequest.myCorrections', compact('correctionRequests'));
+        return view('correctionRequest.myCorrections', compact('correctionRequests', 'ds'));
     }
 
     // Méthode to display the correction request form

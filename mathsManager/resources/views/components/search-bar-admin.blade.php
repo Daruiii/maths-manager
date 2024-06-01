@@ -4,6 +4,7 @@
 
 <form action="{{ $action }}" method="GET">
 <div class="search">
+  <input type="hidden" name="status" value="{{ request('status') }}">
   <input type="text" class="search__input" placeholder="{{ $placeholder }}" name="{{ $name }}">
   <button class="search__button">
       <svg class="search__icon" aria-hidden="true" viewBox="0 0 24 24">
