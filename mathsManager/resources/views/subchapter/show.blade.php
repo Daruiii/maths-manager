@@ -13,7 +13,7 @@
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
             <div class="flex items-start justify-between w-full">
-                <div class="flex items-start justify-center align-start pr-6"
+                <div class="flex items-start justify-center align-start pr-9"
                     style="border-radius : 2rem 0 10rem 0 ; background-color: {{ $subchapter->chapter->theme }};">
                     <h1 class="text-white text-xl font-bold px-4 py-1">{{ $subchapter->title }}</h1>
                 </div>
