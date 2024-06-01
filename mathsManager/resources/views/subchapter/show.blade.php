@@ -13,7 +13,7 @@
         <div
             class="flex flex-col align-center items-center justify-center my-5 bg-[#FBF7F0] w-full md:w-4/5 rounded-lg box-shadow shadow-xl">
             <div class="flex items-start justify-between w-full">
-                <div class="flex items-start justify-center align-start pr-12"
+                <div class="flex items-start justify-center align-start pr-6"
                     style="border-radius : 2rem 0 10rem 0 ; background-color: {{ $subchapter->chapter->theme }};">
                     <h1 class="text-white text-xl font-bold px-4 py-1">{{ $subchapter->title }}</h1>
                 </div>
@@ -33,7 +33,7 @@
             <div class=" md:p-4 flex flex-col items-center justify-center w-full" id="exercises-container">
                 @foreach ($exercises as $index => $ex)
                     <div x-data="{ showClue: false, showSolution: false }"
-                        class="exercise mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-4/5"
+                        class="exercise mb-8 bg-white rounded-lg box-shadow shadow-xl w-full md:w-10/12"
                         id="exercise-{{ $ex->id }}" data-order="{{ $ex->order }}">
                         <div class="p-4">
                             <div class="drag-handle hidden mr-2 cursor-move">☰</div>
