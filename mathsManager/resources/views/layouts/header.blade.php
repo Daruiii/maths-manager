@@ -1,127 +1,115 @@
+@section('styles')
+    {{-- flowbite --}}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+@endsection
+
 <header class="bg-secondary-color text-text-color" id="top">
-    <nav class="px-4 py-2 flex items-center justify-between">
-        <a href="{{ route('home') }}" class="logo">{{ config('app.name') }}</a>
-        <!-- Menu Toggle Button -->
-        <button id="menu-toggle" class="md:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                class="h-6 w-6 text-text-color">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-        </button>
-        <!-- Links for large screens -->
-        <div class="hidden md:flex space-x-4 items-center">
-            @foreach ($classes as $class)
-                <a href="{{ route('classe.show', $class->level) }}"
-                    class="link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
-            @endforeach
+    <nav class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <a href="{{ route('home') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
+            {{-- <img src="{{ asset('storage/images/professor.png') }}" alt="Logo" class="h-8"> --}}
+            <span
+                class="self-center text-2xl font-semibold whitespace-nowrap text-black">{{ config('app.name') }}</span>
+        </a>
+        <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+            <!-- User menu -->
             @auth
-                @if (Auth::user()->role === 'student')
-                    <a href="{{ route('ds.myDS', Auth::user()->id) }}"
-                        class="link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
-                @endif
-                @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('correctionRequest.myCorrections') }}"
-                        class="link {{ request()->routeIs('correctionRequest.myCorrections') ? 'active' : '' }}">Mes
-                        corrections</a>
-                    <a href="{{ route('students.show') }}"
-                        class="link {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes élèves</a>
-                    <a href="{{ route('admin') }}"
-                        class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is('admin') ? 'active' : '' }}">admin</a>
-                @endif
-            @endauth
-        </div>
-        <div class="hidden md:flex">
-            @auth
-                <div class="relative" id="profile-dropdown">
-                    <button id="profile-toggle" class="flex items-center focus:outline-none">
-                        <span
-                            class="text-xs mr-2 hover:brightness-50 transition duration-300">{{ Auth::user()->name }}</span>
-                        @if (Str::startsWith(Auth::user()->avatar, 'http'))
-                            <img src="{{ Auth::user()->avatar }}"
-                                class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300  "alt="Profile Picture">
-                        @else
-                            <img src="{{ asset('storage/images/' . Auth::user()->avatar) }}"
-                                class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300"
-                                alt="Profile Picture">
-                        @endif
-                    </button>
-                    <div id="profile-popup" class="popup absolute right-0 mt-2 py-2 w-48 rounded-md shadow-xl z-20 hidden">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm capitalize">Mon profil</a>
-                        <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm capitalize"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se
-                            déconnecter</a>
+                <button type="button"
+                    class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300"
+                    id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
+                    data-dropdown-placement="bottom">
+                    <span class="sr-only">Open user menu</span>
+                    @if (Str::startsWith(Auth::user()->avatar, 'http'))
+                        <img src="{{ Auth::user()->avatar }}"
+                            class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300  "alt="Profile Picture">
+                    @else
+                        <img src="{{ asset('storage/images/' . Auth::user()->avatar) }}"
+                            class="w-9 h-9 rounded-full border border-black object-cover hover:brightness-50 transition duration-300"
+                            alt="Profile Picture">
+                    @endif
+
+                </button>
+                <!-- Dropdown menu -->
+                <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow"
+                    id="user-dropdown">
+                    <div class="px-4 py-3">
+                        <span class="block text-sm text-gray-900">{{ Auth::user()->name }}</span>
+                        <span class="block text-sm  text-gray-500 truncate">{{ Auth::user()->email }}</span>
                     </div>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                        @csrf
-                    </form>
+                    <ul class="py-2" aria-labelledby="user-menu-button">
+                        <li>
+                            <a href="{{ route('profile.edit') }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mon profil</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se
+                                déconnecter</a>
+                        </li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                            @csrf
+                        </form>
+                    </ul>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="link">Se connecter</a>
+                <a href="{{ route('login') }}"
+                    class="link font-bold text-center">Se
+                    connecter</a>
             @endauth
+            <!-- Menu toggle button for small screens -->
+            <button data-collapse-toggle="navbar-user" type="button"
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                aria-controls="navbar-user" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1 1h15M1 7h15M1 13h15" />
+                </svg>
+            </button>
         </div>
-        <!-- Dropdown Links for small screens -->
-        <div id="mobile-menu"
-            class="md:hidden absolute right-1 top-0 mt-14 p-4 rounded-lg shadow-xl bg-gray-100 space-y-4 z-50 hidden">
-            @foreach ($classes as $class)
-                <a href="{{ route('classe.show', $class->level) }}"
-                    class="block link {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
-            @endforeach
-            @auth
-                @if (Auth::user()->role === 'student')
-                    <a href="{{ route('ds.myDS', Auth::user()->id) }}"
-                        class="block link {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes devoirs</a>
-                @endif
-
-                @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('correctionRequest.myCorrections') }}"
-                        class="block link {{ request()->routeIs('correctionRequest.myCorrections') ? 'active' : '' }}">Mes
-                        corrections</a>
-                    <a href="{{ route('students.show') }}"
-                        class="block link {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes élèves</a>
-                    <a href="{{ route('admin') }}"
-                        class="block bg-yellow-100 rounded-lg p-3 link {{ request()->is('admin') ? 'active' : '' }}">admin</a>
-                @endif
-                <a href="{{ route('profile.edit') }}"
-                    class="block bg-blue-100 rounded-lg p-3 link {{ request()->is('profile') ? 'active' : '' }}">Mon
-                    profil</a>
-                <a href="{{ route('logout') }}" class="block bg-red-100 rounded-lg p-3 link"
-                    onclick="event.preventDefault(); document.getElementById('logout-form-small').submit();">Se
-                    déconnecter</a>
-            @else
-                <a href="{{ route('login') }}" class="block bg-green-100 rounded-lg p-3 link">Se connecter</a>
-            @endauth
+        <div class="items-center justify-center hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
+            <ul
+                class="flex flex-col items-center font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
+                @foreach ($classes as $class)
+                    <li>
+                        <a href="{{ route('classe.show', $class->level) }}"
+                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
+                    </li>
+                @endforeach
+                @auth
+                    @if (Auth::user()->role === 'student')
+                        <li>
+                            <a href="{{ route('ds.myDS', Auth::user()->id) }}"
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes
+                                devoirs</a>
+                        </li>
+                    @endif
+                    @if (Auth::user()->role === 'admin')
+                        <li>
+                            <a href="{{ route('correctionRequest.myCorrections') }}"
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('correctionRequest.myCorrections') ? 'active' : '' }}">Mes
+                                corrections</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('students.show') }}"
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes
+                                élèves</a>
+                        </li>
+                        <a href="{{ route('admin') }}"
+                            class="bg-blue-500 text-white font-bold text-center rounded-lg p-2 {{ request()->is('admin') ? 'active' : '' }}">admin</a>
+                    @endif
+                @else
+                    <li>
+                        <a href="{{ route('isntValid') }}"
+                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('isntValid') ? 'active' : '' }}">Mes
+                            devoirs</a>
+                    </li>
+                @endauth
+            </ul>
         </div>
     </nav>
-    @auth
-        <form id="logout-form-small" action="{{ route('logout') }}" method="POST" class="hidden">
-            @csrf
-        </form>
-    @endauth
-</header>
+    <header>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var toggleButton = document.getElementById('menu-toggle');
-        var mobileMenu = document.getElementById('mobile-menu');
-        var profileToggle = document.getElementById('profile-toggle');
-        var profilePopup = document.getElementById('profile-popup');
-
-        toggleButton.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-        });
-        if (profileToggle) {
-            profileToggle.addEventListener('click', function() {
-                profilePopup.classList.toggle('hidden');
-            });
-        }
-        if (profilePopup) {
-            document.addEventListener('click', function(event) {
-                var isClickInsideProfile = profileToggle.contains(event.target) || profilePopup
-                    .contains(event.target);
-                if (!isClickInsideProfile) {
-                    profilePopup.classList.add('hidden');
-                }
-            });
-        }
-    });
-</script>
+        @section('scripts')
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+        @endsection
