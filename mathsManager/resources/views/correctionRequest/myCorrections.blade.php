@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div
-                class="flex flex-col justify-start items-center p-4 bg-white border-2 border-gray-200 rounded-md max-w-full min-w-80">
+                class="flex flex-col justify-start items-center p-4 bg-white border-2 border-gray-200 rounded-md max-w-full min-w-80 max-h-96">
                 <!-- Your DS data goes here -->
                 <h2 class="text-base leading-6 font-medium text-gray-900">Devoirs </h2>
                 <div class="overflow-y-auto w-11/12 h-full bg-gray-100 rounded-md p-3 mt-2 max-h-96">
