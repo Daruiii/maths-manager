@@ -4,7 +4,7 @@
 @endsection
 
 <header class="bg-secondary-color text-text-color" id="top">
-    <nav class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <nav class="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="{{ route('home') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
             {{-- <img src="{{ asset('storage/images/professor.png') }}" alt="Logo" class="h-8"> --}}
             <span
