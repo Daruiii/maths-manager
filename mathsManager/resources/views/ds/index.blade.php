@@ -29,6 +29,10 @@
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Nombre d'exercices</th>
+                                    <th
+                                        class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    Note
+                                </th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Chapitres</th>
@@ -47,6 +51,12 @@
                                         {{ $ds->user->name ?? 'Utilisateur supprimé' }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $ds->exercises_number }}</td>
+                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+                                        @if ( $ds->correctionRequest)
+                                            {{ $ds->correctionRequest->grade }}/20
+                                        @else
+                                            Non corrigé
+                                        @endif
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         @if ($ds->type_bac)
                                             <span

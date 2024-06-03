@@ -35,6 +35,6 @@ class DS extends Model
 
     public function correctionRequest()
     {
-        return $this->hasOne(CorrectionRequest::class);
+        return $this->hasOne(CorrectionRequest::class, 'ds_id');
     }
 }
