@@ -12,23 +12,41 @@ use Illuminate\Support\Facades\Log;
 
 class ExerciseController extends Controller
 {
+    public function decrementAllExercises()
+    {
+        try {
+            // Get the minimum order value
+            $minOrder = Exercise::min('order');
+
+            // If the minimum order is greater than 1, decrement all exercises
+            if ($minOrder > 1) {
+                Exercise::where('order', '>=', $minOrder)
+                    ->decrement('order');
+            }
+
+            return redirect()->back()->with('success', 'Exercises order decremented successfully');
+        } catch (\Exception $e) {
+            Log::error("Failed to decrement exercises: " . $e->getMessage());
+            return back()->withErrors('Failed to decrement exercises.');
+        }
+    }
     public function updateOrder(Request $request)
     {
         $orderData = $request->input('order');
         Log::info('updateOrder called with request: ', $request->all());
-    
+
         foreach ($orderData as $data) {
             $id = $data['id'];
             $order = $data['order'];
             Log::info("Updating exercise $id with order $order");
-    
+
             $exercise = Exercise::find($id);
-            
+
             if ($exercise === null) {
                 Log::info("Exercise $id not found");
                 continue;
             }
-    
+
             try {
                 $exercise->order = $order;
                 $exercise->save();
@@ -37,7 +55,7 @@ class ExerciseController extends Controller
                 Log::error("Failed to save exercise $id: " . $e->getMessage());
             }
         }
-    
+
         return response()->json(['status' => 'success']);
     }
 
@@ -45,14 +63,14 @@ class ExerciseController extends Controller
     {
         try {
             $search = request()->get('search');
-    
+
             $exercises = Exercise::orderBy('created_at', 'desc');
             if ($search) {
                 $exercises = $exercises->where('name', 'like', '%' . $search . '%')
                     ->orWhere('id', 'like', '%' . $search . '%');
             }
             $exercises = $exercises->paginate(10)->withQueryString();
-    
+
             $subchapters = Subchapter::all();
             return view('exercise.index', compact('exercises', 'subchapters'));
         } catch (\Exception $e) {
@@ -73,7 +91,8 @@ class ExerciseController extends Controller
         }
     }
 
-    private function getMaxOrder($subchapter) {
+    private function getMaxOrder($subchapter)
+    {
         $maxOrder = null;
 
         // Get the previous subchapters in the same chapter
@@ -81,7 +100,7 @@ class ExerciseController extends Controller
             ->where('order', '<', $subchapter->order)
             ->orderBy('order', 'desc')
             ->get();
-        
+
         // Loop through the previous subchapters to find the max order
         foreach ($previousSubchapters as $previousSubchapter) {
             $maxOrder = Exercise::where('subchapter_id', $previousSubchapter->id)->max('order');
@@ -89,84 +108,84 @@ class ExerciseController extends Controller
                 break;
             }
         }
-        
+
         // If there are no exercises in the previous subchapters, get the last exercise of the previous chapters
         if ($maxOrder === null) {
             $previousChapters = Chapter::where('order', '<', $subchapter->chapter->order)
                 ->orderBy('order', 'desc')
                 ->get();
-        
+
             // Loop through the previous chapters to find the max order
             foreach ($previousChapters as $previousChapter) {
                 $maxOrder = Exercise::whereHas('subchapter', function ($query) use ($previousChapter) {
                     $query->where('chapter_id', $previousChapter->id);
                 })->max('order');
-        
+
                 if ($maxOrder !== null) {
                     break;
                 }
             }
         }
-        
+
         // If there are no exercises in the previous chapters, start from 1
         if ($maxOrder === null) {
             $maxOrder = 0;
         }
-        
+
         // Get the max order of the exercises in the current subchapter
         $currentSubchapterMaxOrder = Exercise::where('subchapter_id', $subchapter->id)->max('order');
-    
+
         // If the max order of the exercises in the current subchapter is greater than the max order of the exercises in the previous subchapter or chapter, use it
         if ($currentSubchapterMaxOrder > $maxOrder) {
             $maxOrder = $currentSubchapterMaxOrder;
         }
-    
+
         return $maxOrder;
     }
 
     public function store(Request $request)
     {
         try {
-        $request->validate([
-            'subchapter_id' => 'required',
-            'statement' => 'required',
-            'clue' => 'nullable',
-            'solution' => 'nullable',
-            'name' => 'nullable',
-            'difficulty' => 'required|numeric|min:1|max:5',
-        ]);
+            $request->validate([
+                'subchapter_id' => 'required',
+                'statement' => 'required',
+                'clue' => 'nullable',
+                'solution' => 'nullable',
+                'name' => 'nullable',
+                'difficulty' => 'required|numeric|min:1|max:5',
+            ]);
 
-        // Convertir les commandes LaTeX personnalisées en HTML
-        $statementHtml = $this->convertCustomLatexToHtml($request->statement);
-        $solutionHtml = $request->solution ? $this->convertCustomLatexToHtml($request->solution) : null;
-        $clueHtml = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
+            // Convertir les commandes LaTeX personnalisées en HTML
+            $statementHtml = $this->convertCustomLatexToHtml($request->statement);
+            $solutionHtml = $request->solution ? $this->convertCustomLatexToHtml($request->solution) : null;
+            $clueHtml = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
 
-        $lastExercise = Exercise::latest()->first();
-        $newId = $lastExercise ? $lastExercise->id + 1 : 1;
+            $lastExercise = Exercise::latest()->first();
+            $newId = $lastExercise ? $lastExercise->id + 1 : 1;
 
-        $maxOrder = $this->getMaxOrder(Subchapter::find($request->subchapter_id));
-        // increment all the orders of the exercises
-        $exercises = Exercise::where('order', '>=', $maxOrder + 1)->orderBy('order', 'desc')->get();
-        // Increment the order of each exercise
-        foreach ($exercises as $exercise) {
-            $exercise->increment('order');
-        }
+            $maxOrder = $this->getMaxOrder(Subchapter::find($request->subchapter_id));
+            // increment all the orders of the exercises
+            $exercises = Exercise::where('order', '>=', $maxOrder + 1)->orderBy('order', 'desc')->get();
+            // Increment the order of each exercise
+            foreach ($exercises as $exercise) {
+                $exercise->increment('order');
+            }
 
-        $exercise = new Exercise();
-        $exercise->id = $newId;
-        $exercise->clue = $clueHtml;
-        $exercise->latex_clue = $request->clue;
-        $exercise->name = $request->name;
-        $exercise->subchapter_id = $request->subchapter_id;
-        $exercise->statement = $statementHtml;
-        $exercise->latex_statement = $request->statement;
-        $exercise->solution = $solutionHtml;
-        $exercise->latex_solution = $request->solution;
-        $exercise->order = $maxOrder + 1;
-        $exercise->difficulty = $request->difficulty;
-        $exercise->save();
+            $exercise = new Exercise();
+            $exercise->id = $newId;
+            $exercise->clue = $clueHtml;
+            $exercise->latex_clue = $request->clue;
+            $exercise->name = $request->name;
+            $exercise->subchapter_id = $request->subchapter_id;
+            $exercise->statement = $statementHtml;
+            $exercise->latex_statement = $request->statement;
+            $exercise->solution = $solutionHtml;
+            $exercise->latex_solution = $request->solution;
+            $exercise->order = $maxOrder + 1;
+            $exercise->difficulty = $request->difficulty;
+            $exercise->save();
 
-        return redirect()->route('subchapter.show', $request->subchapter_id);
+            return redirect()->route('subchapter.show', $request->subchapter_id);
         } catch (\Exception $e) {
             Log::error("Failed to store exercise: " . $e->getMessage());
             return back()->withErrors('Failed to store exercise.');
@@ -247,8 +266,8 @@ class ExerciseController extends Controller
     public function edit($id)
     {
         try {
-        $exercise = Exercise::findOrFail($id);
-        return view('exercise.edit', compact('exercise'));
+            $exercise = Exercise::findOrFail($id);
+            return view('exercise.edit', compact('exercise'));
         } catch (\Exception $e) {
             Log::error("Failed to load edit exercise view: " . $e->getMessage());
             return back()->withErrors('Failed to load edit exercise view.');
@@ -258,37 +277,37 @@ class ExerciseController extends Controller
     public function update(Request $request, $id)
     {
         try {
-        $request->validate([
-            'subchapter_id' => 'required',
-            'statement' => 'required',
-            'latex_statement' => 'nullable',
-            'solution' => 'nullable',
-            'latex_solution' => 'nullable',
-            'name' => 'nullable',
-            'clue' => 'nullable',
-            'latex_clue' => 'nullable',
-            'difficulty' => 'required|numeric|min:1|max:5'
-        ]);
+            $request->validate([
+                'subchapter_id' => 'required',
+                'statement' => 'required',
+                'latex_statement' => 'nullable',
+                'solution' => 'nullable',
+                'latex_solution' => 'nullable',
+                'name' => 'nullable',
+                'clue' => 'nullable',
+                'latex_clue' => 'nullable',
+                'difficulty' => 'required|numeric|min:1|max:5'
+            ]);
 
-        $statementHtml = $this->convertCustomLatexToHtml($request->statement);
-        $solutionHtml = $this->convertCustomLatexToHtml($request->solution);
-        $clueHtml = $this->convertCustomLatexToHtml($request->clue);
+            $statementHtml = $this->convertCustomLatexToHtml($request->statement);
+            $solutionHtml = $this->convertCustomLatexToHtml($request->solution);
+            $clueHtml = $this->convertCustomLatexToHtml($request->clue);
 
-        $exercise = Exercise::findOrFail($id);
-        // dd the request all for see if difficulty is here
-        $exercise->update([
-            'subchapter_id' => $request->subchapter_id,
-            'difficulty' => $request->difficulty,
-            'latex_statement' => $request->statement,
-            'latex_solution' => $request->solution,
-            'latex_clue' => $request->clue,
-            'statement' => $statementHtml,
-            'solution' => $solutionHtml,
-            'name' => $request->name,
-            'clue' => $clueHtml,
-        ]);
+            $exercise = Exercise::findOrFail($id);
+            // dd the request all for see if difficulty is here
+            $exercise->update([
+                'subchapter_id' => $request->subchapter_id,
+                'difficulty' => $request->difficulty,
+                'latex_statement' => $request->statement,
+                'latex_solution' => $request->solution,
+                'latex_clue' => $request->clue,
+                'statement' => $statementHtml,
+                'solution' => $solutionHtml,
+                'name' => $request->name,
+                'clue' => $clueHtml,
+            ]);
 
-        return redirect()->route('subchapter.show', $request->subchapter_id);
+            return redirect()->route('subchapter.show', $request->subchapter_id);
         } catch (\Exception $e) {
             Log::error("Failed to update exercise: " . $e->getMessage());
             return back()->withErrors('Failed to update exercise.');
@@ -298,13 +317,13 @@ class ExerciseController extends Controller
     public function destroy($id)
     {
         try {
-        $exercise = Exercise::findOrFail($id);
-        $deletedOrder = $exercise->order;
-        $subchapterId = $exercise->subchapter_id;
-        // Delete the exercise
-        $exercise->delete();
-    
-        return redirect()->route('subchapter.show', $subchapterId);
+            $exercise = Exercise::findOrFail($id);
+            $deletedOrder = $exercise->order;
+            $subchapterId = $exercise->subchapter_id;
+            // Delete the exercise
+            $exercise->delete();
+
+            return redirect()->route('subchapter.show', $subchapterId);
         } catch (\Exception $e) {
             Log::error("Failed to destroy exercise: " . $e->getMessage());
             return back()->withErrors('Failed to destroy exercise.');
