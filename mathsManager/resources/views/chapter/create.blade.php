@@ -50,6 +50,11 @@
                 @endforeach
             </select>
         </div>
+
+        <div class="form-group">
+            <label for="order">Ordre</label>
+            <input type="number" class="form-control" id="order" name="order" value="{{ $nextOrder }}" required>
+        </div>
         
         <button type="submit" class="submit-btn-form">Ajouter le chapitre</button>
     </form>

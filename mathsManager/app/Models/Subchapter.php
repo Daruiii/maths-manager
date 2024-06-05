@@ -9,7 +9,7 @@ class Subchapter extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['chapter_id', 'title', 'description'];
+    protected $fillable = ['chapter_id', 'title', 'description', 'order'];
 
     public function chapter()
     {

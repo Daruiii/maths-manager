@@ -39,19 +39,28 @@ class ChapterController extends Controller
         $classes = Classe::all();
         $classeActive = Classe::findOrFail($id)->id;
         $themeColors = $this->themeColors;
-        return view('chapter.create', compact('classes', 'classeActive', 'themeColors'));
+    
+        $previousClassId = Classe::where('id', '<', $classeActive)->max('id');
+        $nextOrder = 1;
+    
+        if ($previousClassId) {
+            $nextOrder = Chapter::where('class_id', $previousClassId)->max('order') + 1;
+        }
+    
+        return view('chapter.create', compact('classes', 'classeActive', 'themeColors', 'nextOrder'));
     }
-
     public function store(Request $request) // admin
     {
         $request->validate([
             'title' => 'required',
-            'class_id' => 'required'
+            'class_id' => 'required',
+            'order' => 'required|integer'
         ]);
-
+    
         $classLevel = Classe::findOrFail($request->class_id)->level;
-
+    
         Chapter::create($request->all());
+    
         return redirect()->route('classe.show', $classLevel);
     }
 
@@ -81,15 +90,18 @@ class ChapterController extends Controller
     public function destroy($id) // admin
     {
         $chapter = Chapter::findOrFail($id);
+        $class_id = $chapter->class_id;
+        $order = $chapter->order;
+    
         $chapter->delete();
-        $classLevel = Classe::findOrFail($chapter->class_id)->level;
-        // renumérotation des id des exercices restants
-        $exercises = Exercise::all();
-        foreach ($exercises as $index => $exercise) {
-            $exercise->id = $index + 1;
-            $exercise->save();
-        }
-
+    
+        // Decrement the order of the chapters that come after
+        Chapter::where('class_id', $class_id)
+            ->where('order', '>', $order)
+            ->decrement('order');
+    
+        $classLevel = Classe::findOrFail($class_id)->level;
+    
         return redirect()->route('classe.show', $classLevel);
     }
 }

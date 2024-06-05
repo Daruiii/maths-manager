@@ -27,8 +27,12 @@
                 <textarea class="form-control" id="description" name="description"></textarea>
             </div>
 
-            {{-- Assurez-vous que $chapter_id est l'ID et non l'objet Chapter entier --}}
             <input type="hidden" name="chapter_id" value="{{ $chapter_id }}">
+
+            <div class="form-group">
+                <label for="order">Ordre</label>
+                <input type="number" class="form-control" id="order" name="order" value="{{ $nextOrder }}" required>
+            </div>
 
             <button type="submit" class="submit-btn-form">Ajouter le sous-chapitre</button>
         </form>

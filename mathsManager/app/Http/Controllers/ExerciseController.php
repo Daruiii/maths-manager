@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Exercise;
 use Illuminate\Http\Request;
 use App\Models\Subchapter;
+use App\Models\Chapter;
 use App\Models\Classe;
 use Illuminate\Support\Facades\Log;
 
@@ -42,28 +43,90 @@ class ExerciseController extends Controller
 
     public function index()
     {
-        $search = request()->get('search');
-
-        $exercises = Exercise::orderBy('created_at', 'desc');
-        if ($search) {
-            $exercises = $exercises->where('name', 'like', '%' . $search . '%')
-                ->orWhere('id', 'like', '%' . $search . '%');
+        try {
+            $search = request()->get('search');
+    
+            $exercises = Exercise::orderBy('created_at', 'desc');
+            if ($search) {
+                $exercises = $exercises->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('id', 'like', '%' . $search . '%');
+            }
+            $exercises = $exercises->paginate(10)->withQueryString();
+    
+            $subchapters = Subchapter::all();
+            return view('exercise.index', compact('exercises', 'subchapters'));
+        } catch (\Exception $e) {
+            Log::error("Failed to load exercises: " . $e->getMessage());
+            return back()->withErrors('Failed to load exercises.');
         }
-        $exercises = $exercises->paginate(10)->withQueryString();
-
-        $subchapters = Subchapter::all();
-        return view('exercise.index', compact('exercises', 'subchapters'));
     }
 
     public function create($id)
     {
-        $subchapter_id = $id;
-        $subchapters = Subchapter::all();
-        return view('exercise.create', compact('subchapter_id', 'subchapters'));
+        try {
+            $subchapter_id = $id;
+            $subchapters = Subchapter::all();
+            return view('exercise.create', compact('subchapter_id', 'subchapters'));
+        } catch (\Exception $e) {
+            Log::error("Failed to load create exercise view: " . $e->getMessage());
+            return back()->withErrors('Failed to load create exercise view.');
+        }
+    }
+
+    private function getMaxOrder($subchapter) {
+        $maxOrder = null;
+
+        // Get the previous subchapters in the same chapter
+        $previousSubchapters = Subchapter::where('chapter_id', $subchapter->chapter_id)
+            ->where('order', '<', $subchapter->order)
+            ->orderBy('order', 'desc')
+            ->get();
+        
+        // Loop through the previous subchapters to find the max order
+        foreach ($previousSubchapters as $previousSubchapter) {
+            $maxOrder = Exercise::where('subchapter_id', $previousSubchapter->id)->max('order');
+            if ($maxOrder !== null) {
+                break;
+            }
+        }
+        
+        // If there are no exercises in the previous subchapters, get the last exercise of the previous chapters
+        if ($maxOrder === null) {
+            $previousChapters = Chapter::where('order', '<', $subchapter->chapter->order)
+                ->orderBy('order', 'desc')
+                ->get();
+        
+            // Loop through the previous chapters to find the max order
+            foreach ($previousChapters as $previousChapter) {
+                $maxOrder = Exercise::whereHas('subchapter', function ($query) use ($previousChapter) {
+                    $query->where('chapter_id', $previousChapter->id);
+                })->max('order');
+        
+                if ($maxOrder !== null) {
+                    break;
+                }
+            }
+        }
+        
+        // If there are no exercises in the previous chapters, start from 1
+        if ($maxOrder === null) {
+            $maxOrder = 0;
+        }
+        
+        // Get the max order of the exercises in the current subchapter
+        $currentSubchapterMaxOrder = Exercise::where('subchapter_id', $subchapter->id)->max('order');
+    
+        // If the max order of the exercises in the current subchapter is greater than the max order of the exercises in the previous subchapter or chapter, use it
+        if ($currentSubchapterMaxOrder > $maxOrder) {
+            $maxOrder = $currentSubchapterMaxOrder;
+        }
+    
+        return $maxOrder;
     }
 
     public function store(Request $request)
     {
+        try {
         $request->validate([
             'subchapter_id' => 'required',
             'statement' => 'required',
@@ -81,7 +144,7 @@ class ExerciseController extends Controller
         $lastExercise = Exercise::latest()->first();
         $newId = $lastExercise ? $lastExercise->id + 1 : 1;
 
-        $maxOrder = Exercise::where('subchapter_id', $request->subchapter_id)->max('order');
+        $maxOrder = $this->getMaxOrder(Subchapter::find($request->subchapter_id));
         // increment all the orders of the exercises
         $exercises = Exercise::where('order', '>=', $maxOrder + 1)->orderBy('order', 'desc')->get();
         // Increment the order of each exercise
@@ -104,6 +167,10 @@ class ExerciseController extends Controller
         $exercise->save();
 
         return redirect()->route('subchapter.show', $request->subchapter_id);
+        } catch (\Exception $e) {
+            Log::error("Failed to store exercise: " . $e->getMessage());
+            return back()->withErrors('Failed to store exercise.');
+        }
     }
 
     protected function convertCustomLatexToHtml($latexContent)
@@ -179,12 +246,18 @@ class ExerciseController extends Controller
 
     public function edit($id)
     {
+        try {
         $exercise = Exercise::findOrFail($id);
         return view('exercise.edit', compact('exercise'));
+        } catch (\Exception $e) {
+            Log::error("Failed to load edit exercise view: " . $e->getMessage());
+            return back()->withErrors('Failed to load edit exercise view.');
+        }
     }
 
     public function update(Request $request, $id)
     {
+        try {
         $request->validate([
             'subchapter_id' => 'required',
             'statement' => 'required',
@@ -216,20 +289,25 @@ class ExerciseController extends Controller
         ]);
 
         return redirect()->route('subchapter.show', $request->subchapter_id);
+        } catch (\Exception $e) {
+            Log::error("Failed to update exercise: " . $e->getMessage());
+            return back()->withErrors('Failed to update exercise.');
+        }
     }
 
     public function destroy($id)
     {
+        try {
         $exercise = Exercise::findOrFail($id);
         $deletedOrder = $exercise->order;
         $subchapterId = $exercise->subchapter_id;
         // Delete the exercise
         $exercise->delete();
     
-        // Decrement the order of all following exercises
-        Exercise::where('order', '>', $deletedOrder)
-            ->decrement('order');
-    
         return redirect()->route('subchapter.show', $subchapterId);
+        } catch (\Exception $e) {
+            Log::error("Failed to destroy exercise: " . $e->getMessage());
+            return back()->withErrors('Failed to destroy exercise.');
+        }
     }
 }

@@ -31,14 +31,16 @@ class SubchapterController extends Controller
     {
         $chapter_id = $id;
         $chapters = Chapter::all();
-        return view('subchapter.create', compact('chapter_id', 'chapters'));
+        $nextOrder = Subchapter::where('chapter_id', $chapter_id)->max('order') + 1;
+        return view('subchapter.create', compact('chapter_id', 'chapters', 'nextOrder'));
     }
 
     public function store(Request $request) // admin
     {
         $request->validate([
             'title' => 'required',
-            'chapter_id' => 'required'
+            'chapter_id' => 'required',
+            'order' => 'required'
         ]);
 
         Subchapter::create($request->all());
