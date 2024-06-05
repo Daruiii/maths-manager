@@ -323,6 +323,10 @@ class ExerciseController extends Controller
             // Delete the exercise
             $exercise->delete();
 
+            // Decrement the order of all following exercises
+            Exercise::where('order', '>', $deletedOrder)
+                ->decrement('order');
+
             return redirect()->route('subchapter.show', $subchapterId);
         } catch (\Exception $e) {
             Log::error("Failed to destroy exercise: " . $e->getMessage());

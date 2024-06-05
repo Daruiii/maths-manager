@@ -12,11 +12,9 @@
                     <x-button-add href="{{ route('chapter.create', $classe->id) }}">
                         {{ __('Chapitre') }}
                     </x-button-add>
-
-        {{--         Route::get('/exercises/decrement', [ExerciseController::class, 'decrementAllExercises']); --}}
-                    <a href="{{ route('exercises.decrement') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    {{-- <a href="{{ route('exercises.decrement') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         décrement les exercices.order
-                    </a>
+                    </a> --}}
                 @endif
             @endauth
         </div>
