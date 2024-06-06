@@ -209,7 +209,7 @@ class CorrectionRequestController extends Controller
         $mail = new CorrectionCorrectedMail($correctionRequest);
         Mail::to(User::find($correctionRequest->user_id)->email)->send($mail);
 
-        return redirect()->route('correctionRequest.myCorrections');
+        return redirect()->route('home')->with('success', 'La correction a été envoyée avec succès');
     }
 
     // Méthode to destroy a correction request and his pictures and his folder
