@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // si on est pas co
         if (!auth()->check()) {
@@ -21,6 +21,32 @@ class HomeController extends Controller
   
         try {
         $user = auth()->user();
+
+        if ($user->role == 'admin') {
+            $search = $request->get('search');
+            $status = $request->get('status', 'pending'); // Par défaut, le statut est 'pending'
+        
+            $correctionRequests = CorrectionRequest::where('status', $status)
+                ->when($search, function ($query, $search) {
+                    $query->whereHas('user', function ($query) use ($search) {
+                        $query->where('name', 'LIKE', "%{$search}%");
+                    });
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(3)->withQueryString();
+    
+            // get all ds not_started and ongoing
+            $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
+            ->where('status', 'not_started')
+            ->orWhere('status', 'ongoing')
+            ->orwhere('status', 'finished')
+            ->select('DS.*', 'users.name')
+            ->orderBy('users.name', 'asc')
+            ->orderBy('status', 'asc')
+            ->get();
+        
+            return view('home', compact('correctionRequests', 'ds'));
+        }
 
         // Get the last 10 quizzes
         $quizzes = Quizze::where('student_id', $user->id)->latest()->take(10)->get();

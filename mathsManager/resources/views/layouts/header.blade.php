@@ -85,11 +85,11 @@
                         </li>
                     @endif
                     @if (Auth::user()->role === 'admin')
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('correctionRequest.myCorrections') }}"
                                 class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('correctionRequest.myCorrections') ? 'active' : '' }}">Mes
                                 corrections</a>
-                        </li>
+                        </li> --}}
                         <li>
                             <a href="{{ route('students.show') }}"
                                 class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes

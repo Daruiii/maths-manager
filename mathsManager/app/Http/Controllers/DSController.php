@@ -17,10 +17,27 @@ use Illuminate\Support\Facades\Mail;
 class DSController extends Controller
 {
     // Méthode pour afficher tous les DS
-    public function index()
+    public function index(Request $request)
     {
-        // search func by user name 
-        $dsList = DS::orderBy('created_at', 'desc');
+        $sort_by_student = request()->query('sort_by_student');
+        $sort_by_status = request()->query('sort_by_status');
+
+        $dsList = DS::query();
+
+        // Check if the request has sort_by_student
+        if ($request->filled('sort_by_student')) {
+            $dsList = $dsList->orderBy('user_id');
+        }
+
+        // Check if the request has sort_by_status
+        if ($request->filled('sort_by_status')) {
+            $dsList = $dsList->orderByRaw("FIELD(status, 'sent', 'ongoing', 'not_started', 'finished', 'corrected')");
+        }
+
+        // Default sort by created_at
+        $dsList = $dsList->orderBy('created_at', 'desc');
+
+        // Existing search functionality
         if (request()->query('search')) {
             $dsList = $dsList->where('type_bac', 'like', '%' . request()->query('search') . '%')
                 ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
@@ -29,10 +46,59 @@ class DSController extends Controller
                     $query->where('name', 'like', '%' . request()->query('search') . '%');
                 });
         }
+
         $dsList = $dsList->paginate(10)->withQueryString();
 
-        return view('ds.index', compact('dsList'));
+        return view('ds.index', compact('dsList', 'sort_by_student', 'sort_by_status'));
     }
+
+    // Méthode pour afficher le formulaire de re assign 
+    public function reAssignForm($id)
+    {
+        $ds = DS::find($id);
+        $students = User::all();
+        return view('ds.reAssign', compact('ds', 'students'));
+    }
+
+    // Méthode pour assigner un DS existant (soit avec les mêmes exercices) à un autre élève
+    public function reAssign(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'ds_id' => 'required|exists:DS,id',
+        ]);
+
+        $oldDs = DS::find($request->input('ds_id'));
+        $newDs = $oldDs->replicate();
+        $newDs->user_id = $request->input('user_id');
+
+        // Réinitialiser les autres colonnes
+        $newDs->chrono = "0";
+        $newDs->status = "not_started";
+
+        $newDs->save();
+
+        // Copier les relations d'exercices de l'ancien DS vers le nouveau
+        foreach ($oldDs->exercisesDS as $exercise) {
+            $newDs->exercisesDS()->attach($exercise->id);
+        }
+        // Copier les relations de multiple_chapters de l'ancien DS vers le nouveau
+        foreach ($oldDs->multipleChapters as $multipleChapter) {
+            $newDs->multipleChapters()->attach($multipleChapter->id);
+        }
+        // Calculer TotalTime comme la somme du temps de tous les exercices
+        $totalTime = $newDs->exercisesDS->sum('time');
+        $newDs->time = $totalTime;
+        $newDs->timer = $totalTime * 60; // timer in seconds
+        $newDs->save();
+
+        // Envoyez un e-mail à l'élève
+        $student = User::find($request->input('user_id'));
+        Mail::to($student->email)->send(new AssignDSMail($newDs));
+
+        return redirect()->route('ds.index');
+    }
+
 
     // Méthode pour afficher les DS de l'utilisateur connecté
     public function indexUser($id)
