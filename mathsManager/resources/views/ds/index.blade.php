@@ -73,7 +73,10 @@
                                         @foreach ($ds->exercisesDS as $exercise)
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full truncate">
+                                                <a href="{{ route('ds_exercise.show', ['id' => $exercise->id, 'filter' => 'false']) }}"
+                                                    class="text-indigo-600 hover:text-indigo-900">
                                                 #{{ $exercise->id }}
+                                                </a>
                                             </span>
                                         @endforeach
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">

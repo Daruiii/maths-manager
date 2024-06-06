@@ -7,7 +7,7 @@
     @if ($filter === 'true')
         <x-back-btn path="{{ route('ds_exercises.index', ['multiple_chapter_id' => $multipleChapter->id ?? null]) }}"> Retour</x-back-btn>
     @else
-        <x-back-btn path="{{ route('ds_exercises.index') }}"> Retour</x-back-btn>
+        <x-back-btn path=""> Retour</x-back-btn>
     @endif
     @if ($previousExercise)
         <a href="{{ route('ds_exercise.show', ['id' => $previousExercise->id, 'filter' => $filter ]) }}"
