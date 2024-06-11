@@ -12,7 +12,8 @@
                     <h2 class="text-base font-bold text-center">Tableau de bord</h2>
                     <div class="flex justify-center flex-wrap gap-4 mt-4">
                         @if (Auth::user()->role == 'admin')
-                            <div class="flex flex-col justify-start bg-[#F0EAD6] items-start p-4 w-full md:w-1/2 flex-grow rounded-lg">
+                            <div
+                                class="flex flex-col justify-start bg-[#F0EAD6] items-start p-4 w-full md:w-1/2 flex-grow rounded-lg">
                                 <div class="w-full flex justify-start items-center">
                                     <h2 class="text-lg leading-6 font-medium text-gray-900">Mes corrections</h2>
                                 </div>
@@ -25,7 +26,10 @@
                                         <x-optionsFilter :status="request('status', 'pending')" />
                                     </form>
                                 </div>
-                                @dd($correctionRequests)
+                                @php
+                                $correctionRequests = session('correctionRequests');
+                                $ds = session('ds');
+                                @endphp
                                 @if ($correctionRequests->count())
                                     <div class="w-full flex flex-wrap justify-center items-center gap-4">
                                         @foreach ($correctionRequests as $index => $correctionRequest)
@@ -76,7 +80,8 @@
                                 class="flex flex-col justify-start items-center p-4 bg-white border-2 border-gray-200 rounded-md max-w-full min-w-80 max-h-96">
                                 <!-- Your DS data goes here -->
                                 <h2 class="text-base leading-6 font-medium text-gray-900">Devoirs </h2>
-                                <a href="{{ route('ds.index') }}" class="text-xs text-black hover:text-indigo-900 underline">Voir en détail</a>
+                                <a href="{{ route('ds.index') }}"
+                                    class="text-xs text-black hover:text-indigo-900 underline">Voir en détail</a>
                                 <div class="overflow-y-auto w-11/12 h-full bg-gray-100 rounded-md p-3 mt-2 max-h-96">
                                     @foreach ($ds as $d)
                                         <div class="flex flex-row justify-between items-center w-full py-2">
@@ -174,37 +179,39 @@
                 @endif
             @endauth
             @if (!Auth::check())
-            <div class="flex flex-col md:flex-row justify-center w-11/12 mx-auto p-6 rounded-lg gap-2 mb-8 ">
+                <div class="flex flex-col md:flex-row justify-center w-11/12 mx-auto p-6 rounded-lg gap-2 mb-8 ">
 
-                <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
-                    <h2 class="text-base font-bold text-center">Bienvenue sur Maths Manager</h2>
-                    <p class="mt-4 text-sm">Vous trouverez sur ce site des exercices, des quizz, des fiches
-                        récapitulatives de cours sur
-                        tous les chapitres des classes de Première et Terminale.
-                        Les exercices ne disposant pas de correction, vous aurez la possibilité d’envoyer
-                        votre travail afin d’obtenir une correction de ma part.
-                        Les quizz sont interactifs et permettent de vérifier que le cours est su.
-                        Vous pourrez suivre votre progression durant l’année grâce au système de notation et
-                        de suivi des exercices et quizz.
-                        Un générateur de DS vous permet de concevoir de manière automatique et aléatoire
-                        un contrôle personnalisé en fonction de la difficulté, du temps et des chapitres
-                        sélectionnés.</p>
-                    <p class="mt-4 text-sm"><a href="{{ route('login') }}" class="underline font-bold">Connectez-vous
-                        </a> et contactez <a href="mailto:maxime@mathsmanager.fr" class="underline font-bold">Maxime</a>
-                        pour accéder
-                        à toutes ces fonctionnalités !</p>
+                    <div class="flex flex-col w-full md:w-3/4 bg-[#FBF7F0] p-6 rounded-lg">
+                        <h2 class="text-base font-bold text-center">Bienvenue sur Maths Manager</h2>
+                        <p class="mt-4 text-sm">Vous trouverez sur ce site des exercices, des quizz, des fiches
+                            récapitulatives de cours sur
+                            tous les chapitres des classes de Première et Terminale.
+                            Les exercices ne disposant pas de correction, vous aurez la possibilité d’envoyer
+                            votre travail afin d’obtenir une correction de ma part.
+                            Les quizz sont interactifs et permettent de vérifier que le cours est su.
+                            Vous pourrez suivre votre progression durant l’année grâce au système de notation et
+                            de suivi des exercices et quizz.
+                            Un générateur de DS vous permet de concevoir de manière automatique et aléatoire
+                            un contrôle personnalisé en fonction de la difficulté, du temps et des chapitres
+                            sélectionnés.</p>
+                        <p class="mt-4 text-sm"><a href="{{ route('login') }}" class="underline font-bold">Connectez-vous
+                            </a> et contactez <a href="mailto:maxime@mathsmanager.fr"
+                                class="underline font-bold">Maxime</a>
+                            pour accéder
+                            à toutes ces fonctionnalités !</p>
+                    </div>
+                    <div class="flex flex-col w-full md:w-1/5 bg-[#FBF7F0] p-6 rounded-lg">
+                        <h2 class="text-base font-bold text-center">Qui suis-je ?</h2>
+                        <p class="mt-4 text-xs">Après deux années de classes
+                            préparatoires MPSI, MP*
+                            j’ai intégré l’école d’ingénieur
+                            ENSEEIHT.
+                            Je suis professeur particulier depuis maintenant 8 années, où j’ai pu aider de nombreux élèves à
+                            obtenir
+                            leur Baccalauréat et poursuivre leurs études dans le supérieur.
+                        </p>
+                    </div>
                 </div>
-                <div class="flex flex-col w-full md:w-1/5 bg-[#FBF7F0] p-6 rounded-lg">
-                    <h2 class="text-base font-bold text-center">Qui suis-je ?</h2>
-                    <p class="mt-4 text-xs">Après deux années de classes
-                        préparatoires MPSI, MP*
-                        j’ai intégré l’école d’ingénieur
-                        ENSEEIHT.
-                        Je suis professeur particulier depuis maintenant 8 années, où j’ai pu aider de nombreux élèves à obtenir
-                        leur Baccalauréat et poursuivre leurs études dans le supérieur.
-                    </p>
-                </div>
-            </div>
             @endif
         </div>
         {{-- cookies --}}

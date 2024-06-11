@@ -18,85 +18,90 @@ class HomeController extends Controller
         if (!auth()->check()) {
             return view('home');
         }
-  
+
         try {
-        $user = auth()->user();
+            $user = auth()->user();
 
-        if ($user->role == 'admin') {
-            $search = $request->get('search');
-            $status = $request->get('status', 'pending'); // Par défaut, le statut est 'pending'
-        
-            $correctionRequests = CorrectionRequest::where('status', $status)
-                ->when($search, function ($query, $search) {
-                    $query->whereHas('user', function ($query) use ($search) {
-                        $query->where('name', 'LIKE', "%{$search}%");
-                    });
-                })
-                ->orderBy('created_at', 'desc')
-                ->paginate(3)->withQueryString();
-    
-            // get all ds not_started and ongoing
-            $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
-            ->where('status', 'not_started')
-            ->orWhere('status', 'ongoing')
-            ->orwhere('status', 'finished')
-            ->select('DS.*', 'users.name')
-            ->orderBy('users.name', 'asc')
-            ->orderBy('status', 'asc')
-            ->get();
+            if ($user->role == 'admin') {
+                $search = $request->get('search');
+                $status = $request->get('status', 'pending'); // Par défaut, le statut est 'pending'
 
-            if ($correctionRequests == null) {
-                $correctionRequests = "N/A";
+                $correctionRequests = CorrectionRequest::where('status', $status)
+                    ->when($search, function ($query, $search) {
+                        $query->whereHas('user', function ($query) use ($search) {
+                            $query->where('name', 'LIKE', "%{$search}%");
+                        });
+                    })
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(3)->withQueryString();
+
+                // get all ds not_started and ongoing
+                $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
+                    ->where('status', 'not_started')
+                    ->orWhere('status', 'ongoing')
+                    ->orwhere('status', 'finished')
+                    ->select('DS.*', 'users.name')
+                    ->orderBy('users.name', 'asc')
+                    ->orderBy('status', 'asc')
+                    ->get();
+
+                session(['correctionRequests' => $correctionRequests]);
+                session(['ds' => $ds]);
+                return view('home', compact('correctionRequests', 'ds'));
             }
-        
-            return view('home', compact('correctionRequests', 'ds'));
-        }
 
-        // Get the last 10 quizzes
-        $quizzes = Quizze::where('student_id', $user->id)->latest()->take(10)->get();
+            // Get the last 10 quizzes
+            $quizzes = Quizze::where('student_id', $user->id)->latest()->take(10)->get();
 
-        // Calculate the number of correct and incorrect answers
-        // goodAnswers = la somme de tous les scores 
-        $goodAnswers = $quizzes->sum('score');
-        $totalQUestions =  $quizzes->sum(function ($quiz) {
-            return $quiz->details->count();
-        });
+            // Calculate the number of correct and incorrect answers
+            // goodAnswers = la somme de tous les scores 
+            $goodAnswers = $quizzes->sum('score');
+            $totalQUestions =  $quizzes->sum(function ($quiz) {
+                return $quiz->details->count();
+            });
 
-        $badAnswers = $totalQUestions - $goodAnswers;
-        if ($totalQUestions == 0) {
-            $goodAnswers = 100;
-            $badAnswers = 0;
-        }
+            $badAnswers = $totalQUestions - $goodAnswers;
+            if ($totalQUestions == 0) {
+                $goodAnswers = 100;
+                $badAnswers = 0;
+            }
 
-        // dd($goodAnswers, $badAnswers, $totalQUestions);
+            // dd($goodAnswers, $badAnswers, $totalQUestions);
 
-        // Get moyenne des 10 derniers scores 
-        if ($quizzes->count() > 0) {
-            $scores = round($goodAnswers / $quizzes->count(), 1);
-        } else {
-            $scores = "N/A";
-        }
+            // Get moyenne des 10 derniers scores 
+            if ($quizzes->count() > 0) {
+                $scores = round($goodAnswers / $quizzes->count(), 1);
+            } else {
+                $scores = "N/A";
+            }
 
-        $totalDS = DS::where('user_id', $user->id)->count();
-        $notStartedDS = DS::where('user_id', $user->id)->where('status', 'not_started')->count();
-        $inProgressDS = DS::where('user_id', $user->id)->where('status', 'ongoing')->count();
-        $sentDS = DS::where('user_id', $user->id)->where('status', 'sent')->count();
-        $correctedDS = DS::where('user_id', $user->id)->where('status', 'corrected')->count();
+            $totalDS = DS::where('user_id', $user->id)->count();
+            $notStartedDS = DS::where('user_id', $user->id)->where('status', 'not_started')->count();
+            $inProgressDS = DS::where('user_id', $user->id)->where('status', 'ongoing')->count();
+            $sentDS = DS::where('user_id', $user->id)->where('status', 'sent')->count();
+            $correctedDS = DS::where('user_id', $user->id)->where('status', 'corrected')->count();
 
-        $averageGrade = CorrectionRequest::where('user_id', $user->id)
-            ->where('status', 'corrected')
-            ->avg('grade');
+            $averageGrade = CorrectionRequest::where('user_id', $user->id)
+                ->where('status', 'corrected')
+                ->avg('grade');
 
-        if ($averageGrade == null) {
-            $averageGrade = "N/A";
-        } else {
-            $averageGrade = round($averageGrade, 1);
-        }
+            if ($averageGrade == null) {
+                $averageGrade = "N/A";
+            } else {
+                $averageGrade = round($averageGrade, 1);
+            }
 
-        $correctionRequests = "rechargez la page";
-
-        return view('home', compact('averageGrade', 'totalDS', 'notStartedDS', 'inProgressDS', 'sentDS', 'correctedDS', 
-        'goodAnswers', 'badAnswers', 'scores', 'correctionRequests'));
+            return view('home', compact(
+                'averageGrade',
+                'totalDS',
+                'notStartedDS',
+                'inProgressDS',
+                'sentDS',
+                'correctedDS',
+                'goodAnswers',
+                'badAnswers',
+                'scores'
+            ));
         } catch (\Exception $e) {
             return redirect()->route('login');
         }
