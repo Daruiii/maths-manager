@@ -44,6 +44,10 @@ class HomeController extends Controller
             ->orderBy('users.name', 'asc')
             ->orderBy('status', 'asc')
             ->get();
+
+            if ($correctionRequests == null) {
+                $correctionRequests = "Rechargez la page";
+            }
         
             return view('home', compact('correctionRequests', 'ds'));
         }
@@ -70,7 +74,7 @@ class HomeController extends Controller
         if ($quizzes->count() > 0) {
             $scores = round($goodAnswers / $quizzes->count(), 1);
         } else {
-            $scores = "N/A";
+            $scores = "Rechargez la page";
         }
 
         $totalDS = DS::where('user_id', $user->id)->count();
@@ -84,7 +88,7 @@ class HomeController extends Controller
             ->avg('grade');
 
         if ($averageGrade == null) {
-            $averageGrade = "N/A";
+            $averageGrade = "Rechargez la page";
         } else {
             $averageGrade = round($averageGrade, 1);
         }
