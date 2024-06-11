@@ -93,7 +93,7 @@ class HomeController extends Controller
             $averageGrade = round($averageGrade, 1);
         }
 
-        $correctionRequests = null;
+        $correctionRequests = "rechargez la page";
 
         return view('home', compact('averageGrade', 'totalDS', 'notStartedDS', 'inProgressDS', 'sentDS', 'correctedDS', 
         'goodAnswers', 'badAnswers', 'scores', 'correctionRequests'));
