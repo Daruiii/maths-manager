@@ -46,7 +46,7 @@ class HomeController extends Controller
             ->get();
 
             if ($correctionRequests == null) {
-                $correctionRequests->count() == 0;
+                $correctionRequests = "N/A";
             }
         
             return view('home', compact('correctionRequests', 'ds'));
@@ -93,8 +93,10 @@ class HomeController extends Controller
             $averageGrade = round($averageGrade, 1);
         }
 
+        $correctionRequests = null;
+
         return view('home', compact('averageGrade', 'totalDS', 'notStartedDS', 'inProgressDS', 'sentDS', 'correctedDS', 
-        'goodAnswers', 'badAnswers', 'scores'));
+        'goodAnswers', 'badAnswers', 'scores', 'correctionRequests'));
         } catch (\Exception $e) {
             return redirect()->route('login');
         }
