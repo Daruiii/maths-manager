@@ -30,7 +30,7 @@
                                 $correctionRequests = session('correctionRequests');
                                 $ds = session('ds');
                                 @endphp
-                                @if ($correctionRequests->count())
+                                @if ($correctionRequests && count($correctionRequests) > 0)
                                     <div class="w-full flex flex-wrap justify-center items-center gap-4">
                                         @foreach ($correctionRequests as $index => $correctionRequest)
                                             <div class="quiz-card">
