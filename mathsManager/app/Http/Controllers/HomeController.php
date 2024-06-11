@@ -46,7 +46,7 @@ class HomeController extends Controller
             ->get();
 
             if ($correctionRequests == null) {
-                $correctionRequests = null;
+                $correctionRequests->count() == 0;
             }
         
             return view('home', compact('correctionRequests', 'ds'));

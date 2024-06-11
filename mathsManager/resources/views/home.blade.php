@@ -25,7 +25,7 @@
                                         <x-optionsFilter :status="request('status', 'pending')" />
                                     </form>
                                 </div>
-
+                                @dd($correctionRequests)
                                 @if ($correctionRequests->count())
                                     <div class="w-full flex flex-wrap justify-center items-center gap-4">
                                         @foreach ($correctionRequests as $index => $correctionRequest)
