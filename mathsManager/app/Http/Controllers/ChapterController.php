@@ -41,11 +41,19 @@ class ChapterController extends Controller
         $themeColors = $this->themeColors;
     
         $previousClassId = Classe::where('id', '<', $classeActive)->max('id');
+        $nextClassId = Classe::where('id', '>', $classeActive)->min('id');
         $nextOrder = 1;
     
         if ($previousClassId) {
             $nextOrder = Chapter::where('class_id', $previousClassId)->max('order') + 1;
         }
+        if ($nextClassId) {
+            $nextOrder = Chapter::where('class_id', $nextClassId)->min('order');
+        } else {
+            $lastOrderInCurrentClass = Chapter::where('class_id', $classeActive)->max('order');
+            $nextOrder = $lastOrderInCurrentClass ? $lastOrderInCurrentClass + 1 : 1;
+        }
+
     
         return view('chapter.create', compact('classes', 'classeActive', 'themeColors', 'nextOrder'));
     }
@@ -57,6 +65,23 @@ class ChapterController extends Controller
             'order' => 'required|integer'
         ]);
     
+        $newOrder = $request->order;
+        $classId = $request->class_id;
+    
+        // Trouver l'ID de la classe suivante
+        $nextClassId = Classe::where('id', '>', $classId)->min('id');
+    
+        if ($nextClassId) {
+            // Trouver l'ordre du premier chapitre de la classe suivante
+            $orderOfFirstChapterInNextClass = Chapter::where('class_id', $nextClassId)->min('order');
+    
+            if ($newOrder >= $orderOfFirstChapterInNextClass) {
+                // Incrémenter l'ordre de tous les chapitres suivants dans toutes les classes
+                Chapter::where('order', '>=', $newOrder)
+                       ->increment('order');
+            }
+        }
+
         $classLevel = Classe::findOrFail($request->class_id)->level;
     
         Chapter::create($request->all());
