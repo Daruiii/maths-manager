@@ -10,6 +10,7 @@ use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\ExercisesSheetController;
 use App\Http\Controllers\DsExerciseController;
 use App\Http\Controllers\MultipleChapterController;
 use App\Http\Controllers\DSController;
@@ -82,6 +83,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/exercise/{id}/edit', [ExerciseController::class, 'edit'])->name('exercise.edit');
         Route::patch('/exercise/{id}', [ExerciseController::class, 'update'])->name('exercise.update');
         Route::delete('/exercise/{id}', [ExerciseController::class, 'destroy'])->name('exercise.destroy');
+    });
+});
+
+// ExerciseSheet routes
+Route::middleware('auth')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/exercises_sheet/create', [ExercisesSheetController::class, 'create'])->name('exercises_sheet.create');
+        Route::post('/exercises_sheet', [ExercisesSheetController::class, 'store'])->name('exercises_sheet.store');
+        Route::get('/exercises_sheets', [ExercisesSheetController::class, 'index'])->name('exercises_sheet.index');
+        Route::get('/exercises_sheet/{id}/edit', [ExercisesSheetController::class, 'edit'])->name('exercises_sheet.edit');
+        Route::patch('/exercises_sheet/{id}', [ExercisesSheetController::class, 'update'])->name('exercises_sheet.update');
+        Route::delete('/exercises_sheet/{id}', [ExercisesSheetController::class, 'destroy'])->name('exercises_sheet.destroy');
+    });
+    Route::middleware([IsVerified::class])->group(function () {
+        Route::get('/exercises_sheet/{id}', [ExerciseController::class, 'show'])->name('exercises_sheet.show');
     });
 });
 

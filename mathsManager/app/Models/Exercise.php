@@ -15,4 +15,9 @@ class Exercise extends Model
     {
         return $this->belongsTo(Subchapter::class);
     }
+
+    public function exercisesSheets()
+    {
+        return $this->belongsToMany(ExercisesSheet::class, 'exercises_sheet_exercises');
+    }
 }

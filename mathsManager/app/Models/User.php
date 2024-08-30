@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(CorrectionRequest::class);
     }
+
+    public function exercisesSheets()
+    {
+        return $this->hasMany(ExercisesSheet::class);
+    }
 }

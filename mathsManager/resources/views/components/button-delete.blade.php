@@ -19,7 +19,9 @@
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Oui',
-      cancelButtonText: 'Non'
+      cancelButtonText: 'Non',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) {
         document.getElementById(`delete-form-${entityId}`).submit();
