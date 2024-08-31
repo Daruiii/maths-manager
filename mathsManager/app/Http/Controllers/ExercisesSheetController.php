@@ -37,6 +37,15 @@ class ExercisesSheetController extends Controller
         return view('exercises_sheet.index', compact('exercisesSheetList', 'sort_by_student'));
     }
 
+    public function indexUser($id)
+    {
+        if (Auth::id() != $id) {
+            return redirect()->route('exercises_sheet.myExerciseSheets', Auth::id());
+        }
+        $exercisesSheetList = ExercisesSheet::where('user_id', $id)->paginate(10);
+        return view('exercises_sheet.myExercisesSheet', compact('exercisesSheetList'));
+    }
+
     // Méthode pour selectionner un chapitre avant de créer une fiche d'exercices
     public function selectChapter(Request $request)
     {

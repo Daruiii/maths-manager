@@ -99,6 +99,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::middleware([IsVerified::class])->group(function () {
         Route::get('/exercises_sheet/{id}', [ExercisesSheetController::class, 'show'])->name('exercises_sheet.show');
+        Route::get('/exercises_sheet/myExercisesSheets/{id}', [ExercisesSheetController::class, 'indexUser'])->name('exercises_sheet.myExercisesSheets');
     });
 });
 
