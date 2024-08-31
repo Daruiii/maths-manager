@@ -60,8 +60,8 @@ class ExercisesSheetController extends Controller
         $selectedStudentId = $request->student_id;
         $selectedChapter = Chapter::find($selectedChapterId);
 
-        if (!$selectedChapter || !$selectedStudentId) {
-            return redirect()->back()->withErrors('Le chapitre ou l\'élève spécifié n\'existe pas.');
+        if (!$selectedChapter) {
+            return redirect()->back()->withErrors('Le chapitre spécifié n\'existe pas.');
         }
 
         $exercises = Exercise::whereHas('subchapter', function ($query) use ($selectedChapterId) {
