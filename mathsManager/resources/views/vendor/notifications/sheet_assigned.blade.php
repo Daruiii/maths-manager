@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Demande de correction</title>
+    <title>Devoir assigné</title>
 </head>
 <body>
     <div class="wrapper">
@@ -11,18 +11,9 @@
             </div>
             <div class="body">
                 <div class="inner-body">
-                    <h2>@lang("Bonjour !")</h2>
-                    <p>@lang("Vous avez reçu une nouvelle demande de correction de la part de : ") {{ $userName }}</p>
-                    <p>@lang("Voici les détails de la demande :")</p>
-                    <div class="table">
-                        <table>
-                            <tr>
-                                <th>@lang("Date de soumission : ")</th>
-                                <td>{{ $correctionRequest->created_at }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <p>@lang("Vous pouvez consulter cette demande de correction en vous connectant à votre compte.")</p>
+                    <h2>@lang("Bonjour") {{ $userName }}</h2>
+                    <p>@lang("Vous avez reçu une nouvelle fiche d'exercices.")</p>
+                    <p>@lang("Vous pouvez consulter cette fiche en vous connectant à votre compte.")</p>
                     <div class="subcopy">
                         <p>@lang('Cordialement'),<br>{{ config('app.name') }}</p>
                     </div>

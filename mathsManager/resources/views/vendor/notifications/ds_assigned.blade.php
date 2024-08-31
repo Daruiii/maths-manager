@@ -21,6 +21,7 @@
             </div>
             <div class="footer">
                 <p>@lang('Merci de votre attention.')</p>
+                <p><a href="{{ url('www.mathsmanager.fr') }}">www.mathsmanager.fr</a></p>
                 <p>@lang('Copyright © '){{ date('Y') }} {{ config('app.name') }}. @lang('Tous droits réservés.')</p>
             </div>
         </div>

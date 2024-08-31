@@ -29,6 +29,9 @@
                             <x-button-generate href="{{ route('ds.assign', ['student_id' => $student->id]) }}">
                                 {{ __('Assigner un DS') }}
                             </x-button-generate>
+                            <x-button-generate href="{{ route('exercises_sheet.selectChapter', ['student_id' => $student->id]) }}">
+                                {{ __("Assigner une fiche d'exercices") }}
+                            </x-button-generate>
                             <x-button-quizz href="{{ route('student.quizzes', ['student_id' => $student->id]) }}">
                                 {{ __('Voir les quizz') }}
                             </x-button-quizz>

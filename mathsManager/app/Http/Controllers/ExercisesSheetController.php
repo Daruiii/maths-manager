@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\ExercisesSheet;
 use App\Models\Exercise;
 use App\Models\User;
+use App\Models\Chapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\AssignSheetMail;
+use Illuminate\Support\Facades\Mail;
 
 class ExercisesSheetController extends Controller
 {
@@ -34,47 +37,95 @@ class ExercisesSheetController extends Controller
         return view('exercises_sheet.index', compact('exercisesSheetList', 'sort_by_student'));
     }
 
-    // Méthode pour afficher le formulaire de réassignation d'une fiche d'exercices
-    public function reAssignForm($id)
+    // Méthode pour selectionner un chapitre avant de créer une fiche d'exercices
+    public function selectChapter(Request $request)
     {
-        $exercisesSheet = ExercisesSheet::find($id);
-        $students = User::all();
-        return view('exercises_sheet.reAssign', compact('exercisesSheet', 'students'));
+        $chapters = Chapter::all();
+        $studentId = $request->student_id;
+        return view('exercises_sheet.select_chapter', compact('chapters', 'studentId'));
+    }
+    // Méthode pour afficher le formulaire de création d'une fiche d'exercices
+    public function create(Request $request)
+    {
+        $selectedChapterId = $request->chapter_id;
+        $selectedStudentId = $request->student_id;
+        $selectedChapter = Chapter::find($selectedChapterId);
+
+        if (!$selectedChapter || !$selectedStudentId) {
+            return redirect()->back()->withErrors('Le chapitre ou l\'élève spécifié n\'existe pas.');
+        }
+
+        $exercises = Exercise::whereHas('subchapter', function ($query) use ($selectedChapterId) {
+            $query->whereHas('chapter', function ($subQuery) use ($selectedChapterId) {
+                $subQuery->where('id', $selectedChapterId);
+            });
+        })->get();
+        $students = User::where('role', 'student')->get();
+    
+        return view('exercises_sheet.create', compact('exercises', 'students', 'selectedChapter', 'selectedStudentId'));
     }
 
-    // Méthode pour réassigner une fiche d'exercices existante à un autre élève
-    public function reAssign(Request $request)
+    // Méthode pour enregistrer une fiche d'exercices
+    public function store(Request $request)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'exercises_sheet_id' => 'required|exists:exercises_sheet,id',
+            'exercises' => 'required|array',
+            'exercises.*' => 'exists:exercises,id',
+            'chapter_id' => 'required|exists:chapters,id',
         ]);
 
-        $oldExercisesSheet = ExercisesSheet::find($request->input('exercises_sheet_id'));
-        $newExercisesSheet = $oldExercisesSheet->replicate();
-        $newExercisesSheet->user_id = $request->input('user_id');
-        $newExercisesSheet->save();
+        $exercisesSheet = new ExercisesSheet();
+        $exercisesSheet->user_id = $request->user_id;
+        $exercisesSheet->chapter_id = $request->chapter_id;
+        $exercisesSheet->save();
+        $exercisesSheet->exercises()->attach($request->exercises);
 
-        // Copier les exercices associés à l'ancienne fiche vers la nouvelle
-        foreach ($oldExercisesSheet->exercises as $exercise) {
-            $newExercisesSheet->exercises()->attach($exercise->id);
-        }
+        // envoyer un mail à l'élève
+        $student = User::find($request->user_id);
+        Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
 
-        // Envoyer un e-mail à l'élève (optionnel, à implémenter)
-
-        return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices réassignée avec succès.');
+        return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices créée avec succès');
     }
 
-    // Méthode pour afficher les fiches d'exercices de l'utilisateur connecté
-    public function indexUser($id)
+    // Méthode pour editer une fiche d'exercices
+    public function edit($id)
     {
-        if (Auth::id() != $id) {
-            return redirect()->route('exercises_sheet.mySheets', Auth::id());
-        }
+        $exercisesSheet = ExercisesSheet::find($id);
+        $exercises = Exercise::whereHas('subchapter', function ($query) use ($exercisesSheet) {
+            $query->whereHas('chapter', function ($subQuery) use ($exercisesSheet) {
+                $subQuery->where('id', $exercisesSheet->chapter_id);
+            });
+        })->get();
+        $students = User::where('role', 'student')->get();
+        return view('exercises_sheet.edit', compact('exercisesSheet', 'exercises', 'students'));
+    }
 
-        $exercisesSheetList = ExercisesSheet::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+    // Méthode pour mettre à jour une fiche d'exercices
+    public function update(Request $request, $id)
+    {
+        $exercisesSheet = ExercisesSheet::find($id);
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'exercises' => 'required|array',
+            'exercises.*' => 'exists:exercises,id',
+            'chapter_id' => 'required|exists:chapters,id',
+        ]);
 
-        return view('exercises_sheet.mySheets', compact('exercisesSheetList'));
+        $exercisesSheet->user_id = $request->user_id;
+        $exercisesSheet->chapter_id = $request->chapter_id;
+        $exercisesSheet->save();
+        $exercisesSheet->exercises()->sync($request->exercises);
+
+        return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices modifiée avec succès');
+    }
+
+    // Méthode pour supprimer une fiche d'exercices
+    public function destroy($id)
+    {
+        $exercisesSheet = ExercisesSheet::find($id);
+        $exercisesSheet->delete();
+        return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices supprimée avec succès');
     }
 
     // Méthode pour afficher une fiche d'exercices

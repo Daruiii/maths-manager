@@ -44,6 +44,11 @@
         <a href="{{ route('quizz.index') }}" class="p-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center">
             Gérer les quizz
         </a>
+
+        <!-- button pour les fiches d'exercices -->
+        <a href="{{ route('exercises_sheet.index') }}" class="p-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center">
+            Gérer les fiches d'exercices
+        </a>
         
         <!-- Ajoutez plus de boutons pour d'autres entités si nécessaire -->
     </div>

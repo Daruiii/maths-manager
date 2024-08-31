@@ -35,4 +35,9 @@ class Chapter extends Model
     {
         return $this->hasMany(QuizzQuestion::class);
     }
+
+    public function exercisesSheets()
+    {
+        return $this->hasMany(ExercisesSheet::class);
+    }
 }

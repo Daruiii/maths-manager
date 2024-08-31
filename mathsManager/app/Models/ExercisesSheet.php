@@ -24,4 +24,9 @@ class ExercisesSheet extends Model
     {
         return $this->belongsToMany(Exercise::class, 'exercises_sheet_exercises');
     }
+
+    public function chapter()
+    {
+        return $this->belongsTo(Chapter::class);
+    }
 }

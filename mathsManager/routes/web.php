@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('/exercises_sheet/create', [ExercisesSheetController::class, 'create'])->name('exercises_sheet.create');
+        Route::get('/exercises_sheet/select-chapter', [ExercisesSheetController::class, 'selectChapter'])->name('exercises_sheet.selectChapter');
         Route::post('/exercises_sheet', [ExercisesSheetController::class, 'store'])->name('exercises_sheet.store');
         Route::get('/exercises_sheets', [ExercisesSheetController::class, 'index'])->name('exercises_sheet.index');
         Route::get('/exercises_sheet/{id}/edit', [ExercisesSheetController::class, 'edit'])->name('exercises_sheet.edit');
@@ -97,7 +98,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/exercises_sheet/{id}', [ExercisesSheetController::class, 'destroy'])->name('exercises_sheet.destroy');
     });
     Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/exercises_sheet/{id}', [ExerciseController::class, 'show'])->name('exercises_sheet.show');
+        Route::get('/exercises_sheet/{id}', [ExercisesSheetController::class, 'show'])->name('exercises_sheet.show');
     });
 });
 
