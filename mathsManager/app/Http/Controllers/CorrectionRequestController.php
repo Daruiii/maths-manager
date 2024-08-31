@@ -171,7 +171,7 @@ class CorrectionRequestController extends Controller
     public function correctCorrectionRequest(Request $request, $ds_id)
     {
         $request->validate([
-            'correction_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'correction_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
             'grade' => 'required|numeric|min:0|max:20',
             'correction_message' => 'nullable',
         ]);
