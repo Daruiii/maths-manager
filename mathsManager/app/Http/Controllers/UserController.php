@@ -138,6 +138,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        $user->quizzes()->delete();
+
         if ($user->avatar && $user->avatar != 'default.jpg') {
             $avatarPath = public_path('/storage/images/' . $user->avatar);
             if (file_exists($avatarPath)) {

@@ -67,4 +67,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ExercisesSheet::class);
     }
+
+    // name of cul is student_id
+    public function quizzes()
+    {
+        return $this->hasMany(Quizze::class, 'student_id');
+    }
 }
