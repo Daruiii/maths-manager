@@ -140,7 +140,24 @@ class ExercisesSheetController extends Controller
     // Méthode pour afficher une fiche d'exercices
     public function show($id)
     {
-        $exercisesSheet = ExercisesSheet::find($id);
-        return view('exercises_sheet.show', compact('exercisesSheet'));
+        $exercisesSheet = ExercisesSheet::with('exercises.subchapter')->find($id);
+    
+        $globalIndex = 0; // Initialiser le compteur global
+    
+        $exercises = $exercisesSheet->exercises
+            ->groupBy('subchapter_id')
+            ->map(function ($group) use (&$globalIndex) { // Utiliser une référence pour modifier le compteur global
+                $group->each(function ($item) use (&$globalIndex) {
+                    $item->globalIndex = ++$globalIndex; // Assigner et incrémenter le compteur global à chaque exercice
+                });
+                return [
+                    'subChapterTitle' => $group->first()->subchapter->title,
+                    'exercises' => $group,
+                    'subChapterOrder' => $group->first()->subchapter->order
+                ];
+            })
+            ->sortBy('subChapterOrder');
+    
+        return view('exercises_sheet.show', compact('exercisesSheet', 'exercises'));
     }
 }
