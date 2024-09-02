@@ -126,6 +126,10 @@ class ExercisesSheetController extends Controller
         $exercisesSheet->save();
         $exercisesSheet->exercises()->sync($request->exercises);
 
+        // envoyer un mail à l'élève
+        $student = User::find($request->user_id);
+        Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
+
         return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices modifiée avec succès');
     }
 
@@ -142,19 +146,19 @@ class ExercisesSheetController extends Controller
     {
         $exercisesSheet = ExercisesSheet::with('exercises.subchapter')->find($id);
     
-        $globalIndex = 0; // Initialiser le compteur global
+        $globalIndex = 0;
     
-        $subChapterIndex = 0; // Initialiser le compteur pour les sous-chapitres
+        $subChapterIndex = 0;
     
         $exercises = $exercisesSheet->exercises
             ->groupBy('subchapter_id')
-            ->map(function ($group) use (&$globalIndex, &$subChapterIndex) { // Ajouter subChapterIndex
+            ->map(function ($group) use (&$globalIndex, &$subChapterIndex) {
                 $group->each(function ($item) use (&$globalIndex) {
-                    $item->globalIndex = ++$globalIndex; // Assigner et incrémenter le compteur global à chaque exercice
+                    $item->globalIndex = ++$globalIndex;
                 });
-                $subChapterIndex++; // Incrémenter le compteur pour les sous-chapitres ici
+                $subChapterIndex++;
                 return [
-                    'subChapterIndex' => $subChapterIndex, // Utiliser subChapterIndex pour numéroter les sous-chapitres
+                    'subChapterIndex' => $subChapterIndex,
                     'subChapterTitle' => $group->first()->subchapter->title,
                     'exercises' => $group,
                     'subChapterOrder' => $group->first()->subchapter->order,
