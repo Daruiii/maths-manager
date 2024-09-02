@@ -4,14 +4,18 @@
 
     {{-- Avatar --}}
     <div class="relative w-32 h-32 rounded-full overflow-hidden">
-        <img src="{{ old('avatar', $user->avatar ? asset('storage/images/' . $user->avatar) : asset('storage/images/default.jpg')) }}"
-            alt="Avatar" class="absolute inset-0 w-full h-full object-cover" id="imagePreview">
+        @php
+            $avatarUrl = Str::startsWith($user->avatar, 'http')
+                ? $user->avatar
+                : asset('storage/images/' . $user->avatar);
+        @endphp
+        <img src="{{ old('avatar', $avatarUrl) }}" alt="Avatar" class="absolute inset-0 w-full h-full object-cover"
+            id="imagePreview">
 
         <label for="avatar"
             class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 cursor-pointer transition duration-300 ease-in-out text-white">
             <span class="text-white font-semibold">EDIT</span>
-            <input type="file" id="avatar" name="avatar" class="hidden"
-                onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0]); document.getElementById('avatar_changed').value = 'true';">
+            <input type="file" id="avatar" name="avatar" class="hidden" onchange="updateImagePreview()">
         </label>
     </div>
 
@@ -83,6 +87,15 @@
 </section>
 
 <script>
+    function updateImagePreview() {
+        const fileInput = document.getElementById('avatar');
+        const file = fileInput.files[0];
+        if (file) {
+            document.getElementById('imagePreview').src = URL.createObjectURL(file);
+            document.getElementById('avatar_changed').value = 'true';
+        }
+    }
+
     function removeAvatar() {
         document.getElementById('imagePreview').src = '{{ asset('storage/images/default.jpg') }}';
         document.getElementById('remove_avatar').value = 'true';
