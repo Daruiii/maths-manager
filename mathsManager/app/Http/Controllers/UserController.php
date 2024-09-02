@@ -138,6 +138,10 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        foreach ($user->quizzes as $quiz) {
+            $quiz->details()->delete();
+        }
+
         $user->quizzes()->delete();
 
         if ($user->avatar && $user->avatar != 'default.jpg') {
