@@ -18,7 +18,7 @@
                     <div class="w-9/12 flex flex-col items-start justify-start">
                         <div class="mb-8 w-full" id="exercise-{{ $exerciseGroup['subChapterOrder'] }}">
                             <div class="exercise-content cmu-serif min-w-full">
-                                <h1 class="truncate font-bold exercise-title"> {{ $exerciseGroup['subChapterOrder'] }}
+                                <h1 class="truncate font-bold exercise-title"> {{ $exerciseGroup['subChapterIndex'] }}
                                     . {{ $exerciseGroup['subChapterTitle'] }}</h1>
                             </div>
                         </div>

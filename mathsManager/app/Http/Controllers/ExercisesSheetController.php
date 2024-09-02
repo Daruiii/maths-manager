@@ -70,7 +70,7 @@ class ExercisesSheetController extends Controller
             });
         })->get();
         $students = User::where('role', 'student')->get();
-    
+
         return view('exercises_sheet.create', compact('exercises', 'students', 'selectedChapter', 'selectedStudentId'));
     }
 
@@ -144,16 +144,20 @@ class ExercisesSheetController extends Controller
     
         $globalIndex = 0; // Initialiser le compteur global
     
+        $subChapterIndex = 0; // Initialiser le compteur pour les sous-chapitres
+    
         $exercises = $exercisesSheet->exercises
             ->groupBy('subchapter_id')
-            ->map(function ($group) use (&$globalIndex) { // Utiliser une référence pour modifier le compteur global
+            ->map(function ($group) use (&$globalIndex, &$subChapterIndex) { // Ajouter subChapterIndex
                 $group->each(function ($item) use (&$globalIndex) {
                     $item->globalIndex = ++$globalIndex; // Assigner et incrémenter le compteur global à chaque exercice
                 });
+                $subChapterIndex++; // Incrémenter le compteur pour les sous-chapitres ici
                 return [
+                    'subChapterIndex' => $subChapterIndex, // Utiliser subChapterIndex pour numéroter les sous-chapitres
                     'subChapterTitle' => $group->first()->subchapter->title,
                     'exercises' => $group,
-                    'subChapterOrder' => $group->first()->subchapter->order
+                    'subChapterOrder' => $group->first()->subchapter->order,
                 ];
             })
             ->sortBy('subChapterOrder');
