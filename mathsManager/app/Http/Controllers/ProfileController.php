@@ -21,44 +21,46 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $user = $request->user();
-        $user->fill($request->validated());
+   /**
+ * Update the user's profile information.
+ */
+public function update(ProfileUpdateRequest $request): RedirectResponse
+{
+    $user = $request->user();
+    $user->fill($request->validated());
     
-        if ($request->hasFile('avatar')) {
-            // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
-            if ($user->avatar && $user->avatar != 'default.jpg') {
-                $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
-                if (file_exists($oldAvatarPath)) {
-                    unlink($oldAvatarPath);
-                }
+    // Vérifier si l'avatar doit être supprimé
+    if ($request->input('remove_avatar') === 'true') {
+        // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
+        if ($user->avatar && $user->avatar != 'default.jpg') {
+            $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
+            if (file_exists($oldAvatarPath)) {
+                unlink($oldAvatarPath);
             }
-    
-            // Stocke le nouvel avatar
-            $newAvatar = $request->file('avatar');
-            $destinationPath = public_path('/storage/images');
-            $avatarName = $user->email . '-' . $newAvatar->getClientOriginalName();
-            $newAvatar->move($destinationPath, $avatarName);
-            $user->avatar = $avatarName;
-        } else {
-            // supprime l'avatar si ce n'est pas l'avatar par défaut
-            if ($user->avatar && $user->avatar != 'default.jpg') {
-                $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
-                if (file_exists($oldAvatarPath)) {
-                    unlink($oldAvatarPath);
-                }
-            }
-            $user->avatar = 'default.jpg';
         }
-    
-        $user->save();
-    
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $user->avatar = 'default.jpg';
+    } elseif ($request->hasFile('avatar')) {
+        // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
+        if ($user->avatar && $user->avatar != 'default.jpg') {
+            $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
+            if (file_exists($oldAvatarPath)) {
+                unlink($oldAvatarPath);
+            }
+        }
+
+        // Stocke le nouvel avatar
+        $newAvatar = $request->file('avatar');
+        $destinationPath = public_path('/storage/images');
+        $avatarName = $user->email . '-' . time() . '.' . $newAvatar->getClientOriginalExtension();
+        $newAvatar->move($destinationPath, $avatarName);
+        $user->avatar = $avatarName;
     }
+
+    $user->save();
+    
+    return Redirect::route('profile.edit')->with('status', 'profile-updated');
+}
+
 
     /**
      * Delete the user's account.
