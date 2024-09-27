@@ -12,9 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('exercises_sheet', function (Blueprint $table) {
-            if (!Schema::hasColumn('exercises_sheet', 'chapter_id')) {
-                $table->foreignId('chapter_id')->constrained('chapters')->onDelete('cascade');
-            }
+            $table->string('title')->nullable();
+            $table->enum('status', ['not_started', 'opened'])->default('not_started');
         });
     }
 
@@ -24,10 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('exercises_sheet', function (Blueprint $table) {
-            if (Schema::hasColumn('exercises_sheet', 'chapter_id')) {
-                $table->dropForeign(['chapter_id']);
-                $table->dropColumn('chapter_id');
-            }
+            $table->dropColumn('title');
+            $table->dropColumn('status');
         });
     }
 };

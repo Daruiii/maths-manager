@@ -19,8 +19,9 @@
                 <a href="{{ route('exercises_sheet.show', $exerciseSheet->id) }}">
                     <x-sheet-card 
                         number="{{ $loop->iteration }}"
-                        title="{{ $exerciseSheet->chapter->title }}" 
+                        title="{{  $exerciseSheet->title ?? $exerciseSheet->chapter->title }}"
                         date="{{ $exerciseSheet->created_at->format('d/m/Y') }}" 
+                        status="{{ $exerciseSheet->status }}"
                     />
                 </a>
             @endforeach

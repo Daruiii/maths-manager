@@ -45,6 +45,12 @@
             <form action="{{ route('exercises_sheet.store') }}" method="POST" id="exercisesSheetForm">
                 @csrf
                 <input type="hidden" name="chapter_id" value="{{ $selectedChapter->id }}">
+                
+                <div class="form-group">
+                    <label for="title">Titre :</label>
+                    <input type="text" id="title" name="title" class="form-control" required>
+                </div>
+
                 <div class="form-group">
                     <label>Étudiant :</label>
                     <select id="user" name="user_id" style="width: 100%;">

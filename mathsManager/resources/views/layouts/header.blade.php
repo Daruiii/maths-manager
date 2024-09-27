@@ -78,15 +78,27 @@
                 @endforeach
                 @auth
                     @if (Auth::user()->role === 'student')
-                        <li>
+                        <li class="relative">
                             <a href="{{ route('ds.myDS', Auth::user()->id) }}"
-                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">Mes
-                                devoirs</a>
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">
+                                Mes devoirs
+                                @if ($dsNotStarted > 0)
+                                    <div class="absolute top-0 right-0 bg-red-500 text-white font-size-xxsmall rounded-full w-3 h-3 flex items-center justify-center transform translate-x-3/4 -translate-y-1/2">
+                                        {{ $dsNotStarted }}
+                                    </div>
+                                @endif
+                            </a>
                         </li>
-                        <li>
+                        <li class="relative">
                             <a href="{{ route('exercises_sheet.myExercisesSheets', Auth::user()->id) }}"
-                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('exercises_sheet.myExercisesSheets') ? 'active' : '' }}">Mes
-                                fiches d'exercices</a>
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('exercises_sheet.myExercisesSheets') ? 'active' : '' }}">
+                                Mes fiches d'exercices
+                                @if ($exercisesSheetNotStarted > 0)
+                                    <div class="absolute top-0 right-0 bg-red-500 text-white font-size-xxsmall rounded-full w-3 h-3 flex items-center justify-center transform translate-x-3/4 -translate-y-1/2">
+                                        {{ $exercisesSheetNotStarted }}
+                                    </div>
+                                @endif
+                            </a>
                         </li>
                     @endif
                     @if (Auth::user()->role === 'admin')

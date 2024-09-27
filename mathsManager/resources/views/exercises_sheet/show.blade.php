@@ -12,7 +12,8 @@
                     <h1 class="text-lg text-center cmu-serif uppercase">T<span class="text-sm">erminale</span> S<span
                             class="text-sm">pécialité</span></h1>
                 </div>
-            </div>
+                {{-- write sheet->title --}}
+                <h1 class="text-xl text-center cmu-serif font-bold">{{ $exercisesSheet->title }}</h1>
             <div class="w-9/12 flex flex-col items-start justify-start">
                 @foreach ($exercises as $exerciseGroup)
                     <div class="w-9/12 flex flex-col items-start justify-start">

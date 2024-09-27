@@ -82,11 +82,13 @@ class ExercisesSheetController extends Controller
             'exercises' => 'required|array',
             'exercises.*' => 'exists:exercises,id',
             'chapter_id' => 'required|exists:chapters,id',
+            'title' => 'nullable|string|max:255',
         ]);
 
         $exercisesSheet = new ExercisesSheet();
         $exercisesSheet->user_id = $request->user_id;
         $exercisesSheet->chapter_id = $request->chapter_id;
+        $exercisesSheet->title = $request->title;
         $exercisesSheet->save();
         $exercisesSheet->exercises()->attach($request->exercises);
 
@@ -119,10 +121,12 @@ class ExercisesSheetController extends Controller
             'exercises' => 'required|array',
             'exercises.*' => 'exists:exercises,id',
             'chapter_id' => 'required|exists:chapters,id',
+            'title' => 'nullable|string|max:255',
         ]);
 
         $exercisesSheet->user_id = $request->user_id;
         $exercisesSheet->chapter_id = $request->chapter_id;
+        $exercisesSheet->title = $request->title;
         $exercisesSheet->save();
         $exercisesSheet->exercises()->sync($request->exercises);
 
@@ -165,6 +169,12 @@ class ExercisesSheetController extends Controller
                 ];
             })
             ->sortBy('subChapterOrder');
+    
+        // Mettre à jour le statut à "opened" ssi l'utilisateur connecté est le propriétaire de la fiche
+        if (Auth::id() == $exercisesSheet->user_id) {
+            $exercisesSheet->status = 'opened';
+            $exercisesSheet->save();
+        }
     
         return view('exercises_sheet.show', compact('exercisesSheet', 'exercises'));
     }

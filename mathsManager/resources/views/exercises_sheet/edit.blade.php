@@ -50,6 +50,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="title">Titre :</label>
+                    <input type="text" id="title" name="title" value="{{ $exercisesSheet->title }}" style="width: 100%;">
+                </div>
+
+                <div class="form-group">
                     <label for="exercises">Sélectionner des exercices :</label>
                     <div class="multiselect">
                         <div class="multiselect__selected" tabindex="0">

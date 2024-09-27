@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use View;
 use App\Models\Classe;
+use App\Models\DS;
+use App\Models\ExercisesSheet;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,12 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('layouts.app', function ($view) {
             $view->with('classes', Classe::all());
+            // count dsNotStarted for user connected
+            $dsNotStarted = DS::where('user_id', auth()->id())->where('status', 'not_started')->count();
+            $view->with('dsNotStarted', $dsNotStarted);
+            // get exercices sheet from user connected where status = not_started and count them
+            $exercisesSheetNotStarted = ExercisesSheet::where('user_id', auth()->id())->where('status', 'not_started')->count();
+            $view->with('exercisesSheetNotStarted', $exercisesSheetNotStarted);
         });
     }
 }

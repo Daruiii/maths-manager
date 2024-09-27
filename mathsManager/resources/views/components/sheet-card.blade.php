@@ -1,8 +1,8 @@
-@props(['title', 'date', 'number'])
+@props(['title', 'date', 'number', 'status'])
 
 <div class="sheet-card">
     <div class="sheet-bg"></div>
-    <div class="sheet-blob"></div>
+    <div class="sheet-blob sheet-{{ $status }}"></div>
     <div class="z-10 text-center">
         {{-- loop number here --}}
         <h3 class="text-sm font-small mb-3 px-2">N° {{ $number }}</h3>
@@ -41,7 +41,12 @@
         overflow: hidden;
         outline: 2px solid white;
     }
-
+    .sheet-not_started {
+        background: linear-gradient(145deg, #00ff00, #00ff00);
+    }
+    .sheet-opened {
+        background: linear-gradient(145deg, #808080, #000000);
+    }
     .sheet-blob {
         position: absolute;
         z-index: 1;
@@ -50,7 +55,6 @@
         width: 100px;
         height: 100px;
         border-radius: 50%;
-        background-color: #FFA500;
         opacity: 1;
         filter: blur(8px);
         animation: blob-bounce 5s infinite ease;
