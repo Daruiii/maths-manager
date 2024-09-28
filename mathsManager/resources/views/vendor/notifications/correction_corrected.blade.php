@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Corrigé de la demande de correction</title>
+    <title>Corrigé du devoir</title>
 </head>
 <body>
     <div class="wrapper">
@@ -12,8 +12,8 @@
             <div class="body">
                 <div class="inner-body">
                     <h2>@lang("Bonjour") {{ $userName }}</h2>
-                    <p>@lang("Votre demande de correction a été corrigée.")</p>
-                    <p>@lang("Vous pouvez consulter cette demande de correction en vous connectant à votre compte.")</p>
+                    <p>@lang("Votre devoir a été corrigée.")</p>
+                    <p>@lang("Vous pouvez consulter ce devoir en vous connectant à votre compte.")</p>
                     <div class="subcopy">
                         <p>@lang('Cordialement'),<br>{{ config('app.name') }}</p>
                     </div>
