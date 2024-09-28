@@ -37,6 +37,7 @@ Route::get('/isntValid', [HomeController::class, 'isntValid'])->name('isntValid'
 // Classe routes
 Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/classe/reorder', [ClasseController::class, 'reorderAllElements'])->name('classe.reorder');
         Route::get('/classe', [ClasseController::class, 'index'])->name('classe.index');
         Route::get('/classe/create', [ClasseController::class, 'create'])->name('classe.create');
         Route::post('/classe', [ClasseController::class, 'store'])->name('classe.store');

@@ -173,7 +173,7 @@ class CorrectionRequestController extends Controller
         $request->validate([
             'correction_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
             'grade' => 'required|numeric|min:0|max:20',
-            'correction_message' => 'nullable',
+            'correction_message' => 'nullable|string|max:255',
         ]);
 
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();

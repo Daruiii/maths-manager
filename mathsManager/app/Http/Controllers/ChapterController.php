@@ -44,14 +44,13 @@ class ChapterController extends Controller
         $nextClassId = Classe::where('id', '>', $classeActive)->min('id');
         $nextOrder = 1;
     
-        if ($previousClassId) {
+        $lastOrderInCurrentClass = Chapter::where('class_id', $classeActive)->max('order');
+        if ($lastOrderInCurrentClass) {
+            $nextOrder = $lastOrderInCurrentClass + 1;
+        } else if ($previousClassId) {
             $nextOrder = Chapter::where('class_id', $previousClassId)->max('order') + 1;
-        }
-        if ($nextClassId) {
+        } else if ($nextClassId) {
             $nextOrder = Chapter::where('class_id', $nextClassId)->min('order');
-        } else {
-            $lastOrderInCurrentClass = Chapter::where('class_id', $classeActive)->max('order');
-            $nextOrder = $lastOrderInCurrentClass ? $lastOrderInCurrentClass + 1 : 1;
         }
 
     

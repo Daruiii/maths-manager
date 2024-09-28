@@ -41,7 +41,9 @@
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Oui',
-                        cancelButtonText: 'Non'
+                        cancelButtonText: 'Non',
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // Si l'utilisateur confirme, soumettre le formulaire
@@ -115,7 +117,9 @@
                     <div class="mb-16 w-full" id="exercise-{{ $index + 1 }}">
                         <div class="exercise-content text-sm cmu-serif min-w-full">
                             <span class="truncate font-bold text-sm exercise-title"> Exercice
-                                {{ $index + 1 }}. @auth @if (Auth::user()->role == 'admin') #{{ $exercise->id }} @endif @endauth </span>
+                                {{ $index + 1 }}. @auth @if (Auth::user()->role == 'admin')
+                                    #{{ $exercise->id }}
+                                @endif @endauth </span>
                             {!! $exercise->statement !!}
                         </div>
                     </div>
