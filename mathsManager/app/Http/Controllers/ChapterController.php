@@ -120,8 +120,7 @@ class ChapterController extends Controller
         $chapter->delete();
     
         // Decrement the order of the chapters that come after
-        Chapter::where('class_id', $class_id)
-            ->where('order', '>', $order)
+        Chapter::where('order', '>', $order)
             ->decrement('order');
     
         $classLevel = Classe::findOrFail($class_id)->level;

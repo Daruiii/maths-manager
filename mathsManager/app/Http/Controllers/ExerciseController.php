@@ -172,7 +172,6 @@ class ExerciseController extends Controller
             }
 
             $exercise = new Exercise();
-            $exercise->id = $newId;
             $exercise->clue = $clueHtml;
             $exercise->latex_clue = $request->clue;
             $exercise->name = $request->name;
@@ -188,7 +187,7 @@ class ExerciseController extends Controller
             return redirect()->route('subchapter.show', $request->subchapter_id);
         } catch (\Exception $e) {
             Log::error("Failed to store exercise: " . $e->getMessage());
-            return back()->withErrors('Failed to store exercise.');
+            return back()->withErrors('Failed to store exercise. ' . $e->getMessage());
         }
     }
 

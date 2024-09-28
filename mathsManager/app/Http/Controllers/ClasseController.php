@@ -16,7 +16,7 @@ class ClasseController extends Controller
         try {
             // Get all classes ordered by id
             $classes = Classe::orderBy('id')->get();
-            
+
             $order = 1;
 
             foreach ($classes as $class) {
@@ -35,6 +35,24 @@ class ClasseController extends Controller
                         // Assign the order to the subchapter
                         $subchapter->order = $index + 1;
                         $subchapter->save();
+                    }
+                }
+            }
+            // Get all classes ordered by id and update the order of the exercises in each subchapter of each chapter of each class.
+            $order = 1;
+
+            foreach ($classes as $class) {
+                $chapters = Chapter::where('class_id', $class->id)->orderBy('order')->get();
+                foreach ($chapters as $chapter) {
+                    $subchapters = Subchapter::where('chapter_id', $chapter->id)->orderBy('order')->get();
+
+                    foreach ($subchapters as $subchapter) {
+                        $exercises = $subchapter->exercises()->orderBy('order')->get();
+
+                        foreach ($exercises as $exercise) {
+                            $exercise->order = $order++;
+                            $exercise->save();
+                        }
                     }
                 }
             }
@@ -108,5 +126,4 @@ class ClasseController extends Controller
 
         return redirect()->route('classe.index');
     }
-
 }
