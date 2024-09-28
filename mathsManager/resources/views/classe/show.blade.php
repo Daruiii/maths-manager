@@ -15,9 +15,9 @@
                     {{-- <a href="{{ route('exercises.decrement') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         décrement les exercices.order
                     </a> --}}
-                     <a href="{{ route('classe.reorder') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                     {{-- <a href="{{ route('classe.reorder') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                         reorder chapters et subchapters
-                    </a>
+                    </a> --}}
                 @endif
             @endauth
         </div>
