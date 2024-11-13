@@ -29,6 +29,7 @@ window.katexDelimiters = [
     {left: "\\frac{", right: "}", display: true},
     {left: "\\Frac{", right: "}", display: true},
     {left: "\\Sum", right: "", display: true},
+    {left: "\\Prod", right: "", display: true},
     {left: "\\boxed{", right: "}", display: true},
     {left: "\\begin{equation}", right: "\\end{equation}", display: true},
     {left: "\\begin{matrix}", right: "\\end{matrix}", display: true},
@@ -112,6 +113,7 @@ window.macros = {
     '\\limzm': '\\displaystyle \\lim_{x \\to 0, x < 0}',
     '\\Frac': '\\displaystyle \\frac{#1}{#2}',
     "\\Sum": "\\displaystyle \\sum",
+    "\\Prod": "\\displaystyle \\prod",
     '\\parenthese': '\\left( #1 \\right)',
     '\\Rp': '[0;+\\infty[',
     '\\Rpe': ']0;+\\infty[',
@@ -130,4 +132,7 @@ window.macros = {
     '\\reperei': '(O;\\vect{i},\\vect{j},\\vect{k})',
     '\\reperea': '(1;\\vect{AB},\\vect{AD},\\vect{AE})',
     '\\finboite' : '\\end{tcolorbox}',
+    // pas testé inch ça marche
+    '\\lq': '\\leqslant',
+    '\\gq': '\\geqslant',
 };

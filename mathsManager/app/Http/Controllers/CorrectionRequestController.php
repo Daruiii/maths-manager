@@ -99,6 +99,7 @@ class CorrectionRequestController extends Controller
         $request->validate([
             'pictures' => 'required|array|min:1',
             'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'message' => 'nullable|string|max:255',
         ]);
 
         $ds = DS::where('id', $ds_id)->firstOrFail();
@@ -124,6 +125,7 @@ class CorrectionRequestController extends Controller
             $imagesPaths[] = 'correctionRequests/' . $ds_id . '/' . $img_name;
         }
         $correctionRequest->pictures = json_encode($imagesPaths);
+        $correctionRequest->message = $request->message;
         $correctionRequest->save();
 
         // set ds status to 'sent'

@@ -39,6 +39,10 @@
                     <x-multiple-file-input-carousel type="file" name="pictures[]" id="images" />
                 </div>
 
+                <div class="form-group flex flex-col">
+                    <label for="comment" class="form-label">Commentaire</label>
+                    <textarea name="message" id="comment" class="form-input" rows="5"></textarea>
+                </div>
                 {{-- <button type="submit" class="submit-btn-form">Envoyer la demande</button> --}}
                 <div class="w-full flex justify-center">
                     <x-btn-send />

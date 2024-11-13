@@ -118,6 +118,13 @@
                         </div>
                     @endforeach
                 </div>
+                {{-- display the comment --}}
+                @if ($correctionRequest->message)
+                    <div class="flex flex-col justify-center items-center w-full h-full p-4">
+                        <h1 class="text-xs md:text-sm font-semibold">Commentaire</h1>
+                        <p class="text-xs md text-sm break-words">{{ $correctionRequest->message }}</p>
+                    </div>
+                @endif
                 <div class="h-full w-full flex flex-row justify-end align-end items-end">
                     <h1 class="p-2 text-xs md:text-sm font-semibold">
                         {{ $correctionRequest->created_at->format('d/m/Y') }}</h1>

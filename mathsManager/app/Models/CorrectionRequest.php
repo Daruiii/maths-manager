@@ -17,6 +17,7 @@ class CorrectionRequest extends Model
         'correction_message',
         'grade',
         'status',
+        'message',
     ];
 
     public function user()
