@@ -53,7 +53,12 @@
                                     <h2 class="truncate font-bold text-sm exercise-title">
                                         <x-stars-difficulty starsActive="{{ $ex->difficulty }}" id="rating{{ $ex->id }}" />
                                         Exercice {{ $ex->order }}.
-                                        {{ $ex->name }}</h2>
+                                        @if (stripos($ex->name, 'Bac') !== false || stripos($ex->name, 'bac') !== false)
+                                            <span class="bg-red-500 text-white px-2 py-1 rounded-full">{{ $ex->name }}</span>
+                                        @else
+                                            {{ $ex->name }}
+                                        @endif
+                                    </h2>
                                     {!! $ex->statement !!}
                                 </div>
                             @else
