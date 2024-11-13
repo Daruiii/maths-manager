@@ -7,6 +7,8 @@ use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
 use App\Models\Exercise;
+use App\Models\QuizzQuestion;
+use App\Models\QuizzDetail;
 
 class SubchapterController extends Controller
 {
@@ -79,6 +81,19 @@ class SubchapterController extends Controller
     public function destroy($id) // admin
     {
         $subchapter = Subchapter::findOrFail($id);
+        
+        // Delete associated quiz details with questions
+        $quizzDetails = QuizzDetail::whereHas('question', function($query) use ($id) {
+            $query->where('subchapter_id', $id);
+        })->get();
+
+        foreach ($quizzDetails as $quizzDetail) {
+            $quizzDetail->delete();
+        }
+        
+        // Delete associated quiz questions
+        QuizzQuestion::where('subchapter_id', $id)->delete();
+        
         $subchapter->delete();
         $chapter_id = $subchapter->chapter_id;
         $class_id = Chapter::findOrFail($chapter_id)->class_id;
