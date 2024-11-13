@@ -33,8 +33,17 @@
             </div>
 
             <div class="form-group">
-                <x-multiple-file-input-carousel type="file" name="correction_pictures[]" id="images" />
+                <x-multiple-file-input-carousel type="file" name="correction_pictures" id="images" />
             </div>
+
+            <div class="form-group">
+                <label for="correction_pdf">Correction PDF (optionnel)</label>
+                <input type="file" id="correction_pdf" name="correction_pdf" accept="application/pdf">
+                @error('correction_pdf')
+                    <div class="text-red-500 text-sm">{{ $message }}</div>
+                @enderror
+            </div>
+            
 
             {{-- grade int with min 0 max 20 --}}
             <div class="form-group">

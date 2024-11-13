@@ -36,7 +36,7 @@
                 id="correctionRequestForm" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
-                    <x-multiple-file-input-carousel type="file" name="pictures[]" id="images" />
+                    <x-multiple-file-input-carousel type="file" name="pictures" id="images" />
                 </div>
 
                 <div class="form-group flex flex-col">

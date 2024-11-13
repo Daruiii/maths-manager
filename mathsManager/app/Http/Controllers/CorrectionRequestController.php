@@ -20,7 +20,7 @@ class CorrectionRequestController extends Controller
         // $path2 = public_path('storage/correctionRequests/' . $id);
         $path = file_exists(public_path('storage/correctionRequests/' . $id . '/correction')) ? public_path('storage/correctionRequests/' . $id . '/correction') : null;
         $path2 = file_exists(public_path('storage/correctionRequests/' . $id)) ? public_path('storage/correctionRequests/' . $id) : null;
-         // foreach path != null, delete the content of the folder and the folder
+        // foreach path != null, delete the content of the folder and the folder
         if ($path != null) {
             $files = glob($path . '/*');
             foreach ($files as $file) {
@@ -63,7 +63,7 @@ class CorrectionRequestController extends Controller
     // {
     //     $search = $request->get('search');
     //     $status = $request->get('status', 'pending'); // Par défaut, le statut est 'pending'
-    
+
     //     $correctionRequests = CorrectionRequest::where('status', $status)
     //         ->when($search, function ($query, $search) {
     //             $query->whereHas('user', function ($query) use ($search) {
@@ -82,7 +82,7 @@ class CorrectionRequestController extends Controller
     //     ->orderBy('users.name', 'asc')
     //     ->orderBy('status', 'asc')
     //     ->get();
-    
+
     //     return view('correctionRequest.myCorrections', compact('correctionRequests', 'ds'));
     // }
 
@@ -116,7 +116,7 @@ class CorrectionRequestController extends Controller
 
         $imagesPaths = [];
         // si le folder 'correctionRequests/ds_id' existe supprimer son contenu et le folder
-            $this->destroyCorrectionFolder($ds_id);
+        $this->destroyCorrectionFolder($ds_id);
 
         foreach ($request->file('pictures') as $key => $image) {
             $img_name = $key + 1 . '.' . $image->getClientOriginalExtension();
@@ -156,7 +156,7 @@ class CorrectionRequestController extends Controller
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
         $corrector = User::where('id', $correctionRequest->corrector_id)->first() ?? User::where('role', 'admin')->first();
         $pictures = json_decode($correctionRequest->pictures) ?? null;
-        $correctedPictures = json_decode($correctionRequest->correction_pictures) ?? null;   
+        $correctedPictures = json_decode($correctionRequest->correction_pictures) ?? null;
         return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector'));
     }
 
@@ -174,6 +174,7 @@ class CorrectionRequestController extends Controller
     {
         $request->validate([
             'correction_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+            'correction_pdf' => 'nullable|mimes:pdf',
             'grade' => 'required|numeric|min:0|max:20',
             'correction_message' => 'nullable|string|max:255',
         ]);
@@ -186,20 +187,33 @@ class CorrectionRequestController extends Controller
 
         $correctionsImagesPaths = [];
 
+
         if ($request->file('correction_pictures')) {
-        if (file_exists(public_path('storage/correctionRequests/' . $ds_id . '/correction'))) {
-            $this->destroyCorrectionFolder($ds_id);
+            if (file_exists(public_path('storage/correctionRequests/' . $ds_id . '/correction'))) {
+                $this->destroyCorrectionFolder($ds_id);
+            }
+
+            foreach ($request->file('correction_pictures') as $key => $image) {
+                // enregistrer l'image dans le path 'public/storage/correctionRequests/ds_id/correction/1.jpg' then 2.jpg, 3.jpg, ...
+                $img_name = $key + 1 . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('storage/correctionRequests/' . $ds_id . '/correction');
+                $image->move($destinationPath, $img_name);
+                $correctionsImagesPaths[] = 'correctionRequests/' . $ds_id . '/correction/' . $img_name;
+            }
+            $correctionRequest->correction_pictures = json_encode($correctionsImagesPaths);
         }
-        
-        foreach ($request->file('correction_pictures') as $key => $image) {
-            // enregistrer l'image dans le path 'public/storage/correctionRequests/ds_id/correction/1.jpg' then 2.jpg, 3.jpg, ...
-            $img_name = $key + 1 . '.' . $image->getClientOriginalExtension();
+        if ($request->file('correction_pdf')) {
+            // Supprime l'ancien PDF s'il existe
+            if ($correctionRequest->correction_pdf && file_exists(public_path('storage/' . $correctionRequest->correction_pdf))) {
+                unlink(public_path('storage/' . $correctionRequest->correction_pdf));
+            }
+
+            // Enregistre le nouveau PDF
+            $pdf_name = 'correction.pdf';
             $destinationPath = public_path('storage/correctionRequests/' . $ds_id . '/correction');
-            $image->move($destinationPath, $img_name);
-            $correctionsImagesPaths[] = 'correctionRequests/' . $ds_id . '/correction/' . $img_name;
+            $request->file('correction_pdf')->move($destinationPath, $pdf_name);
+            $correctionRequest->correction_pdf = 'correctionRequests/' . $ds_id . '/correction/' . $pdf_name;
         }
-        $correctionRequest->correction_pictures = json_encode($correctionsImagesPaths);
-    }
         $correctionRequest->save();
 
         // set ds status to 'finished'

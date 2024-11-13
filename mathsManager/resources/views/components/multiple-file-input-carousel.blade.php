@@ -1,46 +1,96 @@
 @props(['name'])
-{{-- 
-@php
-dd($name);
-@endphp --}}
-{{-- tout mettre en colonne --}}
-{{-- <label>
-    Mes photos :
 
-{{-- tout mettre en ligne --}}
-<label>
-    Mes photos :
-</label>
-{{-- wrap if there is a lot input --}}
-<div class="flex items-center gap-4 flex-wrap">
-<label class="custom-file-upload" for="file1">
-    1
-    <div class="image-container">
-        <div class="carousel">
-            <div class="carousel-inner"></div>
+<label>Mes photos :</label>
+<div class="flex items-center gap-4 flex-wrap" id="imageUploadContainer">
+    <label class="custom-file-upload" for="file1">
+        <span>1</span>
+        <div class="image-container">
+            <div class="carousel">
+                <div class="carousel-inner"></div>
+            </div>
+            <div class="add-icon">+</div>
         </div>
-        <div class="add-icon">+</div>
-    </div>
-    <input type="file" id="file1" name="{{ $name }}" accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" style="display: none;">
-</label>
-
-
+        <input type="file" id="file1" name="{{ $name }}[]" accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" class="image-upload-input" style="display: none;">
+    </label>
 </div>
 
 <script>
-    // on dom updated
-    // eventlistener for input file is generated
     document.addEventListener('DOMContentLoaded', function() {
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    fileInputs.forEach(function(input) {
-        input.addEventListener('change', function(event) {
+        const fileInputs = document.querySelectorAll('.image-upload-input'); // Cible seulement les inputs d'images
+        fileInputs.forEach(function(input) {
+            input.addEventListener('change', function(event) {
+                generateNewLabel();
+                const files = event.target.files;
+                const label = input.parentElement;
+                const carouselInner = label.querySelector('.carousel-inner');
+                carouselInner.innerHTML = ''; // Efface les images existantes
+
+                Array.from(files).forEach(function(file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('carousel-item');
+                        carouselInner.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                // Masque le symbole "+" une fois que l'image est sélectionnée
+                label.querySelector('.add-icon').style.display = 'none';
+            });
+        });
+    });
+
+    function generateNewLabel() {
+        const fileInputs = document.querySelectorAll('.image-upload-input'); // Cible seulement les inputs d'images
+        const lastFileInput = fileInputs[fileInputs.length - 1];
+        const lastFileInputId = lastFileInput.getAttribute('id');
+        const lastFileInputName = lastFileInput.getAttribute('name');
+        const lastFileInputIndex = parseInt(lastFileInputId.replace('file', ''));
+        const newFileInputIndex = lastFileInputIndex + 1;
+        const newFileInputId = 'file' + newFileInputIndex;
+        const newFileInputLabel = document.createElement('label');
+        newFileInputLabel.setAttribute('class', 'custom-file-upload');
+        newFileInputLabel.setAttribute('for', newFileInputId);
+        newFileInputLabel.innerHTML = `<span>${newFileInputIndex}</span>`;
+
+        const newImageContainer = document.createElement('div');
+        newImageContainer.setAttribute('class', 'image-container');
+
+        const newCarousel = document.createElement('div');
+        newCarousel.setAttribute('class', 'carousel');
+        const newCarouselInner = document.createElement('div');
+        newCarouselInner.setAttribute('class', 'carousel-inner');
+        newCarousel.appendChild(newCarouselInner);
+
+        const newAddIcon = document.createElement('div');
+        newAddIcon.setAttribute('class', 'add-icon');
+        newAddIcon.innerHTML = '+';
+
+        newImageContainer.appendChild(newCarousel);
+        newImageContainer.appendChild(newAddIcon);
+
+        newFileInputLabel.appendChild(newImageContainer);
+
+        const newFileInput = document.createElement('input');
+        newFileInput.setAttribute('type', 'file');
+        newFileInput.setAttribute('id', newFileInputId);
+        newFileInput.setAttribute('name', lastFileInputName);
+        newFileInput.setAttribute('accept', 'image/jpeg, image/png, image/jpg, image/gif, image/svg');
+        newFileInput.setAttribute('class', 'image-upload-input'); // Ajoute la classe ici
+        newFileInput.setAttribute('style', 'display: none;');
+
+        newFileInputLabel.appendChild(newFileInput);
+        lastFileInput.parentElement.insertAdjacentElement('afterend', newFileInputLabel);
+
+        newFileInput.addEventListener('change', function(event) {
             generateNewLabel();
             const files = event.target.files;
-            console.log(files);
-            const label = input.parentElement;
+            const label = newFileInput.parentElement;
             const carouselInner = label.querySelector('.carousel-inner');
             carouselInner.innerHTML = ''; // Efface les images existantes
-            
+
             Array.from(files).forEach(function(file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -55,68 +105,9 @@ dd($name);
             // Masque le symbole "+" une fois que l'image est sélectionnée
             label.querySelector('.add-icon').style.display = 'none';
         });
-    });
-});
-
-function generateNewLabel() {
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    const lastFileInput = fileInputs[fileInputs.length - 1];
-    const lastFileInputId = lastFileInput.getAttribute('id');
-    const lastFileInputName = lastFileInput.getAttribute('name');
-    const lastFileInputIndex = parseInt(lastFileInputId.replace('file', ''));
-    const newFileInputIndex = lastFileInputIndex + 1;
-    const newFileInputId = 'file' + newFileInputIndex;
-    const newFileInputLabel = document.createElement('label');
-    newFileInputLabel.setAttribute('class', 'custom-file-upload');
-    newFileInputLabel.setAttribute('for', newFileInputId);
-    newFileInputLabel.innerHTML = newFileInputIndex;
-    const newImageContainer = document.createElement('div');
-    newImageContainer.setAttribute('class', 'image-container');
-    const newCarousel = document.createElement('div');
-    newCarousel.setAttribute('class', 'carousel');
-    const newCarouselInner = document.createElement('div');
-    newCarouselInner.setAttribute('class', 'carousel-inner');
-    newCarousel.appendChild(newCarouselInner);
-    newImageContainer.appendChild(newCarousel);
-    const newAddIcon = document.createElement('div');
-    newAddIcon.setAttribute('class', 'add-icon');
-    newAddIcon.innerHTML = '+';
-    newImageContainer.appendChild(newAddIcon);
-    newFileInputLabel.appendChild(newImageContainer);
-    const newFileInput = document.createElement('input');
-    newFileInput.setAttribute('type', 'file');
-    newFileInput.setAttribute('id', newFileInputId);
-    newFileInput.setAttribute('name', lastFileInputName);
-    newFileInput.setAttribute('accept', 'image/jpeg, image/png, image/jpg, image/gif, image/svg');
-    newFileInput.setAttribute('style', 'display: none;');
-    newFileInputLabel.appendChild(newFileInput);
-    lastFileInput.parentElement.insertAdjacentElement('afterend', newFileInputLabel);
-
-    newFileInput.addEventListener('change', function(event) {
-        generateNewLabel();
-        const files = event.target.files;
-        console.log(files);
-        const label = newFileInput.parentElement;
-        const carouselInner = label.querySelector('.carousel-inner');
-        carouselInner.innerHTML = ''; // Efface les images existantes
-        
-        Array.from(files).forEach(function(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.classList.add('carousel-item');
-                carouselInner.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // Masque le symbole "+" une fois que l'image est sélectionnée
-        label.querySelector('.add-icon').style.display = 'none';
-    });
-}
-    
+    }
 </script>
+
 
 <style>
     .custom-file-upload {
