@@ -33,8 +33,8 @@
                                 @if ($correctionRequests && count($correctionRequests) > 0)
                                     <div class="w-full flex flex-wrap justify-center items-center gap-4">
                                         @foreach ($correctionRequests as $index => $correctionRequest)
-                                            <div class="quiz-card">
-                                                <div class="quiz-card-details">
+                                            <div class="correction-card">
+                                                <div class="correction-card-details">
                                                     <div class="flex flex-row justify-center items-center">
                                                         @if (Str::startsWith($correctionRequest->user->avatar, 'http'))
                                                             <img src="{{ $correctionRequest->user->avatar }}"
@@ -52,12 +52,12 @@
                                                             DS n°{{ $correctionRequest->ds_id }}
                                                         </a></p>
                                                     <div
-                                                        class="quiz-card-score {{ $correctionRequest->status == 'pending' ? 'score-low' : 'score-high' }}">
+                                                        class="correction-card-score {{ $correctionRequest->status == 'pending' ? 'score-low' : 'score-high' }}">
                                                         <p class="text-white text-center">
                                                             {{ ucfirst($correctionRequest->status) }}</p>
                                                     </div>
                                                 </div>
-                                                <button class="quiz-card-button"
+                                                <button class="correction-card-button"
                                                     onclick="window.location.href='{{ route('correctionRequest.show', $correctionRequest->ds_id) }}'">Voir</button>
                                             </div>
                                         @endforeach
