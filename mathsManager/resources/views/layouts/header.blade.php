@@ -10,11 +10,11 @@
             <span
                 class="self-center text-2xl font-semibold whitespace-nowrap text-black">{{ config('app.name') }}</span>
         </a>
-        <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+        <div class="flex items-center lg:order-2 space-x-3 lg:space-x-0 rtl:space-x-reverse">
             <!-- User menu -->
             @auth
                 <button type="button"
-                    class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300"
+                    class="flex text-sm bg-gray-800 rounded-full lg:me-0 focus:ring-4 focus:ring-gray-300"
                     id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                     data-dropdown-placement="bottom">
                     <span class="sr-only">Open user menu</span>
@@ -57,7 +57,7 @@
             @endauth
             <!-- Menu toggle button for small screens -->
             <button data-collapse-toggle="navbar-user" type="button"
-                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
                 aria-controls="navbar-user" aria-expanded="false">
                 <span class="sr-only">Open main menu</span>
                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -67,20 +67,20 @@
                 </svg>
             </button>
         </div>
-        <div class="items-center justify-center hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
+        <div class="items-center justify-center hidden w-full lg:flex lg:w-auto lg:order-1" id="navbar-user">
             <ul
-                class="flex flex-col items-center font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
+                class="flex flex-col items-center font-medium p-4 lg:p-0 mt-4 border border-gray-100 rounded-lg lg:space-x-8 rtl:space-x-reverse lg:flex-row lg:mt-0 lg:border-0">
                 @foreach ($classes as $class)
                     <li>
                         <a href="{{ route('classe.show', $class->level) }}"
-                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
+                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
                     </li>
                 @endforeach
                 @auth
                     @if (Auth::user()->role === 'student')
                         <li class="relative">
                             <a href="{{ route('ds.myDS', Auth::user()->id) }}"
-                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->routeIs('ds.myDS') ? 'active' : '' }}">
                                 Mes devoirs
                                 @if ($dsNotStarted > 0)
                                     <div class="absolute top-0 right-0 bg-red-500 text-white font-size-xxsmall rounded-full w-3 h-3 flex items-center justify-center transform translate-x-3/4 -translate-y-1/2">
@@ -91,7 +91,7 @@
                         </li>
                         <li class="relative">
                             <a href="{{ route('exercises_sheet.myExercisesSheets', Auth::user()->id) }}"
-                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('exercises_sheet.myExercisesSheets') ? 'active' : '' }}">
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->routeIs('exercises_sheet.myExercisesSheets') ? 'active' : '' }}">
                                 Mes fiches d'exercices
                                 @if ($exercisesSheetNotStarted > 0)
                                     <div class="absolute top-0 right-0 bg-red-500 text-white font-size-xxsmall rounded-full w-3 h-3 flex items-center justify-center transform translate-x-3/4 -translate-y-1/2">
@@ -104,12 +104,12 @@
                     @if (Auth::user()->role === 'admin')
                         {{-- <li>
                             <a href="{{ route('correctionRequest.myCorrections') }}"
-                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('correctionRequest.myCorrections') ? 'active' : '' }}">Mes
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->routeIs('correctionRequest.myCorrections') ? 'active' : '' }}">Mes
                                 corrections</a>
                         </li> --}}
                         <li>
                             <a href="{{ route('students.show') }}"
-                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->routeIs('students.show') ? 'active' : '' }}">Mes
                                 élèves</a>
                         </li>
                         <a href="{{ route('admin') }}"
@@ -118,12 +118,12 @@
                 @else
                     <li>
                         <a href="{{ route('isntValid') }}"
-                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('isntValid') ? 'active' : '' }}">Mes
+                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->routeIs('isntValid') ? 'active' : '' }}">Mes
                             devoirs</a>
                     </li>
                     <li>
                         <a href="{{ route('isntValid') }}"
-                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 {{ request()->routeIs('isntValid') ? 'active' : '' }}">Mes
+                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->routeIs('isntValid') ? 'active' : '' }}">Mes
                             fiches d'exercices</a>
                     </li>
                 @endauth
