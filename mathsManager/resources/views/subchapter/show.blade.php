@@ -54,7 +54,7 @@
                                         <x-stars-difficulty starsActive="{{ $ex->difficulty }}" id="rating{{ $ex->id }}" />
                                         Exercice {{ $ex->order }}.
                                         @if (stripos($ex->name, 'Bac') !== false || stripos($ex->name, 'bac') !== false)
-                                            <span class="bg-[#E67C7C] text-white px-2 py-1 rounded-full comfortaa">{{ $ex->name }}</span>
+                                            <span class="bg-[#E67C7C] text-white px-2 py-1 rounded-full">{{ $ex->name }}</span>
                                         @else
                                             {{ $ex->name }}
                                         @endif
