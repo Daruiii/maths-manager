@@ -8,12 +8,12 @@
         </div>
         @auth
             <div class="flex flex-col md:flex-row justify-center w-11/12 mx-auto p-6 rounded-lg gap-2 mb-8 ">
-                <div class="flex flex-col w-full md:w-full bg-[#FBF7F0] p-6 rounded-lg">
+                <div class="flex flex-col w-full md:w-full p-6 rounded-lg">
                     <h2 class="text-base font-bold text-center">Tableau de bord</h2>
                     <div class="flex justify-center flex-wrap gap-4 mt-4">
                         @if (Auth::user()->role == 'admin')
                             <div
-                                class="flex flex-col justify-start bg-[#F0EAD6] items-start p-4 w-full md:w-1/2 flex-grow rounded-lg">
+                                class="flex flex-col justify-start bg-white border-2 border-gray-200 items-start p-4 w-full md:w-1/2 flex-grow rounded-lg">
                                 <div class="w-full flex justify-start items-center">
                                     <h2 class="text-lg leading-6 font-medium text-gray-900">Mes corrections</h2>
                                 </div>
