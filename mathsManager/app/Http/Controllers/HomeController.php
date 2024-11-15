@@ -19,7 +19,7 @@ class HomeController extends Controller
         if (!auth()->check()) {
             $introContent = Content::where('section', 'home_guest_intro')->first();
             $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
-            // dd($introContent, $whoamiContent);
+            dd($introContent, $whoamiContent);
             return view('home', compact('introContent', 'whoamiContent'));
         }
 
@@ -95,9 +95,6 @@ class HomeController extends Controller
                 $averageGrade = round($averageGrade, 1);
             }
 
-            $introContent = Content::where('section', 'home_guest_intro')->first();
-            $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
-
             return view('home', compact(
                 'averageGrade',
                 'totalDS',
@@ -107,18 +104,11 @@ class HomeController extends Controller
                 'correctedDS',
                 'goodAnswers',
                 'badAnswers',
-                'scores',
-                'introContent',
-                'whoamiContent'
+                'scores'
             ));
         } catch (\Exception $e) {
             return redirect()->route('login');
         }
-
-        $introContent = Content::where('section', 'home_guest_intro')->first();
-        $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
-        // dd($introContent, $whoamiContent);
-        return view('home', compact('introContent', 'whoamiContent'));
     }
 
     // method for redirect to error isntValid
