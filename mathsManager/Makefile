@@ -2,17 +2,12 @@
 deploy: public/build/manifest.json
 	rsync -avz public/build davidinfomaniak:~/sites/mathsmanager.fr/mathsManager/public
 	rsync -avz storage/app/public/images/ davidinfomaniak:~/sites/mathsmanager.fr/mathsManager/public/storage/images/
-	ssh davidinfomaniak 'cd ~/sites/mathsmanager.fr && git pull origin main && make install && php artisan storage:link && make migrate_and_seed'
+	ssh davidinfomaniak 'cd ~/sites/mathsmanager.fr && git pull origin main && make install && php artisan storage:link'
 
 # Cible pour installer les dépendances et effectuer la migration
 install: vendor/autoload.php .env public/storage
 	php artisan cache:clear
 	php artisan migrate
-
-# Cible pour migrer et faire le seeding des données de la base de données
-migrate_and_seed:
-	php artisan migrate --force
-	php artisan db:seed --class=ContentsSeeder --force
 
 # Cible pour générer le fichier .env à partir de l'exemple et générer la clé d'application
 .env:
