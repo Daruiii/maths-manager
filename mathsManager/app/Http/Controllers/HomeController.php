@@ -109,6 +109,11 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('login');
         }
+
+        $introContent = Content::where('section', 'home_guest_intro')->first();
+        $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
+        // dd($introContent, $whoamiContent);
+        return view('home', compact('introContent', 'whoamiContent'));
     }
 
     // method for redirect to error isntValid
