@@ -25,11 +25,14 @@
                 </div>
             </div>
         @endauth
+        {{-- condition for un auth --}}
+    @guest
         @if(isset($whoamiContent) && isset($introContent))
         <x-homeGuest whoamiTitle="{{ $whoamiContent->title }}" whoamiContent="{{ $whoamiContent->content }}" introTitle="{{ $introContent->title }}"
             introContent="{{ $introContent->content }}" whoamiImage="{{ $whoamiContent->image }}" />
     @else
         <p>Some content is missing. Please check back later.</p>
     @endif
+    @endguest
     </div>
 @endsection
