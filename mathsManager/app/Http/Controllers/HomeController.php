@@ -95,6 +95,9 @@ class HomeController extends Controller
                 $averageGrade = round($averageGrade, 1);
             }
 
+            $introContent = Content::where('section', 'home_guest_intro')->first();
+            $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
+
             return view('home', compact(
                 'averageGrade',
                 'totalDS',
@@ -104,7 +107,9 @@ class HomeController extends Controller
                 'correctedDS',
                 'goodAnswers',
                 'badAnswers',
-                'scores'
+                'scores',
+                'introContent',
+                'whoamiContent'
             ));
         } catch (\Exception $e) {
             return redirect()->route('login');
