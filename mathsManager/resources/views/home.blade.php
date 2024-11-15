@@ -19,20 +19,21 @@
                         @else
                             <x-homeStudent totalDS="{{ $totalDS }}" notStartedDS="{{ $notStartedDS }}"
                                 inProgressDS="{{ $inProgressDS }}" sentDS="{{ $sentDS }}" correctedDS="{{ $correctedDS }}"
-                                averageGrade="{{ $averageGrade }}" goodAnswers="{{ $goodAnswers }}" badAnswers="{{ $badAnswers }}" scores="{{ $scores }}" />
+                                averageGrade="{{ $averageGrade }}" goodAnswers="{{ $goodAnswers }}"
+                                badAnswers="{{ $badAnswers }}" scores="{{ $scores }}" />
                         @endif
                     </div>
                 </div>
             </div>
         @endauth
-        {{-- condition for un auth --}}
-    @guest
-        @if(isset($whoamiContent) && isset($introContent))
-        <x-homeGuest whoamiTitle="{{ $whoamiContent->title }}" whoamiContent="{{ $whoamiContent->content }}" introTitle="{{ $introContent->title }}"
-            introContent="{{ $introContent->content }}" whoamiImage="{{ $whoamiContent->image }}" />
-    @else
-        <p>Some content is missing. Please check back later.</p>
-    @endif
-    @endguest
+        @if (!Auth::check())
+            @if (isset($whoamiContent) && isset($introContent))
+                <x-homeGuest whoamiTitle="{{ $whoamiContent->title }}" whoamiContent="{{ $whoamiContent->content }}"
+                    introTitle="{{ $introContent->title }}" introContent="{{ $introContent->content }}"
+                    whoamiImage="{{ $whoamiContent->image }}" />
+            @else
+                <p>Some content is missing. Please check back later.</p>
+            @endif
+        @endif
     </div>
 @endsection
