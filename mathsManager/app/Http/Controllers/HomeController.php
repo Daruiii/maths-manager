@@ -19,7 +19,7 @@ class HomeController extends Controller
         if (!auth()->check()) {
             $introContent = Content::where('section', 'home_guest_intro')->first();
             $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
-            // dd($introContent, $whoamiContent);
+            dd($introContent, $whoamiContent);
             return view('home', compact('introContent', 'whoamiContent'));
         }
 
