@@ -30,7 +30,7 @@ class ContentsSeeder extends Seeder
             'content' => 'Après deux années de classes préparatoires MPSI, MP* j’ai intégré l’école d’ingénieur
             ENSEEIHT. Je suis professeur particulier depuis maintenant 8 années, où j’ai pu aider de nombreux élèves à
             obtenir leur Baccalauréat et poursuivre leurs études dans le supérieur.',
-            'image' => 'mimigl@gmail.com-tr-mikey-moto-min.jpeg',
+            'image' => '',
         ]);
     }
 }
