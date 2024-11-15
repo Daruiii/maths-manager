@@ -7,6 +7,7 @@ use View;
 use App\Models\Classe;
 use App\Models\DS;
 use App\Models\ExercisesSheet;
+use App\Models\Content;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $introContent = Content::where('section', 'home_guest_intro')->first();
+        $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
+
+        View::composer('home', function ($view) use ($introContent, $whoamiContent) {
+            $view->with('introContent', $introContent);
+            $view->with('whoamiContent', $whoamiContent);
+        });
+
         View::composer('layouts.app', function ($view) {
             $view->with('classes', Classe::all());
             // count dsNotStarted for user connected
