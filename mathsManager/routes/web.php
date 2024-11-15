@@ -18,6 +18,7 @@ use App\Http\Middleware\IsVerified;
 use App\Http\Controllers\CorrectionRequestController;
 use App\Http\Controllers\RecapController;
 use App\Http\Controllers\QuizzController;
+use App\Http\Controllers\ContentController;
 
 Route::get('/', function () {
     return view('home');
@@ -33,6 +34,15 @@ Route::middleware('auth')->group(function () {
 
 // errors
 Route::get('/isntValid', [HomeController::class, 'isntValid'])->name('isntValid');
+
+// Content routes
+Route::middleware('auth')->prefix('admin')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        Route::get('/contents', [ContentController::class, 'index'])->name('contents.index');
+        Route::get('/content/{section}/edit', [ContentController::class, 'edit'])->name('content.edit');
+        Route::put('/content/{section}', [ContentController::class, 'update'])->name('content.update');
+    });
+});
 
 // Classe routes
 Route::middleware('auth')->group(function () {

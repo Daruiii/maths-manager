@@ -8,6 +8,7 @@ use App\Models\Classe;
 use App\Models\CorrectionRequest;
 use App\Models\DS;
 use App\Models\Quizze;
+use App\Models\Content;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -16,7 +17,10 @@ class HomeController extends Controller
     {
         // si on est pas co
         if (!auth()->check()) {
-            return view('home');
+            $introContent = Content::where('section', 'home_guest_intro')->first();
+            $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
+            // dd($introContent, $whoamiContent);
+            return view('home', compact('introContent', 'whoamiContent'));
         }
 
         try {

@@ -25,7 +25,8 @@
                 </div>
             </div>
         @else
-            <x-homeGuest />
+            <x-homeGuest whoamiTitle="{{ $whoamiContent->title }}" whoamiContent="{{ $whoamiContent->content }}" introTitle="{{ $introContent->title }}"
+                introContent="{{ $introContent->content }}" whoamiImage="{{ $whoamiContent->image }}" />
         @endauth
     </div>
 @endsection

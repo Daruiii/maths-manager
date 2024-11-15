@@ -1,4 +1,3 @@
-<!-- resources/views/components/homeAdmin.blade.php -->
 <div
     class="flex flex-col justify-start bg-white border-2 border-gray-200 items-start p-4 w-full md:w-1/2 flex-grow rounded-lg">
     <div class="w-full flex justify-start items-center">

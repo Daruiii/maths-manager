@@ -1,7 +1,7 @@
 # Cible principale de déploiement
 deploy: public/build/manifest.json
 	rsync -avz public/build davidinfomaniak:~/sites/mathsmanager.fr/mathsManager/public
-	rsync -avz storage/app/public/images/ davidinfomaniak:~/sites/mathsmanager.fr/mathsManager/storage/app/public/images/
+	rsync -avz storage/app/public/images/ davidinfomaniak:~/sites/mathsmanager.fr/mathsManager/public/storage/images/
 	ssh davidinfomaniak 'cd ~/sites/mathsmanager.fr && git pull origin main && make install && php artisan storage:link'
 
 # Cible pour installer les dépendances et effectuer la migration
