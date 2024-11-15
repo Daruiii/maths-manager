@@ -7,6 +7,7 @@ use View;
 use App\Models\Classe;
 use App\Models\DS;
 use App\Models\ExercisesSheet;
+use App\Models\Content;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
             // get exercices sheet from user connected where status = not_started and count them
             $exercisesSheetNotStarted = ExercisesSheet::where('user_id', auth()->id())->where('status', 'not_started')->count();
             $view->with('exercisesSheetNotStarted', $exercisesSheetNotStarted);
+            $introContent = Content::where('section', 'home_guest_intro')->first();
+            $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
+            $view->with('introContent', $introContent);
+            $view->with('whoamiContent', $whoamiContent);
         });
     }
 }
