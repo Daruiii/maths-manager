@@ -26,7 +26,7 @@
                 </div>
             </div>
         @endauth
-        @if (!Auth::check())
+        @guest
             @if (isset($whoamiContent) && isset($introContent))
                 <x-homeGuest whoamiTitle="{{ $whoamiContent->title }}" whoamiContent="{{ $whoamiContent->content }}"
                     introTitle="{{ $introContent->title }}" introContent="{{ $introContent->content }}"
@@ -34,6 +34,6 @@
             @else
                 <p>Some content is missing. Please check back later.</p>
             @endif
-        @endif
+        @endguest
     </div>
 @endsection
