@@ -211,7 +211,10 @@ class ExerciseController extends Controller
             // Étape 4 : Mise à jour des images et sauvegarde finale
             $exercise->save();
     
-            return redirect()->route('subchapter.show', $request->subchapter_id);
+            return redirect()->route('subchapter.show', [
+                'id' => $request->subchapter_id,
+                'exercise' => $exercise->id,
+            ]);
         } catch (\Exception $e) {
             Log::error("Failed to store exercise: " . $e->getMessage());
             return back()->withErrors('Failed to store exercise. ' . $e->getMessage());
