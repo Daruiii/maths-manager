@@ -45,7 +45,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 });
 
 // Classe routes
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->prefix('admin')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('/classe/reorder', [ClasseController::class, 'reorderAllElements'])->name('classe.reorder');
         Route::get('/classe', [ClasseController::class, 'index'])->name('classe.index');
@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/classe/{level}', [ClasseController::class, 'show'])->name('classe.show');
 
 // Chapter routes
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->prefix('admin')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('/chapter', [ChapterController::class, 'index'])->name('chapter.index');
         Route::get('/chapter/{id}/create', [ChapterController::class, 'create'])->name('chapter.create');
@@ -73,7 +73,7 @@ Route::get('/chapter/{id}', [ChapterController::class, 'show'])->name('chapter.s
 
 // Subchapter routes
 Route::get('/subchapter', [SubchapterController::class, 'index'])->name('subchapter.index');
-Route::middleware([IsAdmin::class])->group(function () {
+Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
     Route::get('/subchapter/{id}/create', [SubchapterController::class, 'create'])->name('subchapter.create');
     Route::post('/subchapter', [SubchapterController::class, 'store'])->name('subchapter.store');
     Route::get('/subchapter/{id}/edit', [SubchapterController::class, 'edit'])->name('subchapter.edit');
@@ -83,7 +83,7 @@ Route::middleware([IsAdmin::class])->group(function () {
 Route::get('/subchapter/{id}', [SubchapterController::class, 'show'])->name('subchapter.show');
 
 // Exercise routes
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->prefix('admin')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         Route::get('/exercise/{id}/create', [ExerciseController::class, 'create'])->name('exercise.create');
         Route::post('/exercise', [ExerciseController::class, 'store'])->name('exercise.store');
@@ -99,7 +99,7 @@ Route::middleware('auth')->group(function () {
 
 // ExerciseSheet routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/exercises_sheet/create', [ExercisesSheetController::class, 'create'])->name('exercises_sheet.create');
         Route::get('/exercises_sheet/select-chapter', [ExercisesSheetController::class, 'selectChapter'])->name('exercises_sheet.selectChapter');
         Route::post('/exercises_sheet', [ExercisesSheetController::class, 'store'])->name('exercises_sheet.store');
@@ -116,7 +116,7 @@ Route::middleware('auth')->group(function () {
 
 // Récap routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/recap/create/{id}', [RecapController::class, 'create'])->name('recap.create');
         Route::post('/recap', [RecapController::class, 'store'])->name('recap.store');
         Route::delete('/recap/{id}', [RecapController::class, 'destroy'])->name('recap.destroy');
@@ -140,7 +140,7 @@ Route::middleware('auth')->group(function () {
 
 // DS_Exercise routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/ds_exercise/create', [DsExerciseController::class, 'create'])->name('ds_exercise.create');
         Route::post('/ds_exercise', [DsExerciseController::class, 'store'])->name('ds_exercise.store');
         Route::get('/ds_exercises', [DsExerciseController::class, 'index'])->name('ds_exercises.index');
@@ -153,7 +153,7 @@ Route::middleware('auth')->group(function () {
 
 // Multiple_chapters routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/multiple_chapters/create', [MultipleChapterController::class, 'create'])->name('multiple_chapter.create');
         Route::post('/multiple_chapters', [MultipleChapterController::class, 'store'])->name('multiple_chapter.store');
         Route::get('/multiple_chapters', [MultipleChapterController::class, 'index'])->name('multiple_chapters.index');
@@ -166,7 +166,7 @@ Route::middleware('auth')->group(function () {
 
 // DS routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/ds', [DSController::class, 'index'])->name('ds.index');
         Route::get('/ds/assign', [DSController::class, 'assignDS'])->name('ds.assign');
         Route::post('/ds/assign', [DSController::class, 'assignDS'])->name('ds.assign.store');
@@ -189,7 +189,7 @@ Route::middleware('auth')->group(function () {
 
 //CorrectionsRequest routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         /// index
         Route::get('/correctionRequest', [CorrectionRequestController::class, 'index'])->name('correctionRequest.index');
         // Route::get('/myCorrections', [CorrectionRequestController::class, 'myCorrections'])->name('correctionRequest.myCorrections');
@@ -206,7 +206,7 @@ Route::middleware('auth')->group(function () {
 
 // Quizzes routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/quizz', [QuizzController::class, 'index'])->name('quizz.index');
         Route::get('/quizz/create', [QuizzController::class, 'createQuestion'])->name('quizz.create');
         Route::post('/quizz', [QuizzController::class, 'storeQuestion'])->name('quizz.store');
@@ -234,7 +234,7 @@ Route::middleware('auth')->group(function () {
 
 // Users routes
 Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->group(function () {
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
         Route::post('/user', [UserController::class, 'store'])->name('user.store');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');

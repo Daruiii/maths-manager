@@ -27,7 +27,7 @@
                 </div>
 
                 <div class="form-group">
-                <x-multiple-file-input type="file" name="images[]" id="images" />
+                <x-multiple-file-input type="file" name="images" id="images" />
                 </div>
 
                 <div class="form-group">

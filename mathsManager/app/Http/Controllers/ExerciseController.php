@@ -153,45 +153,72 @@ class ExerciseController extends Controller
                 'solution' => 'nullable',
                 'name' => 'nullable',
                 'difficulty' => 'required|numeric|min:1|max:5',
+                'images_statement' => 'nullable|array',
+                'images_statement.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'images_solution' => 'nullable|array',
+                'images_solution.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
-
-            // Convertir les commandes LaTeX personnalisées en HTML
-            $statementHtml = $this->convertCustomLatexToHtml($request->statement);
-            $solutionHtml = $request->solution ? $this->convertCustomLatexToHtml($request->solution) : null;
-            $clueHtml = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
-
-            $lastExercise = Exercise::latest()->first();
-            $newId = $lastExercise ? $lastExercise->id + 1 : 1;
-
+    
             $maxOrder = $this->getMaxOrder(Subchapter::find($request->subchapter_id));
-            // increment all the orders of the exercises
             $exercises = Exercise::where('order', '>=', $maxOrder + 1)->orderBy('order', 'desc')->get();
-            // Increment the order of each exercise
             foreach ($exercises as $exercise) {
                 $exercise->increment('order');
             }
-
+    
+            // Étape 1 : Enregistrer l'exercice pour obtenir son ID
             $exercise = new Exercise();
-            $exercise->clue = $clueHtml;
+            $exercise->clue = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
             $exercise->latex_clue = $request->clue;
             $exercise->name = $request->name;
             $exercise->subchapter_id = $request->subchapter_id;
-            $exercise->statement = $statementHtml;
-            $exercise->latex_statement = $request->statement;
-            $exercise->solution = $solutionHtml;
-            $exercise->latex_solution = $request->solution;
-            $exercise->order = $maxOrder + 1;
             $exercise->difficulty = $request->difficulty;
+            $exercise->order = $maxOrder + 1;
+            $exercise->statement = 'temp'; // Temporaire pour éviter les erreurs de validation
+            $exercise->save(); // Sauvegarde pour générer l'ID
+    
+            // Étape 2 : Gestion des images pour `statement`
+            $imagePathsStatement = [];
+            if ($request->hasFile('images_statement')) {
+                foreach ($request->file('images_statement') as $key => $image) {
+                    $imageName = "statement_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
+                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id); // Utilise maintenant l'ID généré
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    $image->move($destinationPath, $imageName);
+                    $imagePathsStatement[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                }
+            }
+            $exercise->statement = $this->convertCustomLatexToHtml($request->statement, $imagePathsStatement);
+            $exercise->latex_statement = $request->statement;
+    
+            // Étape 3 : Gestion des images pour `solution`
+            $imagePathsSolution = [];
+            if ($request->hasFile('images_solution')) {
+                foreach ($request->file('images_solution') as $key => $image) {
+                    $imageName = "solution_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
+                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id);
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0755, true);
+                    }
+                    $image->move($destinationPath, $imageName);
+                    $imagePathsSolution[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                }
+            }
+            $exercise->solution = $request->solution ? $this->convertCustomLatexToHtml($request->solution, $imagePathsSolution) : null;
+            $exercise->latex_solution = $request->solution;
+    
+            // Étape 4 : Mise à jour des images et sauvegarde finale
             $exercise->save();
-
+    
             return redirect()->route('subchapter.show', $request->subchapter_id);
         } catch (\Exception $e) {
             Log::error("Failed to store exercise: " . $e->getMessage());
             return back()->withErrors('Failed to store exercise. ' . $e->getMessage());
         }
-    }
+    }    
 
-    protected function convertCustomLatexToHtml($latexContent)
+    protected function convertCustomLatexToHtml($latexContent, $images = [])
     {
         // Nettoyage initial du contenu et remplacement des espaces non sécables
         $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
@@ -240,11 +267,27 @@ class ExerciseController extends Controller
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
 
-        // Convertir les commandes personnalisées en HTML
+
+        // Remplacer les images pour chaque \graph{0.5}{photoenbeuch.pnj} dans l'ordre des images[]
+        if (count($images) > 0) {
+            $imageIndex = 0;
+            $cleanedContent = preg_replace_callback("/\\\\graph\{(.*?)\}\{(.*?)\}/", function ($matches) use (&$images, &$imageIndex) {
+                $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
+                $imageIndex++;
+                $percent = $matches[1] * 100;
+                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'></div>";
+            }, $cleanedContent);
+        } else {
+            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
+        }
+
         $customCommands = [
-            "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
-            "\\enm" => "<ol>", "\\fenm" => "</ol>",
-            "\\itm" => "<ul class='point'>", "\\fitm" => "</ul>",
+            "\\enmb" => "<ol class='enumb'>",
+            "\\fenmb" => "</ol>",
+            "\\enm" => "<ol>",
+            "\\fenm" => "</ol>",
+            "\\itm" => "<ul class='point'>",
+            "\\fitm" => "</ul>",
             // Convertir les environnements théoriques
             // "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
             // "\\finboite" => "</div>",
@@ -257,10 +300,12 @@ class ExerciseController extends Controller
         return $cleanedContent;
     }
 
-    public function show(Exercise $exercise)
+    public function show($id)
     {
+        $exercise = Exercise::findOrFail($id);
         return view('exercise.show', compact('exercise'));
     }
+    
 
     public function edit($id)
     {
@@ -279,57 +324,110 @@ class ExerciseController extends Controller
             $request->validate([
                 'subchapter_id' => 'required',
                 'statement' => 'required',
-                'latex_statement' => 'nullable',
                 'solution' => 'nullable',
-                'latex_solution' => 'nullable',
-                'name' => 'nullable',
                 'clue' => 'nullable',
-                'latex_clue' => 'nullable',
-                'difficulty' => 'required|numeric|min:1|max:5'
+                'name' => 'nullable',
+                'difficulty' => 'required|numeric|min:1|max:5',
+                'images_statement' => 'nullable|array',
+                'images_statement.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'images_solution' => 'nullable|array',
+                'images_solution.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
-
-            $statementHtml = $this->convertCustomLatexToHtml($request->statement);
-            $solutionHtml = $this->convertCustomLatexToHtml($request->solution);
-            $clueHtml = $this->convertCustomLatexToHtml($request->clue);
-
+    
             $exercise = Exercise::findOrFail($id);
-            // dd the request all for see if difficulty is here
+    
+            // Mise à jour des images pour `statement`
+            $imagePathsStatement = [];
+            if ($request->hasFile('images_statement')) {
+                $oldImagesStatement = glob(public_path('storage/exercises/exercise_' . $exercise->id . '/statement_*'));
+                foreach ($oldImagesStatement as $image) {
+                    unlink($image);
+                }
+    
+                foreach ($request->file('images_statement') as $key => $image) {
+                    $imageName = "statement_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
+                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id);
+                    $image->move($destinationPath, $imageName);
+                    $imagePathsStatement[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                }
+            } else {
+                $imagePathsStatement = array_map(function ($path) use ($exercise) {
+                    return 'exercises/exercise_' . $exercise->id . '/' . basename($path);
+                }, glob(public_path('storage/exercises/exercise_' . $exercise->id . '/statement_*')));
+            }
+            $exercise->statement = $this->convertCustomLatexToHtml($request->statement, $imagePathsStatement);
+    
+            // Mise à jour des images pour `solution`
+            $imagePathsSolution = [];
+            if ($request->hasFile('images_solution')) {
+                $oldImagesSolution = glob(public_path('storage/exercises/exercise_' . $exercise->id . '/solution_*'));
+                foreach ($oldImagesSolution as $image) {
+                    unlink($image);
+                }
+    
+                foreach ($request->file('images_solution') as $key => $image) {
+                    $imageName = "solution_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
+                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id);
+                    $image->move($destinationPath, $imageName);
+                    $imagePathsSolution[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                }
+            } else {
+                $imagePathsSolution = array_map(function ($path) use ($exercise) {
+                    return 'exercises/exercise_' . $exercise->id . '/' . basename($path);
+                }, glob(public_path('storage/exercises/exercise_' . $exercise->id . '/solution_*')));
+            }
+            $exercise->solution = $request->solution ? $this->convertCustomLatexToHtml($request->solution, $imagePathsSolution) : null;
+    
+            // Mise à jour des indices (`clue`)
+            $exercise->clue = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
+            $exercise->latex_clue = $request->clue;
+    
+            // Mise à jour des autres champs
             $exercise->update([
                 'subchapter_id' => $request->subchapter_id,
                 'difficulty' => $request->difficulty,
+                'name' => $request->name,
                 'latex_statement' => $request->statement,
                 'latex_solution' => $request->solution,
-                'latex_clue' => $request->clue,
-                'statement' => $statementHtml,
-                'solution' => $solutionHtml,
-                'name' => $request->name,
-                'clue' => $clueHtml,
             ]);
-
-            return redirect()->route('subchapter.show', $request->subchapter_id);
+    
+            return redirect()->route('subchapter.show', [
+                'id' => $request->subchapter_id,
+                'exercise' => $exercise->id,
+            ]);
         } catch (\Exception $e) {
             Log::error("Failed to update exercise: " . $e->getMessage());
             return back()->withErrors('Failed to update exercise.');
         }
     }
-
+    
     public function destroy($id)
     {
         try {
             $exercise = Exercise::findOrFail($id);
+    
+            // Supprimer les images associées
+            $images = glob(public_path('storage/exercises/exercise_' . $exercise->id . '/*'));
+            foreach ($images as $image) {
+                unlink($image);
+            }
+            $folderPath = public_path('storage/exercises/exercise_' . $exercise->id);
+            if (is_dir($folderPath)) {
+                rmdir($folderPath);
+            }
+    
             $deletedOrder = $exercise->order;
             $subchapterId = $exercise->subchapter_id;
-            // Delete the exercise
+    
             $exercise->delete();
-
-            // Decrement the order of all following exercises
-            Exercise::where('order', '>', $deletedOrder)
-                ->decrement('order');
-
+    
+            Exercise::where('order', '>', $deletedOrder)->decrement('order');
+    
             return redirect()->route('subchapter.show', $subchapterId);
         } catch (\Exception $e) {
             Log::error("Failed to destroy exercise: " . $e->getMessage());
             return back()->withErrors('Failed to destroy exercise.');
         }
     }
+    
 }

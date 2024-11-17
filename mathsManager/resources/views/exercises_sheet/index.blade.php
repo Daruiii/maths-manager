@@ -61,7 +61,7 @@
                                         @foreach ($sheet->exercises as $exercise)
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full truncate">
-                                                <a href="{{ route('exercise.show', $exercise->id) }}"
+                                                <a href="{{ route('subchapter.show', $exercise->subchapter->id) }}?exercise={{ $exercise->id }}"
                                                     class="text-indigo-600 hover:text-indigo-900">
                                                     #{{ $exercise->order }}
                                                 </a>

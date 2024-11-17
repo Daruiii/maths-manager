@@ -5,6 +5,37 @@
     font-family: "CMU Exercise Bold";
 }
 
+.highlight {
+    animation: fadeHighlight 5s ease-out forwards; /* Animation plus longue */
+    border: 2px solid green; /* Encadré en vert */
+}
+
+@keyframes fadeHighlight {
+    0% {
+        background-color: #f0f8ff; /* Couleur de mise en évidence */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Ombre subtile */
+    }
+    25% {
+        background-color: #e6f2ff; /* Couleur légèrement atténuée */
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+    }
+    50% {
+        background-color: #dceeff; /* Couleur encore plus atténuée */
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+    75% {
+        background-color: #d2eaff; /* Couleur presque normale */
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+    }
+    100% {
+        background-color: white; /* Retour à la normale */
+        box-shadow: none; /* Pas d'ombre */
+        border: 2px solid green; /* Encadré en vert */
+    }
+}
+
+
+
 // .solution-content, .dropdownCC, .exercise-cc {
 //     font-family: "CMU TI" !important;
 

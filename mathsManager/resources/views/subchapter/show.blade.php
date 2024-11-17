@@ -51,10 +51,12 @@
 
                                 <div class="exercise-content text-sm px-4 cmu-serif">
                                     <h2 class="truncate font-bold text-sm exercise-title">
-                                        <x-stars-difficulty starsActive="{{ $ex->difficulty }}" id="rating{{ $ex->id }}" />
+                                        <x-stars-difficulty starsActive="{{ $ex->difficulty }}"
+                                            id="rating{{ $ex->id }}" />
                                         Exercice {{ $ex->order }}.
                                         @if (stripos($ex->name, 'Bac') !== false || stripos($ex->name, 'bac') !== false)
-                                            <span class="bg-[#E67C7C] text-white px-2 py-1 rounded-full">{{ $ex->name }}</span>
+                                            <span
+                                                class="bg-[#E67C7C] text-white px-2 py-1 rounded-full">{{ $ex->name }}</span>
                                         @else
                                             {{ $ex->name }}
                                         @endif
@@ -72,7 +74,8 @@
                                     @endif
                                 @endauth
                                 <div class="exercise-content text-sm px-4 cmu-serif">
-                                    <x-stars-difficulty starsActive="{{ $ex->difficulty }}" id="rating{{ $ex->id }}" />
+                                    <x-stars-difficulty starsActive="{{ $ex->difficulty }}"
+                                        id="rating{{ $ex->id }}" />
                                     <span class="truncate font-bold text-sm exercise-title">Exercice
                                         {{ $ex->order }}.</span> {!! $ex->statement !!}
                                 </div>
@@ -159,7 +162,7 @@
 
                         for (var i = 0; i < exercises.length; i++) {
                             var id = exercises[i].id.replace('exercise-',
-                            ''); // Remove the 'exercise-' prefix
+                                ''); // Remove the 'exercise-' prefix
                             order.push({
                                 id: id,
                                 order: minOrder + i
@@ -189,5 +192,46 @@
                     location.reload();
                 }
             });
+        </script>
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const exerciseId = params.get('exercise');
+
+    if (exerciseId) {
+        const target = document.getElementById(`exercise-${exerciseId}`);
+        if (target) {
+            setTimeout(() => {
+                // Calculer la position pour scroller
+                const bodyHeight = document.body.scrollHeight;
+                const windowHeight = window.innerHeight;
+
+                // Si l'élément est trop bas, scroller jusqu'en bas
+                if (bodyHeight - target.offsetTop < windowHeight) {
+                    window.scrollTo({
+                        top: bodyHeight,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // Sinon, scroller à la position de l'élément
+                    const offset = -150; // Ajustez cette valeur si nécessaire
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = target.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition + offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+
+                // Ajouter une classe pour mettre en évidence l'élément
+                target.classList.add('highlight');
+                setTimeout(() => target.classList.remove('highlight'), 10000); // Supprimer l'effet après 10 secondes
+            }, 500); // Attendre 500ms pour s'assurer que tout est chargé
+        }
+    }
+});
         </script>
     @endsection

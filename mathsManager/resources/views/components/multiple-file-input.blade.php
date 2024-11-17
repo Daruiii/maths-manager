@@ -1,82 +1,64 @@
-@props(['disabled' => false])
+@props(['name' => 'images', 'label'])
 
-{{-- tout mettre en ligne --}}
+
+{{-- Affichage des fichiers et gestion des inputs --}}
 <label>
-    Images :
+    {{ $label ?? 'Images :' }}
 </label>
 <div class="flex items-center gap-4">
-<label class="custom-file-upload" for="file1">
-    1
-    <div class="image-container">
-        <div class="carousel">
-            <div class="carousel-inner"></div>
-        </div>
-        <div class="add-icon">+</div>
-    </div>
-    <input type="file" id="file1" name="images[]" accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" style="display: none;">
-</label>
-
-<label class="custom-file-upload" for="file2">
-    2
-    <div class="image-container">
-        <div class="carousel">
-            <div class="carousel-inner"></div>
-        </div>
-        <div class="add-icon">+</div>
-    </div>
-    <input type="file" id="file2" name="images[]" accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" style="display: none;">
-</label>
-
-<label class="custom-file-upload" for="file3">
-    3
-    <div class="image-container">
-        <div class="carousel">
-            <div class="carousel-inner"></div>
-        </div>
-        <div class="add-icon">+</div>
-    </div>
-    <input type="file" id="file3" name="images[]" accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" style="display: none;">
-</label>
-
-<label class="custom-file-upload" for="file4">
-    4
-    <div class="image-container">
-        <div class="carousel">
-            <div class="carousel-inner"></div>
-        </div>
-        <div class="add-icon">+</div>
-    </div>
-    <input type="file" id="file4" name="images[]" accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" style="display: none;">
-</label>
+    @for ($i = 1; $i <= 4; $i++)
+        @php
+            $inputId = $name . '_file' . $i; // Génère un id unique basé sur le name et l'indice
+        @endphp
+        <label class="custom-file-upload" for="{{ $inputId }}">
+            {{ $i }}
+            <div class="image-container">
+                <div class="carousel">
+                    <div class="carousel-inner"></div>
+                </div>
+                <div class="add-icon">+</div>
+            </div>
+            <input 
+                type="file" 
+                id="{{ $inputId }}" 
+                name="{{ $name }}[]" 
+                accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" 
+                style="display: none;">
+        </label>
+    @endfor
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    fileInputs.forEach(function(input) {
-        input.addEventListener('change', function(event) {
-            const files = event.target.files;
-            console.log(files);
-            const label = input.parentElement;
-            const carouselInner = label.querySelector('.carousel-inner');
-            carouselInner.innerHTML = ''; // Efface les images existantes
-            
-            Array.from(files).forEach(function(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.classList.add('carousel-item');
-                    carouselInner.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(function(input) {
+            input.addEventListener('change', function(event) {
+                const files = event.target.files;
+                const label = input.parentElement;
+                const carouselInner = label.querySelector('.carousel-inner');
+                
+                // Nettoyage du conteneur pour éviter les doublons
+                carouselInner.innerHTML = '';
 
-            // Masque le symbole "+" une fois que l'image est sélectionnée
-            label.querySelector('.add-icon').style.display = 'none';
+                Array.from(files).forEach(function(file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // Vérifie si l'image est déjà dans le carousel
+                        if (!carouselInner.querySelector(`img[src="${e.target.result}"]`)) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.classList.add('carousel-item');
+                            carouselInner.appendChild(img);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                // Masque l'icône "+" une fois qu'une image est sélectionnée
+                label.querySelector('.add-icon').style.display = files.length > 0 ? 'none' : 'flex';
+            });
         });
     });
-});
 </script>
 
 <style>
