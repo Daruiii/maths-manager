@@ -3,74 +3,87 @@
 @section('content')
     <div class="container mx-auto mb-8">
         <div class="flex justify-start flex-col items-start w-9/12 mt-6 mb-4">
-            <h1 class="text-xl mb-2">Liste des élèves</h1>
+            <div class="flex flex-row items-center justify-center gap-2">
+                <h1 class="text-xl">Liste des élèves</h1>
+                <button id="helpButton" class="">
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path opacity="0.1"
+                                d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                                fill="#323232"></path>
+                            <path
+                                d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                                stroke="#323232" stroke-width="2"></path>
+                            <path
+                                d="M10.5 8.67709C10.8665 8.26188 11.4027 8 12 8C13.1046 8 14 8.89543 14 10C14 10.9337 13.3601 11.718 12.4949 11.9383C12.2273 12.0064 12 12.2239 12 12.5V12.5V13"
+                                stroke="#323232" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M12 16H12.01" stroke="#323232" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+            <div id="helpModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white p-4 rounded-lg w-10/12 max-w-lg">
+                    <!-- Contenu de la popup -->
+                    <p class="text-lg font-semibold w-full text-center">Aide</p>
+                    <p class="text-sm">Cette page vous permet de gérer les élèves de votre classe. Vous pouvez leur assigner des devoirs surveillés, des fiches d'exercices, activer ou désactiver leur compte, et plus encore.</p>
+                    <p class="text-sm mt-2">Les boutons suivants sont disponibles pour chaque élève :</p>
+                    <ul class="list-none text-sm mt-2">
+                        <li class="mb-2 bg-gray-200 p-2 rounded-lg">
+                            <a href="#" class="text-white bg-blue-700 hover:bg-blue-900 rounded-lg px-4 py-2 w-full text-center inline-block">
+                                {{ __('Assigner un DS') }}
+                            </a>
+                            <p class="mt-1"><strong>Assigner un DS</strong> : Permet d'assigner un devoir surveillé à l'élève.</p>
+                        </li>
+                        <li class="mb-2 bg-gray-200 p-2 rounded-lg">
+                            <a href="#" class="text-white bg-green-700 hover:bg-green-900 rounded-lg px-4 py-2 w-full text-center inline-block">
+                                {{ __('Assigner une fiche') }}
+                            </a>
+                            <p class="mt-1"><strong>Assigner une fiche</strong> : Permet d'assigner une fiche d'exercices à l'élève.</p>
+                        </li>
+                        <li class="mb-2 bg-gray-200 p-2 rounded-lg">
+                            <button type="button" class="text-white bg-gray-500 rounded-full px-2 py-1 cursor-not-allowed inline-block">
+                                DS+
+                            </button>
+                            <p class="mt-1"><strong>DS+</strong> : Ce bouton permet de réinitialiser la date du dernier devoir surveillé généré pour l'élève. Il est activé uniquement si un devoir surveillé a été généré aujourd'hui.</p>
+                        </li>
+                        <li class="mb-2 bg-gray-200 p-2 rounded-lg">
+                            <button type="button" class="text-xs text-red-600 hover:text-red-900 p-2 border border-red-600 rounded-full bg-red-100 inline-block">
+                                Désactiver
+                            </button>
+                            <p class="mt-1"><strong>Activer/Désactiver</strong> : Permet d'activer ou de désactiver le compte de l'élève. Si le compte est actif, le bouton affichera "Désactiver", sinon il affichera "Activer".</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <div class="flex justify-between items-center py-3">
                 <x-search-bar-admin action="{{ route('students.show') }}" placeholder="Rechercher un utilisateur..."
                     name="search" />
             </div>
-            <div class="flex row justify-center items-center flex-wrap gap-5 w-full mb-5">
+            <div class="w-full flex flex-wrap justify-center items-center gap-3">
                 @foreach ($students as $student)
-                    <div class="bg-white rounded-lg p-2 w-84 min-w-80 shadow-md transition duration-300 mb-4 hover:shadow-lg flex flex-col items-center">
-                        <div class="w-full flex flex-row justify-start items-center border-b border-gray-200 p-2 mb-2">
-                        @if (Str::startsWith($student->avatar, 'http'))
-                            <img src="{{ $student->avatar }}"
-                                class="w-12 h-12 rounded-full border border-black object-cover hover:brightness-50 transition duration-300  "alt="Profile Picture">
-                        @else
-                            <img src="{{ asset('storage/images/' . $student->avatar) }}"
-                                class="w-12 h-12 rounded-full border border-black object-cover hover:brightness-50 transition duration-300"
-                                alt="Profile Picture">
-                        @endif
-                        <div class="w-full flex flex-col justify-center items-center">
-                        <h2>{{ $student->name }}</h2>
-                        <p class="text-xs"> {{ $student->email }}</p>
-                        </div>
-                        </div>
-                        <div class="w-full gap-2 flex flex-col justify-center items-center">
-                            <x-button-generate href="{{ route('ds.assign', ['student_id' => $student->id]) }}">
-                                {{ __('Assigner un DS') }}
-                            </x-button-generate>
-                            <x-button-generate href="{{ route('exercises_sheet.selectChapter', ['student_id' => $student->id]) }}">
-                                {{ __("Assigner une fiche d'exercices") }}
-                            </x-button-generate>
-                            <x-button-quizz href="{{ route('student.quizzes', ['student_id' => $student->id]) }}">
-                                {{ __('Voir les quizz') }}
-                            </x-button-quizz>
-                            @php
-                                $last_ds = new DateTime($student->last_ds_generated_at);
-                            @endphp
-                            <div class="flex flex-row justify-between w-full items-center">
-                            @if ($student->last_ds_generated_at == null || date('Y-m-d') != $last_ds->format('Y-m-d'))
-                                <button type="submit"
-                                    class="text-white bg-gray-500 rounded-full px-2 py-1 cursor-not-allowed">
-                                    DS+
-                                </button>
-                            @else
-                                <form action="{{ route('user.resetLastDSGeneratedAt', $student->id) }}" method="POST"
-                                    class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="text-white bg-blue-500 hover:bg-blue-700 rounded-full px-2 py-1">DS+</button>
-                                </form>
-                            @endif
-                            @if($student->verified)
-                                <form action="{{ route('user.unverify', $student->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="text-xs text-red-600 hover:text-red-900 p-2 border border-red-600 rounded-full bg-red-100">Désactiver</button>
-                                </form>
-                            @else
-                                <form action="{{ route('user.verify', $student->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="text-xs text-green-600 hover:text-green-900 p-2 border border-green-600 rounded-full bg-green-100">Activer</button>
-                                </form>
-                            @endif
-                            </div>
-                        </div>
-                    </div>
+                    <x-user-card :avatar="$student->avatar" :name="$student->name" :assignDsRoute="route('ds.assign', ['student_id' => $student->id])" :assignSheetRoute="route('exercises_sheet.selectChapter', ['student_id' => $student->id])" :lastDsGenerated="$student->last_ds_generated_at"
+                        :resetLastDsRoute="route('user.resetLastDSGeneratedAt', $student->id)" :verified="$student->verified" :id="$student->id" />
                 @endforeach
             </div>
+
         </div>
         {{ $students->links() }}
     </div>
+
+    <script>
+        document.getElementById('helpButton').addEventListener('click', function() {
+            document.getElementById('helpModal').classList.remove('hidden');
+        });
+
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('helpModal');
+            if (event.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    </script>
 @endsection
