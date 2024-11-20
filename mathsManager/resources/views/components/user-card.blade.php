@@ -73,15 +73,15 @@
         @endif
     </div>
         <!-- Show More Details Button -->
-    <button class="user-card-button hover:bg-gray-800"
-            onclick="window.location.href='#'">
+    <a class="user-card-button hover:bg-gray-800"
+         href="{{ route('user.show', ['id' => $id]) }}">
         Voir plus
-    </button>
+    </a>
 </div>
 
 <style>
 .user-card {
-    width: 250px; /* Plus large pour plus d'espace */
+    width: 250px;
     height: auto;
     border-radius: 15px;
     background: #f5f5f5;
@@ -106,6 +106,7 @@
 }
 
 .user-card-button {
+    cursor: pointer;
     transform: translate(-50%, 135%);
     width: 80%;
     border-radius: 0.8rem;
@@ -119,6 +120,7 @@
     bottom: 2px;
     opacity: 0;
     transition: 0.5s ease-out;
+    text-align: center; 
 }
 
 .user-card:hover {

@@ -24,6 +24,16 @@ class UserController extends Controller
         return view('user.index', compact('users'));
     }
 
+    // Affiche les détails d'un utilisateur
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        $quizzes = $user->quizzes();
+        $ds = $user->ds;
+
+        return view('user.show', compact('user', 'quizzes', 'ds'));
+    }
+
     // Affiche la liste paginée des students
     public function showStudents(Request $request)
     {
