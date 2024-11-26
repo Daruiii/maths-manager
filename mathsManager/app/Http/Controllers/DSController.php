@@ -346,7 +346,7 @@ class DSController extends Controller
         if ($request->isMethod('post')) {
             $request->validate([
                 'exercisesDS' => 'required|array',
-                'exercisesDS.*' => 'exists:exercises,id',
+                'exercisesDS.*' => 'exists:ds_exercises,id',
                 'user_id' => 'required|exists:users,id',
             ]);
 
