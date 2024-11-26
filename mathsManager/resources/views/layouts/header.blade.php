@@ -3,7 +3,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
 @endsection
 
-<header class="bg-secondary-color text-text-color" id="top">
+<header class="bg-secondary-color text-text-color sticky top-0 z-50" id="top">
     <nav class="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="{{ route('home') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
             {{-- <img src="{{ asset('storage/images/professor.png') }}" alt="Logo" class="h-8"> --}}
@@ -130,8 +130,21 @@
             </ul>
         </div>
     </nav>
-    <header>
+</header>
 
-        @section('scripts')
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
-        @endsection
+@section('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('a[href="#top"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+@endsection
