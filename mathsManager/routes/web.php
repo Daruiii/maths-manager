@@ -20,9 +20,7 @@ use App\Http\Controllers\RecapController;
 use App\Http\Controllers\QuizzController;
 use App\Http\Controllers\ContentController;
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 // route for use changeAnalyse2Color function
 Route::get('/changeAnalyse2Color', [MultipleChapterController::class, 'changeAnalyse2Color'])->name('changeAnalyse2Color');

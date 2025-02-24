@@ -1,3 +1,13 @@
+# Ce fichier Makefile permet de déployer l'application sur le serveur de production et de synchroniser les images du dossier storage
+
+# Cible pour lancer le serveur de développement de PHP
+serve:
+	php artisan serve
+
+# Cible pour lancer le serveur de développement de Vite
+vite:
+	npm run dev
+
 # Cible principale de déploiement
 deploy: public/build/manifest.json
 	rsync -avz public/build davidinfomaniak:~/sites/mathsmanager.fr/mathsManager/public
