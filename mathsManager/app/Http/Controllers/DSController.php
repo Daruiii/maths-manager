@@ -192,14 +192,15 @@ class DSController extends Controller
         $ds->save();
         $timerAction = "pause";
         // get list of user's DS
-        $dsList = Auth::user()->ds;
-        $dsList = $dsList->sortByDesc('created_at');
-        foreach ($dsList as $ds) {
-            foreach ($ds->exercisesDS as $exerciseDS) {
-                $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
-            }
-        }
-        return view('ds.myDS', compact('ds', 'timerAction', 'dsList'));
+        // $dsList = Auth::user()->ds;
+        // $dsList = $dsList->sortByDesc('created_at');
+        // foreach ($dsList as $ds) {
+        //     foreach ($ds->exercisesDS as $exerciseDS) {
+        //         $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
+        //     }
+        // }
+        return response()->json(['timerAction' => $timerAction, 'ds' => $ds]);
+        // return view('ds.myDS', compact('ds', 'timerAction', 'dsList'));
     }
 
     public function finish($id)

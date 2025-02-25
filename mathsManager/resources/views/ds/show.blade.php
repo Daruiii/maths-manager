@@ -129,85 +129,116 @@
         </div>
     </div>
     @if ($timerAction == 'start')
-        <script>
-            var timer = document.getElementById('timer');
-            var time = "{{ $timerFormatted }}";
-            var interval;
-
-            function updateTimer() {
-                updateTimerWithAjax();
-                window.location.href = "{{ route('ds.myDS', ['id' => Auth::user()->id]) }}";
-            }
-
-            function updateTimerWithAjax() {
-                var timerValue = timer.textContent; // Utiliser textContent au lieu de innerText
-                fetch("{{ route('ds.pause', ['id' => $ds->id, 'timer' => 'timerValue']) }}".replace('timerValue',
-                        timerValue), {
-                        method: 'GET',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => console.log(data))
-                    .catch(error => console.error(error));
-            }
-
-            // on reloading the page, the timer will be updated
-            window.addEventListener('beforeunload', function(event) {
-                updateTimerWithAjax();
-            });
-
-            // on going back to ohter page, the timer will be updated
-            window.addEventListener('popstate', function(event) {
-                updateTimerWithAjax();
-            });
-
-            // on click back button of the navigator, the timer will be updated
-            window.addEventListener('unload', function(event) {
-                updateTimerWithAjax();
-            });
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const timerElement = document.getElementById('timer');
+            const dsId = "{{ $ds->id }}"; // ID du DS actuel
+            const localStorageKey = `ds_timer_${dsId}`; // 🔑 Clé unique pour ce DS
+            let timer = localStorage.getItem(localStorageKey) || "{{ $timerFormatted }}";
+            let interval;
+    
+            /**
+             * ⏳ Démarre le compte à rebours
+             */
             function startTimer() {
                 interval = setInterval(function() {
-                    var timerArray = time.split(':');
-                    var hours = parseInt(timerArray[0]);
-                    var minutes = parseInt(timerArray[1]);
-                    var seconds = parseInt(timerArray[2]);
-
-                    if (hours == 0 && minutes == 0 && seconds == 0) {
+                    let [hours, minutes, seconds] = timer.split(':').map(Number);
+    
+                    if (hours === 0 && minutes === 0 && seconds === 0) {
                         clearInterval(interval);
-                        window.location.href = "{{ route('ds.pause', ['id' => $ds->id, 'timer' => '00:00:00']) }}";
-                    } else {
-                        if (seconds == 0) {
-                            if (minutes == 0) {
-                                hours--;
-                                minutes = 59;
-                                seconds = 59;
-                            } else {
-                                minutes--;
-                                seconds = 59;
-                            }
-                        } else {
-                            seconds--;
-                        }
+                        window.location.href = "{{ route('ds.finish', ['id' => $ds->id]) }}";
+                        return;
                     }
-
-                    time = (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' +
-                        (seconds < 10 ? '0' + seconds : seconds);
-                    timer.innerHTML = time;
+    
+                    if (seconds === 0) {
+                        if (minutes === 0) {
+                            hours--;
+                            minutes = 59;
+                        } else {
+                            minutes--;
+                        }
+                        seconds = 59;
+                    } else {
+                        seconds--;
+                    }
+    
+                    timer = formatTime(hours, minutes, seconds);
+                    timerElement.textContent = timer;
+                    localStorage.setItem(localStorageKey, timer); // 🛠️ Sauvegarde spécifique à ce DS
                 }, 1000);
             }
-
-            document.getElementById('pauseButton').addEventListener('click', function() {
-                clearInterval(interval);
-                updateTimer();
-            });
-
-            // Démarrer le timer lors du chargement de la page
+    
+            /**
+             * ⏱️ Met à jour le timer en BDD via AJAX
+             */
+            function updateTimerInDB() {
+                fetch("{{ route('ds.pause', ['id' => $ds->id, 'timer' => 'TIMER_VALUE']) }}".replace('TIMER_VALUE', timer), {
+                        method: 'GET',
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log("Timer mis à jour:", data))
+                    .catch(error => console.error('Erreur AJAX:', error));
+            }
+    
+            /**
+             * 🕰️ Formate un temps en HH:MM:SS
+             */
+            function formatTime(h, m, s) {
+                return [h, m, s].map(unit => unit < 10 ? `0${unit}` : unit).join(':');
+            }
+    
+            /**
+             * 🔄 Met à jour la BDD toutes les 30 secondes
+             */
+            setInterval(updateTimerInDB, 30000);
+    
+            /**
+             * 🔄 Vérifier le `localStorage` au chargement de la page
+             */
             window.addEventListener('load', function() {
-                startTimer();
+                if (localStorage.getItem(localStorageKey)) {
+                    timer = localStorage.getItem(localStorageKey); // 🛠️ Restaurer le bon timer
+                    timerElement.textContent = timer;
+                }
             });
-        </script>
+    
+            /**
+             * 🔄 Nettoyage des autres timers stockés en local pour éviter les erreurs entre DS différents
+             */
+            function clearOtherDSTimers() {
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('ds_timer_') && key !== localStorageKey) {
+                        localStorage.removeItem(key); // ❌ Supprime les anciens timers d'autres DS
+                    }
+                });
+            }
+            clearOtherDSTimers();
+    
+            /**
+             * 🔙 Gestion du retour navigateur & changement d'onglet
+             */
+            window.addEventListener('beforeunload', updateTimerInDB);
+            window.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    updateTimerInDB(); // Mise à jour en revenant sur l'onglet
+                }
+            });
+    
+            /**
+             * ⏸️ Gestion du bouton pause
+             */
+            document.getElementById('pauseButton')?.addEventListener('click', function() {
+                clearInterval(interval);
+                updateTimerInDB();
+                setTimeout(() => {
+                    window.location.href = "{{ route('ds.myDS', ['id' => Auth::user()->id]) }}";
+                }, 1000); // Pause et redirection après 1s
+            });
+    
+            startTimer();
+        });
+    </script>
+    
     @endif
 @endsection
