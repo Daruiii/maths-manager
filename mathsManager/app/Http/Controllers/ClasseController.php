@@ -91,7 +91,8 @@ class ClasseController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'level' => 'required'
+            'level' => 'required',
+            'hidden' => 'boolean'
         ]);
 
         Classe::create($request->all());
@@ -108,13 +109,16 @@ class ClasseController extends Controller
     public function update(Request $request, $id)
     {
         $classe = Classe::where('id', $id)->firstOrFail();
-
         $request->validate([
             'name' => 'required',
-            'level' => 'required'
+            'level' => 'required',
         ]);
+    
+        $classe->name = $request->name;
+        $classe->level = $request->level;
+        $classe->hidden = $request->has('hidden');
 
-        $classe->update($request->all());
+        $classe->save();
         $classes = Classe::all();
         return redirect()->route('classe.index', compact('classes'));
     }

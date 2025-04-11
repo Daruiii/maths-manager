@@ -28,6 +28,11 @@
                 <label for="level">Niveau</label>
                 <input type="text" class="form-control" id="level" name="level" value="{{ old('level', $classe->level) }}" required>
             </div>
+
+            <div class="form-group">
+                <label for="hidden">Caché</label>
+                <input type="checkbox" id="hidden" name="hidden" {{ $classe->hidden ? 'checked' : '' }}>
+            </div>
             
             <button type="submit" class="submit-btn-form">Mettre à jour la classe</button>
         </form>

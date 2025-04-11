@@ -3,7 +3,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
 @endsection
 
-<header class="bg-secondary-color text-text-color sticky top-0 z-50" id="top">
+<header class="bg-secondary-color text-text-color sticky top-0 z-50 fade-in" id="top">
     <nav class="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="{{ route('home') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
             {{-- <img src="{{ asset('storage/images/professor.png') }}" alt="Logo" class="h-8"> --}}
@@ -71,10 +71,12 @@
             <ul
                 class="flex flex-col items-center font-medium p-4 lg:p-0 mt-4 border border-gray-100 rounded-lg lg:space-x-8 rtl:space-x-reverse lg:flex-row lg:mt-0 lg:border-0">
                 @foreach ($classes as $class)
-                    <li>
-                        <a href="{{ route('classe.show', $class->level) }}"
-                            class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
-                    </li>
+                    @if (!$class->hidden)
+                        <li>
+                            <a href="{{ route('classe.show', $class->level) }}"
+                                class="link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 {{ request()->is("classe/{$class->level}") ? 'active' : '' }}">{{ $class->name }}</a>
+                        </li>
+                    @endif
                 @endforeach
                 @auth
                     @if (Auth::user()->role === 'student')

@@ -28,6 +28,11 @@
                 <input type="text" class="form-control" id="level" name="level" required>
             </div>
 
+            <div class="form-group">
+                <label for="hidden">Caché</label>
+                <input type="checkbox" id="hidden" name="hidden" value="1">
+            </div>
+
             <button type="submit" class="submit-btn-form">Ajouter la classe</button>
         </form>
     </div>
