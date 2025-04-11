@@ -60,7 +60,7 @@
     }
 
     .delete-button:hover {
-        width: 60px;
+        /* width: 60px; */
         border-radius: 50px;
         transition-duration: 0.3s;
         background-color: rgb(255, 69, 69);
@@ -68,7 +68,7 @@
     }
 
     .delete-button:hover .delete-svgIcon {
-        width: 12px;
+        width: 15px;
         transition-duration: 0.3s;
         transform: translateY(60%);
         -webkit-transform: rotate(360deg);
@@ -80,7 +80,7 @@
 
     .delete-button::before {
         display: none;
-        content: "Delete";
+        /* content: "Delete"; */
         color: white;
         transition-duration: 0.3s;
         font-size: 2px;
@@ -88,7 +88,7 @@
 
     .delete-button:hover::before {
         display: block;
-        padding-right: 10px;
+        /* padding-right: 10px; */
         font-size: 10px;
         opacity: 1;
         transform: translateY(0px);

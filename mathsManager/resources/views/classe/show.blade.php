@@ -35,7 +35,7 @@
                         <button
                             class="flex items-center justify-end w-full text-left chapter-title text-lg font-semibold text-gray-700">
                             {{-- Icône de Chevron --}}
-                            <svg :class="{ 'transform rotate-180': open }" class="w-6 h-6"
+                            <svg :class="{ 'transform rotate-180 transition-transform duration-300': open, 'transform rotate-0 transition-transform duration-300': !open }" class="w-6 h-6"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -52,7 +52,7 @@
                     </div>
                     <div x-show="open" x-cloak x-transition:enter="transition-all ease-out duration-300"
                         x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen"
-                        x-transition:leave="transition-all ease-in duration-200"
+                        x-transition:leave="transition-all ease-in duration-500"
                         x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0"
                         class="overflow-hidden px-4 pt-2 pb-4">
                         <div class="flex flex-col items-start space-x-2 mb-4">

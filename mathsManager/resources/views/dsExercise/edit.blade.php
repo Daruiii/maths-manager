@@ -42,6 +42,12 @@
                         <div class="mt-2">
                             <a href="{{ asset('storage/' . $dsExercise->correction_pdf) }}" target="_blank" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Voir le PDF actuel</a>
                             <input type="hidden" name="existing_correction_pdf" value="{{ $dsExercise->correction_pdf }}">
+                            <div class="mt-2">
+                                <label>
+                                    <input type="checkbox" name="delete_correction_pdf" value="1">
+                                    Supprimer le PDF actuel
+                                </label>
+                            </div>
                         </div>
                     @endif
                 </div>

@@ -230,6 +230,7 @@ class DsExerciseController extends Controller
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
             'correction_pdf' => 'nullable|file|mimes:pdf|max:2048',
+            'delete_correction_pdf' => 'nullable|boolean',
         ]);
 
         // dd($request->existing_images); // (string) "ds_exercises/ds_exercise_1/1.jpg" par exemple
@@ -279,6 +280,19 @@ class DsExerciseController extends Controller
         // give images to the convertCustomLatexToHtml function, qui met les images dans l'order dans lequel on les veut dans le contenu de l'exercice
         // dd($imagePaths);
         $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement, $imagePaths);
+
+
+        // si cocher la case pour supprimer le pdf de correction
+        if ($request->has('delete_correction_pdf')) {
+            // Supprimer le PDF de correction
+            if ($dsExercise->correction_pdf) {
+                $pdfPath = public_path('storage/' . $dsExercise->correction_pdf);
+                if (file_exists($pdfPath)) {
+                    unlink($pdfPath);
+                }
+                $dsExercise->correction_pdf = null;
+            }
+        }
 
         // gestion du PDF de correction
         if ($request->hasFile('correction_pdf')) {
