@@ -1,3 +1,3 @@
 <footer class="footer">
-    <p class="">Maths Manager - Copyright © 2024</p>
+    <p class="">Maths Manager - Copyright © 2025</p>
 </footer>

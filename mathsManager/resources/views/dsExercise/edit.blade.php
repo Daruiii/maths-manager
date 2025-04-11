@@ -27,12 +27,23 @@
                 </div>
 
                 <div class="form-group">
-                <x-multiple-file-input type="file" name="images" id="images" />
+                <x-multiple-file-input type="file" name="images" id="images" imgFolder="storage/ds_exercises/ds_exercise_{{ $dsExercise->id }}" />
                 </div>
 
                 <div class="form-group">
                     <label for="statement">Énoncé de l'Exercice DS (LaTeX):</label>
                     <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici...">{{ $dsExercise->latex_statement }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="correction_pdf">Correction (PDF) :</label>
+                    <input type="file" class="form-control" id="correction_pdf" name="correction_pdf" accept="application/pdf">
+                    @if ($dsExercise->correction_pdf)
+                        <div class="mt-2">
+                            <a href="{{ asset('storage/' . $dsExercise->correction_pdf) }}" target="_blank" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Voir le PDF actuel</a>
+                            <input type="hidden" name="existing_correction_pdf" value="{{ $dsExercise->correction_pdf }}">
+                        </div>
+                    @endif
                 </div>
 
                 <div class="form-group">

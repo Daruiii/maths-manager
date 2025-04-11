@@ -466,6 +466,13 @@ class QuizzController extends Controller
     public function destroyQuestion($id, Request $request)
     {
         $question = QuizzQuestion::find($id);
+        // delete before the answers bcs linked to the question
+        // Delete quizz details that reference the answers
+        foreach ($question->answers as $answer) {
+            QuizzDetail::where('chosen_answer_id', $answer->id)->delete();
+        }
+        QuizzDetail::where('question_id', $question->id)->delete();
+        $question->answers()->delete();
         $question->delete();
 
         $filter = $request->get('filter');
@@ -542,6 +549,8 @@ class QuizzController extends Controller
     public function destroyAnswer($id, Request $request)
     {
         $answer = QuizzAnswer::find($id);
+        // unlink the answer from the question, bcs it's a foreign key
+        $answer->quizz_question_id = null;
         $answer->delete();
 
         $filter = $request->get('filter');

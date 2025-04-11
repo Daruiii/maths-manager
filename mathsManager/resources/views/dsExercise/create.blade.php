@@ -52,6 +52,12 @@
                     <label for="statement">Énoncé de l'Exercice DS (LaTeX):</label>
                     <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>
+                
+                <div class="form-group">
+                    <label for="correction_pdf">Correction (PDF) :</label>
+                    <input type="file" class="form-control" id="correction_pdf" name="correction_pdf"
+                        accept="application/pdf">
+                </div>
 
                 <div class="form-group">
                     <label for="harder_exercise">Exercice plus difficile:</label>

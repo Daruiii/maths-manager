@@ -15,7 +15,7 @@
                     {{-- <a href="{{ route('exercises.decrement') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         décrement les exercices.order
                     </a> --}}
-                     {{-- <a href="{{ route('classe.reorder') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    {{-- <a href="{{ route('classe.reorder') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                         reorder chapters et subchapters
                     </a> --}}
                 @endif
@@ -44,38 +44,44 @@
                             @if (Auth::user()->role === 'admin')
                                 <div class="flex items-center space-x-2">
                                     <x-button-edit href="{{ route('chapter.edit', $chapter->id) }}" />
-                                    <x-button-delete href="{{ route('chapter.destroy', $chapter->id) }}" entity="ce chapitre" entityId="chapitre{{$chapter->id}}" />
+                                    <x-button-delete href="{{ route('chapter.destroy', $chapter->id) }}" entity="ce chapitre"
+                                        entityId="chapitre{{ $chapter->id }}" />
                                 </div>
                             @endif
                         @endauth
                     </div>
-                    <div x-show="open" x-cloak class="px-4 pt-2 pb-4">
+                    <div x-show="open" x-cloak x-transition:enter="transition-all ease-out duration-300"
+                        x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen"
+                        x-transition:leave="transition-all ease-in duration-200"
+                        x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0"
+                        class="overflow-hidden px-4 pt-2 pb-4">
                         <div class="flex flex-col items-start space-x-2 mb-4">
                             @auth
                                 @if (Auth::user()->role === 'admin')
-                                <div class="flex items-center space-x-3">
-                                <x-button-add href="{{ route('recap.create', ['id' => $chapter->id]) }}">
-                                        {{ __('Récap') }}
-                                    </x-button-add>
-                                </div>
+                                    <div class="flex items-center space-x-3">
+                                        <x-button-add href="{{ route('recap.create', ['id' => $chapter->id]) }}">
+                                            {{ __('Récap') }}
+                                        </x-button-add>
+                                    </div>
                                 @endif
                             @endauth
                             <div class="flex items-center space-x-3 p-2 flex-wrap">
-                            @foreach ($chapter->recaps as $index => $recap)
-                                <x-button-recap href="{{ route('recap.show', $recap->id) }}">
-                                    {{ __('Récap') }}
-                                </x-button-recap>
-                                @auth 
-                                @if (Auth::user()->role === 'admin')
-                                <x-button-delete href="{{ route('recap.destroy', $recap->id) }}" entity="ce récap" entityId="recap{{$recap->id}}" />
+                                @foreach ($chapter->recaps as $index => $recap)
+                                    <x-button-recap href="{{ route('recap.show', $recap->id) }}">
+                                        {{ __('Récap') }}
+                                    </x-button-recap>
+                                    @auth
+                                        @if (Auth::user()->role === 'admin')
+                                            <x-button-delete href="{{ route('recap.destroy', $recap->id) }}" entity="ce récap"
+                                                entityId="recap{{ $recap->id }}" />
+                                        @endif
+                                    @endauth
+                                @endforeach
+                                @if ($chapter->quizzQuestions->count() >= 10)
+                                    <x-button-quizz href="{{ route('start_quizz', $chapter->id) }}">
+                                        {{ __('Quizz') }}
+                                    </x-button-quizz>
                                 @endif
-                                @endauth
-                            @endforeach
-                            @if ($chapter->quizzQuestions->count() >= 10)
-                            <x-button-quizz href="{{ route('start_quizz', $chapter->id) }}">
-                                {{ __('Quizz') }}
-                            </x-button-quizz>
-                            @endif
                             </div>
                             <div class="flex flex-col w-full bg-gray-100 p-4 rounded-lg">
                                 <div class="flex items-center space-x-2 mb-2">
@@ -111,7 +117,7 @@
                                                 @if (Auth::user()->role === 'admin')
                                                     <x-button-edit href="{{ route('subchapter.edit', $subchapter->id) }}" />
                                                     <x-button-delete href="{{ route('subchapter.destroy', $subchapter->id) }}"
-                                                        entity="ce sous-chapitre" entityId="subchapter{{$subchapter->id}}" />
+                                                        entity="ce sous-chapitre" entityId="subchapter{{ $subchapter->id }}" />
                                                 @endif
                                             @endauth
                                         </div>

@@ -1,5 +1,4 @@
-@props(['name' => 'images', 'label'])
-
+@props(['name' => 'images', 'label', 'imgFolder'])
 
 {{-- Affichage des fichiers et gestion des inputs --}}
 <label>
@@ -9,21 +8,28 @@
     @for ($i = 1; $i <= 4; $i++)
         @php
             $inputId = $name . '_file' . $i; // Génère un id unique basé sur le name et l'indice
+            // $existingImages = glob(public_path($imgFolder) . '/*.{jpg,jpeg,png,gif,svg}', GLOB_BRACE);
+            // $imageSrc = isset($existingImages[$i - 1])
+            //     ? asset($imgFolder . '/' . basename($existingImages[$i - 1]))
+            //     : null;
         @endphp
         <label class="custom-file-upload" for="{{ $inputId }}">
             {{ $i }}
             <div class="image-container">
                 <div class="carousel">
-                    <div class="carousel-inner"></div>
+                    <div class="carousel-inner">
+                        {{-- @if ($imageSrc)
+                            <img src="{{ $imageSrc }}" class="carousel-item active">
+                        @endif --}}
+                    </div>
                 </div>
+                {{-- <div class="add-icon" style="display: {{ $imageSrc ? 'none' : 'flex' }};">+</div> --}}
                 <div class="add-icon">+</div>
             </div>
-            <input 
-                type="file" 
-                id="{{ $inputId }}" 
-                name="{{ $name }}[]" 
-                accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" 
-                style="display: none;">
+            {{-- @if ($imageSrc)
+                <input type="text" name="existing_{{ $name }}[]" value="{{ basename($existingImages[$i - 1]) }}">
+            @endif --}}
+            <input type="file" id="{{ $inputId }}" name="{{ $name }}[]" accept="image/jpeg, image/png, image/jpg, image/gif, image/svg" style="display: none;">
         </label>
     @endfor
 </div>
@@ -36,7 +42,7 @@
                 const files = event.target.files;
                 const label = input.parentElement;
                 const carouselInner = label.querySelector('.carousel-inner');
-                
+
                 // Nettoyage du conteneur pour éviter les doublons
                 carouselInner.innerHTML = '';
 

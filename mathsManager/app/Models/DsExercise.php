@@ -9,7 +9,7 @@ class DsExercise extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'header', 'multiple_chapter_id', 'harder_exercise', 'time', 'name', 'statement', 'latex_statement', 'image_paths'
+        'header', 'multiple_chapter_id', 'harder_exercise', 'time', 'name', 'statement', 'latex_statement', 'image_paths', 'correction_pdf'
     ];
 
     public function chapters()

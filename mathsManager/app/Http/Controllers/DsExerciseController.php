@@ -37,13 +37,13 @@ class DsExerciseController extends Controller
             "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
             // PA
             "/\\\\PA\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Première partie $1</span></div>",
-            "/\\\\PA/" =>"<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
+            "/\\\\PA/" => "<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
             // PB
             "/\\\\PB\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie $1</span></div>",
-            "/\\\\PB/" =>"<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
+            "/\\\\PB/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
             // PC
             "/\\\\PC\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie $1</span></div>",
-            "/\\\\PC/" =>"<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
+            "/\\\\PC/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
             // for all text like texttt textit textbf
             "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
             // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
@@ -59,23 +59,26 @@ class DsExerciseController extends Controller
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
 
-        // Remplacer les images pour chaque \graph{0.5}{photoenbeuch.pnj} dans l'ordre des images[]
+        // Remplacer les images pour chaque \graph{0.5}{photoenbeuch.png} dans l'ordre des images[]
         if (count($images) > 0) {
-        $imageIndex = 0;
-        $cleanedContent = preg_replace_callback("/\\\\graph\{(.*?)\}\{(.*?)\}/", function ($matches) use (&$images, &$imageIndex) {
-            $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
-            $imageIndex++;
-            $percent = $matches[1]*100;
-            return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'></div>";
-        }, $cleanedContent);
+            $imageIndex = 0;
+            $cleanedContent = preg_replace_callback("/\\\\graph\{(.*?)\}\{(.*?)\}/", function ($matches) use (&$images, &$imageIndex) {
+                $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
+                $imageIndex++;
+                $percent = $matches[1] * 100;
+                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'></div>";
+            }, $cleanedContent);
         } else {
             $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
         }
 
         $customCommands = [
-            "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
-            "\\enm" => "<ol>", "\\fenm" => "</ol>",
-            "\\itm" => "<ul class='point'>", "\\fitm" => "</ul>",
+            "\\enmb" => "<ol class='enumb'>",
+            "\\fenmb" => "</ol>",
+            "\\enm" => "<ol>",
+            "\\fenm" => "</ol>",
+            "\\itm" => "<ul class='point'>",
+            "\\fitm" => "</ul>",
             // Convertir les environnements théoriques
             // "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
             // "\\finboite" => "</div>",
@@ -87,7 +90,7 @@ class DsExerciseController extends Controller
 
         return $cleanedContent;
     }
-    
+
     public function index(Request $request)
     {
         $search = $request->get('search');
@@ -104,8 +107,7 @@ class DsExerciseController extends Controller
             $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
             $filterActivated = true;
             $chapterActivated = MultipleChapter::findOrFail($request->multiple_chapter_id);
-        }
-        else {
+        } else {
             $filterActivated = false;
             $chapterActivated = null;
         }
@@ -132,6 +134,7 @@ class DsExerciseController extends Controller
             'latex_statement' => 'nullable',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'correction_pdf' => 'nullable|file|mimes:pdf|max:2048',
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
         ]);
@@ -146,6 +149,8 @@ class DsExerciseController extends Controller
         $dsExercise->id = $newExerciseId;
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->latex_statement = $dsExercise->statement;
+  
+        // gestion des images
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $key => $image) {
@@ -157,6 +162,23 @@ class DsExerciseController extends Controller
         }
         // give images to the convertCustomLatexToHtml function
         $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement, $imagePaths);
+
+        // gestion du PDF de correction
+        if ($request->hasFile('correction_pdf')) {
+            $pdf = $request->file('correction_pdf');
+            // Définir le nom du fichier PDF
+            $pdfName = 'correction_ds_' . $dsExercise->id . '.' . $pdf->getClientOriginalExtension();
+            // Définir le chemin de destination
+            $destinationPath = public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/correction/');
+            // S'assurer que le dossier existe
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            // Déplacer le fichier
+            $pdf->move($destinationPath, $pdfName);
+            // Enregistrer le chemin en base de données
+            $dsExercise->correction_pdf = 'ds_exercises/ds_exercise_' . $dsExercise->id . '/correction/' . $pdfName;
+        }
         $dsExercise->save();
 
         // $dsExercise->chapters()->attach($request->chapters);
@@ -170,8 +192,7 @@ class DsExerciseController extends Controller
         $multipleChapter = MultipleChapter::findOrFail($dsExercise->multiple_chapter_id);
         if ($filter == 'true') {
             $dsExercises = DsExercise::where('multiple_chapter_id', $dsExercise->multiple_chapter_id)->get();
-        }
-        else {
+        } else {
             $dsExercises = DsExercise::with('chapters')->orderBy('id')->get();
         }
         $nextExercise = $dsExercises->filter(function ($exercise) use ($dsExercise) {
@@ -202,10 +223,17 @@ class DsExerciseController extends Controller
             'latex_statement' => 'nullable',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'existing_images' => 'nullable|array',
+            'existing_images.*' => 'string',
             'filter' => 'nullable|string',
+            'image_order' => 'nullable|string',
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
+            'correction_pdf' => 'nullable|file|mimes:pdf|max:2048',
         ]);
+
+        // dd($request->existing_images); // (string) "ds_exercises/ds_exercise_1/1.jpg" par exemple
+        // dd($request->images); // fichier image ou null
 
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->fill($request->except('images'));
@@ -215,26 +243,60 @@ class DsExerciseController extends Controller
         if ($request->hasFile('images')) {
             // remove old image
             $images = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
+            $images = array_filter($images, function($image) {
+            return !is_dir($image);
+            });
             if ($images) {
                 foreach ($images as $image) {
                     unlink($image);
                 }
             }
+            // ci-dessus, on récupérait les images qui ne sont pas des dossiers et qui sont dans le dossier de l'exercice pour les supprimer
+            // avant de les remplacer par les nouvelles images
             foreach ($request->file('images') as $key => $image) {
                 $imageName = ($key + 1) . '.' . $image->getClientOriginalExtension();
                 $destinationPath = public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id);
                 $image->move($destinationPath, $imageName);
-                $imagePaths[] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . $imageName;
-            }
-        }
-        else {
+                $imagePaths[$key] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . $imageName;
+            } // la, on ajoute les nouvelles images dans le tableau $imagePaths qui sera utilisé pour la conversion du latex en html.
+            // if ($request->filled('existing_images')) {
+            //     foreach ($request->existing_images as $key => $existingImage) {
+            //         $imagePaths[$key] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . basename($existingImage);
+            //     }
+            // }
+             // maintenant, ci-dessus, on ajoute les anciennes images dans le tableau $imagePaths qui sera utilisé pour la conversion du latex en html.
+            // le problème, c'est l'ordre des images, elles devraient être dans l'ordre des images dans le contenu de l'exercice, mais comme on utilise deux arrays
+            // différents, on ne peut pas garantir l'ordre des images. Il faudrait les fusionner dans un seul tableau pour garantir l'ordre des images.
+            // qu'on prenne l'id de l'input dans lequel sont les images et qu'on les trie par ordre croissant. mais comment faire ça ? il faudrait envoyé l'id
+            // de l'input dans lequel il se trouve à l'envoi du formulaire je pense.
+        } else {
             $imagePaths = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
             foreach ($imagePaths as $key => $imagePath) {
                 $imagePaths[$key] = 'ds_exercises/' . 'ds_exercise_' . $dsExercise->id . '/' . basename($imagePath);
             }
         }
-        // give images to the convertCustomLatexToHtml function
+        // on remet les anciennes dans le tableau $imagePaths qui sera utilisé pour la conversion du latex en html.
+        // give images to the convertCustomLatexToHtml function, qui met les images dans l'order dans lequel on les veut dans le contenu de l'exercice
+        // dd($imagePaths);
         $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement, $imagePaths);
+
+        // gestion du PDF de correction
+        if ($request->hasFile('correction_pdf')) {
+            // Supprimer l'ancien PDF s'il existe
+            if ($dsExercise->correction_pdf) {
+                $oldPdfPath = public_path('storage/' . $dsExercise->correction_pdf);
+                if (file_exists($oldPdfPath)) {
+                    unlink($oldPdfPath);
+                }
+            }
+            // Sauvegarde du nouveau PDF
+            $pdf = $request->file('correction_pdf');
+            $pdfName = 'correction_' . time() . '.' . $pdf->getClientOriginalExtension();
+            $pdfPath = 'ds_exercises/ds_exercise_' . $dsExercise->id . '/correction/' . $pdfName;
+            $pdf->move(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/correction'), $pdfName);
+            $dsExercise->correction_pdf = $pdfPath;
+        }
+
         $dsExercise->save();
 
         // $dsExercise->chapters()->sync($request->chapters);
@@ -244,15 +306,32 @@ class DsExerciseController extends Controller
     public function destroy(string $id)
     {
         $dsExercise = DsExercise::findOrFail($id);
-        // delete images
+    
+        // 🔹 Supprimer les images
         $images = glob(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id . '/*'));
         if ($images) {
             foreach ($images as $image) {
                 unlink($image);
             }
-            rmdir(public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id));
         }
+    
+        // 🔹 Supprimer le dossier de l'exercice si vide
+        $exerciseFolder = public_path('storage/ds_exercises/ds_exercise_' . $dsExercise->id);
+        if (is_dir($exerciseFolder)) {
+            rmdir($exerciseFolder);
+        }
+    
+        // 🔹 Supprimer le PDF de correction s'il existe
+        if ($dsExercise->correction_pdf) {
+            $pdfPath = public_path('storage/' . $dsExercise->correction_pdf);
+            if (file_exists($pdfPath)) {
+                unlink($pdfPath);
+            }
+        }
+    
+        // Supprimer l'exercice de la base de données
         $dsExercise->delete();
+    
         return redirect()->route('ds_exercises.index');
     }
 }
