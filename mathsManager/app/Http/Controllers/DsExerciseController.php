@@ -135,6 +135,9 @@ class DsExerciseController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'correction_pdf' => 'nullable|file|mimes:pdf|max:2048',
+            'type' => 'nullable|string',
+            'year' => 'nullable|integer',
+            'academy' => 'nullable|string',
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
         ]);
@@ -231,11 +234,13 @@ class DsExerciseController extends Controller
             // 'chapters.*' => 'exists:chapters,id'
             'correction_pdf' => 'nullable|file|mimes:pdf|max:2048',
             'delete_correction_pdf' => 'nullable|boolean',
+            'type' => 'nullable|string',
+            'year' => 'nullable|integer',
+            'academy' => 'nullable|string',
         ]);
 
         // dd($request->existing_images); // (string) "ds_exercises/ds_exercise_1/1.jpg" par exemple
         // dd($request->images); // fichier image ou null
-
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->fill($request->except('images'));
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;

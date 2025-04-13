@@ -27,6 +27,30 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="type">Type de l'Exercice DS:</label>
+                    <select class="form-control" id="type" name="type">
+                        <option value="bac" {{ $dsExercise->type == 'bac' ? 'selected' : '' }}>bac</option>
+                        <option value="mimigl" {{ $dsExercise->type == 'mimigl' ? 'selected' : '' }}>mimigl</option>
+                        <option value="lycee" {{ $dsExercise->type == 'lycee' ? 'selected' : '' }}>lycee</option>
+                        <option value="concours" {{ $dsExercise->type == 'concours' ? 'selected' : '' }}>concours</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="year">Année</label>
+                    <select class="form-control" id="year" name="year">
+                        @for ($year = 1950; $year <= date('Y'); $year++)
+                            <option value="{{ $year }}" {{ $dsExercise->year == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="academy">Académie:</label>
+                    <input type="text" class="form-control" id="academy" name="academy" value="{{ $dsExercise->academy }}" placeholder="Académie de l'exercice DS">
+                </div>
+
+                <div class="form-group">
                 <x-multiple-file-input type="file" name="images" id="images" imgFolder="storage/ds_exercises/ds_exercise_{{ $dsExercise->id }}" />
                 </div>
 
