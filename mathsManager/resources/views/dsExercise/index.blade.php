@@ -12,23 +12,79 @@
                 <x-button-add href="{{ route('ds_exercise.create') }}">Exercice</x-button-add>
             </div>
         </div>
-        {{-- Search form --}}
         <div class="flex justify-between items-center py-2 w-full flex-wrap gap-2">
+            {{-- Search form --}}
             <div>
                 <x-search-bar-admin action="{{ route('ds_exercises.index') }}" placeholder="Rechercher un exercice..."
                     name="search" />
             </div>
-            <form method="GET" action="{{ route('ds_exercises.index') }}" class=" flex-grow">
+
+            {{-- Combined filter form --}}
+            <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex gap-2">
                 @csrf
-                <div class="relative group rounded-lg  overflow-hidden flex items-center justify-end">
-                    <select name="multiple_chapter_id" onchange="this.form.submit()"
-                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                {{-- Filter for type --}}
+                <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
+                    <select name="type"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-40"
+                        onchange="this.form.submit()">
+                        <option value="" {{ !$typeFilterActivated ? 'selected' : '' }}>Tous les types</option>
+                        @if ($typeFilterActivated)
+                            <option value="{{ $typeActivated }}" selected>
+                                {{ ucfirst($typeActivated) }}
+                            </option>
+                        @endif
+                        @foreach (['bac', 'mimigl', 'lycee', 'concours'] as $type)
+                            @if ($typeFilterActivated && $type === $typeActivated)
+                                @continue
+                            @endif
+                            <option value="{{ $type }}">{{ ucfirst($type) }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                        <svg class="w-4 h-4 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Filter for academy --}}
+                <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
+                    <select name="academy"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-48"
+                        onchange="this.form.submit()">
+                        <option value="" {{ !$academyFilterActivated ? 'selected' : '' }}>Toutes les académies
+                        </option>
+                        @if ($academyFilterActivated)
+                            <option value="{{ $academyActivated }}" selected>
+                                {{ ucfirst($academyActivated) }}
+                            </option>
+                        @endif
+                        @foreach ($academies as $academy)
+                            @if ($academyFilterActivated && $academy === $academyActivated)
+                                @continue
+                            @endif
+                            <option value="{{ $academy }}">{{ ucfirst($academy) }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                        <svg class="w-4 h-4 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Filter for multiple chapters --}}
+                <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
+                    <select name="multiple_chapter_id"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none"
+                        onchange="this.form.submit()">
+                        <option value="" {{ !$filterActivated ? 'selected' : '' }}>Tous les chapitres</option>
                         @if ($filterActivated)
                             <option value="{{ $chapterActivated->id }}" selected>
-                                {{  $chapterActivated->title }}
+                                {{ $chapterActivated->title }}
                             </option>
-                        @else
-                            <option value="" selected>Tous les chapitres</option>
                         @endif
                         @foreach ($multipleChapters as $index => $chapter)
                             @if ($filterActivated && $chapter->id === $chapterActivated->id)
@@ -40,22 +96,28 @@
                             </option>
                         @endforeach
                     </select>
-                    @if ($filterActivated)
-                        <a href="{{ route('ds_exercises.index') }}" class="ml-2 hover:rotate-180 duration-300">
-                            <svg width="24px" height="18px" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M6.30958 3.54424C7.06741 2.56989 8.23263 2 9.46699 2H20.9997C21.8359 2 22.6103 2.37473 23.1614 2.99465C23.709 3.61073 23.9997 4.42358 23.9997 5.25V18.75C23.9997 19.5764 23.709 20.3893 23.1614 21.0054C22.6103 21.6253 21.8359 22 20.9997 22H9.46699C8.23263 22 7.06741 21.4301 6.30958 20.4558L0.687897 13.2279C0.126171 12.5057 0.126169 11.4943 0.687897 10.7721L6.30958 3.54424ZM10.2498 7.04289C10.6403 6.65237 11.2734 6.65237 11.664 7.04289L14.4924 9.87132L17.3208 7.04289C17.7113 6.65237 18.3445 6.65237 18.735 7.04289L19.4421 7.75C19.8327 8.14052 19.8327 8.77369 19.4421 9.16421L16.6137 11.9926L19.4421 14.8211C19.8327 15.2116 19.8327 15.8448 19.4421 16.2353L18.735 16.9424C18.3445 17.3329 17.7113 17.3329 17.3208 16.9424L14.4924 14.114L11.664 16.9424C11.2734 17.3329 10.6403 17.3329 10.2498 16.9424L9.54265 16.2353C9.15212 15.8448 9.15212 15.2116 9.54265 14.8211L12.3711 11.9926L9.54265 9.16421C9.15212 8.77369 9.15212 8.14052 9.54265 7.75L10.2498 7.04289Z"
-                                    fill="#000000"></path>
-                            </svg>
-                        </a>
-                    @endif
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                        <svg class="w-4 h-4 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
+
+                {{-- Reset button --}}
+                @if ($typeFilterActivated || $academyFilterActivated || $filterActivated)
+                    <a href="{{ route('ds_exercises.index') }}"
+                        class="hover:rotate-180 duration-300 z-10 flex items-center justify-center text-gray-700 font-bold rounded-lg">
+                        <svg width="24px" height="18px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M6.30958 3.54424C7.06741 2.56989 8.23263 2 9.46699 2H20.9997C21.8359 2 22.6103 2.37473 23.1614 2.99465C23.709 3.61073 23.9997 4.42358 23.9997 5.25V18.75C23.9997 19.5764 23.709 20.3893 23.1614 21.0054C22.6103 21.6253 21.8359 22 20.9997 22H9.46699C8.23263 22 7.06741 21.4301 6.30958 20.4558L0.687897 13.2279C0.126171 12.5057 0.126169 11.4943 0.687897 10.7721L6.30958 3.54424ZM10.2498 7.04289C10.6403 6.65237 11.2734 6.65237 11.664 7.04289L14.4924 9.87132L17.3208 7.04289C17.7113 6.65237 18.3445 6.65237 18.735 7.04289L19.4421 7.75C19.8327 8.14052 19.8327 8.77369 19.4421 9.16421L16.6137 11.9926L19.4421 14.8211C19.8327 15.2116 19.8327 15.8448 19.4421 16.2353L18.735 16.9424C18.3445 17.3329 17.7113 17.3329 17.3208 16.9424L14.4924 14.114L11.664 16.9424C11.2734 17.3329 10.6403 17.3329 10.2498 16.9424L9.54265 16.2353C9.15212 15.8448 9.15212 15.2116 9.54265 14.8211L12.3711 11.9926L9.54265 9.16421C9.15212 8.77369 9.15212 8.14052 9.54265 7.75L10.2498 7.04289Z"
+                                fill="#000000"></path>
+                        </svg>
+                    </a>
+                @endif
             </form>
         </div>
-        
-        
-        
         <!-- Pagination links -->
         {{ $dsExercises->links('vendor.pagination.tailwind') }}
         <div class="flex flex-col mb-8 mt-2 items-cente justify-center">
@@ -74,13 +136,13 @@
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Type</th>
-                                <th 
+                                <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Année</th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Académie</th>
-                                <th 
+                                <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                     Date</th>
                                 <th
@@ -111,23 +173,27 @@
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $ex->name }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                    @if ($ex->type === 'bac')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            Bac
-                                        </span>
-                                    @elseif ($ex->type === 'mimigl')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                            Mimigl
-                                        </span>
-                                    @elseif ($ex->type === 'lycee')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Lycée
-                                        </span>
-                                    @elseif ($ex->type === 'concours')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                            Concours
-                                        </span>
-                                    @endif
+                                        @if ($ex->type === 'bac')
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                Bac
+                                            </span>
+                                        @elseif ($ex->type === 'mimigl')
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                                Mimigl
+                                            </span>
+                                        @elseif ($ex->type === 'lycee')
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Lycée
+                                            </span>
+                                        @elseif ($ex->type === 'concours')
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Concours
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $ex->year }}</td>
@@ -175,8 +241,9 @@
                                                 href="{{ route('ds_exercise.show', ['id' => $ex->id, 'filter' => $filterActivated ? 'true' : 'false']) }}">
                                                 <svg version="1.1" id="Uploaded to svgrepo.com"
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="20px"
-                                                    viewBox="0 0 32 32" xml:space="preserve" fill="#000000">
+                                                    xmlns:xlink="http://www.w3.org/1999/xlink" width="20px"
+                                                    height="20px" viewBox="0 0 32 32" xml:space="preserve"
+                                                    fill="#000000">
                                                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
                                                         stroke-linejoin="round"></g>

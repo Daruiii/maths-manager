@@ -111,10 +111,57 @@ class DsExerciseController extends Controller
             $filterActivated = false;
             $chapterActivated = null;
         }
+
+        if ($request->filled('type')) {
+            $dsExercises->where('type', $request->type);
+            $typeActivated = $request->type;
+            $typeFilterActivated = true;
+        } else {
+            $typeActivated = null;
+            $typeFilterActivated = false;
+        }
+
+        if ($request->filled('academy')) {
+            $dsExercises->where('academy', $request->academy);
+            $academyActivated = $request->academy;
+            $academyFilterActivated = true;
+        } else {
+            $academyActivated = null;
+            $academyFilterActivated = false;
+        }
+
+        // Filter by both `type` and `academy` if both are provided
+        if ($request->filled('type') && $request->filled('academy')) {
+            $dsExercises->where('type', $request->type)
+                        ->where('academy', $request->academy);
+        }
+
+        // Filter by both `multiple_chapter_id` and `type` if both are provided
+        if ($request->filled('multiple_chapter_id') && $request->filled('type')) {
+            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id)
+                        ->where('type', $request->type);
+        }
+
+        // Filter by both `multiple_chapter_id` and `academy` if both are provided
+        if ($request->filled('multiple_chapter_id') && $request->filled('academy')) {
+            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id)
+                        ->where('academy', $request->academy);
+        }
+
+        // Filter by all three `multiple_chapter_id`, `type`, and `academy` if all are provided
+        if ($request->filled('multiple_chapter_id') && $request->filled('type') && $request->filled('academy')) {
+            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id)
+                        ->where('type', $request->type)
+                        ->where('academy', $request->academy);
+        }
+
+        $academies = DsExercise::distinct('academy')->pluck('academy');
+
         $dsExercises = $dsExercises->paginate(10)->withQueryString();
         $multipleChapters = MultipleChapter::all();
 
-        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated'));
+        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated', 
+        'typeActivated', 'typeFilterActivated', 'academyActivated', 'academyFilterActivated', 'academies'));
     }
 
     public function create()

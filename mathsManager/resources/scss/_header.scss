@@ -32,10 +32,10 @@ nav .link.active {
     &::after {
         content: "";
         position: absolute;
-        bottom: -1.6rem; // Converted -5px to rem
+        bottom: -1.75rem; // Converted -5px to rem
         left: 0;
         width: 100%;
-        height: 0.125rem; // Converted 2px to rem
+        height: 0.125rem; // Converted 2px to rem   
         background-color: black;
         border-radius: 1rem; // Converted 2px to rem
     }

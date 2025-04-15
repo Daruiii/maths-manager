@@ -32,7 +32,7 @@
   color: #646464;
   padding: 0.7rem 1rem;
   border-radius: 30px;
-  width: 12em;
+  width: 15em;
   transition: all ease-in-out .5s;
   margin-right: -2rem;
 }
