@@ -66,7 +66,7 @@
         background-color: rgb(255, 69, 69);
         align-items: center;
     }
-
+    
     .delete-button:hover .delete-svgIcon {
         width: 15px;
         transition-duration: 0.3s;

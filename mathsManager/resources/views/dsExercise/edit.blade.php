@@ -15,15 +15,17 @@
                 </div>
             @endif
 
-            <form action="{{ route('ds_exercise.update', $dsExercise->id) }}" method="POST" id="dsExerciseForm" enctype="multipart/form-data">
+            <form action="{{ route('ds_exercise.update', $dsExercise->id) }}" method="POST" id="dsExerciseForm"
+                enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
 
                 {{-- hidden input for give the filter true or false --}}
-                <input type="hidden" name="filter" value="{{$filter}}">
+                <input type="hidden" name="filter" value="{{ $filter }}">
                 <div class="form-group">
                     <label for="name">Nom de l'Exercice DS:</label>
-                    <input type="text" class="form-control" id="name" name="name" value="{{ $dsExercise->name }}" placeholder="Nom de l'exercice DS">
+                    <input type="text" class="form-control" id="name" name="name" value="{{ $dsExercise->name }}"
+                        placeholder="Nom de l'exercice DS">
                 </div>
 
                 <div class="form-group">
@@ -39,19 +41,50 @@
                 <div class="form-group">
                     <label for="year">Année</label>
                     <select class="form-control" id="year" name="year">
-                        @for ($year = 1950; $year <= date('Y'); $year++)
-                            <option value="{{ $year }}" {{ $dsExercise->year == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        @for ($year = date('Y'); $year >= 1950; $year--)
+                            <option value="{{ $year }}" {{ $dsExercise->year == $year ? 'selected' : '' }}>
+                                {{ $year }}</option>
                         @endfor
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="academy">Académie:</label>
-                    <input type="text" class="form-control" id="academy" name="academy" value="{{ $dsExercise->academy }}" placeholder="Académie de l'exercice DS">
+                    <select class="form-control" id="academy" name="academy">
+                        <option value="" {{ $dsExercise->academy == '' ? 'selected' : '' }}>Aucun</option>
+                        <option value="Metropole" {{ $dsExercise->academy == 'Metropole' ? 'selected' : '' }}>Metropole
+                        </option>
+                        <option value="Antille Guyane" {{ $dsExercise->academy == 'Antille Guyane' ? 'selected' : '' }}>
+                            Antille Guyane</option>
+                        <option value="Pondichéry" {{ $dsExercise->academy == 'Pondichéry' ? 'selected' : '' }}>Pondichéry
+                        </option>
+                        <option value="Polynésie" {{ $dsExercise->academy == 'Polynésie' ? 'selected' : '' }}>Polynésie
+                        </option>
+                        <option value="Asie" {{ $dsExercise->academy == 'Asie' ? 'selected' : '' }}>Asie</option>
+                        <option value="Liban" {{ $dsExercise->academy == 'Liban' ? 'selected' : '' }}>Liban</option>
+                        <option value="Nouvelle Calédonie"
+                            {{ $dsExercise->academy == 'Nouvelle Calédonie' ? 'selected' : '' }}>Nouvelle Calédonie
+                        </option>
+                        <option value="Centres étrangers"
+                            {{ $dsExercise->academy == 'Centres étrangers' ? 'selected' : '' }}>Centres étrangers</option>
+                        <option value="Amérique du nord"
+                            {{ $dsExercise->academy == 'Amérique du nord' ? 'selected' : '' }}>Amérique du nord</option>
+                        <option value="Amérique du sud" {{ $dsExercise->academy == 'Amérique du sud' ? 'selected' : '' }}>
+                            Amérique du sud</option>
+                        <option value="La Réunion" {{ $dsExercise->academy == 'La Réunion' ? 'selected' : '' }}>La Réunion
+                        </option>
+                        <option value="Sujet 0" {{ $dsExercise->academy == 'Sujet 0' ? 'selected' : '' }}>Sujet 0</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                <x-multiple-file-input type="file" name="images" id="images" imgFolder="storage/ds_exercises/ds_exercise_{{ $dsExercise->id }}" />
+                    <label for="date">Date de l'Exercice DS:</label>
+                    <input type="text" class="form-control" id="date" name="date_data" value="{{ $dsExercise->date_data }}" placeholder="Exemple: mai 2022 s2">
+                </div>
+
+                <div class="form-group">
+                    <x-multiple-file-input type="file" name="images" id="images"
+                        imgFolder="storage/ds_exercises/ds_exercise_{{ $dsExercise->id }}" />
                 </div>
 
                 <div class="form-group">
@@ -61,10 +94,12 @@
 
                 <div class="form-group">
                     <label for="correction_pdf">Correction (PDF) :</label>
-                    <input type="file" class="form-control" id="correction_pdf" name="correction_pdf" accept="application/pdf">
+                    <input type="file" class="form-control" id="correction_pdf" name="correction_pdf"
+                        accept="application/pdf">
                     @if ($dsExercise->correction_pdf)
                         <div class="mt-2">
-                            <a href="{{ asset('storage/' . $dsExercise->correction_pdf) }}" target="_blank" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Voir le PDF actuel</a>
+                            <a href="{{ asset('storage/' . $dsExercise->correction_pdf) }}" target="_blank"
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Voir le PDF actuel</a>
                             <input type="hidden" name="existing_correction_pdf" value="{{ $dsExercise->correction_pdf }}">
                             <div class="mt-2">
                                 <label>
@@ -79,24 +114,29 @@
                 <div class="form-group">
                     <label for="harder_exercise">Exercice plus difficile:</label>
                     <div class="flex items-center w-4 h-4 border-gray-300 rounded focus:ring-blue-500 text-black">
-                        <input type="checkbox" id="harder_exercise" name="harder_exercise" value="1" class="text-black border-gray-300 rounded focus:ring-blue-500 checked:bg-black" {{ $dsExercise->harder_exercise ? 'checked' : '' }}>
+                        <input type="checkbox" id="harder_exercise" name="harder_exercise" value="1"
+                            class="text-black border-gray-300 rounded focus:ring-blue-500 checked:bg-black"
+                            {{ $dsExercise->harder_exercise ? 'checked' : '' }}>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="time">Temps (en minutes):</label>
-                    <input type="number" class="form-control" id="time" name="time" value="{{ $dsExercise->time }}">
+                    <input type="number" class="form-control" id="time" name="time"
+                        value="{{ $dsExercise->time }}">
                 </div>
 
                 <div class="form-group">
                     <label for="multiple_chapter_id">Chapitre duo:</label>
                     <select class="form-control" id="multiple_chapter_id" name="multiple_chapter_id">
                         @foreach ($multipleChapters as $multipleChapter)
-                            <option value="{{ $multipleChapter->id }}" {{ $dsExercise->multiple_chapter_id == $multipleChapter->id ? 'selected' : '' }}>{{ $multipleChapter->title }}</option>
+                            <option value="{{ $multipleChapter->id }}"
+                                {{ $dsExercise->multiple_chapter_id == $multipleChapter->id ? 'selected' : '' }}>
+                                {{ $multipleChapter->title }}</option>
                         @endforeach
                     </select>
                 </div>
-{{-- 
+                {{-- 
                 <div class="form-group">
                     <label for="chapters">Chapitres associés:</label>
                     <div class="multiselect">

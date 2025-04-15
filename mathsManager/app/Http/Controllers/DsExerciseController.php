@@ -138,6 +138,7 @@ class DsExerciseController extends Controller
             'type' => 'nullable|string',
             'year' => 'nullable|integer',
             'academy' => 'nullable|string',
+            'date_data' => 'nullable|string',
             // 'chapters' => 'required|array',
             // 'chapters.*' => 'exists:chapters,id'
         ]);
@@ -237,6 +238,7 @@ class DsExerciseController extends Controller
             'type' => 'nullable|string',
             'year' => 'nullable|integer',
             'academy' => 'nullable|string',
+            'date_data' => 'nullable|string',
         ]);
 
         // dd($request->existing_images); // (string) "ds_exercises/ds_exercise_1/1.jpg" par exemple
@@ -319,7 +321,7 @@ class DsExerciseController extends Controller
         $dsExercise->save();
 
         // $dsExercise->chapters()->sync($request->chapters);
-        return redirect()->route('ds_exercise.show', ['id' => $dsExercise->id, 'filter' => $request->filter]);
+        return redirect()->route('ds_exercises.index', ['filter' => $request->filter]);
     }
 
     public function destroy(string $id)

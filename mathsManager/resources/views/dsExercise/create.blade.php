@@ -36,7 +36,8 @@
                 </div>
             @endif
 
-            <form action="{{ route('ds_exercise.store') }}" method="POST" id="dsExerciseForm" enctype="multipart/form-data">
+            <form action="{{ route('ds_exercise.store') }}" method="POST" id="dsExerciseForm"
+                enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <label for="name">Nom de l'Exercice DS:</label>
@@ -57,7 +58,7 @@
                 <div class="form-group">
                     <label for="year">Année</label>
                     <select class="form-control" id="year" name="year">
-                        @for ($year = 1950; $year <= date('Y'); $year++)
+                        @for ($year = date('Y'); $year >= 1950; $year--)
                             <option value="{{ $year }}">{{ $year }}</option>
                         @endfor
                     </select>
@@ -65,19 +66,37 @@
 
                 <div class="form-group">
                     <label for="academy">Académie:</label>
-                    <input type="text" class="form-control" id="academy" name="academy"
-                        placeholder="Académie de l'exercice DS">
+                    <select class="form-control" id="academy" name="academy">
+                        <option value="" selected>Aucun</option>
+                        <option value="Metropole">Metropole</option>
+                        <option value="Antille Guyane">Antille Guyane</option>
+                        <option value="Pondichéry">Pondichéry</option>
+                        <option value="Polynésie">Polynésie</option>
+                        <option value="Asie">Asie</option>
+                        <option value="Liban">Liban</option>
+                        <option value="Nouvelle Calédonie">Nouvelle Calédonie</option>
+                        <option value="Centres étrangers">Centres étrangers</option>
+                        <option value="Amérique du nord">Amérique du nord</option>
+                        <option value="Amérique du sud">Amérique du sud</option>
+                        <option value="La Réunion">La Réunion</option>
+                        <option value="Sujet 0">Sujet 0</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                   <x-multiple-file-input type="file" name="images" id="images" />
+                    <label for="date">Date de l'Exercice DS:</label>
+                    <input type="text" class="form-control" id="date" name="date_data" placeholder="Exemple: mai 2022 s2">
+                </div>
+
+                <div class="form-group">
+                    <x-multiple-file-input type="file" name="images" id="images" />
                 </div>
 
                 <div class="form-group">
                     <label for="statement">Énoncé de l'Exercice DS (LaTeX):</label>
                     <textarea class="form-control" id="statement" name="statement" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="correction_pdf">Correction (PDF) :</label>
                     <input type="file" class="form-control" id="correction_pdf" name="correction_pdf"
