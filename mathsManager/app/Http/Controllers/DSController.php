@@ -255,15 +255,27 @@ class DSController extends Controller
 
         if ($request->type_bac) {
             foreach ($exercisesDS as $key => $exercise) {
-                $exercisesDS[$key]['multipleChapter'] = MultipleChapter::find($exercise['multiple_chapter_id']);
+            $exercisesDS[$key]['multipleChapter'] = MultipleChapter::find($exercise['multiple_chapter_id']);
             }
-            // dans tous les exercisesDS, on va chercher les exercises qui ont le même multipleChapter->theme et supprimer les doublons
-            foreach ($exercisesDS as $key => $exercise) { // on aura donc des exos avec couleurs différentes affichés sur les labels
-                foreach ($exercisesDS as $key2 => $exercise2) {
-                    if ($key != $key2 && $exercise['multipleChapter']['theme'] == $exercise2['multipleChapter']['theme']) {
-                        unset($exercisesDS[$key]);
-                    }
+            // Exclude specific multipleChapters
+            $excludedChapters = [
+            'ARITHMETIQUE (MATHS EXPERTES)',
+            'COMPLEXES',
+            'MATRICES (MATHS EXPERTES)',
+            'Vers la prépa'
+            ];
+            foreach ($exercisesDS as $key => $exercise) {
+            if (in_array($exercise['multipleChapter']['title'], $excludedChapters)) {
+                unset($exercisesDS[$key]);
+            }
+            }
+            // Remove duplicates based on the same multipleChapter->theme
+            foreach ($exercisesDS as $key => $exercise) {
+            foreach ($exercisesDS as $key2 => $exercise2) {
+                if ($key != $key2 && $exercise['multipleChapter']['theme'] == $exercise2['multipleChapter']['theme']) {
+                unset($exercisesDS[$key]);
                 }
+            }
             }
         } else {
             // Créez un tableau pour stocker les id des chapitres déjà sélectionnés
