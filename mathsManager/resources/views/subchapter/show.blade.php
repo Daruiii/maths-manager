@@ -1,5 +1,9 @@
     @extends('layouts.app')
 
+    @section('title', $subchapter->title . ' - Maths Manager')
+    @section('meta_description', 'Sous-chapitre : ' . $subchapter->title . '. Description : ' . $subchapter->description)
+    @section('canonical', url()->current())
+
     @section('content')
         <div class="container mx-auto">
             @auth

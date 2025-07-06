@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Admin - Maths Manager')
+@section('meta_description', "Espace d'administration : gestion des utilisateurs, classes, exercices, fiches, quizz et devoirs surveillés.")
+@section('canonical', url()->current())
+
 @section('content')
     <div class="container mx-auto p-6">
         <x-back-btn path="{{ route('home') }}" label="retour" />

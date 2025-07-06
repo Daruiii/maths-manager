@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Fiches d’Exercices - Maths Manager')
+@section('meta_description', "Liste des fiches d’exercices disponibles pour les élèves et les professeurs.")
+@section('canonical', url()->current())
+
 @section('content')
     <x-back-btn path="{{ route('admin') }}">Retour</x-back-btn>
 

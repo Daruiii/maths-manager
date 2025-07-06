@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Quizz - Maths Manager')
+@section('meta_description', "Liste des quizz interactifs pour réviser les chapitres de maths et s’auto-évaluer.")
+@section('canonical', url()->current())
+
 @section('content')
 <x-back-btn path="{{ route('admin') }}"> Retour</x-back-btn>
 

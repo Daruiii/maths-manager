@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Mes Devoirs Surveillés - Maths Manager')
+@section('meta_description', "Consultez et gérez vos devoirs surveillés (DS) attribués par vos professeurs sur Maths Manager.")
+@section('canonical', url()->current())
+
 @section('content')
     {{-- Titre de la page un peu sur la gauche avec ecrit "Mes devoirs" --}}
     {{-- un bouton pour générer un nouveau DS --}}

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', $classe->name . ' - Maths Manager')
+@section('meta_description', 'Chapitres, exercices et ressources pour la classe de ' . $classe->name . ' sur Maths Manager.')
+@section('canonical', url()->current())
+
 @section('content')
     <div class="container mx-auto chapters-container">
         <div class="flex header">

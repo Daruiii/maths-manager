@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', ($exercise->name ?? 'Exercice') . ' - Maths Manager')
+@section('meta_description', 'Exercice de maths : ' . ($exercise->name ?? 'Sans titre') . '. Consultez l’énoncé, la difficulté et la solution.')
+@section('canonical', url()->current())
+
 @section('content')
     <div class="container mx-auto">
         <!-- Boutons de navigation -->

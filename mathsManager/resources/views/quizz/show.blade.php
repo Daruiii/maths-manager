@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', ($question->chapter->title ?? 'Quizz') . ' - Maths Manager')
+@section('meta_description', 'Question de quizz sur le chapitre : ' . ($question->chapter->title ?? 'N/A') . '. Testez vos connaissances en maths !')
+@section('canonical', url()->current())
+
 @section('content')
     <div class="container mx-auto">
         {{-- bouton a gauche pour retour au index des dsexercises --}}

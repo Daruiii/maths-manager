@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', "Mes Fiches d'Exercices - Maths Manager")
+@section('meta_description', "Consultez et gérez vos fiches d'exercices attribuées par vos professeurs sur Maths Manager.")
+@section('canonical', url()->current())
+
 @section('content')
     <div class="container mx-auto mb-8">
         <div class="flex justify-start flex-col items-start w-9/12 mt-6 mb-4">

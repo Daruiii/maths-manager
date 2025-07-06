@@ -1,66 +1,336 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Maths Manager
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Une application Laravel pour la gestion d'exercices de mathématiques, avec génération de DS, correction automatique et système de récapitulatifs.
 
-## About Laravel
+## 🚀 Installation et Configuration
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 💫 Installation rapide (Recommandée)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Pour une installation automatique, utilisez le script d'installation :
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+git clone https://github.com/Daruiii/maths-manager
+cd mathsManager
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
 
-## Learning Laravel
+Le script vous guidera à travers toutes les étapes d'installation.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🔨 Installation manuelle
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+#### Prérequis
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.1 ou supérieur
+- Composer
+- Node.js et NPM
+- Une base de données MariaDB/MySQL
+- Docker (optionnel)
 
-## Laravel Sponsors
+### 1. Cloner le projet
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/Daruiii/maths-manager
+cd mathsManager
+```
 
-### Premium Partners
+### 2. Installation des dépendances
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+# Dépendances PHP
+composer install
 
-## Contributing
+# Dépendances Node.js
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Configuration de l'environnement
 
-## Code of Conduct
+#### Option A : Configuration avec Docker (Recommandée)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Créer le fichier `.env`** :
+```bash
+cp .env.example .env
+```
 
-## Security Vulnerabilities
+2. **Lancer la base de données avec Docker** :
+```bash
+docker run -d \
+  --name mathsmanager-db \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=mathsManager \
+  -p 3307:3306 \
+  mariadb:10.6
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Vérifier que le conteneur fonctionne** :
+```bash
+docker ps
+```
 
-## License
+4. **Configurer le `.env`** :
+```env
+DB_CONNECTION=mariadb
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=mathsManager
+DB_USERNAME=root
+DB_PASSWORD=root
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Option B : Configuration avec XAMPP
+
+1. **Installer XAMPP** et démarrer Apache + MySQL
+2. **Créer le fichier `.env`** :
+```bash
+cp .env.example .env
+```
+
+3. **Configurer le `.env`** :
+```env
+DB_CONNECTION=mariadb
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=mathsManager
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Finaliser la configuration
+
+1. **Générer la clé d'application** :
+```bash
+php artisan key:generate
+```
+
+2. **Créer la base de données** (si elle n'existe pas) :
+```bash
+# Pour Docker
+docker exec -it mathsmanager-db mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS mathsManager;"
+
+# Pour XAMPP
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS mathsManager;"
+```
+
+3. **Exécuter les migrations** :
+```bash
+php artisan migrate
+```
+
+**OU** utiliser la base de données sample avec des données d'exemple :
+```bash
+# Au lieu des migrations, importer la base sample
+./scripts/import-db.sh mathsmanager-sample.sql
+```
+
+4. **Créer les liens symboliques** :
+```bash
+php artisan storage:link
+```
+
+5. **Compiler les assets** :
+```bash
+npm run dev
+```
+
+### 5. Lancer l'application
+
+```bash
+php artisan serve
+```
+
+L'application sera accessible sur `http://localhost:8000`
+
+## 🔧 Problèmes courants et solutions
+
+### Erreur "Connection refused"
+
+**Problème** : L'application ne peut pas se connecter à la base de données.
+
+**Solutions** :
+1. Vérifier que la base de données est démarrée :
+   ```bash
+   # Pour Docker
+   docker ps
+   docker start mathsmanager-db
+   
+   # Pour XAMPP
+   sudo /opt/lampp/lampp start
+   ```
+
+2. Vérifier les paramètres de connexion dans `.env`
+
+3. Tester la connexion manuellement :
+   ```bash
+   # Pour Docker (port 3307)
+   mysql -h 127.0.0.1 -P 3307 -u root -proot
+   
+   # Pour XAMPP (port 3306)
+   mysql -h 127.0.0.1 -P 3306 -u root -p
+   ```
+
+### Erreur "Port already in use"
+
+**Problème** : Le port 3306 est déjà utilisé.
+
+**Solutions** :
+1. Utiliser Docker avec le port 3307 (recommandé)
+2. Arrêter le service qui utilise le port 3306 :
+   ```bash
+   sudo systemctl stop mysql
+   sudo systemctl stop mariadb
+   ```
+
+### Erreur "No application encryption key"
+
+**Solution** :
+```bash
+php artisan key:generate
+```
+
+### Erreur "Class 'ZipArchive' not found"
+
+**Solution** :
+```bash
+sudo apt-get install php-zip
+```
+
+### Erreur "proc_open(): fork failed"
+
+**Solution** :
+```bash
+sudo sysctl -w vm.max_map_count=262144
+```
+
+### Erreur de permissions sur les fichiers
+
+**Solution** :
+```bash
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+```
+
+## 📦 Fonctionnalités
+
+### Principales fonctionnalités
+
+- **Gestion des classes** : Création et gestion des classes d'élèves
+- **Chapitres et sous-chapitres** : Organisation hiérarchique du contenu
+- **Exercices** : Création et gestion d'exercices avec différents niveaux de difficulté
+- **Génération de DS** : Création automatique de devoirs surveillés
+- **Correction automatique** : Système de correction avec upload de fichiers
+- **Récapitulatifs** : Génération de fiches de révision
+- **Quizz** : Système de quiz interactifs
+- **Authentification** : Système d'authentification avec rôles (admin, professeur, élève)
+
+### Fonctionnalités avancées
+
+- **OAuth** : Connexion via GitHub et Google (optionnel)
+- **Emails** : Système d'envoi d'emails (Mailtrap pour le développement)
+- **Export PDF** : Génération de PDF pour les DS et corrections
+- **Cache** : Système de cache pour optimiser les performances
+
+## 🗄️ Structure de la base de données
+
+### Tables principales
+
+- `users` : Utilisateurs (élèves, professeurs, admins)
+- `classes` : Classes d'élèves
+- `chapters` : Chapitres de cours
+- `subchapters` : Sous-chapitres
+- `exercises` : Exercices
+- `ds` : Devoirs surveillés
+- `correction_requests` : Demandes de correction
+- `quizz_questions` : Questions de quiz
+- `recaps` : Récapitulatifs de cours
+
+## 🔧 Maintenance
+
+### Commandes utiles
+
+```bash
+# Vider le cache
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+# Optimiser pour la production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Voir le statut des migrations
+php artisan migrate:status
+
+# Rollback des migrations
+php artisan migrate:rollback
+
+# Seed de la base de données
+php artisan db:seed
+```
+
+### Logs
+
+Les logs sont stockés dans `storage/logs/laravel.log`
+
+### Backup de la base de données
+
+```bash
+# Docker
+docker exec mathsmanager-db mysqldump -u root -proot mathsManager > backup.sql
+
+# XAMPP
+mysqldump -u root -p mathsManager > backup.sql
+```
+
+## 🚀 Déploiement
+
+### Prérequis pour la production
+
+1. Configurer un serveur web (Apache/Nginx)
+2. Configurer PHP-FPM
+3. Installer une base de données MariaDB/MySQL
+4. Configurer les variables d'environnement
+5. Optimiser les performances
+
+### Variables d'environnement importantes
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://votre-domaine.com
+DB_CONNECTION=mariadb
+DB_HOST=votre-host
+DB_DATABASE=votre-database
+DB_USERNAME=votre-username
+DB_PASSWORD=votre-password
+```
+
+## 📝 Contribuer
+
+1. Fork le projet
+2. Créer une branche pour votre fonctionnalité
+3. Commiter vos changements
+4. Pousser vers la branche
+5. Ouvrir une Pull Request
+
+## 🐛 Signaler un bug
+
+Si vous rencontrez un problème :
+1. Vérifiez les logs dans `storage/logs/laravel.log`
+2. Consultez la section "Problèmes courants" ci-dessus
+3. Ouvrez une issue avec les détails du problème
+
+## 📄 Licence
+
+Ce projet est sous licence MIT.
+
+## 👥 Auteurs
+
+- **David** - Développeur principal
+- **Maxime** - Contributeur
+
+---
+
+Pour toute question ou problème, n'hésitez pas à consulter les logs ou à ouvrir une issue sur le dépôt GitHub.

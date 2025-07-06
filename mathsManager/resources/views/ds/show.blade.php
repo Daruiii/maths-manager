@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'DS n°' . $ds->id . ' - Maths Manager')
+@section('meta_description', 'Sujet de devoir surveillé (DS) : consultez les exercices, le temps imparti et envoyez votre copie pour correction.')
+@section('canonical', url()->current())
+
 @section('content')
     <div class="container mx-auto">
         {{-- fixed div with timer inside --}}

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Accueil - Maths Manager')
+@section('meta_description', "Plateforme de gestion de maths : exercices, quizz, fiches, DS, progression et corrections personnalisées pour lycéens.")
+@section('canonical', url()->current())
+
 @section('content')
     <div class="container mx-auto">
         <div class="quote-box">

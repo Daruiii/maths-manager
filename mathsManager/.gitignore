@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Database exports (keep sample only)
+*.sql
+!mathsmanager-sample.sql
