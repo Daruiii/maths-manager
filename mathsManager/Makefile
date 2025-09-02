@@ -16,7 +16,8 @@ help:
 	@echo "  deploy       - Déployer en production"
 	@echo "  prod-optimize - Optimiser pour la production"
 	@echo "  install      - Installer les dépendances"
-	@echo "  sync-images  - Synchroniser les images uniquement"
+	@echo "  sync-images  - Synchroniser les images vers la production"
+	@echo "  fetch-images - Récupérer les images depuis la production"
 	@echo "  clean        - Nettoyer les caches"
 	@echo "  status       - Afficher le statut de l'application"
 
@@ -93,9 +94,16 @@ public/build/manifest.json: package.json
 
 # Cible pour synchroniser seulement les images de storage (à exécuter manuellement si nécessaire)
 sync-images:
-	@echo "📸 Synchronisation des images..."
+	@echo "📸 Synchronisation des images vers la production..."
 	rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/
-	@echo "✅ Images synchronisées"
+	@echo "✅ Images synchronisées vers la production"
+
+# Récupérer les images depuis la production
+fetch-images:
+	@echo "📥 Récupération des images depuis la production..."
+	@mkdir -p storage/app/public/images
+	rsync -avz $(SERVER_USER):$(SERVER_HOST)/public/storage/images/ storage/app/public/images/
+	@echo "✅ Images récupérées depuis la production"
 
 # Nettoyer les caches
 clean:
