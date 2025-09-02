@@ -16,7 +16,7 @@ cd "$(dirname "$0")/.."
 echo -e "${BLUE}"
 echo "╔══════════════════════════════════════════╗"
 echo "║         MATHS MANAGER SETUP              ║"
-echo "║      Installation automatique           ║"
+echo "║      Installation automatique            ║"
 echo "╚══════════════════════════════════════════╝"
 echo -e "${NC}"
 
