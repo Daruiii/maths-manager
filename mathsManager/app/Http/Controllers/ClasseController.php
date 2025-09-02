@@ -95,7 +95,7 @@ class ClasseController extends Controller
             'hidden' => 'boolean'
         ]);
 
-        Classe::create($request->all());
+        Classe::create($request->only(['name', 'level', 'hidden']));
 
         return redirect()->route('classe.index');
     }

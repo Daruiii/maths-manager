@@ -61,7 +61,8 @@ class ChapterController extends Controller
         $request->validate([
             'title' => 'required',
             'class_id' => 'required',
-            'order' => 'required|integer'
+            'order' => 'required|integer',
+            'theme' => 'nullable'
         ]);
     
         $newOrder = $request->order;
@@ -83,7 +84,7 @@ class ChapterController extends Controller
 
         $classLevel = Classe::findOrFail($request->class_id)->level;
     
-        Chapter::create($request->all());
+        Chapter::create($request->only(['title', 'class_id', 'order', 'theme']));
     
         return redirect()->route('classe.show', $classLevel);
     }
@@ -102,10 +103,11 @@ class ChapterController extends Controller
 
         $request->validate([
             'title' => 'required',
-            'class_id' => 'required'
+            'class_id' => 'required',
+            'theme' => 'nullable'
         ]);
 
-        $chapter->update($request->all());
+        $chapter->update($request->only(['title', 'class_id', 'theme']));
         $classLevel = Classe::findOrFail($request->class_id)->level;
 
         return redirect()->route('classe.show', $classLevel);

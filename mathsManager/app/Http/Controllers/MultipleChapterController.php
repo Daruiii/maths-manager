@@ -100,7 +100,7 @@ class MultipleChapterController extends Controller
             'theme' => 'nullable'
         ]);
 
-        $multipleChapter->update($request->all());
+        $multipleChapter->update($request->only(['title', 'description', 'theme']));
         return redirect()->route('multiple_chapters.index');
     }
 

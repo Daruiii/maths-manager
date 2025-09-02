@@ -42,10 +42,11 @@ class SubchapterController extends Controller
         $request->validate([
             'title' => 'required',
             'chapter_id' => 'required',
-            'order' => 'required'
+            'order' => 'required',
+            'description' => 'nullable'
         ]);
 
-        Subchapter::create($request->all());
+        Subchapter::create($request->only(['title', 'chapter_id', 'order', 'description']));
         $chapter_id = $request->chapter_id;
         $class_id = Chapter::findOrFail($chapter_id)->class_id;
         $class_level = Classe::findOrFail($class_id)->level;
@@ -67,10 +68,11 @@ class SubchapterController extends Controller
 
         $request->validate([
             'title' => 'required',
-            'chapter_id' => 'required'
+            'chapter_id' => 'required',
+            'description' => 'nullable'
         ]);
 
-        $subchapter->update($request->all());
+        $subchapter->update($request->only(['title', 'chapter_id', 'description']));
         $chapter_id = $subchapter->chapter_id;
         $class_id = Chapter::findOrFail($chapter_id)->class_id;
         $class_level = Classe::findOrFail($class_id)->level;

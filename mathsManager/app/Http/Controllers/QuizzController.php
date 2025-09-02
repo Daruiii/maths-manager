@@ -9,73 +9,10 @@ use App\Models\Quizze;
 use App\Models\QuizzDetail;
 use App\Models\Chapter;
 use App\Models\Subchapter;
+use App\Services\LatexToHtmlConverter;
 
 class QuizzController extends Controller
 {
-    protected function convertCustomLatexToHtml($latexContent)
-    {
-        // Nettoyage initial du contenu et remplacement des espaces non sécables
-        $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
-
-        // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu que KATEX ne gère pas ou mal
-        $patterns = [
-            "/\\\\begin\{itemize\}/" => "<ul>",
-            "/\\\\end\{itemize\}/" => "</ul>",
-            "/\\\\begin\{enumerate\}/" => "<ol>",
-            "/\\\\end\{enumerate\}/" => "</ol>",
-            "/\\\\item/" => "<li>",
-            "/\\\\begin\{center\}/" => "<div class='latex-center'>",
-            "/\\\\end\{center\}/" => " </div>",
-            "/\\\\begin\{minipage\}/" => "<div class='latex-minipage'>",
-            "/\\\\end\{minipage\}/" => "</div>",
-            "/\\\\begin\{tabularx\}\{(.+?)\}/" => "<span class='latex latex-tabularx' style='width: $1%;'>",
-            "/\\\\end\{tabularx\}/" => "</span>",
-            "/\\\\begin\{boxed\}/" => "<span class='latex latex-boxed'>",
-            "/\\\\end\{boxed\}/" => "</span>",
-            // "/\\\\\\\/" => "<br>",
-            "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'> </style>",
-            "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width:'$1';'> </style>",
-            "/\\\\hline/" => "<hr>",
-            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
-            // PA
-            "/\\\\PA\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Première partie $1</span></div>",
-            "/\\\\PA/" => "<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
-            // PB
-            "/\\\\PB\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie $1</span></div>",
-            "/\\\\PB/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
-            // PC
-            "/\\\\PC\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie $1</span></div>",
-            "/\\\\PC/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
-            "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
-            // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
-            // "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
-            // "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
-            // "/\\\\times/" => "×",
-            // "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;",
-            // "/\\\\quad/" => "&nbsp;&nbsp;",
-        ];
-
-        // Appliquer les remplacements pour les maths et les listes
-        foreach ($patterns as $pattern => $replacement) {
-            $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
-        }
-
-        // Convertir les commandes personnalisées en HTML
-        $customCommands = [
-            "\\enmb" => "<ol class='enumb'>", "\\fenmb" => "</ol>",
-            "\\enm" => "<ol>", "\\fenm" => "</ol>",
-            "\\itm" => "<ul class='point'>", "\\fitm" => "</ul>",
-            // Convertir les environnements théoriques
-            // "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
-            // "\\finboite" => "</div>",
-        ];
-
-        foreach ($customCommands as $command => $html) {
-            $cleanedContent = str_replace($command, $html, $cleanedContent);
-        }
-
-        return $cleanedContent;
-    }
 
     // Méthode pour commencer un quizz sur un chapitre en particulier (question par question avec bouton suivant une fois qu'on a rep)
     public function startQuizz($chapter_id)
@@ -404,7 +341,7 @@ class QuizzController extends Controller
         $question = new QuizzQuestion();
         $question->name = $request->name;
         $question->latex_question = $request->question;
-        $question->question = $this->convertCustomLatexToHtml($request->question);
+        $question->question = LatexToHtmlConverter::convertForQuiz($request->question);
         $question->chapter_id = $request->chapter_id;
         $question->subchapter_id = $request->subchapter_id;
         $question->save();
@@ -452,7 +389,7 @@ class QuizzController extends Controller
         $question = QuizzQuestion::find($id);
         $question->name = $request->name;
         $question->latex_question = $request->question;
-        $question->question = $this->convertCustomLatexToHtml($request->question);
+        $question->question = LatexToHtmlConverter::convertForQuiz($request->question);
         $question->chapter_id = $request->chapter_id;
         $question->subchapter_id = $request->subchapter_id;
         $question->save();
@@ -504,8 +441,8 @@ class QuizzController extends Controller
         $answer = new QuizzAnswer();
         $answer->latex_answer = $request->answer;
         $answer->latex_explanation = $request->explanation;
-        $answer->explanation = $this->convertCustomLatexToHtml($request->explanation);
-        $answer->answer = $this->convertCustomLatexToHtml($request->answer);
+        $answer->explanation = LatexToHtmlConverter::convertForQuiz($request->explanation);
+        $answer->answer = LatexToHtmlConverter::convertForQuiz($request->answer);
         $answer->is_correct = $request->is_correct;
         $answer->quizz_question_id = $id;
         $answer->save();
@@ -535,8 +472,8 @@ class QuizzController extends Controller
         $answer = QuizzAnswer::find($id);
         $answer->latex_answer = $request->answer;
         $answer->latex_explanation = $request->explanation;
-        $answer->explanation = $this->convertCustomLatexToHtml($request->explanation);
-        $answer->answer = $this->convertCustomLatexToHtml($request->answer);
+        $answer->explanation = LatexToHtmlConverter::convertForQuiz($request->explanation);
+        $answer->answer = LatexToHtmlConverter::convertForQuiz($request->answer);
         $answer->is_correct = $request->is_correct;
         $answer->save();
 

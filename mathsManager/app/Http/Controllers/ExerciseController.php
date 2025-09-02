@@ -9,6 +9,7 @@ use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
 use Illuminate\Support\Facades\Log;
+use App\Services\LatexToHtmlConverter;
 
 class ExerciseController extends Controller
 {
@@ -167,7 +168,7 @@ class ExerciseController extends Controller
     
             // Étape 1 : Enregistrer l'exercice pour obtenir son ID
             $exercise = new Exercise();
-            $exercise->clue = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
+            $exercise->clue = $request->clue ? LatexToHtmlConverter::convertForExercise($request->clue) : null;
             $exercise->latex_clue = $request->clue;
             $exercise->name = $request->name;
             $exercise->subchapter_id = $request->subchapter_id;
@@ -189,7 +190,7 @@ class ExerciseController extends Controller
                     $imagePathsStatement[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
                 }
             }
-            $exercise->statement = $this->convertCustomLatexToHtml($request->statement, $imagePathsStatement);
+            $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
             $exercise->latex_statement = $request->statement;
     
             // Étape 3 : Gestion des images pour `solution`
@@ -205,7 +206,7 @@ class ExerciseController extends Controller
                     $imagePathsSolution[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
                 }
             }
-            $exercise->solution = $request->solution ? $this->convertCustomLatexToHtml($request->solution, $imagePathsSolution) : null;
+            $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
             $exercise->latex_solution = $request->solution;
     
             // Étape 4 : Mise à jour des images et sauvegarde finale
@@ -220,88 +221,6 @@ class ExerciseController extends Controller
             return back()->withErrors('Failed to store exercise. ' . $e->getMessage());
         }
     }    
-
-    protected function convertCustomLatexToHtml($latexContent, $images = [])
-    {
-        // Nettoyage initial du contenu et remplacement des espaces non sécables
-        $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
-
-        // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu que KATEX ne gère pas ou mal
-        $patterns = [
-            "/\\\\begin\{itemize\}/" => "<ul>",
-            "/\\\\end\{itemize\}/" => "</ul>",
-            "/\\\\begin\{enumerate\}/" => "<ol>",
-            "/\\\\end\{enumerate\}/" => "</ol>",
-            "/\\\\item/" => "<li>",
-            "/\\\\begin\{center\}/" => "<div class='latex-center'>",
-            "/\\\\end\{center\}/" => " </div>",
-            "/\\\\begin\{minipage\}/" => "<div class='latex-minipage'>",
-            "/\\\\end\{minipage\}/" => "</div>",
-            "/\\\\begin\{tabularx\}\{(.+?)\}/" => "<span class='latex latex-tabularx' style='width: $1%;'>",
-            "/\\\\end\{tabularx\}/" => "</span>",
-            "/\\\\begin\{boxed\}/" => "<span class='latex latex-boxed'>",
-            "/\\\\end\{boxed\}/" => "</span>",
-            // "/\\\\\\\/" => "<br>",
-            "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'> </style>",
-            "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width:'$1';'> </style>",
-            "/\\\\hline/" => "<hr>",
-            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
-            // PA
-            "/\\\\PA\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Première partie $1</span></div>",
-            "/\\\\PA/" => "<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
-            // PB
-            "/\\\\PB\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie $1</span></div>",
-            "/\\\\PB/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
-            // PC
-            "/\\\\PC\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie $1</span></div>",
-            "/\\\\PC/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
-            // for all text like texttt textit textbf
-            "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
-            // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
-            // "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
-            // "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
-            // "/\\\\times/" => "×",
-            // "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;",
-            // "/\\\\quad/" => "&nbsp;&nbsp;",
-        ];
-
-        // Appliquer les remplacements pour les maths et les listes
-        foreach ($patterns as $pattern => $replacement) {
-            $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
-        }
-
-
-        // Remplacer les images pour chaque \graph{0.5}{photoenbeuch.pnj} dans l'ordre des images[]
-        if (count($images) > 0) {
-            $imageIndex = 0;
-            $cleanedContent = preg_replace_callback("/\\\\graph\{(.*?)\}\{(.*?)\}/", function ($matches) use (&$images, &$imageIndex) {
-                $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
-                $imageIndex++;
-                $percent = $matches[1] * 100;
-                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'></div>";
-            }, $cleanedContent);
-        } else {
-            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
-        }
-
-        $customCommands = [
-            "\\enmb" => "<ol class='enumb'>",
-            "\\fenmb" => "</ol>",
-            "\\enm" => "<ol>",
-            "\\fenm" => "</ol>",
-            "\\itm" => "<ul class='point'>",
-            "\\fitm" => "</ul>",
-            // Convertir les environnements théoriques
-            // "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
-            // "\\finboite" => "</div>",
-        ];
-
-        foreach ($customCommands as $command => $html) {
-            $cleanedContent = str_replace($command, $html, $cleanedContent);
-        }
-
-        return $cleanedContent;
-    }
 
     public function show($id)
     {
@@ -358,7 +277,7 @@ class ExerciseController extends Controller
                     return 'exercises/exercise_' . $exercise->id . '/' . basename($path);
                 }, glob(public_path('storage/exercises/exercise_' . $exercise->id . '/statement_*')));
             }
-            $exercise->statement = $this->convertCustomLatexToHtml($request->statement, $imagePathsStatement);
+            $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
     
             // Mise à jour des images pour `solution`
             $imagePathsSolution = [];
@@ -379,10 +298,10 @@ class ExerciseController extends Controller
                     return 'exercises/exercise_' . $exercise->id . '/' . basename($path);
                 }, glob(public_path('storage/exercises/exercise_' . $exercise->id . '/solution_*')));
             }
-            $exercise->solution = $request->solution ? $this->convertCustomLatexToHtml($request->solution, $imagePathsSolution) : null;
+            $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
     
             // Mise à jour des indices (`clue`)
-            $exercise->clue = $request->clue ? $this->convertCustomLatexToHtml($request->clue) : null;
+            $exercise->clue = $request->clue ? LatexToHtmlConverter::convertForExercise($request->clue) : null;
             $exercise->latex_clue = $request->clue;
     
             // Mise à jour des autres champs

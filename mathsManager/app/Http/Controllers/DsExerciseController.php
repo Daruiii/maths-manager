@@ -7,89 +7,10 @@ use App\Models\DsExercise;
 use App\Models\Chapter;
 use App\Models\MultipleChapter;
 use Illuminate\Pagination\Paginator;
+use App\Services\LatexToHtmlConverter;
 
 class DsExerciseController extends Controller
 {
-    protected function convertCustomLatexToHtml($latexContent, $images = [])
-    {
-        // Nettoyage initial du contenu et remplacement des espaces non sécables
-        $cleanedContent = str_replace("\xc2\xa0", " ", $latexContent);
-
-        // Unification de la syntaxe LaTeX vers des spans et des divs pour le rendu que KATEX ne gère pas ou mal
-        $patterns = [
-            "/\\\\begin\{itemize\}/" => "<ul>",
-            "/\\\\end\{itemize\}/" => "</ul>",
-            "/\\\\begin\{enumerate\}/" => "<ol>",
-            "/\\\\end\{enumerate\}/" => "</ol>",
-            "/\\\\item/" => "<li>",
-            "/\\\\begin\{center\}/" => "<div class='latex latex-center'>",
-            "/\\\\end\{center\}/" => "</div>",
-            "/\\\\begin\{minipage\}/" => "<div class='latex-minipage'>",
-            "/\\\\end\{minipage\}/" => "</div>",
-            "/\\\\begin\{tabularx\}\{(.+?)\}/" => "<table class='latex-tabularx' style='width: $1%;'>",
-            "/\\\\end\{tabularx\}/" => "</table>",
-            "/\\\\begin\{boxed\}/" => "<span class='latex latex-boxed'>",
-            "/\\\\end\{boxed\}/" => "</span>",
-            // "/\\\\\\\/" => "<br>",
-            "/\{([0-9.]+)\\\\linewidth\}/" => "<style='width: calc($1% - 2em);'>",
-            "/\{\\\\linewidth\}\{(.+?)\}/" => "<style='width: $1;'>",
-            "/\\\\hline/" => "<hr>",
-            "/\\\\renewcommand\\\\arraystretch\{0.9\}/" => "",
-            // PA
-            "/\\\\PA\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Première partie $1</span></div>",
-            "/\\\\PA/" => "<div class='latex latex-center'><span class='textbf'>Première partie</span></div>",
-            // PB
-            "/\\\\PB\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie $1</span></div>",
-            "/\\\\PB/" => "<div class='latex latex-center'><span class='textbf'>Deuxième partie</span></div>",
-            // PC
-            "/\\\\PC\{(.*?)\}/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie $1</span></div>",
-            "/\\\\PC/" => "<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>",
-            // for all text like texttt textit textbf
-            "/\\\\(textbf|textit|texttt|textup)\{(.*?)\}/" => "<span class='$1'>$2</span>",
-            // "/\\\\listpart\{(.*?)\}/" => "<div class='listpart'>$1</div>",
-            // "/\\\\abs\{(.*?)\}/" => "<span class='abs'>| $1 |</span>",
-            // "/\\\\norm\{(.*?)\}/" => "<span class='norm'>‖ $1 ‖</span>",
-            // "/\\\\times/" => "×",
-            // "/\\\\qquad/" => "&nbsp;&nbsp;&nbsp;&nbsp;",
-            // "/\\\\quad/" => "&nbsp;&nbsp;",
-        ];
-
-        // Appliquer les remplacements pour les maths et les listes
-        foreach ($patterns as $pattern => $replacement) {
-            $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
-        }
-
-        // Remplacer les images pour chaque \graph{0.5}{photoenbeuch.png} dans l'ordre des images[]
-        if (count($images) > 0) {
-            $imageIndex = 0;
-            $cleanedContent = preg_replace_callback("/\\\\graph\{(.*?)\}\{(.*?)\}/", function ($matches) use (&$images, &$imageIndex) {
-                $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
-                $imageIndex++;
-                $percent = $matches[1] * 100;
-                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='$matches[2]' class='png' style='width: $percent%;'></div>";
-            }, $cleanedContent);
-        } else {
-            $cleanedContent = preg_replace("/\\\\graph\{([0-9]+)\}\{(.*?)\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
-        }
-
-        $customCommands = [
-            "\\enmb" => "<ol class='enumb'>",
-            "\\fenmb" => "</ol>",
-            "\\enm" => "<ol>",
-            "\\fenm" => "</ol>",
-            "\\itm" => "<ul class='point'>",
-            "\\fitm" => "</ul>",
-            // Convertir les environnements théoriques
-            // "/\\\\(prop|cor|thm|definition|rappels|rem)\\b/" => "<div class='latex-$1'>",
-            // "\\finboite" => "</div>",
-        ];
-
-        foreach ($customCommands as $command => $html) {
-            $cleanedContent = str_replace($command, $html, $cleanedContent);
-        }
-
-        return $cleanedContent;
-    }
 
     public function index(Request $request)
     {
@@ -212,7 +133,7 @@ class DsExerciseController extends Controller
             }
         }
         // give images to the convertCustomLatexToHtml function
-        $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement, $imagePaths);
+        $dsExercise->statement = LatexToHtmlConverter::convertForDsExercise($dsExercise->statement, $imagePaths);
 
         // gestion du PDF de correction
         if ($request->hasFile('correction_pdf')) {
@@ -333,7 +254,7 @@ class DsExerciseController extends Controller
         // on remet les anciennes dans le tableau $imagePaths qui sera utilisé pour la conversion du latex en html.
         // give images to the convertCustomLatexToHtml function, qui met les images dans l'order dans lequel on les veut dans le contenu de l'exercice
         // dd($imagePaths);
-        $dsExercise->statement = $this->convertCustomLatexToHtml($dsExercise->statement, $imagePaths);
+        $dsExercise->statement = LatexToHtmlConverter::convertForDsExercise($dsExercise->statement, $imagePaths);
 
 
         // si cocher la case pour supprimer le pdf de correction
