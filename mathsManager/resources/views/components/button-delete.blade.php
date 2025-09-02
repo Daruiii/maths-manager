@@ -20,8 +20,10 @@
       showCancelButton: true,
       confirmButtonText: 'Oui',
       cancelButtonText: 'Non',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#28a745', // Vert plus visible
+      cancelButtonColor: '#dc3545',  // Rouge Bootstrap plus visible
+      background: '#ffffff',         // Fond blanc pour contraste
+      color: '#333333',             // Texte foncé
     }).then((result) => {
       if (result.isConfirmed) {
         document.getElementById(`delete-form-${entityId}`).submit();
@@ -31,7 +33,7 @@
 </script>
 
 <style>
-   .delete-button {
+    .delete-button {
         width: 25px;
         height: 25px;
         margin : 0 0.05rem;
@@ -93,5 +95,25 @@
         opacity: 1;
         transform: translateY(0px);
         transition-duration: 0.3s;
+    }
+
+    /* Force la visibilité des boutons SweetAlert */
+    .swal2-confirm {
+        background-color: #28a745 !important;
+        color: white !important;
+        border: 1px solid #1e7e34 !important;
+        font-weight: 600 !important;
+    }
+    
+    .swal2-cancel {
+        background-color: #dc3545 !important;
+        color: white !important;
+        border: 1px solid #c82333 !important;
+        font-weight: 600 !important;
+    }
+    
+    .swal2-popup {
+        background-color: #ffffff !important;
+        color: #333333 !important;
     }
 </style>
