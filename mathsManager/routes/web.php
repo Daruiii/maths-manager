@@ -22,6 +22,25 @@ use App\Http\Controllers\ContentController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+// Route pour robots.txt dynamique selon l'environnement
+Route::get('/robots.txt', function () {
+    if (config('app.env') === 'staging') {
+        // En preprod, bloquer tout
+        return response(file_get_contents(public_path('robots-preprod.txt')))
+            ->header('Content-Type', 'text/plain');
+    }
+    
+    // En production, utiliser le robots.txt standard (si il existe)
+    if (file_exists(public_path('robots.txt'))) {
+        return response(file_get_contents(public_path('robots.txt')))
+            ->header('Content-Type', 'text/plain');
+    }
+    
+    // Robots.txt par défaut (production)
+    return response("User-agent: *\nDisallow: /admin\nDisallow: /login\n")
+        ->header('Content-Type', 'text/plain');
+})->name('robots');
 // route for use changeAnalyse2Color function
 Route::get('/changeAnalyse2Color', [MultipleChapterController::class, 'changeAnalyse2Color'])->name('changeAnalyse2Color');
 Route::get('/changeSuitesColor', [MultipleChapterController::class, 'changeSuitesColor'])->name('changeSuitesColor');

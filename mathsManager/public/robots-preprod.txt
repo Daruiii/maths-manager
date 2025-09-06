@@ -1,0 +1,24 @@
+# Robots.txt pour environnement de pré-production
+# Tout le site est bloqué pour éviter l'indexation
+
+User-agent: *
+Disallow: /
+
+# Bloquer spécifiquement les principaux crawlers
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Bingbot
+Disallow: /
+
+User-agent: Slurp
+Disallow: /
+
+User-agent: DuckDuckBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+# Pas de sitemap en preprod
+# Sitemap:

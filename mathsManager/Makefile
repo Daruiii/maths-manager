@@ -5,6 +5,7 @@
 # Variables (peuvent être overridées via Makefile.local ou variables d'environnement)
 SERVER_USER ?= your-server-user
 SERVER_HOST ?= your-server-path
+PREPROD_HOST ?= your-preprod-path
 PHP_BINARY ?= php
 NPM_BINARY ?= npm
 
@@ -20,7 +21,8 @@ help:
 	@echo "Commandes disponibles :"
 	@echo "  serve        - Lancer le serveur de développement PHP"
 	@echo "  vite         - Lancer Vite en mode développement"
-	@echo "  deploy       - Déployer en production"
+	@echo "  deploy       - Déployer en production (branche main)"
+	@echo "  deploy-preprod - Déployer en preprod (branche develop)"
 	@echo "  prod-optimize - Optimiser pour la production"
 	@echo "  install      - Installer les dépendances"
 	@echo "  sync-images  - Synchroniser les images vers la production"
@@ -51,13 +53,27 @@ deploy: prod-optimize
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot  # Remove Vite hot file to ensure production assets are used
 	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' . $(SERVER_USER):$(SERVER_HOST)/
-	@if [ -d "storage/app/public/images" ]; then \
-		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \
-	else \
-		echo "⚠️  Dossier images introuvable, ignoré"; \
+	@if [ -d "storage/app/public/images" ]; then \\
+		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \\
+	else \\
+		echo "⚠️  Dossier images introuvable, ignoré"; \\
 	fi
 	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f public/hot && make install-prod && (php-8.3 artisan storage:link || echo "Storage link already exists")'
 	@echo "🎉 Déploiement terminé !"
+
+# Déploiement preprod (branche develop)
+deploy-preprod: prod-optimize
+	@echo "📦 Déploiement preprod en cours..."
+	@mkdir -p storage/app/public/images
+	@rm -f public/hot
+	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' . $(SERVER_USER):$(PREPROD_HOST)/
+	@if [ -d "storage/app/public/images" ]; then \\
+		rsync -avz storage/app/public/images/ $(SERVER_USER):$(PREPROD_HOST)/public/storage/images/; \\
+	else \\
+		echo "⚠️  Dossier images introuvable, ignoré"; \\
+	fi
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && rm -f public/hot && make install-preprod && (php-8.3 artisan storage:link || echo "Storage link already exists")'
+	@echo "🎉 Déploiement preprod terminé !"
 
 # Installation pour la production (sur le serveur)
 install-prod: vendor/autoload.php .env public/storage
@@ -76,6 +92,21 @@ install-prod: vendor/autoload.php .env public/storage
 	php-8.3 artisan route:cache
 	php-8.3 artisan view:cache
 	@echo "✅ Installation production terminée"
+
+# Installation pour la preprod (sur le serveur)
+install-preprod: vendor/autoload.php .env public/storage
+	@echo "🔧 Installation en mode preprod..."
+	@echo "🔧 Fixing storage permissions..."
+	chmod -R 775 storage bootstrap/cache
+	@echo "🔧 Setting preprod environment..."
+	sed -i 's/APP_ENV=local/APP_ENV=staging/' .env
+	sed -i 's/APP_DEBUG=true/APP_DEBUG=true/' .env
+	@echo "🔧 Clearing cached config..."
+	rm -rf bootstrap/cache/config.php bootstrap/cache/routes*.php bootstrap/cache/packages.php bootstrap/cache/services.php || true
+	php-8.3 artisan config:clear || true
+	php-8.3 artisan cache:clear || true
+	php-8.3 artisan migrate --force
+	@echo "✅ Installation preprod terminée"
 
 # Cible pour installer les dépendances et effectuer la migration (développement)
 install: vendor/autoload.php .env public/storage

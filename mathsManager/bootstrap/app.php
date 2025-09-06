@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsVerified;
+use App\Http\Middleware\PreprodAuth;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,6 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(
             IsVerified::class
+        );
+    })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(
+            PreprodAuth::class
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
