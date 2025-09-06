@@ -188,15 +188,10 @@ test-vars:
 deploy-sample-to-preprod:
 	@echo "🎯 Déploiement des données sample → preprod..."
 	@echo "⚠️  Cette opération va écraser toutes les données de la preprod !"
-	@read -p "Êtes-vous sûr de vouloir continuer ? (oui/non): " confirmation; \\
-	if [ "$$confirmation" != "oui" ]; then \\
-		echo "❌ Déploiement annulé"; \\
-		exit 1; \\
-	fi
 	@echo "📦 Upload du fichier sample..."
 	rsync -avz mathsmanager-sample.sql.gz $(SERVER_USER):$(PREPROD_HOST)/
-	@echo "🗄️  Import en base preprod..."
-	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && gunzip -c mathsmanager-sample.sql.gz | mysql -h dm2blc.myd.infomaniak.com -u dm2blc_david -p dm2blc_mathsManager_preprod'
+	@echo "🗄️  Import en base preprod (saisissez le mot de passe MySQL)..."
+	ssh -t $(SERVER_USER) 'cd $(PREPROD_HOST) && echo "Import des données sample..." && gunzip -c mathsmanager-sample.sql.gz | mysql -h dm2blc.myd.infomaniak.com -u dm2blc_david -p dm2blc_mathsManager_preprod'
 	@echo "🎉 Données sample déployées en preprod !"
 
 # Réinitialiser la preprod avec les données sample
