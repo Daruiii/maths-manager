@@ -20,20 +20,22 @@ class PreprodAuth
             return $next($request);
         }
 
-        // Vérifier si l'utilisateur est déjà authentifié pour la preprod
-        if (session('preprod_authenticated')) {
+        // Vérifier si l'utilisateur est déjà authentifié pour la preprod via cookie
+        $isAuthenticated = $request->cookie('preprod_auth') === 'authenticated';
+        
+        if ($isAuthenticated) {
             return $next($request);
         }
 
         // Si c'est une tentative d'authentification
         if ($request->has('preprod_password')) {
             $password = config('app.preprod_password', 'mathsdev2024');
+            $inputPassword = $request->input('preprod_password');
             
-            if ($request->input('preprod_password') === $password) {
-                session(['preprod_authenticated' => true]);
-                // Redirection vers l'URL sans paramètres pour éviter la boucle
+            if ($inputPassword === $password) {
+                // Créer une redirection avec cookie au lieu de session
                 $cleanUrl = strtok($request->url(), '?');
-                return redirect($cleanUrl);
+                return redirect($cleanUrl)->cookie('preprod_auth', 'authenticated', 60 * 24 * 7); // 7 jours
             } else {
                 return response()->view('preprod-auth', ['error' => 'Mot de passe incorrect'])
                     ->setStatusCode(401);
