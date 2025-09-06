@@ -23,6 +23,7 @@ help:
 	@echo "  vite         - Lancer Vite en mode développement"
 	@echo "  deploy       - Déployer en production (branche main)"
 	@echo "  deploy-preprod - Déployer en preprod (branche develop)"
+	@echo "  sync-prod-to-preprod - Synchroniser la BDD prod vers preprod"
 	@echo "  prod-optimize - Optimiser pour la production"
 	@echo "  install      - Installer les dépendances"
 	@echo "  sync-images  - Synchroniser les images vers la production"
@@ -179,3 +180,10 @@ logs:
 test-vars:
 	@echo "SERVER_USER: $(SERVER_USER)"
 	@echo "SERVER_HOST: $(SERVER_HOST)"
+	@echo "PREPROD_HOST: $(PREPROD_HOST)"
+
+# Synchroniser la BDD de prod vers preprod
+sync-prod-to-preprod:
+	@echo "🔄 Synchronisation BDD prod → preprod..."
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && chmod +x scripts/sync-prod-to-preprod.sh && ./scripts/sync-prod-to-preprod.sh'
+	@echo "✅ Synchronisation terminée"
