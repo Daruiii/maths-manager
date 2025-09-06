@@ -2,11 +2,14 @@
 
 .PHONY: serve vite deploy install prod-optimize sync-images clean status help
 
-# Variables
-SERVER_USER = davidinfomaniak
-SERVER_HOST = ~/sites/mathsmanager.fr/mathsManager
-PHP_BINARY = php
-NPM_BINARY = npm
+# Variables (peuvent être overridées via des variables d'environnement)
+SERVER_USER ?= your-server-user
+SERVER_HOST ?= your-server-path
+PHP_BINARY ?= php
+NPM_BINARY ?= npm
+
+# Exemple d'utilisation :
+# SERVER_USER=monuser SERVER_HOST=mon.serveur.com:/path make deploy
 
 # Aide
 help:

@@ -119,8 +119,10 @@ php artisan migrate
 
 **OU** utiliser la base de données sample avec des données d'exemple :
 ```bash
-# Au lieu des migrations, importer la base sample
-./scripts/import-db.sh mathsmanager-sample.sql
+# Au lieu des migrations, importer la base sample compressée
+gunzip -c mathsmanager-sample.sql.gz | mysql -u root -p mathsManager
+# OU avec Docker :
+gunzip -c mathsmanager-sample.sql.gz | docker exec -i mathsmanager-db mysql -u root -proot mathsManager
 ```
 
 4. **Créer les liens symboliques** :
@@ -225,10 +227,32 @@ chown -R www-data:www-data storage bootstrap/cache
 
 ### Fonctionnalités avancées
 
-- **OAuth** : Connexion via GitHub et Google (optionnel)
+- **OAuth** : Connexion via GitHub et Google (optionnel - voir configuration ci-dessous)
 - **Emails** : Système d'envoi d'emails (Mailtrap pour le développement)
 - **Export PDF** : Génération de PDF pour les DS et corrections
 - **Cache** : Système de cache pour optimiser les performances
+
+### Configuration OAuth (Optionnel)
+
+L'application supporte l'authentification via Google et GitHub. Pour l'activer :
+
+1. **Créer une application OAuth** :
+   - Google : [Google Cloud Console](https://console.cloud.google.com/)
+   - GitHub : [GitHub Developer Settings](https://github.com/settings/developers)
+
+2. **Configurer les redirections** :
+   - Google : `http://localhost:8000/auth/google/callback`
+   - GitHub : `http://localhost:8000/auth/github/callback`
+
+3. **Ajouter les clés dans `.env`** :
+   ```env
+   GOOGLE_CLIENT_ID=votre-google-client-id
+   GOOGLE_CLIENT_SECRET=votre-google-client-secret
+   GITHUB_CLIENT_ID=votre-github-client-id
+   GITHUB_CLIENT_SECRET=votre-github-client-secret
+   ```
+
+⚠️ **Important** : Ces clés sont personnelles et ne doivent pas être partagées publiquement.
 
 ## 🗄️ Structure de la base de données
 
@@ -305,6 +329,21 @@ DB_HOST=votre-host
 DB_DATABASE=votre-database
 DB_USERNAME=votre-username
 DB_PASSWORD=votre-password
+```
+
+### Déploiement avec le Makefile
+
+Pour déployer en production, configurez vos variables de serveur :
+
+```bash
+# Définir vos paramètres de serveur
+SERVER_USER=votre-utilisateur SERVER_HOST=votre.serveur.com:/path/vers/app make deploy
+```
+
+Ou créez un fichier `.env.deploy` :
+```env
+SERVER_USER=votre-utilisateur
+SERVER_HOST=votre.serveur.com:/path/vers/app
 ```
 
 ## 📝 Contribuer

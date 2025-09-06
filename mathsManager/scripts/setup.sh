@@ -95,25 +95,40 @@ case $REPLY in
         
         # Lancer le conteneur MariaDB
         echo -e "${YELLOW}🚀 Lancement du conteneur MariaDB...${NC}"
-        docker run -d \
+        if ! docker run -d \
             --name mathsmanager-db \
             -e MYSQL_ROOT_PASSWORD=root \
             -e MYSQL_DATABASE=mathsManager \
             -p 3307:3306 \
-            mariadb:10.6
+            mariadb:10.6; then
+            echo -e "${RED}❌ Échec du lancement du conteneur Docker${NC}"
+            echo -e "${YELLOW}💡 Vérifiez :${NC}"
+            echo "• Le port 3307 n'est pas déjà utilisé : netstat -tlnp | grep 3307"
+            echo "• Docker fonctionne : docker --version"
+            echo "• Permissions Docker : docker ps"
+            exit 1
+        fi
         
         # Attendre que le conteneur soit prêt
         echo -e "${YELLOW}⏳ Attente du démarrage de la base de données...${NC}"
         
         # Attendre que MariaDB soit réellement prêt
+        DB_READY=false
         for i in {1..30}; do
             if docker exec mathsmanager-db mysql -uroot -proot -e "SELECT 1" >/dev/null 2>&1; then
                 echo -e "${GREEN}✅ Base de données prête !${NC}"
+                DB_READY=true
                 break
             fi
             echo "Tentative $i/30..."
             sleep 2
         done
+        
+        if [ "$DB_READY" = "false" ]; then
+            echo -e "${RED}❌ La base de données n'est pas prête après 60 secondes${NC}"
+            echo -e "${YELLOW}Vérifiez les logs : docker logs mathsmanager-db${NC}"
+            exit 1
+        fi
         
         # Mettre à jour le .env avec des expressions plus robustes
         sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
@@ -146,6 +161,12 @@ case $REPLY in
         read -s -p "Password: " db_pass
         echo
         
+        # Validation des inputs
+        if [ -n "$db_port" ] && ! [[ "$db_port" =~ ^[0-9]+$ ]]; then
+            echo -e "${RED}❌ Le port doit être un nombre${NC}"
+            exit 1
+        fi
+        
         # Mettre à jour le .env
         sed -i "s/^DB_HOST=.*/DB_HOST=${db_host:-127.0.0.1}/" .env
         sed -i "s/^DB_PORT=.*/DB_PORT=${db_port:-3306}/" .env
@@ -164,11 +185,14 @@ esac
 echo -e "${YELLOW}🔌 Test de la connexion à la base de données...${NC}"
 sleep 2
 
-# Tentatives multiples de connexion
+# Récupérer la config de la base depuis .env
+source <(grep -E '^(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD)=' .env | sed 's/^/export /')
+
+# Tentatives multiples de connexion avec les vraies valeurs du .env
 for i in {1..5}; do
-    # Test de connexion plus simple avec une requête SQL basique
+    # Test de connexion avec les vraies variables
     if php -r "try { 
-        \$pdo = new PDO('mysql:host=127.0.0.1;port=3307;dbname=mathsManager', 'root', 'root');
+        \$pdo = new PDO('mysql:host=${DB_HOST};port=${DB_PORT};dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}');
         echo 'OK';
     } catch(Exception \$e) {
         echo 'Erreur: ' . \$e->getMessage() . PHP_EOL;
@@ -182,13 +206,16 @@ for i in {1..5}; do
             echo "Vérifiez vos paramètres dans le fichier .env"
             echo "Contenu actuel du .env (section DB):"
             grep "^DB_" .env
-            echo "Test direct avec les paramètres :"
-            php -r "try { 
-                \$pdo = new PDO('mysql:host=127.0.0.1;port=3307;dbname=mathsManager', 'root', 'root');
-                echo 'Connexion PDO OK' . PHP_EOL;
-            } catch(Exception \$e) {
-                echo 'Erreur: ' . \$e->getMessage() . PHP_EOL;
-            }"
+            echo ""
+            echo -e "${YELLOW}💡 Conseils de dépannage :${NC}"
+            if [ "$DB_PORT" = "3307" ]; then
+                echo "• Docker est configuré, vérifiez que le conteneur fonctionne : docker ps"
+                echo "• Redémarrez le conteneur : docker restart mathsmanager-db"
+            elif [ "$DB_PORT" = "3306" ]; then
+                echo "• XAMPP/MySQL local configuré, vérifiez que le service est démarré"
+                echo "• Testez la connexion : mysql -h${DB_HOST} -P${DB_PORT} -u${DB_USERNAME} -p"
+            fi
+            echo "• Vérifiez que la base '${DB_DATABASE}' existe"
             exit 1
         fi
         echo "Tentative $i/5 échouée, nouvelle tentative dans 3 secondes..."
