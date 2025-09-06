@@ -42,13 +42,14 @@ prod-optimize:
 deploy: prod-optimize
 	@echo "📦 Déploiement en cours..."
 	@mkdir -p storage/app/public/images
+	@rm -f public/hot  # Remove Vite hot file to ensure production assets are used
 	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' . $(SERVER_USER):$(SERVER_HOST)/
 	@if [ -d "storage/app/public/images" ]; then \
 		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \
 	else \
 		echo "⚠️  Dossier images introuvable, ignoré"; \
 	fi
-	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && make install-prod && (php-8.3 artisan storage:link || echo "Storage link already exists")'
+	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f public/hot && make install-prod && (php-8.3 artisan storage:link || echo "Storage link already exists")'
 	@echo "🎉 Déploiement terminé !"
 
 # Installation pour la production (sur le serveur)

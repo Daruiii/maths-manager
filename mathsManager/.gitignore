@@ -18,6 +18,6 @@ yarn-error.log
 /.idea
 /.vscode
 
-# Database exports (keep sample only)
+# Database exports (keep compressed sample only)
 *.sql
-!mathsmanager-sample.sql
+!mathsmanager-sample.sql.gz

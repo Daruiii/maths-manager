@@ -219,18 +219,18 @@ echo -e "${GREEN}🎉 Installation terminée avec succès !${NC}"
 echo ""
 
 # Proposer l'import des données si pas encore fait
-if [ -f "mathsmanager-sample.sql" ]; then
+if [ -f "mathsmanager-sample.sql.gz" ]; then
     echo -e "${YELLOW}📊 Voulez-vous importer les données de démonstration ? (y/N):${NC}"
     read -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Import de mathsmanager-sample.sql..."
+        echo "Décompression et import de mathsmanager-sample.sql.gz..."
         source <(grep -E '^(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD)=' .env | sed 's/^/export /')
         
         if [ "$DB_PORT" = "3307" ]; then
-            docker exec -i mathsmanager-db mysql -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < "mathsmanager-sample.sql"
+            gunzip -c "mathsmanager-sample.sql.gz" | docker exec -i mathsmanager-db mysql -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE"
         else
-            mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < "mathsmanager-sample.sql"
+            gunzip -c "mathsmanager-sample.sql.gz" | mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE"
         fi
         
         if [ $? -eq 0 ]; then
