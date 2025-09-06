@@ -23,7 +23,8 @@ help:
 	@echo "  vite         - Lancer Vite en mode développement"
 	@echo "  deploy       - Déployer en production (branche main)"
 	@echo "  deploy-preprod - Déployer en preprod (branche develop)"
-	@echo "  sync-prod-to-preprod - Synchroniser la BDD prod vers preprod"
+	@echo "  deploy-sample-to-preprod - Déployer les données sample en preprod"
+	@echo "  reset-preprod-with-sample - Réinitialiser preprod avec données sample"
 	@echo "  prod-optimize - Optimiser pour la production"
 	@echo "  install      - Installer les dépendances"
 	@echo "  sync-images  - Synchroniser les images vers la production"
@@ -182,8 +183,24 @@ test-vars:
 	@echo "SERVER_HOST: $(SERVER_HOST)"
 	@echo "PREPROD_HOST: $(PREPROD_HOST)"
 
-# Synchroniser la BDD de prod vers preprod
-sync-prod-to-preprod:
-	@echo "🔄 Synchronisation BDD prod → preprod..."
-	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && chmod +x scripts/sync-prod-to-preprod.sh && ./scripts/sync-prod-to-preprod.sh'
-	@echo "✅ Synchronisation terminée"
+
+# Déployer les données sample vers la preprod
+deploy-sample-to-preprod:
+	@echo "🎯 Déploiement des données sample → preprod..."
+	@echo "⚠️  Cette opération va écraser toutes les données de la preprod !"
+	@read -p "Êtes-vous sûr de vouloir continuer ? (oui/non): " confirmation; \\
+	if [ "$$confirmation" != "oui" ]; then \\
+		echo "❌ Déploiement annulé"; \\
+		exit 1; \\
+	fi
+	@echo "📦 Upload du fichier sample..."
+	rsync -avz mathsmanager-sample.sql.gz $(SERVER_USER):$(PREPROD_HOST)/
+	@echo "🗄️  Import en base preprod..."
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && gunzip -c mathsmanager-sample.sql.gz | mysql -h dm2blc.myd.infomaniak.com -u dm2blc_david -p dm2blc_mathsManager_preprod'
+	@echo "🎉 Données sample déployées en preprod !"
+
+# Réinitialiser la preprod avec les données sample
+reset-preprod-with-sample: deploy-sample-to-preprod
+	@echo "🔄 Configuration post-import..."
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && php-8.3 artisan config:clear && php-8.3 artisan cache:clear'
+	@echo "✅ Preprod réinitialisée avec les données sample"

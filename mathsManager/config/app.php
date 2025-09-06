@@ -123,4 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Preprod Authentication
+    |--------------------------------------------------------------------------
+    |
+    | Password for accessing the preprod environment when APP_ENV=staging
+    |
+    */
+
+    'preprod_password' => env('APP_PREPROD_PASSWORD', 'maths2025'),
+
 ];
