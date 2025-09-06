@@ -72,13 +72,21 @@ class ClasseController extends Controller
     public function show($level) // student
     {
         $classe = Classe::where('level', $level)->firstOrFail();
-        // $chapters = Chapter::where('class_id', $classe->id)->get();
-        //  get chapter with there recap
-        $chapters = Chapter::where('class_id', $classe->id)->with('recaps')->get();
+        // Get chapters with their recaps, ordered by local order
+        $chapters = Chapter::where('class_id', $classe->id)
+            ->with('recaps')
+            ->orderBy('order') // Maintenant c'est l'ordre local dans la classe
+            ->get();
+            
         if ($chapters->isEmpty()) {
             return view('classe.show', compact('classe', 'chapters'));
         }
-        $subchapters = Subchapter::where('chapter_id', $chapters->first()->id)->get();
+        
+        // Get subchapters for the first chapter (if needed)
+        $subchapters = Subchapter::where('chapter_id', $chapters->first()->id)
+            ->orderBy('order')
+            ->get();
+            
         return view('classe.show', compact('classe', 'chapters', 'subchapters'));
     }
 

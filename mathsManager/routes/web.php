@@ -19,6 +19,7 @@ use App\Http\Controllers\CorrectionRequestController;
 use App\Http\Controllers\RecapController;
 use App\Http\Controllers\QuizzController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\OrderingController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -58,6 +59,24 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::get('/contents', [ContentController::class, 'index'])->name('contents.index');
         Route::get('/content/{section}/edit', [ContentController::class, 'edit'])->name('content.edit');
         Route::put('/content/{section}', [ContentController::class, 'update'])->name('content.update');
+    });
+});
+
+// Ordering routes (nouveau système drag-and-drop multi-niveaux)
+Route::middleware('auth')->prefix('admin')->group(function () {
+    Route::middleware([IsAdmin::class])->group(function () {
+        // Déplacements entre conteneurs
+        Route::post('/ordering/move-subchapter', [OrderingController::class, 'moveSubchapter'])->name('ordering.moveSubchapter');
+        Route::post('/ordering/move-chapter', [OrderingController::class, 'moveChapter'])->name('ordering.moveChapter');
+        Route::post('/ordering/move-class', [OrderingController::class, 'moveClass'])->name('ordering.moveClass');
+        
+        // Réorganisations internes
+        Route::post('/ordering/reorder-subchapters', [OrderingController::class, 'reorderSubchaptersInChapter'])->name('ordering.reorderSubchapters');
+        Route::post('/ordering/reorder-chapters', [OrderingController::class, 'reorderChaptersInClass'])->name('ordering.reorderChapters');
+        Route::post('/ordering/reorder-classes', [OrderingController::class, 'reorderClasses'])->name('ordering.reorderClasses');
+        
+        // Preview d'impact
+        Route::post('/ordering/preview-move', [OrderingController::class, 'previewMove'])->name('ordering.previewMove');
     });
 });
 

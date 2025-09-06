@@ -13,9 +13,15 @@
             </div>
             @auth
                 @if (Auth::user()->role === 'admin')
-                    <x-button-add href="{{ route('chapter.create', $classe->id) }}">
-                        {{ __('Chapitre') }}
-                    </x-button-add>
+                    <div class="flex items-center space-x-2">
+                        <x-button-add href="{{ route('chapter.create', $classe->id) }}">
+                            {{ __('Chapitre') }}
+                        </x-button-add>
+                        <button id="reorder-chapters-button"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none">
+                            Réorganiser les chapitres
+                        </button>
+                    </div>
                     {{-- <a href="{{ route('exercises.decrement') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         décrement les exercices.order
                     </a> --}}
@@ -25,13 +31,19 @@
                 @endif
             @endauth
         </div>
-        <div class=" chapter-list">
+        <div class="chapter-list" id="chapters-container">
             @foreach ($chapters as $indexChap => $chapter)
                 @props(['color' => $chapter->theme])
-                <div class="chapter bg-white rounded-lg p-2 mb-4"x-data="{ open: false }"
+                <div class="chapter bg-white rounded-lg p-2 mb-4" x-data="{ open: false }" 
+                    id="chapter-{{ $chapter->id }}" data-order="{{ $chapter->order }}"
                     style="border-left: 5px solid {{ $chapter->theme }}; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
                     {{-- Chapitre Titre et Boutons d'Action pour Admin --}}
                     <div class="flex justify-between items-center" @click="open = !open">
+                        @auth
+                            @if (Auth::user()->role === 'admin')
+                                <div class="drag-handle-chapter hidden mr-2 cursor-move">☰</div>
+                            @endif
+                        @endauth
                         <button
                             class="flex items-center justify-between w-2/3 text-left chapter-title text-lg font-semibold text-gray-700">
                             <span class="truncate">{{ $indexChap + 1 }}. {{ $chapter->title }}</span>
@@ -98,12 +110,18 @@
                                         @endif
                                     @endauth
                                 </div>
-                                <div class="space-y-2">
-                                    @foreach ($chapter->subchapters as $index => $subchapter)
-                                        <div class="flex items-center justify-between px-2 border-b border-gray-200">
+                                <div class="space-y-2" id="subchapters-container-{{ $chapter->id }}">
+                                    @foreach ($chapter->subchapters()->orderBy('order')->get() as $index => $subchapter)
+                                        <div class="flex items-center justify-between px-2 border-b border-gray-200 subchapter" 
+                                            id="subchapter-{{ $subchapter->id }}" data-order="{{ $subchapter->order }}">
+                                            @auth
+                                                @if (Auth::user()->role === 'admin')
+                                                    <div class="drag-handle-subchapter hidden mr-2 cursor-move">☰</div>
+                                                @endif
+                                            @endauth
                                             <a href="{{ route('subchapter.show', $subchapter->id) }}"
                                                 class="my-2 flex w-full items-center justify-between space-x-2 truncate hover:underline border-l-2 border-black pl-2">
-                                                <span class="text-sm">{{ $indexChap + 1 }}.{{ $index + 1 }} -
+                                                <span class="text-sm">{{ $indexChap + 1 }}.{{ $subchapter->order }} -
                                                     {{ $subchapter->title }}</span>
                                                 <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg" stroke="#000000">
@@ -119,9 +137,11 @@
                                             </a>
                                             @auth
                                                 @if (Auth::user()->role === 'admin')
-                                                    <x-button-edit href="{{ route('subchapter.edit', $subchapter->id) }}" />
-                                                    <x-button-delete href="{{ route('subchapter.destroy', $subchapter->id) }}"
-                                                        entity="ce sous-chapitre" entityId="subchapter{{ $subchapter->id }}" />
+                                                    <div class="flex items-center space-x-2">
+                                                        <x-button-edit href="{{ route('subchapter.edit', $subchapter->id) }}" />
+                                                        <x-button-delete href="{{ route('subchapter.destroy', $subchapter->id) }}"
+                                                            entity="ce sous-chapitre" entityId="subchapter{{ $subchapter->id }}" />
+                                                    </div>
                                                 @endif
                                             @endauth
                                         </div>
@@ -135,4 +155,114 @@
         </div>
         <x-button-back-top />
     </div>
+
+    {{-- JavaScript pour drag-and-drop multi-niveaux --}}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        // Configuration pour les chapitres
+        window.currentClassId = {{ $classe->id }};
+        let chaptersReorderMode = false;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Script chargé, classe ID:', window.currentClassId);
+            
+            const button = document.getElementById('reorder-chapters-button');
+            console.log('🔘 Bouton trouvé:', button);
+            
+            if (button) {
+                button.addEventListener('click', function() {
+                    console.log('🖱️ Bouton cliqué !');
+                    chaptersReorderMode = !chaptersReorderMode;
+                    
+                    if (chaptersReorderMode) {
+                        // Activer le mode réorganisation
+                        this.classList.remove('bg-blue-500', 'hover:bg-blue-700');
+                        this.classList.add('bg-green-500', 'hover:bg-green-700');
+                        this.textContent = 'Terminer la réorganisation';
+                        
+                        // Montrer les drag handles
+                        document.querySelectorAll('.drag-handle-chapter').forEach(handle => {
+                            handle.classList.remove('hidden');
+                        });
+                        
+                        console.log('✅ Mode réorganisation activé');
+                        
+                        // Créer l'instance Sortable
+                        if (typeof Sortable !== 'undefined') {
+                            new Sortable(document.getElementById('chapters-container'), {
+                                animation: 150,
+                                handle: '.drag-handle-chapter',
+                                onEnd: function(evt) {
+                                    console.log('📍 Drag terminé, updating order...');
+                                    updateChapterOrder();
+                                }
+                            });
+                            console.log('✅ Sortable activé');
+                        } else {
+                            console.error('❌ Sortable non disponible');
+                        }
+                        
+                    } else {
+                        // Désactiver le mode réorganisation
+                        this.classList.remove('bg-green-500', 'hover:bg-green-700');
+                        this.classList.add('bg-blue-500', 'hover:bg-blue-700');
+                        this.textContent = 'Réorganiser les chapitres';
+                        
+                        // Cacher les drag handles
+                        document.querySelectorAll('.drag-handle-chapter').forEach(handle => {
+                            handle.classList.add('hidden');
+                        });
+                        
+                        console.log('✅ Mode réorganisation désactivé');
+                        
+                        // Recharger la page pour voir l'ordre mis à jour
+                        location.reload();
+                    }
+                });
+                
+                console.log('✅ Event listener ajouté au bouton');
+            } else {
+                console.error('❌ Bouton reorder-chapters-button non trouvé');
+            }
+        });
+        
+        function updateChapterOrder() {
+            const chapters = document.querySelectorAll('#chapters-container .chapter');
+            const orderData = [];
+            
+            chapters.forEach((chapter, index) => {
+                const chapterId = chapter.id.replace('chapter-', '');
+                orderData.push({
+                    id: chapterId,
+                    order: index + 1
+                });
+            });
+            
+            console.log('📊 Nouveau ordre des chapitres:', orderData);
+            
+            // Envoyer la nouvelle organisation au serveur
+            fetch('{{ route('ordering.reorderChapters') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    class_id: {{ $classe->id }},
+                    chapter_orders: orderData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('✅ Chapitres réorganisés avec succès');
+                } else {
+                    console.error('❌ Erreur lors de la réorganisation:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Erreur:', error);
+            });
+        }
+    </script>
 @endsection
