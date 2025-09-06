@@ -21,3 +21,6 @@ yarn-error.log
 # Database exports (keep compressed sample only)
 *.sql
 !mathsmanager-sample.sql.gz
+
+# Local configuration files
+Makefile.local

@@ -2,14 +2,18 @@
 
 .PHONY: serve vite deploy install prod-optimize sync-images clean status help
 
-# Variables (peuvent être overridées via des variables d'environnement)
+# Variables (peuvent être overridées via Makefile.local ou variables d'environnement)
 SERVER_USER ?= your-server-user
 SERVER_HOST ?= your-server-path
 PHP_BINARY ?= php
 NPM_BINARY ?= npm
 
+# Inclure les variables locales si le fichier existe (non versionné)
+-include Makefile.local
+
 # Exemple d'utilisation :
-# SERVER_USER=monuser SERVER_HOST=mon.serveur.com:/path make deploy
+# 1. Créer un fichier Makefile.local avec tes vraies variables (ajouté au .gitignore)
+# 2. Ou utiliser: SERVER_USER=monuser SERVER_HOST=mon.serveur.com:/path make deploy
 
 # Aide
 help:
@@ -139,3 +143,8 @@ rollback:
 # Logs de production
 logs:
 	ssh $(SERVER_USER) 'tail -f $(SERVER_HOST)/storage/logs/laravel.log'
+
+# Test des variables (pour debug)
+test-vars:
+	@echo "SERVER_USER: $(SERVER_USER)"
+	@echo "SERVER_HOST: $(SERVER_HOST)"
