@@ -31,7 +31,9 @@ class PreprodAuth
             
             if ($request->input('preprod_password') === $password) {
                 session(['preprod_authenticated' => true]);
-                return redirect($request->url());
+                // Redirection vers l'URL sans paramètres pour éviter la boucle
+                $cleanUrl = strtok($request->url(), '?');
+                return redirect($cleanUrl);
             } else {
                 return response()->view('preprod-auth', ['error' => 'Mot de passe incorrect'])
                     ->setStatusCode(401);
