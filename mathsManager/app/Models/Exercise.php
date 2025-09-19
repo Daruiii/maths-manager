@@ -21,4 +21,19 @@ class Exercise extends Model
     {
         return $this->belongsToMany(ExercisesSheet::class, 'exercises_sheet_exercises');
     }
+    
+    public function whitelist()
+    {
+        return $this->hasMany(ExerciseWhitelist::class);
+    }
+    
+    public function whitelistedUsers()
+    {
+        return $this->belongsToMany(User::class, 'exercise_whitelist');
+    }
+    
+    public function isWhitelisted($userId)
+    {
+        return $this->whitelist()->where('user_id', $userId)->exists();
+    }
 }

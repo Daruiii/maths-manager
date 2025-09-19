@@ -72,4 +72,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Quizze::class, 'student_id');
     }
+    
+    public function exerciseWhitelist()
+    {
+        return $this->hasMany(ExerciseWhitelist::class);
+    }
+    
+    public function whitelistedExercises()
+    {
+        return $this->belongsToMany(Exercise::class, 'exercise_whitelist');
+    }
 }

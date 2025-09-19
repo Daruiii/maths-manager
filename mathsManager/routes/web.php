@@ -20,6 +20,7 @@ use App\Http\Controllers\RecapController;
 use App\Http\Controllers\QuizzController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\OrderingController;
+use App\Http\Controllers\ExerciseWhitelistController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -130,6 +131,11 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::get('/exercise/{id}/edit', [ExerciseController::class, 'edit'])->name('exercise.edit');
         Route::patch('/exercise/{id}', [ExerciseController::class, 'update'])->name('exercise.update');
         Route::delete('/exercise/{id}', [ExerciseController::class, 'destroy'])->name('exercise.destroy');
+        
+        // Exercise whitelist routes
+        Route::get('/exercise/{exerciseId}/whitelist', [ExerciseWhitelistController::class, 'show'])->name('exercise.whitelist.show');
+        Route::post('/exercise/{exerciseId}/whitelist', [ExerciseWhitelistController::class, 'addStudent'])->name('exercise.whitelist.add');
+        Route::delete('/exercise/{exerciseId}/whitelist/{userId}', [ExerciseWhitelistController::class, 'removeStudent'])->name('exercise.whitelist.remove');
     });
 });
 
