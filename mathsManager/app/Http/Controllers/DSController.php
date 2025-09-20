@@ -94,9 +94,13 @@ class DSController extends Controller
 
         // Envoyez un e-mail à l'élève
         $student = User::find($request->input('user_id'));
-        Mail::to($student->email)->send(new AssignDSMail($newDs));
+        try {
+            Mail::to($student->email)->send(new AssignDSMail($newDs));
+        } catch (\Exception $e) {
+            \Log::error('Erreur envoi email DS re-assign: ' . $e->getMessage());
+        }
 
-        return redirect()->route('ds.index');
+        return redirect()->route('ds.index')->with('success', 'DS réassigné avec succès.');
     }
 
 
@@ -130,6 +134,11 @@ class DSController extends Controller
     public function show($id)
     {
         $ds = DS::find($id);
+        
+        if (!$ds) {
+            return redirect()->route('ds.myDS', Auth::id())->with('error', 'DS non trouvé.');
+        }
+        
         $timerFormatted = $this->formatTimer($ds->timer);
         $timerAction = "show";
         return view('ds.show', compact('ds', 'timerFormatted', 'timerAction'));
@@ -393,9 +402,13 @@ class DSController extends Controller
 
             // Envoyez un e-mail à l'élève
             $student = User::find($request->input('user_id'));
-            Mail::to($student->email)->send(new AssignDSMail($ds));
+            try {
+                Mail::to($student->email)->send(new AssignDSMail($ds));
+            } catch (\Exception $e) {
+                \Log::error('Erreur envoi email DS assign: ' . $e->getMessage());
+            }
 
-            return redirect()->route('students.show')->with('success', 'DS assigned successfully');
+            return redirect()->route('students.show')->with('success', 'DS assigné avec succès.');
         }
 
         // Récupérez tous les exercices et tous les utilisateurs

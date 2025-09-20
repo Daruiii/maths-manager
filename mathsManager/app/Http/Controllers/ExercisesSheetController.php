@@ -94,7 +94,11 @@ class ExercisesSheetController extends Controller
 
         // envoyer un mail à l'élève
         $student = User::find($request->user_id);
-        Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
+        try {
+            Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
+        } catch (\Exception $e) {
+            \Log::error('Erreur envoi email fiche exercices create: ' . $e->getMessage());
+        }
 
         return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices créée avec succès');
     }
@@ -132,7 +136,11 @@ class ExercisesSheetController extends Controller
 
         // envoyer un mail à l'élève
         $student = User::find($request->user_id);
-        Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
+        try {
+            Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
+        } catch (\Exception $e) {
+            \Log::error('Erreur envoi email fiche exercices update: ' . $e->getMessage());
+        }
 
         return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices modifiée avec succès');
     }
