@@ -107,6 +107,11 @@
                                             <x-button-add href="{{ route('subchapter.create', ['id' => $chapter->id]) }}">
                                                 {{ __('Sous-chap') }}
                                             </x-button-add>
+                                            <button id="reorder-subchapters-{{ $chapter->id }}-button"
+                                                class="px-3 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-700 focus:outline-none"
+                                                data-original-text="⭯ Réorganiser">
+                                                ⭯ Réorganiser
+                                            </button>
                                         @endif
                                     @endauth
                                 </div>
@@ -158,111 +163,40 @@
 
     {{-- JavaScript pour drag-and-drop multi-niveaux --}}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="{{ asset('js/multi-level-drag-drop.js') }}"></script>
     <script>
-        // Configuration pour les chapitres
+        // Configuration des IDs pour le contexte
         window.currentClassId = {{ $classe->id }};
-        let chaptersReorderMode = false;
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Script chargé, classe ID:', window.currentClassId);
+            console.log('🚀 Drag & Drop multi-niveaux initialisé pour la classe', window.currentClassId);
             
-            const button = document.getElementById('reorder-chapters-button');
-            console.log('🔘 Bouton trouvé:', button);
+            // Configuration pour les chapitres
+            window.MultiLevelDragDrop.initLevel({
+                containerId: 'chapters-container',
+                handleClass: 'drag-handle-chapter',
+                buttonId: 'reorder-chapters-button',
+                itemClass: 'chapter',
+                reorderRoute: '{{ route('ordering.reorderChapters') }}',
+                level: 'chapter',
+                previewRoute: '{{ route('ordering.previewMove') }}'
+            });
             
-            if (button) {
-                button.addEventListener('click', function() {
-                    console.log('🖱️ Bouton cliqué !');
-                    chaptersReorderMode = !chaptersReorderMode;
-                    
-                    if (chaptersReorderMode) {
-                        // Activer le mode réorganisation
-                        this.classList.remove('bg-blue-500', 'hover:bg-blue-700');
-                        this.classList.add('bg-green-500', 'hover:bg-green-700');
-                        this.textContent = 'Terminer la réorganisation';
-                        
-                        // Montrer les drag handles
-                        document.querySelectorAll('.drag-handle-chapter').forEach(handle => {
-                            handle.classList.remove('hidden');
-                        });
-                        
-                        console.log('✅ Mode réorganisation activé');
-                        
-                        // Créer l'instance Sortable
-                        if (typeof Sortable !== 'undefined') {
-                            new Sortable(document.getElementById('chapters-container'), {
-                                animation: 150,
-                                handle: '.drag-handle-chapter',
-                                onEnd: function(evt) {
-                                    console.log('📍 Drag terminé, updating order...');
-                                    updateChapterOrder();
-                                }
-                            });
-                            console.log('✅ Sortable activé');
-                        } else {
-                            console.error('❌ Sortable non disponible');
-                        }
-                        
-                    } else {
-                        // Désactiver le mode réorganisation
-                        this.classList.remove('bg-green-500', 'hover:bg-green-700');
-                        this.classList.add('bg-blue-500', 'hover:bg-blue-700');
-                        this.textContent = 'Réorganiser les chapitres';
-                        
-                        // Cacher les drag handles
-                        document.querySelectorAll('.drag-handle-chapter').forEach(handle => {
-                            handle.classList.add('hidden');
-                        });
-                        
-                        console.log('✅ Mode réorganisation désactivé');
-                        
-                        // Recharger la page pour voir l'ordre mis à jour
-                        location.reload();
-                    }
+            // Configuration pour les sous-chapitres avec cross-container (un bouton par chapitre)
+            @foreach ($chapters as $chapter)
+                window.MultiLevelDragDrop.initLevel({
+                    containerId: 'subchapters-container-{{ $chapter->id }}',
+                    handleClass: 'drag-handle-subchapter',
+                    buttonId: 'reorder-subchapters-{{ $chapter->id }}-button',
+                    itemClass: 'subchapter',
+                    reorderRoute: '{{ route('ordering.reorderSubchapters') }}',
+                    level: 'subchapter',
+                    crossContainer: true,
+                    moveRoute: '{{ route('ordering.moveSubchapter') }}'
                 });
-                
-                console.log('✅ Event listener ajouté au bouton');
-            } else {
-                console.error('❌ Bouton reorder-chapters-button non trouvé');
-            }
+            @endforeach
+            
+            console.log('✅ Configuration de tous les niveaux terminée');
         });
-        
-        function updateChapterOrder() {
-            const chapters = document.querySelectorAll('#chapters-container .chapter');
-            const orderData = [];
-            
-            chapters.forEach((chapter, index) => {
-                const chapterId = chapter.id.replace('chapter-', '');
-                orderData.push({
-                    id: chapterId,
-                    order: index + 1
-                });
-            });
-            
-            console.log('📊 Nouveau ordre des chapitres:', orderData);
-            
-            // Envoyer la nouvelle organisation au serveur
-            fetch('{{ route('ordering.reorderChapters') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    class_id: {{ $classe->id }},
-                    chapter_orders: orderData
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log('✅ Chapitres réorganisés avec succès');
-                } else {
-                    console.error('❌ Erreur lors de la réorganisation:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('❌ Erreur:', error);
-            });
-        }
     </script>
 @endsection

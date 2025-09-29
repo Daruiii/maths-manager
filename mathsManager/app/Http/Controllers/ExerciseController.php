@@ -10,9 +10,16 @@ use App\Models\Chapter;
 use App\Models\Classe;
 use Illuminate\Support\Facades\Log;
 use App\Services\LatexToHtmlConverter;
+use App\Services\OrderingService;
 
 class ExerciseController extends Controller
 {
+    protected OrderingService $orderingService;
+    
+    public function __construct(OrderingService $orderingService)
+    {
+        $this->orderingService = $orderingService;
+    }
     public function decrementAllExercises()
     {
         try {
@@ -23,6 +30,9 @@ class ExerciseController extends Controller
             if ($minOrder > 1) {
                 Exercise::where('order', '>=', $minOrder)
                     ->decrement('order');
+                    
+                // Recalculer tous les ordres pour maintenir la cohérence
+                $this->orderingService->recalculateAllGlobalExerciseOrders();
             }
 
             return redirect()->back()->with('success', 'Exercises order decremented successfully');
@@ -161,10 +171,8 @@ class ExerciseController extends Controller
             ]);
     
             $maxOrder = $this->getMaxOrder(Subchapter::find($request->subchapter_id));
-            $exercises = Exercise::where('order', '>=', $maxOrder + 1)->orderBy('order', 'desc')->get();
-            foreach ($exercises as $exercise) {
-                $exercise->increment('order');
-            }
+            // Décaler les exercices existants
+            Exercise::where('order', '>', $maxOrder)->increment('order');
     
             // Étape 1 : Enregistrer l'exercice pour obtenir son ID
             $exercise = new Exercise();
@@ -211,6 +219,9 @@ class ExerciseController extends Controller
     
             // Étape 4 : Mise à jour des images et sauvegarde finale
             $exercise->save();
+            
+            // Recalculer tous les ordres globaux des exercices
+            $this->orderingService->recalculateAllGlobalExerciseOrders();
     
             return redirect()->route('subchapter.show', [
                 'id' => $request->subchapter_id,
@@ -343,7 +354,11 @@ class ExerciseController extends Controller
     
             $exercise->delete();
     
+            // Décaler les exercices suivants
             Exercise::where('order', '>', $deletedOrder)->decrement('order');
+            
+            // Recalculer tous les ordres globaux des exercices
+            $this->orderingService->recalculateAllGlobalExerciseOrders();
     
             return redirect()->route('subchapter.show', $subchapterId);
         } catch (\Exception $e) {

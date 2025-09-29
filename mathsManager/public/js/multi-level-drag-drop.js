@@ -22,7 +22,9 @@ class MultiLevelDragDrop {
             itemClass,
             reorderRoute,
             level = 'chapter',
-            previewRoute = null
+            previewRoute = null,
+            crossContainer = false,
+            moveRoute = null
         } = config;
 
         const container = document.getElementById(containerId);
@@ -34,18 +36,18 @@ class MultiLevelDragDrop {
         }
 
         button.addEventListener('click', () => {
-            this.toggleReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute);
+            this.toggleReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute, crossContainer, moveRoute);
         });
     }
 
     /**
      * Active/désactive le mode réorganisation
      */
-    toggleReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute) {
+    toggleReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute, crossContainer = false, moveRoute = null) {
         this.isReorderMode = !this.isReorderMode;
 
         if (this.isReorderMode) {
-            this.enableReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute);
+            this.enableReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute, crossContainer, moveRoute);
         } else {
             this.disableReorderMode(button, handleClass);
         }
@@ -54,7 +56,7 @@ class MultiLevelDragDrop {
     /**
      * Active le mode réorganisation
      */
-    enableReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute) {
+    enableReorderMode(container, button, handleClass, reorderRoute, level, itemClass, previewRoute, crossContainer = false, moveRoute = null) {
         // Changer le style du bouton
         button.classList.remove('bg-blue-500', 'hover:bg-blue-700');
         button.classList.add('bg-green-500', 'hover:bg-green-700');
@@ -65,13 +67,25 @@ class MultiLevelDragDrop {
             handle.classList.remove('hidden');
         });
 
-        // Créer l'instance Sortable
-        const sortable = new Sortable(container, {
+        // Configuration Sortable
+        const sortableConfig = {
             animation: 150,
             handle: `.${handleClass}`,
             onStart: (evt) => this.onDragStart(evt, level, previewRoute),
-            onEnd: (evt) => this.onDragEnd(evt, reorderRoute, level, itemClass)
-        });
+            onEnd: (evt) => this.onDragEnd(evt, reorderRoute, level, itemClass, crossContainer, moveRoute)
+        };
+        
+        // Ajouter la configuration cross-container si nécessaire
+        if (crossContainer) {
+            sortableConfig.group = {
+                name: level,
+                pull: true,
+                put: true
+            };
+        }
+        
+        // Créer l'instance Sortable
+        const sortable = new Sortable(container, sortableConfig);
 
         this.sortableInstances.push(sortable);
     }
@@ -129,73 +143,168 @@ class MultiLevelDragDrop {
     /**
      * Appelé à la fin du drag
      */
-    async onDragEnd(evt, reorderRoute, level, itemClass) {
+    async onDragEnd(evt, reorderRoute, level, itemClass, crossContainer = false, moveRoute = null) {
         this.hidePreviewTooltip();
 
-        const container = evt.to;
-        const items = container.querySelectorAll(`.${itemClass}`);
-        const orderData = [];
+        const fromContainer = evt.from;
+        const toContainer = evt.to;
+        const movedItem = evt.item;
+        const itemId = this.extractId(movedItem.id);
+        const newIndex = evt.newIndex;
 
-        items.forEach((item, index) => {
-            const itemId = this.extractId(item.id);
-            orderData.push({
-                id: itemId,
-                order: index + 1
-            });
-        });
+        // Détecter si c'est un déplacement cross-container
+        const isCrossContainerMove = crossContainer && fromContainer !== toContainer;
 
-        // Confirmation pour les gros changements
-        const totalAffected = await this.getTotalAffectedExercises(orderData, level);
-        if (totalAffected > 50) {
+        if (isCrossContainerMove && moveRoute) {
+            // Déplacement cross-container
+            const newContainerId = this.extractContainerId(toContainer.id, level);
+            
+            // Confirmation spéciale pour cross-container
             const confirm = await this.showConfirmation(
-                `Cette réorganisation va affecter ${totalAffected} exercices. Continuer ?`
+                `Déplacer cet élément vers un autre conteneur ? Cela va recalculer tous les ordres d'exercices.`
             );
             if (!confirm) {
-                location.reload(); // Annuler en rechargeant
+                location.reload();
                 return;
             }
-        }
 
-        this.showLoadingState(container);
+            this.showLoadingState(toContainer);
 
-        try {
-            const response = await fetch(reorderRoute, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': this.csrfToken
-                },
-                body: JSON.stringify(this.buildReorderPayload(orderData, level))
+            try {
+                const response = await fetch(moveRoute, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken
+                    },
+                    body: JSON.stringify(this.buildMovePayload(itemId, newContainerId, newIndex + 1, level))
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    this.showSuccess('Déplacement réussi !');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    this.showError(data.message || 'Erreur lors du déplacement');
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                this.showError('Erreur de connexion');
+                location.reload();
+            } finally {
+                this.hideLoadingState(toContainer);
+            }
+        } else {
+            // Réorganisation interne (logique existante)
+            const container = toContainer;
+            const items = container.querySelectorAll(`.${itemClass}`);
+            const orderData = [];
+
+            items.forEach((item, index) => {
+                const itemId = this.extractId(item.id);
+                orderData.push({
+                    id: itemId,
+                    order: index + 1
+                });
             });
 
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                this.showSuccess('Réorganisation réussie !');
-            } else {
-                this.showError(data.message || 'Erreur lors de la réorganisation');
+            // Confirmation pour les gros changements
+            const totalAffected = await this.getTotalAffectedExercises(orderData, level);
+            if (totalAffected > 50) {
+                const confirm = await this.showConfirmation(
+                    `Cette réorganisation va affecter ${totalAffected} exercices. Continuer ?`
+                );
+                if (!confirm) {
+                    location.reload();
+                    return;
+                }
             }
-        } catch (error) {
-            console.error('Erreur:', error);
-            this.showError('Erreur de connexion');
-        } finally {
-            this.hideLoadingState(container);
+
+            this.showLoadingState(container);
+
+            try {
+                const response = await fetch(reorderRoute, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken
+                    },
+                    body: JSON.stringify(this.buildReorderPayload(orderData, level, container))
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    this.showSuccess('Réorganisation réussie !');
+                } else {
+                    this.showError(data.message || 'Erreur lors de la réorganisation');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                this.showError('Erreur de connexion');
+            } finally {
+                this.hideLoadingState(container);
+            }
         }
+    }
+
+    /**
+     * Construit le payload pour un déplacement cross-container
+     */
+    buildMovePayload(itemId, newContainerId, newPosition, level) {
+        switch (level) {
+            case 'subchapter':
+                return {
+                    subchapter_id: itemId,
+                    new_chapter_id: newContainerId,
+                    new_position: newPosition
+                };
+            case 'chapter':
+                return {
+                    chapter_id: itemId,
+                    new_class_id: newContainerId,
+                    new_position: newPosition
+                };
+            default:
+                return {
+                    id: itemId,
+                    new_container_id: newContainerId,
+                    new_position: newPosition
+                };
+        }
+    }
+
+    /**
+     * Extrait l'ID du conteneur depuis l'ID HTML
+     */
+    extractContainerId(containerId, level) {
+        // Pour les sous-chapitres: "subchapters-container-123" -> 123 (chapter_id)
+        if (level === 'subchapter') {
+            return containerId.replace('subchapters-container-', '');
+        }
+        // Pour les chapitres: "chapters-container" -> class_id depuis le contexte
+        if (level === 'chapter') {
+            return this.getCurrentClassId();
+        }
+        // Par défaut, extraire le dernier nombre
+        return containerId.split('-').pop();
     }
 
     /**
      * Construit le payload selon le type de réorganisation
      */
-    buildReorderPayload(orderData, level) {
+    buildReorderPayload(orderData, level, container = null) {
         switch (level) {
             case 'chapter':
                 return {
-                    class_id: this.getCurrentClassId(),
+                    class_id: container ? this.extractContainerId(container.id, 'chapter') : this.getCurrentClassId(),
                     chapter_orders: orderData
                 };
             case 'subchapter':
                 return {
-                    chapter_id: this.getCurrentChapterId(),
+                    chapter_id: container ? this.extractContainerId(container.id, 'subchapter') : this.getCurrentChapterId(),
                     subchapter_orders: orderData
                 };
             case 'class':

@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\ManagesOrdering;
 
 class Exercise extends Model
 {
-    use HasFactory, ManagesOrdering;
+    use HasFactory;
 
     protected $fillable = ['subchapter_id', 'name', 'statement', 'solution', 'clue', 'latex_statement', 'latex_solution', 'latex_clue', 'difficulty', 'order'];
 

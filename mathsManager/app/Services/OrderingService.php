@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace App\Services;
 
 use App\Models\Classe;
 use App\Models\Chapter;
@@ -9,19 +9,19 @@ use App\Models\Exercise;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-trait ManagesOrdering
+class OrderingService
 {
     /**
      * Recalcule TOUS les ordres globaux des exercices
      * À appeler après toute modification de structure
      */
-    public static function recalculateAllGlobalExerciseOrders()
+    public function recalculateAllGlobalExerciseOrders(): void
     {
         Log::info('Starting global exercise order recalculation');
         
-        $globalOrder = 1; // Déclarer la variable AVANT la transaction
+        $globalOrder = 1;
         
-        DB::transaction(function () use (&$globalOrder) { // Passer par référence
+        DB::transaction(function () use (&$globalOrder) {
             // Parcourir seulement les classes VISIBLES par display_order
             $classes = Classe::where('hidden', false)->orderBy('display_order')->get();
             
@@ -52,7 +52,7 @@ trait ManagesOrdering
     /**
      * Déplace un sous-chapitre vers un nouveau chapitre
      */
-    public static function moveSubchapter($subchapterId, $newChapterId, $newPosition)
+    public function moveSubchapter(int $subchapterId, int $newChapterId, int $newPosition): void
     {
         Log::info("Moving subchapter $subchapterId to chapter $newChapterId at position $newPosition");
         
@@ -67,21 +67,21 @@ trait ManagesOrdering
             
             // 2. Réorganiser les ordres dans l'ancien chapitre
             if ($oldChapterId != $newChapterId) {
-                static::reorderSubchaptersInChapter($oldChapterId);
+                $this->reorderSubchaptersInChapter($oldChapterId);
             }
             
             // 3. Réorganiser les ordres dans le nouveau chapitre
-            static::reorderSubchaptersInChapter($newChapterId);
+            $this->reorderSubchaptersInChapter($newChapterId);
             
             // 4. Recalculer tous les ordres globaux d'exercices
-            static::recalculateAllGlobalExerciseOrders();
+            $this->recalculateAllGlobalExerciseOrders();
         });
     }
 
     /**
      * Déplace un chapitre vers une nouvelle classe
      */
-    public static function moveChapter($chapterId, $newClassId, $newPosition)
+    public function moveChapter(int $chapterId, int $newClassId, int $newPosition): void
     {
         Log::info("Moving chapter $chapterId to class $newClassId at position $newPosition");
         
@@ -96,21 +96,21 @@ trait ManagesOrdering
             
             // 2. Réorganiser les ordres dans l'ancienne classe
             if ($oldClassId != $newClassId) {
-                static::reorderChaptersInClass($oldClassId);
+                $this->reorderChaptersInClass($oldClassId);
             }
             
             // 3. Réorganiser les ordres dans la nouvelle classe
-            static::reorderChaptersInClass($newClassId);
+            $this->reorderChaptersInClass($newClassId);
             
             // 4. Recalculer tous les ordres globaux d'exercices
-            static::recalculateAllGlobalExerciseOrders();
+            $this->recalculateAllGlobalExerciseOrders();
         });
     }
 
     /**
      * Réorganise une classe dans l'ordre d'affichage
      */
-    public static function moveClass($classId, $newDisplayOrder)
+    public function moveClass(int $classId, int $newDisplayOrder): void
     {
         Log::info("Moving class $classId to display order $newDisplayOrder");
         
@@ -136,40 +136,84 @@ trait ManagesOrdering
             $classe->save();
             
             // Recalculer tous les ordres globaux d'exercices
-            static::recalculateAllGlobalExerciseOrders();
+            $this->recalculateAllGlobalExerciseOrders();
         });
     }
 
     /**
-     * Réorganise les ordres des sous-chapitres dans un chapitre
+     * Réorganise les sous-chapitres dans un chapitre (drag interne)
      */
-    private static function reorderSubchaptersInChapter($chapterId)
+    public function reorderSubchaptersInChapter(int $chapterId, array $subchapterOrders = null): void
     {
-        $subchapters = Subchapter::where('chapter_id', $chapterId)->orderBy('order')->get();
-        
-        foreach ($subchapters as $index => $subchapter) {
-            $subchapter->order = $index + 1;
-            $subchapter->save();
-        }
+        DB::transaction(function () use ($chapterId, $subchapterOrders) {
+            if ($subchapterOrders) {
+                // Mise à jour avec l'ordre spécifié
+                foreach ($subchapterOrders as $data) {
+                    $subchapter = Subchapter::find($data['id']);
+                    $subchapter->order = $data['order'];
+                    $subchapter->save();
+                }
+            } else {
+                // Réorganisation automatique pour fermer les trous
+                $subchapters = Subchapter::where('chapter_id', $chapterId)->orderBy('order')->get();
+                
+                foreach ($subchapters as $index => $subchapter) {
+                    $subchapter->order = $index + 1;
+                    $subchapter->save();
+                }
+            }
+            
+            $this->recalculateAllGlobalExerciseOrders();
+        });
     }
 
     /**
-     * Réorganise les ordres des chapitres dans une classe
+     * Réorganise les chapitres dans une classe (drag interne)
      */
-    private static function reorderChaptersInClass($classId)
+    public function reorderChaptersInClass(int $classId, array $chapterOrders = null): void
     {
-        $chapters = Chapter::where('class_id', $classId)->orderBy('order')->get();
-        
-        foreach ($chapters as $index => $chapter) {
-            $chapter->order = $index + 1;
-            $chapter->save();
-        }
+        DB::transaction(function () use ($classId, $chapterOrders) {
+            if ($chapterOrders) {
+                // Mise à jour avec l'ordre spécifié
+                foreach ($chapterOrders as $data) {
+                    $chapter = Chapter::find($data['id']);
+                    $chapter->order = $data['order'];
+                    $chapter->save();
+                }
+            } else {
+                // Réorganisation automatique pour fermer les trous
+                $chapters = Chapter::where('class_id', $classId)->orderBy('order')->get();
+                
+                foreach ($chapters as $index => $chapter) {
+                    $chapter->order = $index + 1;
+                    $chapter->save();
+                }
+            }
+            
+            $this->recalculateAllGlobalExerciseOrders();
+        });
+    }
+
+    /**
+     * Réorganise l'ordre d'affichage des classes (drag interne)
+     */
+    public function reorderClasses(array $classOrders): void
+    {
+        DB::transaction(function () use ($classOrders) {
+            foreach ($classOrders as $data) {
+                $classe = Classe::find($data['id']);
+                $classe->display_order = $data['display_order'];
+                $classe->save();
+            }
+            
+            $this->recalculateAllGlobalExerciseOrders();
+        });
     }
 
     /**
      * Compte le nombre d'exercices qui seront impactés par une réorganisation
      */
-    public static function countAffectedExercises($type, $id)
+    public function countAffectedExercises(string $type, int $id): int
     {
         switch ($type) {
             case 'subchapter':
@@ -192,5 +236,15 @@ trait ManagesOrdering
             default:
                 return 0;
         }
+    }
+
+    /**
+     * Détermine le niveau d'alerte selon le nombre d'exercices impactés
+     */
+    public function getWarningLevel(int $count): string
+    {
+        if ($count < 50) return 'low';
+        if ($count < 200) return 'medium'; 
+        return 'high';
     }
 }

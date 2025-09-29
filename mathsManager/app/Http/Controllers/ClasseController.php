@@ -7,55 +7,22 @@ use App\Models\Classe;
 use App\Models\Chapter;
 use App\Models\Subchapter;
 use Illuminate\Support\Facades\Log;
+use App\Services\OrderingService;
 
 class ClasseController extends Controller
 {
+    protected OrderingService $orderingService;
+    
+    public function __construct(OrderingService $orderingService)
+    {
+        $this->orderingService = $orderingService;
+    }
 
     public function reorderAllElements()
     {
         try {
-            // Get all classes ordered by id
-            $classes = Classe::orderBy('id')->get();
-
-            $order = 1;
-
-            foreach ($classes as $class) {
-                // Get all chapters of the class ordered by id
-                $chapters = Chapter::where('class_id', $class->id)->orderBy('id')->get();
-
-                foreach ($chapters as $chapter) {
-                    // Assign the order to the chapter
-                    $chapter->order = $order++;
-                    $chapter->save();
-
-                    // Get all subchapters of the chapter ordered by id
-                    $subchapters = Subchapter::where('chapter_id', $chapter->id)->orderBy('id')->get();
-
-                    foreach ($subchapters as $index => $subchapter) {
-                        // Assign the order to the subchapter
-                        $subchapter->order = $index + 1;
-                        $subchapter->save();
-                    }
-                }
-            }
-            // Get all classes ordered by id and update the order of the exercises in each subchapter of each chapter of each class.
-            $order = 1;
-
-            foreach ($classes as $class) {
-                $chapters = Chapter::where('class_id', $class->id)->orderBy('order')->get();
-                foreach ($chapters as $chapter) {
-                    $subchapters = Subchapter::where('chapter_id', $chapter->id)->orderBy('order')->get();
-
-                    foreach ($subchapters as $subchapter) {
-                        $exercises = $subchapter->exercises()->orderBy('order')->get();
-
-                        foreach ($exercises as $exercise) {
-                            $exercise->order = $order++;
-                            $exercise->save();
-                        }
-                    }
-                }
-            }
+            // Utiliser le service pour recalculer tous les ordres globaux
+            $this->orderingService->recalculateAllGlobalExerciseOrders();
 
             return redirect()->route('classe.index')->with('success', 'Elements reordered successfully');
         } catch (\Exception $e) {
@@ -65,7 +32,7 @@ class ClasseController extends Controller
     }
     public function index() // admin
     {
-        $classes = Classe::all();
+        $classes = Classe::orderBy('display_order')->get();
         return view('classe.index', compact('classes'));
     }
 

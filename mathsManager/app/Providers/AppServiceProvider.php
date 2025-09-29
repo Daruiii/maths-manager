@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
                 // Charger les données seulement si les tables existent
                 if ($this->tableExists('classes') && $this->tableExists('DS') && $this->tableExists('exercises_sheet')) {
                     try {
-                        $classes = Classe::all();
+                        $classes = Classe::orderBy('display_order')->get();
                         
                         // Compter seulement si l'utilisateur est connecté
                         if (auth()->check() && auth()->id()) {

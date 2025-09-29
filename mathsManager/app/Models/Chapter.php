@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\ManagesOrdering;
 
 class Chapter extends Model
 {
-    use HasFactory, ManagesOrdering;
+    use HasFactory;
 
     protected $fillable = ['class_id', 'title', 'description', 'theme', 'order'];
 

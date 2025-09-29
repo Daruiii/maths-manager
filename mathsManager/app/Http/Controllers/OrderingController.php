@@ -6,12 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\Classe;
 use App\Models\Chapter;
 use App\Models\Subchapter;
-use App\Traits\ManagesOrdering;
+use App\Services\OrderingService;
 use Illuminate\Support\Facades\Log;
 
 class OrderingController extends Controller
 {
-    use ManagesOrdering;
+    protected OrderingService $orderingService;
+    
+    public function __construct(OrderingService $orderingService)
+    {
+        $this->orderingService = $orderingService;
+    }
 
     /**
      * Déplace un sous-chapitre vers un nouveau chapitre
@@ -26,9 +31,9 @@ class OrderingController extends Controller
 
         try {
             // Compter les exercices impactés pour info
-            $affectedExercises = static::countAffectedExercises('subchapter', $request->subchapter_id);
+            $affectedExercises = $this->orderingService->countAffectedExercises('subchapter', $request->subchapter_id);
             
-            static::moveSubchapter(
+            $this->orderingService->moveSubchapter(
                 $request->subchapter_id,
                 $request->new_chapter_id,
                 $request->new_position
@@ -62,9 +67,9 @@ class OrderingController extends Controller
 
         try {
             // Compter les exercices impactés pour info
-            $affectedExercises = static::countAffectedExercises('chapter', $request->chapter_id);
+            $affectedExercises = $this->orderingService->countAffectedExercises('chapter', $request->chapter_id);
             
-            static::moveChapter(
+            $this->orderingService->moveChapter(
                 $request->chapter_id,
                 $request->new_class_id,
                 $request->new_position
@@ -97,9 +102,9 @@ class OrderingController extends Controller
 
         try {
             // Compter les exercices impactés pour info
-            $affectedExercises = static::countAffectedExercises('class', $request->class_id);
+            $affectedExercises = $this->orderingService->countAffectedExercises('class', $request->class_id);
             
-            static::moveClass(
+            $this->orderingService->moveClass(
                 $request->class_id,
                 $request->new_display_order
             );
@@ -132,14 +137,10 @@ class OrderingController extends Controller
         ]);
 
         try {
-            foreach ($request->subchapter_orders as $data) {
-                $subchapter = Subchapter::find($data['id']);
-                $subchapter->order = $data['order'];
-                $subchapter->save();
-            }
-
-            // Recalculer tous les ordres globaux d'exercices
-            static::recalculateAllGlobalExerciseOrders();
+            $this->orderingService->reorderSubchaptersInChapter(
+                $request->chapter_id,
+                $request->subchapter_orders
+            );
 
             return response()->json(['status' => 'success']);
 
@@ -165,14 +166,10 @@ class OrderingController extends Controller
         ]);
 
         try {
-            foreach ($request->chapter_orders as $data) {
-                $chapter = Chapter::find($data['id']);
-                $chapter->order = $data['order'];
-                $chapter->save();
-            }
-
-            // Recalculer tous les ordres globaux d'exercices
-            static::recalculateAllGlobalExerciseOrders();
+            $this->orderingService->reorderChaptersInClass(
+                $request->class_id,
+                $request->chapter_orders
+            );
 
             return response()->json(['status' => 'success']);
 
@@ -197,14 +194,7 @@ class OrderingController extends Controller
         ]);
 
         try {
-            foreach ($request->class_orders as $data) {
-                $classe = Classe::find($data['id']);
-                $classe->display_order = $data['display_order'];
-                $classe->save();
-            }
-
-            // Recalculer tous les ordres globaux d'exercices
-            static::recalculateAllGlobalExerciseOrders();
+            $this->orderingService->reorderClasses($request->class_orders);
 
             return response()->json(['status' => 'success']);
 
@@ -228,11 +218,11 @@ class OrderingController extends Controller
         ]);
 
         try {
-            $affectedCount = static::countAffectedExercises($request->type, $request->id);
+            $affectedCount = $this->orderingService->countAffectedExercises($request->type, $request->id);
             
             return response()->json([
                 'affected_exercises' => $affectedCount,
-                'warning_level' => $this->getWarningLevel($affectedCount)
+                'warning_level' => $this->orderingService->getWarningLevel($affectedCount)
             ]);
 
         } catch (\Exception $e) {
@@ -243,13 +233,4 @@ class OrderingController extends Controller
         }
     }
 
-    /**
-     * Détermine le niveau d'alerte selon le nombre d'exercices impactés
-     */
-    private function getWarningLevel($count)
-    {
-        if ($count < 50) return 'low';
-        if ($count < 200) return 'medium'; 
-        return 'high';
-    }
 }

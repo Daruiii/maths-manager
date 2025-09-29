@@ -7,9 +7,16 @@ use App\Models\Chapter;
 use App\Models\Classe;
 use App\Models\Subchapter;
 use App\Models\Exercise;
+use App\Services\OrderingService;
 
 class ChapterController extends Controller
 {
+    protected OrderingService $orderingService;
+    
+    public function __construct(OrderingService $orderingService)
+    {
+        $this->orderingService = $orderingService;
+    }
     protected $themeColors = [
         'analyse1' => '#318CE7',
         'analyse2' => '#CCA9DD',
@@ -40,19 +47,11 @@ class ChapterController extends Controller
         $classeActive = Classe::findOrFail($id)->id;
         $themeColors = $this->themeColors;
     
-        $previousClassId = Classe::where('id', '<', $classeActive)->max('id');
-        $nextClassId = Classe::where('id', '>', $classeActive)->min('id');
-        $nextOrder = 1;
-    
-        $lastOrderInCurrentClass = Chapter::where('class_id', $classeActive)->max('order');
-        if ($lastOrderInCurrentClass) {
-            $nextOrder = $lastOrderInCurrentClass + 1;
-        } else if ($previousClassId) {
-            $nextOrder = Chapter::where('class_id', $previousClassId)->max('order') + 1;
-        } else if ($nextClassId) {
-            $nextOrder = Chapter::where('class_id', $nextClassId)->min('order');
+        // Ordre local dans la classe : prochaine position disponible
+        $nextOrder = Chapter::where('class_id', $classeActive)->max('order') + 1;
+        if (!$nextOrder) {
+            $nextOrder = 1;
         }
-
     
         return view('chapter.create', compact('classes', 'classeActive', 'themeColors', 'nextOrder'));
     }
@@ -65,27 +64,21 @@ class ChapterController extends Controller
             'theme' => 'nullable'
         ]);
     
-        $newOrder = $request->order;
         $classId = $request->class_id;
-    
-        // Trouver l'ID de la classe suivante
-        $nextClassId = Classe::where('id', '>', $classId)->min('id');
-    
-        if ($nextClassId) {
-            // Trouver l'ordre du premier chapitre de la classe suivante
-            $orderOfFirstChapterInNextClass = Chapter::where('class_id', $nextClassId)->min('order');
-    
-            if ($newOrder >= $orderOfFirstChapterInNextClass) {
-                // Incrémenter l'ordre de tous les chapitres suivants dans toutes les classes
-                Chapter::where('order', '>=', $newOrder)
-                       ->increment('order');
-            }
-        }
+        $newOrder = $request->order;
+        
+        // Décaler les chapitres existants dans la classe si nécessaire
+        Chapter::where('class_id', $classId)
+               ->where('order', '>=', $newOrder)
+               ->increment('order');
 
-        $classLevel = Classe::findOrFail($request->class_id)->level;
-    
+        // Créer le nouveau chapitre
         Chapter::create($request->only(['title', 'class_id', 'order', 'theme']));
-    
+        
+        // Recalculer les ordres globaux des exercices
+        $this->orderingService->recalculateAllGlobalExerciseOrders();
+        
+        $classLevel = Classe::findOrFail($classId)->level;
         return redirect()->route('classe.show', $classLevel);
     }
 
@@ -121,12 +114,15 @@ class ChapterController extends Controller
     
         $chapter->delete();
     
-        // Decrement the order of the chapters that come after
-        Chapter::where('order', '>', $order)
-            ->decrement('order');
+        // Décaler les chapitres suivants dans la même classe
+        Chapter::where('class_id', $class_id)
+               ->where('order', '>', $order)
+               ->decrement('order');
+        
+        // Recalculer les ordres globaux des exercices
+        $this->orderingService->recalculateAllGlobalExerciseOrders();
     
         $classLevel = Classe::findOrFail($class_id)->level;
-    
         return redirect()->route('classe.show', $classLevel);
     }
 }
