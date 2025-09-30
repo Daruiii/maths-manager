@@ -80,3 +80,41 @@
             badAnswers="{{ isset($badAnswers) ? $badAnswers : '50' }}" />
     </div>
 </div>
+
+<!-- Section Mes demandes de corrections -->
+<div class="flex flex-col w-full lg:w-56 bg-white p-4 rounded-lg border border-gray-200 shadow-md">
+    <h3 class="text-sm font-bold">Demandes de corrections</h3>
+    
+    @php
+        $pendingCount = Auth::user()->whitelistRequests()->pending()->count();
+        $approvedCount = Auth::user()->whitelistRequests()->where('status', 'approved')->count();
+        $totalRequests = Auth::user()->whitelistRequests()->count();
+    @endphp
+    
+    <div class="text-center mt-3">
+        @if($pendingCount > 0)
+            <div class="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-2">
+                {{ $pendingCount }}
+            </div>
+            <p class="text-xs font-medium text-orange-600">En attente</p>
+        @elseif($approvedCount > 0)
+            <div class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                🎉
+            </div>
+            <p class="text-xs font-medium text-green-600">{{ $approvedCount }} correction(s) débloquée(s) !</p>
+        @else
+            <div class="w-12 h-12 bg-gray-400 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                📝
+            </div>
+            <p class="text-xs text-gray-500">Aucune demande</p>
+        @endif
+    </div>
+    
+    @if($totalRequests > 0)
+        <div class="mt-3">
+            <x-btn-see href="{{ route('whitelist-requests.my') }}" class="w-full text-center">
+                Voir mes {{ $totalRequests }} demande(s)
+            </x-btn-see>
+        </div>
+    @endif
+</div>

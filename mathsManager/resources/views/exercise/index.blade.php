@@ -8,9 +8,23 @@
 <x-back-btn path="{{ route('admin') }}"> Retour</x-back-btn>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-center items-center pt-6">
+        <div class="flex justify-between items-center pt-6">
             <div>
                 <h2 class="text-lg leading-6 font-medium text-gray-900">Exercices ({{{ $exercises->total() }}})</h2>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('whitelist-requests.index') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-orange-300 rounded-md shadow-sm text-sm font-medium text-orange-700 bg-orange-50 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors">
+                    📝 Demandes d'accès
+                    @php
+                        $pendingCount = App\Models\WhitelistRequest::pending()->count();
+                    @endphp
+                    @if($pendingCount > 0)
+                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            {{ $pendingCount }}
+                        </span>
+                    @endif
+                </a>
             </div>
         </div>
                {{-- Search form --}}
@@ -51,7 +65,7 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                                         {{ $ex->id }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 exercise-content">
                                         {{ $ex->name }}</td>
                                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                             {{ $subchapters->where('id', $ex->subchapter_id)->first()->title }}

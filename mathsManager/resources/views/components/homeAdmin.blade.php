@@ -107,3 +107,35 @@
         </div>
     </div>
 </div>
+
+<!-- Section Demandes de whitelist -->
+<div class="flex flex-col justify-start items-center p-4 bg-white border-2 border-orange-200 rounded-md max-w-full min-w-80">
+    <h2 class="text-base leading-6 font-medium text-gray-900">Demandes de corrections</h2>
+    
+    @php
+        $pendingCount = App\Models\WhitelistRequest::pending()->count();
+    @endphp
+    
+    <div class="w-full mt-3">
+        @if($pendingCount > 0)
+            <div class="text-center p-4">
+                <div class="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-3">
+                    {{ $pendingCount }}
+                </div>
+                <p class="text-sm font-medium text-gray-900 mb-2">{{ $pendingCount }} demande(s) en attente</p>
+                <a href="{{ route('whitelist-requests.index') }}" 
+                   class="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md text-sm hover:bg-orange-700 transition-colors">
+                    Traiter les demandes
+                </a>
+            </div>
+        @else
+            <div class="text-center p-4">
+                <div class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-3">
+                    ✓
+                </div>
+                <p class="text-sm text-gray-600">Aucune demande en attente</p>
+                <p class="text-xs text-gray-500 mt-1">Toutes les demandes ont été traitées</p>
+            </div>
+        @endif
+    </div>
+</div>

@@ -3,17 +3,23 @@
 @section('title', 'Gestion des corrections - ' . $exercise->name)
 
 @section('content')
-    <div class="container mx-auto px-4 py-6">
+    <div class="max-w-6xl mx-auto px-4 py-6">
         <!-- En-tête -->
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Gestion des corrections</h1>
                 <p class="text-gray-600 mt-1">
-                    Exercice: <strong>{{ $exercise->name }}</strong> 
-                    ({{ $exercise->subchapter->chapter->classe->name ?? 'N/A' }} - {{ $exercise->subchapter->name ?? 'N/A' }})
+                    Exercice: <strong>{{ $exercise->name }}</strong> (n°{{ $exercise->order }})
+                    <br><span class="text-sm">{{ $exercise->subchapter->chapter->classe->name ?? 'N/A' }} - {{ $exercise->subchapter->name ?? 'N/A' }}</span>
                 </p>
             </div>
-            <x-back-btn path="{{ route('exercise.show', $exercise->id) }}">Retour à l'exercice</x-back-btn>
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('whitelist-requests.index') }}" 
+                   class="px-4 py-2 border border-orange-300 rounded-md text-sm font-medium text-orange-700 bg-orange-50 hover:bg-orange-100 transition-colors">
+                    📝 Toutes les demandes
+                </a>
+                <x-back-btn path="{{ route('subchapter.show', $exercise->subchapter->id) }}?exercise={{ $exercise->id }}">Retour au sous-chapitre</x-back-btn>
+            </div>
         </div>
 
         <!-- Messages flash -->
@@ -29,31 +35,114 @@
             </div>
         @endif
 
+        <!-- Demandes en attente pour cet exercice -->
+        @if($pendingRequests->count() > 0)
+            <div class="mb-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <h3 class="text-lg font-semibold text-orange-800 mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Demandes d'accès en attente ({{ $pendingRequests->count() }})
+                </h3>
+                <div class="space-y-3">
+                    @foreach($pendingRequests as $request)
+                        <div class="bg-white border border-orange-200 rounded-md p-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                    {{ strtoupper(substr($request->user->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ $request->user->name }}</p>
+                                    <p class="text-xs text-gray-500">{{ $request->created_at->format('d/m/Y à H:i') }}</p>
+                                    @if($request->message)
+                                        <p class="text-sm text-gray-600 mt-1 italic">"{{ $request->message }}"</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <form method="POST" action="{{ route('whitelist-requests.approve', $request->id) }}" class="inline-block">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Accepter
+                                    </button>
+                                </form>
+                                <button onclick="openRejectModal('{{ $request->id }}', '{{ $request->user->name }}')"
+                                        class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Refuser
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <div class="grid md:grid-cols-2 gap-6">
             <!-- Ajouter un étudiant -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Ajouter un étudiant à la whitelist</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Ajouter des étudiants</h2>
+                    <a href="{{ route('whitelist-requests.index') }}" 
+                       class="text-sm text-blue-600 hover:text-blue-800 underline">
+                        📝 Voir les demandes
+                    </a>
+                </div>
                 
-                <form method="POST" action="{{ route('exercise.whitelist.add', $exercise->id) }}">
-                    @csrf
-                    <div class="mb-4">
-                        <label for="user_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            Sélectionner un étudiant
-                        </label>
-                        <select name="user_id" id="user_id" 
-                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                required>
-                            <option value="">-- Choisir un étudiant --</option>
-                            @foreach($students as $student)
-                                <option value="{{ $student->id }}">{{ $student->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" 
-                            class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-                        Ajouter à la whitelist
-                    </button>
-                </form>
+                <!-- Recherche rapide -->
+                <div class="mb-4">
+                    <input type="text" 
+                           id="studentSearch" 
+                           placeholder="Rechercher un étudiant par nom..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                           onkeyup="filterStudents()">
+                </div>
+                
+                <!-- Liste des étudiants non whitelisés -->
+                <div id="studentList" class="max-h-64 overflow-y-auto border border-gray-200 rounded-md">
+                    @php
+                        $whitelistedIds = $exercise->whitelistedUsers->pluck('id')->toArray();
+                        $availableStudents = $students->reject(function($student) use ($whitelistedIds) {
+                            return in_array($student->id, $whitelistedIds);
+                        });
+                    @endphp
+                    
+                    @foreach($availableStudents as $student)
+                        <div class="student-item p-3 border-b border-gray-100 hover:bg-gray-50 flex items-center justify-between" 
+                             data-name="{{ strtolower($student->name) }}">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gray-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                    {{ strtoupper(substr($student->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ $student->name }}</p>
+                                    <p class="text-xs text-gray-500">{{ $student->email }}</p>
+                                </div>
+                            </div>
+                            
+                            <form method="POST" action="{{ route('exercise.whitelist.add', $exercise->id) }}" class="inline-block">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ $student->id }}">
+                                <button type="submit" 
+                                        class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors">
+                                    + Ajouter
+                                </button>
+                            </form>
+                        </div>
+                    @endforeach
+                    
+                    @if($availableStudents->count() === 0)
+                        <div class="p-4 text-center text-gray-500">
+                            <p>Tous les étudiants ont déjà accès à cette correction</p>
+                        </div>
+                    @endif
+                </div>
             </div>
 
             <!-- Liste des étudiants whitelistés -->
@@ -112,5 +201,81 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Modal de rejet de demande -->
+        <div id="rejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50" onclick="closeRejectModal(event)">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4" onclick="event.stopPropagation()">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Refuser la demande</h3>
+                    <p class="text-gray-600 mb-4">Voulez-vous refuser la demande de <strong id="rejectStudentName"></strong> ?</p>
+                    
+                    <form id="rejectForm" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="rejectMessage" class="block text-sm font-medium text-gray-700 mb-2">
+                                Message pour l'étudiant (optionnel)
+                            </label>
+                            <textarea id="rejectMessage" 
+                                      name="message" 
+                                      rows="3" 
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Expliquez pourquoi la demande est refusée..."></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" 
+                                    onclick="closeRejectModal()" 
+                                    class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                                Annuler
+                            </button>
+                            <button type="submit" 
+                                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                                Refuser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+@endsection
+
+@section('scripts')
+<script>
+function filterStudents() {
+    const search = document.getElementById('studentSearch').value.toLowerCase();
+    const students = document.querySelectorAll('.student-item');
+    
+    students.forEach(function(student) {
+        const name = student.getAttribute('data-name');
+        if (name.includes(search)) {
+            student.style.display = 'flex';
+        } else {
+            student.style.display = 'none';
+        }
+    });
+}
+
+// Fonctions pour la modal de rejet
+function openRejectModal(requestId, studentName) {
+    document.getElementById('rejectStudentName').textContent = studentName;
+    document.getElementById('rejectForm').action = '/admin/whitelist-requests/' + requestId + '/reject';
+    document.getElementById('rejectMessage').value = '';
+    document.getElementById('rejectModal').classList.remove('hidden');
+    document.getElementById('rejectModal').classList.add('flex');
+}
+
+function closeRejectModal(event) {
+    if (event && event.target !== event.currentTarget) return;
+    document.getElementById('rejectModal').classList.add('hidden');
+    document.getElementById('rejectModal').classList.remove('flex');
+}
+
+// Fermer avec Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeRejectModal();
+    }
+});
+</script>
 @endsection

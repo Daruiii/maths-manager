@@ -145,8 +145,20 @@
                                                         </svg>
                                                     </button>
                                                 @else
-                                                    <div class="text-xs text-red-600 font-bold flex items-center">
-                                                        🔒 Correction masquée
+                                                    <div class="text-xs text-red-600 font-bold flex items-center justify-end w-full space-x-1">
+                                                        <span>🔒 Correction masquée</span>
+                                                        @if (Auth::user()->role === 'student')
+                                                            @if ($ex->hasWhitelistRequest(Auth::id()))
+                                                                <span class="text-xs text-yellow-600 font-normal bg-yellow-100 px-2 py-1 rounded whitespace-nowrap">
+                                                                    ⏳ En cours
+                                                                </span>
+                                                            @else
+                                                                <button onclick="openRequestModal({{ $ex->id }}, '{{ $ex->name }}', {{ $ex->order }})" 
+                                                                        class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded transition-colors whitespace-nowrap">
+                                                                    Demander
+                                                                </button>
+                                                            @endif
+                                                        @endif
                                                     </div>
                                                 @endif
                                             @endif
@@ -309,4 +321,78 @@
                     }
                 });
             </script>
+            
+            @if(Auth::check() && Auth::user()->role === 'student')
+            <!-- Modal de demande de correction -->
+            <div id="requestModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" onclick="closeRequestModal(event)">
+                <div class="flex items-center justify-center min-h-screen px-4">
+                    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6" onclick="event.stopPropagation()">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Demander l'accès à la correction</h3>
+                            <button onclick="closeRequestModal()" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <form id="requestForm" method="POST">
+                            @csrf
+                            <p class="text-sm text-gray-600 mb-4">
+                                Exercice : <strong id="exerciseName"></strong>
+                            </p>
+                            
+                            <div class="mb-4">
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Pourquoi avez-vous besoin de cette correction ? (optionnel)
+                                </label>
+                                <textarea 
+                                    name="message" 
+                                    id="message" 
+                                    rows="3" 
+                                    maxlength="500"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Ex: Je n'arrive pas à comprendre cette méthode..."
+                                ></textarea>
+                                <p class="text-xs text-gray-500 mt-1">Un message aide l'équipe à mieux comprendre votre besoin.</p>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" onclick="closeRequestModal()" 
+                                        class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                    Annuler
+                                </button>
+                                <button type="submit" 
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    Envoyer ma demande
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+            function openRequestModal(exerciseId, exerciseName, exerciseOrder) {
+                document.getElementById('exerciseName').textContent = `${exerciseName} (n°${exerciseOrder})`;
+                document.getElementById('requestForm').action = `/exercise/${exerciseId}/request-whitelist`;
+                document.getElementById('message').value = '';
+                document.getElementById('requestModal').classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            }
+
+            function closeRequestModal(event) {
+                if (event && event.target !== event.currentTarget) return;
+                document.getElementById('requestModal').classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            // Fermer la modal avec Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeRequestModal();
+                }
+            });
+            </script>
+            @endif
         @endsection

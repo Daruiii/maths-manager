@@ -21,6 +21,7 @@ use App\Http\Controllers\QuizzController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\OrderingController;
 use App\Http\Controllers\ExerciseWhitelistController;
+use App\Http\Controllers\WhitelistRequestController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -136,6 +137,13 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::get('/exercise/{exerciseId}/whitelist', [ExerciseWhitelistController::class, 'show'])->name('exercise.whitelist.show');
         Route::post('/exercise/{exerciseId}/whitelist', [ExerciseWhitelistController::class, 'addStudent'])->name('exercise.whitelist.add');
         Route::delete('/exercise/{exerciseId}/whitelist/{userId}', [ExerciseWhitelistController::class, 'removeStudent'])->name('exercise.whitelist.remove');
+        
+        // Whitelist requests admin routes
+        Route::get('/whitelist-requests', [WhitelistRequestController::class, 'index'])->name('whitelist-requests.index');
+        Route::post('/whitelist-requests/{requestId}/approve', [WhitelistRequestController::class, 'approve'])->name('whitelist-requests.approve');
+        Route::post('/whitelist-requests/{requestId}/reject', [WhitelistRequestController::class, 'reject'])->name('whitelist-requests.reject');
+        Route::delete('/whitelist-requests/{requestId}', [WhitelistRequestController::class, 'destroy'])->name('whitelist-requests.destroy');
+        Route::delete('/whitelist-requests/clear-history', [WhitelistRequestController::class, 'clearHistory'])->name('whitelist-requests.clear-history');
     });
 });
 
@@ -243,6 +251,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequestForm'])->name('correctionRequest.showCorrectionRequestForm');
         Route::post('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'sendCorrectionRequest'])->name('correctionRequest.sendCorrectionRequest');
         Route::get('/correctionRequest/show/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequest'])->name('correctionRequest.show');
+        
+        // Whitelist requests - student routes
+        Route::post('/exercise/{exerciseId}/request-whitelist', [WhitelistRequestController::class, 'store'])->name('whitelist-request.store');
+        Route::get('/my-whitelist-requests', [WhitelistRequestController::class, 'myRequests'])->name('whitelist-requests.my');
     });
 });
 

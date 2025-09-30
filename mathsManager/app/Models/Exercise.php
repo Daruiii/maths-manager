@@ -35,4 +35,19 @@ class Exercise extends Model
     {
         return $this->whitelist()->where('user_id', $userId)->exists();
     }
+    
+    public function whitelistRequests()
+    {
+        return $this->hasMany(WhitelistRequest::class);
+    }
+    
+    public function pendingWhitelistRequests()
+    {
+        return $this->whitelistRequests()->pending();
+    }
+    
+    public function hasWhitelistRequest($userId)
+    {
+        return $this->whitelistRequests()->where('user_id', $userId)->exists();
+    }
 }

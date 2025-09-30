@@ -82,4 +82,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Exercise::class, 'exercise_whitelist');
     }
+    
+    public function whitelistRequests()
+    {
+        return $this->hasMany(WhitelistRequest::class);
+    }
+    
+    public function processedWhitelistRequests()
+    {
+        return $this->hasMany(WhitelistRequest::class, 'processed_by');
+    }
 }
