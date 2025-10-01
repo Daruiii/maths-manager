@@ -134,7 +134,11 @@
                     ✓
                 </div>
                 <p class="text-sm text-gray-600">Aucune demande en attente</p>
-                <p class="text-xs text-gray-500 mt-1">Toutes les demandes ont été traitées</p>
+                <p class="text-xs text-gray-500 mt-1 mb-3">Toutes les demandes ont été traitées</p>
+                <a href="{{ route('whitelist-requests.index') }}" 
+                   class="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors">
+                    Voir toutes les demandes
+                </a>
             </div>
         @endif
     </div>

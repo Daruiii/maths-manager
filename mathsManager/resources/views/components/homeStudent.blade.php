@@ -110,11 +110,13 @@
         @endif
     </div>
     
-    @if($totalRequests > 0)
-        <div class="mt-3">
-            <x-btn-see href="{{ route('whitelist-requests.my') }}" class="w-full text-center">
+    <div class="mt-3">
+        <x-btn-see href="{{ route('whitelist-requests.my') }}" class="w-full text-center">
+            @if($totalRequests > 0)
                 Voir mes {{ $totalRequests }} demande(s)
-            </x-btn-see>
-        </div>
-    @endif
+            @else
+                Mes demandes
+            @endif
+        </x-btn-see>
+    </div>
 </div>
