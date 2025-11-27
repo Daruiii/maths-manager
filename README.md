@@ -229,31 +229,80 @@ composer --version
 
 **Solution Linux/Windows** : [Suivre les instructions officielles](https://getcomposer.org/download/)
 
-### Erreur "Connection refused"
+### Erreur "Connection refused" ou "SQLSTATE[HY000] [2002]"
 
 **Problème** : L'application ne peut pas se connecter à la base de données.
 
+**Cause** : Le service de base de données n'est pas démarré (très courant au redémarrage de l'ordinateur).
+
 **Solutions** :
-1. Vérifier que la base de données est démarrée :
+
+1. **Avec Docker** :
    ```bash
-   # Pour Docker
+   # Vérifier si Docker est lancé
    docker ps
+   
+   # Si erreur "Cannot connect to the Docker daemon"
+   open -a Docker  # macOS
+   # Attendre quelques secondes que Docker démarre
+   
+   # Démarrer le conteneur de la base de données
    docker start mathsmanager-db
    
-   # Pour XAMPP
-   sudo /opt/lampp/lampp start
+   # Vérifier que le conteneur fonctionne
+   docker ps | grep mathsmanager-db
    ```
 
-2. Vérifier les paramètres de connexion dans `.env`
-
-3. Tester la connexion manuellement :
+2. **Avec XAMPP** :
    ```bash
-   # Pour Docker (port 3307)
-   mysql -h 127.0.0.1 -P 3307 -u root -proot
+   # Démarrer XAMPP
+   sudo /opt/lampp/lampp start
    
-   # Pour XAMPP (port 3306)
-   mysql -h 127.0.0.1 -P 3306 -u root -p
+   # Ou via l'interface graphique XAMPP
+   # Démarrer Apache + MySQL
    ```
+
+3. **Avec MySQL/MariaDB local** :
+   ```bash
+   # macOS (Homebrew)
+   brew services start mariadb
+   # ou
+   brew services start mysql
+   
+   # Linux (systemd)
+   sudo systemctl start mariadb
+   # ou
+   sudo systemctl start mysql
+   
+   # Pour démarrer automatiquement au boot
+   brew services enable mariadb  # macOS
+   sudo systemctl enable mariadb # Linux
+   ```
+
+4. **Vérifier les paramètres de connexion dans `.env`** :
+   ```env
+   DB_CONNECTION=mariadb
+   DB_HOST=127.0.0.1
+   DB_PORT=3307  # 3307 pour Docker, 3306 pour XAMPP/local
+   DB_DATABASE=mathsManager
+   DB_USERNAME=root
+   DB_PASSWORD=root
+   ```
+
+5. **Tester la connexion** :
+   ```bash
+   # Avec Laravel
+   php artisan db:show
+   
+   # Ou manuellement
+   mysql -h 127.0.0.1 -P 3307 -u root -proot  # Docker
+   mysql -h 127.0.0.1 -P 3306 -u root -p      # XAMPP/local
+   
+   # Avec Docker exec (si client mysql non installé)
+   docker exec -it mathsmanager-db mysql -uroot -proot
+   ```
+
+**💡 Astuce** : Au redémarrage de votre ordinateur, pensez à relancer Docker ou votre service MySQL/MariaDB !
 
 ### Erreur "Port already in use"
 
