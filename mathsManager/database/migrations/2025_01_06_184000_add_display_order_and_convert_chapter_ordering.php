@@ -16,7 +16,7 @@ return new class extends Migration
         // 1. Ajouter display_order aux classes
         if (!Schema::hasColumn('classes', 'display_order')) {
             Schema::table('classes', function (Blueprint $table) {
-                $table->integer('display_order')->after('hidden')->default(1);
+                $table->integer('display_order')->default(1);
             });
         }
 

@@ -6,6 +6,14 @@ Une application Laravel pour la gestion d'exercices de mathématiques, avec gén
 
 ### 💫 Installation rapide (Recommandée)
 
+**⚠️ Prérequis obligatoires** (à installer avant de lancer le script) :
+- PHP 8.1 ou supérieur ([Installer PHP](https://www.php.net/downloads))
+- Composer ([Installer Composer](https://getcomposer.org/download/))
+- Node.js et NPM ([Installer Node.js](https://nodejs.org/))
+- Docker (optionnel, uniquement pour la base de données) ([Installer Docker](https://docs.docker.com/get-docker/))
+
+**📝 Note importante** : L'option Docker du script sert uniquement à créer une base de données MariaDB dans un conteneur. PHP, Composer et Node.js doivent être installés localement sur votre machine car le script les utilise pour installer les dépendances et lancer l'application.
+
 Pour une installation automatique, utilisez le script d'installation :
 
 ```bash
@@ -15,17 +23,19 @@ chmod +x scripts/setup.sh
 ./scripts/setup.sh
 ```
 
-Le script vous guidera à travers toutes les étapes d'installation.
+Le script vous guidera à travers toutes les étapes d'installation et vérifiera automatiquement que tous les prérequis sont installés.
 
 ### 🔨 Installation manuelle
 
+Si vous préférez installer manuellement (ou si le script automatique ne fonctionne pas), suivez ces étapes.
+
 #### Prérequis
 
-- PHP 8.1 ou supérieur
+- PHP 8.1 ou supérieur avec les extensions `pdo_mysql` et `zip`
 - Composer
 - Node.js et NPM
-- Une base de données MariaDB/MySQL
-- Docker (optionnel)
+- Une base de données MariaDB/MySQL (ou Docker pour la lancer en conteneur)
+- Docker (optionnel, uniquement pour la base de données)
 
 ### 1. Cloner le projet
 
@@ -144,6 +154,80 @@ php artisan serve
 L'application sera accessible sur `http://localhost:8000`
 
 ## 🔧 Problèmes courants et solutions
+
+### OAuth Google ne fonctionne pas
+
+**Problème** : Erreur lors de la connexion avec Google OAuth.
+
+**Solutions** :
+
+1. **Vider le cache de configuration Laravel** :
+   ```bash
+   php artisan config:clear
+   php artisan cache:clear
+   ```
+
+2. **Vérifier que les clés sont bien dans le `.env`** :
+   ```env
+   GOOGLE_CLIENT_ID=votre-client-id
+   GOOGLE_CLIENT_SECRET=votre-client-secret
+   ```
+
+3. **Vérifier l'URL de callback dans Google Cloud Console** :
+   - Aller sur [Google Cloud Console](https://console.cloud.google.com/)
+   - APIs & Services → Credentials → OAuth 2.0 Client IDs
+   - Ajouter dans "Authorized redirect URIs" : `http://localhost:8000/auth/google/callback`
+   - ⚠️ **Important** : Si votre `APP_URL` dans `.env` est `http://127.0.0.1:8000`, ajoutez aussi `http://127.0.0.1:8000/auth/google/callback`
+   - Pour la preprod/production, ajouter aussi : `https://votre-domaine.com/auth/google/callback`
+
+4. **Tester l'URL directement** :
+   ```
+   http://localhost:8000/auth/google/redirect
+   ```
+
+### Mode Preprod / Staging
+
+**Comment activer le mode preprod** :
+
+1. **Modifier le `.env`** :
+   ```env
+   APP_ENV=staging  # au lieu de 'local' ou 'production'
+   APP_DEBUG=false
+   APP_PREPROD_PASSWORD=votre-mot-de-passe-sécurisé
+   ```
+
+2. **Comportement en mode preprod** :
+   - L'application demande un mot de passe avant d'accéder au site
+   - Le mot de passe est défini par `APP_PREPROD_PASSWORD` dans le `.env`
+   - Un cookie est créé pour 7 jours après authentification
+   - Les robots de crawl sont bloqués (fichier `robots-preprod.txt`)
+
+3. **Accéder à la preprod** :
+   - Visiter : `http://localhost:8000`
+   - Entrer le mot de passe défini dans `APP_PREPROD_PASSWORD`
+   - Le cookie permet de rester connecté
+
+4. **Désactiver le mode preprod** :
+   ```env
+   APP_ENV=local  # ou 'production'
+   ```
+
+### Composer n'est pas installé
+
+**Problème** : La commande `composer` n'est pas trouvée.
+
+**Solution macOS** :
+```bash
+# Télécharger et installer Composer globalement
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php --install-dir=/opt/homebrew/bin --filename=composer
+php -r "unlink('composer-setup.php');"
+
+# Vérifier l'installation
+composer --version
+```
+
+**Solution Linux/Windows** : [Suivre les instructions officielles](https://getcomposer.org/download/)
 
 ### Erreur "Connection refused"
 

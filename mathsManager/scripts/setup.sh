@@ -19,6 +19,13 @@ echo "║         MATHS MANAGER SETUP              ║"
 echo "║      Installation automatique            ║"
 echo "╚══════════════════════════════════════════╝"
 echo -e "${NC}"
+echo ""
+echo -e "${YELLOW}📋 Important :${NC}"
+echo "  • Ce script installe l'application Laravel sur votre machine"
+echo "  • L'option Docker sert uniquement pour la base de données"
+echo "  • PHP, Composer et Node.js doivent être installés localement"
+echo ""
+sleep 2
 
 # Fonction pour vérifier si une commande existe
 command_exists() {
@@ -27,39 +34,102 @@ command_exists() {
 
 # Vérifier les prérequis
 echo -e "${YELLOW}🔍 Vérification des prérequis...${NC}"
+sleep 1
 
 if ! command_exists php; then
     echo -e "${RED}❌ PHP n'est pas installé${NC}"
+    echo ""
+    echo -e "${YELLOW}💡 Comment installer PHP :${NC}"
+    if [[ "$(uname)" == "Darwin" ]]; then
+        echo "  macOS : brew install php@8.2"
+    else
+        echo "  Ubuntu/Debian : sudo apt-get install php8.2 php8.2-cli php8.2-mysql php8.2-zip"
+        echo "  Fedora : sudo dnf install php php-cli php-mysqlnd php-zip"
+    fi
     exit 1
 fi
 
+# Vérifier la version minimale de PHP (>= 8.1)
+if ! php -r "exit(version_compare(PHP_VERSION,'8.1.0','<') ? 1 : 0);"; then
+    CURRENT_PHP_VERSION=$(php -r 'echo PHP_VERSION;')
+    echo -e "${RED}❌ PHP >= 8.1 requis (version actuelle: ${CURRENT_PHP_VERSION})${NC}"
+    echo "Veuillez mettre à jour PHP ou utiliser une version compatible (par ex. via Homebrew, phpenv, Docker, ...)."
+    exit 1
+fi
+
+# Vérifier extensions PHP utiles
+for ext in pdo_mysql zip; do
+    if ! php -m | grep -q "${ext}"; then
+        echo -e "${RED}❌ L'extension PHP '${ext}' n'est pas installée${NC}"
+        echo ""
+        echo -e "${YELLOW}💡 Comment installer l'extension PHP ${ext} :${NC}"
+        if [[ "$(uname)" == "Darwin" ]]; then
+            echo "  macOS : L'extension devrait être incluse avec Homebrew PHP"
+            echo "  Vérifiez votre php.ini ou réinstallez : brew reinstall php@8.2"
+        else
+            echo "  Ubuntu/Debian : sudo apt-get install php8.2-mysql php8.2-zip"
+            echo "  Fedora : sudo dnf install php-mysqlnd php-zip"
+        fi
+        exit 1
+    fi
+done
+
 if ! command_exists composer; then
     echo -e "${RED}❌ Composer n'est pas installé${NC}"
+    echo ""
+    echo -e "${YELLOW}💡 Comment installer Composer :${NC}"
+    if [[ "$(uname)" == "Darwin" ]]; then
+        echo "  macOS (installation globale) :"
+        echo "  php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\""
+        echo "  php composer-setup.php --install-dir=/opt/homebrew/bin --filename=composer"
+        echo "  php -r \"unlink('composer-setup.php');\""
+    else
+        echo "  Linux : https://getcomposer.org/download/"
+    fi
     exit 1
 fi
 
 if ! command_exists node; then
     echo -e "${RED}❌ Node.js n'est pas installé${NC}"
+    echo ""
+    echo -e "${YELLOW}💡 Comment installer Node.js :${NC}"
+    if [[ "$(uname)" == "Darwin" ]]; then
+        echo "  macOS : brew install node"
+    else
+        echo "  Ubuntu/Debian : curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs"
+    fi
+    echo "  Ou téléchargez depuis : https://nodejs.org/"
     exit 1
 fi
 
 if ! command_exists npm; then
     echo -e "${RED}❌ NPM n'est pas installé${NC}"
+    echo -e "${YELLOW}💡 NPM est normalement inclus avec Node.js${NC}"
     exit 1
 fi
 
 echo -e "${GREEN}✅ Tous les prérequis sont installés${NC}"
+sleep 1
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    SED_INPLACE=("-i" "")
+else
+    SED_INPLACE=("-i")
+fi
 
 # 1. Installation des dépendances
 echo -e "${YELLOW}📦 Installation des dépendances PHP...${NC}"
+sleep 1
 composer install
 
 echo -e "${YELLOW}📦 Installation des dépendances Node.js...${NC}"
+sleep 1
 npm install
 
 # 2. Configuration de l'environnement
 if [ ! -f .env ]; then
     echo -e "${YELLOW}⚙️  Création du fichier .env...${NC}"
+    sleep 1
     cp .env.example .env
     echo -e "${GREEN}✅ Fichier .env créé${NC}"
 else
@@ -68,14 +138,20 @@ fi
 
 # 3. Génération de la clé d'application
 echo -e "${YELLOW}🔑 Génération de la clé d'application...${NC}"
+sleep 1
 php artisan key:generate --force
 
 # 4. Configuration de la base de données
+echo ""
 echo -e "${YELLOW}🗄️  Configuration de la base de données...${NC}"
-echo "Choisissez votre méthode d'installation :"
-echo "1) Docker (Recommandé)"
-echo "2) XAMPP"
-echo "3) MySQL/MariaDB local"
+sleep 1
+echo ""
+echo "Choisissez votre méthode d'installation de la base de données :"
+echo "1) Docker (Recommandé) - Lance MariaDB dans un conteneur"
+echo "2) XAMPP - Utilise MySQL/MariaDB de XAMPP"
+echo "3) MySQL/MariaDB local - Base de données déjà installée sur votre machine"
+echo ""
+sleep 1
 
 read -p "Votre choix (1-3): " -n 1 -r
 echo
@@ -83,6 +159,7 @@ echo
 case $REPLY in
     1)
         echo -e "${YELLOW}🐳 Configuration avec Docker...${NC}"
+        sleep 1
         
         if ! command_exists docker; then
             echo -e "${RED}❌ Docker n'est pas installé${NC}"
@@ -95,6 +172,7 @@ case $REPLY in
         
         # Lancer le conteneur MariaDB
         echo -e "${YELLOW}🚀 Lancement du conteneur MariaDB...${NC}"
+        sleep 1
         if ! docker run -d \
             --name mathsmanager-db \
             -e MYSQL_ROOT_PASSWORD=root \
@@ -130,30 +208,38 @@ case $REPLY in
             exit 1
         fi
         
-        # Mettre à jour le .env avec des expressions plus robustes
-        sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
-        sed -i 's/^DB_PORT=.*/DB_PORT=3307/' .env
-        sed -i 's/^DB_DATABASE=.*/DB_DATABASE=mathsManager/' .env
-        sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
-        sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+    # Mettre à jour le .env avec des expressions plus robustes
+    sed "${SED_INPLACE[@]}" 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_PORT=.*/DB_PORT=3307/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_DATABASE=.*/DB_DATABASE=mathsManager/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+    # Forcer l'utilisation du port TCP au lieu du socket Unix (important pour macOS)
+    if grep -q "^DB_SOCKET=" .env; then
+        sed "${SED_INPLACE[@]}" 's/^DB_SOCKET=.*/DB_SOCKET=/' .env
+    else
+        echo "DB_SOCKET=" >> .env
+    fi
         ;;
         
     2)
         echo -e "${YELLOW}📊 Configuration avec XAMPP...${NC}"
         echo "Assurez-vous que XAMPP est démarré (Apache + MySQL)"
+        sleep 1
         
-        # Mettre à jour le .env
-        sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
-        sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
-        sed -i 's/^DB_DATABASE=.*/DB_DATABASE=mathsManager/' .env
-        sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
-        sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=/' .env
+    # Mettre à jour le .env
+    sed "${SED_INPLACE[@]}" 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_PORT=.*/DB_PORT=3306/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_DATABASE=.*/DB_DATABASE=mathsManager/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
+    sed "${SED_INPLACE[@]}" 's/^DB_PASSWORD=.*/DB_PASSWORD=/' .env
         
         read -p "Appuyez sur Entrée quand XAMPP est prêt..."
         ;;
         
     3)
         echo -e "${YELLOW}🗄️  Configuration MySQL/MariaDB local...${NC}"
+        sleep 1
         read -p "Host (127.0.0.1): " db_host
         read -p "Port (3306): " db_port
         read -p "Database (mathsManager): " db_name
@@ -167,12 +253,12 @@ case $REPLY in
             exit 1
         fi
         
-        # Mettre à jour le .env
-        sed -i "s/^DB_HOST=.*/DB_HOST=${db_host:-127.0.0.1}/" .env
-        sed -i "s/^DB_PORT=.*/DB_PORT=${db_port:-3306}/" .env
-        sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${db_name:-mathsManager}/" .env
-        sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${db_user:-root}/" .env
-        sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${db_pass}/" .env
+    # Mettre à jour le .env
+    sed "${SED_INPLACE[@]}" "s/^DB_HOST=.*/DB_HOST=${db_host:-127.0.0.1}/" .env
+    sed "${SED_INPLACE[@]}" "s/^DB_PORT=.*/DB_PORT=${db_port:-3306}/" .env
+    sed "${SED_INPLACE[@]}" "s/^DB_DATABASE=.*/DB_DATABASE=${db_name:-mathsManager}/" .env
+    sed "${SED_INPLACE[@]}" "s/^DB_USERNAME=.*/DB_USERNAME=${db_user:-root}/" .env
+    sed "${SED_INPLACE[@]}" "s/^DB_PASSWORD=.*/DB_PASSWORD=${db_pass}/" .env
         ;;
         
     *)
@@ -182,40 +268,38 @@ case $REPLY in
 esac
 
 # 5. Test de la connexion à la base de données
+echo ""
 echo -e "${YELLOW}🔌 Test de la connexion à la base de données...${NC}"
 sleep 2
 
-# Récupérer la config de la base depuis .env
-source <(grep -E '^(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD)=' .env | sed 's/^/export /')
-
-# Tentatives multiples de connexion avec les vraies valeurs du .env
+# Tentatives multiples de connexion via Laravel Artisan qui respecte le DB_SOCKET
 for i in {1..5}; do
-    # Test de connexion avec les vraies variables
-    if php -r "try { 
-        \$pdo = new PDO('mysql:host=${DB_HOST};port=${DB_PORT};dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}');
-        echo 'OK';
-    } catch(Exception \$e) {
-        echo 'Erreur: ' . \$e->getMessage() . PHP_EOL;
-        exit(1);
-    }"; then
+    # Test de connexion via artisan qui utilise la config Laravel complète
+    if php artisan db:show >/dev/null 2>&1; then
         echo -e "${GREEN}✅ Connexion à la base de données réussie${NC}"
         break
     else
         if [ $i -eq 5 ]; then
             echo -e "${RED}❌ Impossible de se connecter à la base de données après 5 tentatives${NC}"
             echo "Vérifiez vos paramètres dans le fichier .env"
+            echo ""
             echo "Contenu actuel du .env (section DB):"
             grep "^DB_" .env
             echo ""
+            
+            # Récupérer les valeurs pour les conseils
+            DB_PORT=$(grep "^DB_PORT=" .env | cut -d'=' -f2)
+            
             echo -e "${YELLOW}💡 Conseils de dépannage :${NC}"
             if [ "$DB_PORT" = "3307" ]; then
                 echo "• Docker est configuré, vérifiez que le conteneur fonctionne : docker ps"
+                echo "• Vérifiez les logs du conteneur : docker logs mathsmanager-db"
                 echo "• Redémarrez le conteneur : docker restart mathsmanager-db"
+                echo "• Testez manuellement : docker exec -it mathsmanager-db mysql -uroot -proot"
             elif [ "$DB_PORT" = "3306" ]; then
                 echo "• XAMPP/MySQL local configuré, vérifiez que le service est démarré"
-                echo "• Testez la connexion : mysql -h${DB_HOST} -P${DB_PORT} -u${DB_USERNAME} -p"
+                echo "• Testez la connexion : mysql -h127.0.0.1 -P3306 -uroot -p"
             fi
-            echo "• Vérifiez que la base '${DB_DATABASE}' existe"
             exit 1
         fi
         echo "Tentative $i/5 échouée, nouvelle tentative dans 3 secondes..."
@@ -224,23 +308,31 @@ for i in {1..5}; do
 done
 
 # 6. Exécution des migrations
+echo ""
 echo -e "${YELLOW}🔄 Exécution des migrations...${NC}"
+sleep 1
 php artisan migrate
 
 # 7. Création des liens symboliques
+echo ""
 echo -e "${YELLOW}🔗 Création des liens symboliques...${NC}"
+sleep 1
 php artisan storage:link
 
 # 8. Compilation des assets
+echo ""
 echo -e "${YELLOW}🎨 Compilation des assets...${NC}"
+sleep 1
 npm run build
 
 # 9. Proposer les actions optionnelles
+echo ""
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════════╗"
 echo "║            INSTALLATION TERMINÉE        ║"
 echo "╚══════════════════════════════════════════╝"
 echo -e "${NC}"
+sleep 1
 
 echo -e "${GREEN}🎉 Installation terminée avec succès !${NC}"
 echo ""
@@ -252,18 +344,37 @@ if [ -f "mathsmanager-sample.sql.gz" ]; then
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "Décompression et import de mathsmanager-sample.sql.gz..."
-        source <(grep -E '^(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD)=' .env | sed 's/^/export /')
+        
+        # Récupérer le port depuis .env (trim whitespace)
+        DB_PORT=$(grep "^DB_PORT=" .env | cut -d'=' -f2 | tr -d ' \r\n')
+        DB_USERNAME=$(grep "^DB_USERNAME=" .env | cut -d'=' -f2 | tr -d ' \r\n')
+        DB_PASSWORD=$(grep "^DB_PASSWORD=" .env | cut -d'=' -f2 | tr -d ' \r\n')
+        DB_DATABASE=$(grep "^DB_DATABASE=" .env | cut -d'=' -f2 | tr -d ' \r\n')
+        DB_HOST=$(grep "^DB_HOST=" .env | cut -d'=' -f2 | tr -d ' \r\n')
         
         if [ "$DB_PORT" = "3307" ]; then
-            gunzip -c "mathsmanager-sample.sql.gz" | docker exec -i mathsmanager-db mysql -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE"
+            # Docker : utiliser docker exec avec mysql (pas besoin de client mysql local)
+            echo -e "${YELLOW}Utilisation de Docker pour l'import...${NC}"
+            if gunzip -c "mathsmanager-sample.sql.gz" | docker exec -i mathsmanager-db mysql -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" 2>/dev/null; then
+                echo -e "${GREEN}✅ Données de démonstration importées${NC}"
+            else
+                echo -e "${RED}❌ Erreur lors de l'import des données${NC}"
+                echo "Vous pouvez importer manuellement plus tard avec :"
+                echo "gunzip -c mathsmanager-sample.sql.gz | docker exec -i mathsmanager-db mysql -uroot -proot mathsManager"
+            fi
         else
-            gunzip -c "mathsmanager-sample.sql.gz" | mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE"
-        fi
-        
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}✅ Données de démonstration importées${NC}"
-        else
-            echo -e "${RED}❌ Erreur lors de l'import des données${NC}"
+            # XAMPP/MySQL local : nécessite le client mysql
+            if command_exists mysql; then
+                echo -e "${YELLOW}Utilisation du client MySQL local...${NC}"
+                if gunzip -c "mathsmanager-sample.sql.gz" | mysql -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" 2>/dev/null; then
+                    echo -e "${GREEN}✅ Données de démonstration importées${NC}"
+                else
+                    echo -e "${RED}❌ Erreur lors de l'import des données${NC}"
+                fi
+            else
+                echo -e "${RED}❌ Le client mysql n'est pas installé${NC}"
+                echo "Installez-le avec : brew install mysql-client (macOS) ou apt-get install mysql-client (Linux)"
+            fi
         fi
     fi
 fi
