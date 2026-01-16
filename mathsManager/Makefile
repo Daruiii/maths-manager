@@ -21,12 +21,13 @@ help:
 	@echo "  vite         - Lancer Vite en mode développement"
 	@echo "  deploy       - Déployer en production (branche main)"
 	@echo "  deploy-preprod - Déployer en preprod (branche develop)"
-	@echo "  deploy-sample-to-preprod - Déployer les données sample en preprod"
-	@echo "  reset-preprod-with-sample - Réinitialiser preprod avec données sample"
 	@echo "  prod-optimize - Optimiser pour la production"
 	@echo "  install      - Installer les dépendances"
 	@echo "  sync-images  - Synchroniser les images vers la production"
 	@echo "  fetch-images - Récupérer les images depuis la production"
+	@echo "  export-prod-to-sample - Exporter la base prod → sample local"
+	@echo "  import-sample-local - Importer le sample → base locale"
+	@echo "  deploy-sample-to-preprod - Déployer le sample → preprod"
 	@echo "  clean        - Nettoyer les caches"
 	@echo "  status       - Afficher le statut de l'application"
 
@@ -47,42 +48,57 @@ prod-optimize:
 	$(NPM_BINARY) run build
 	@echo "✅ Optimisations terminées"
 
-# Cible principale de déploiement
+# Déploiement en production (branche main)
+# Étapes :
+# 1. Optimise le code (cache config/routes/views + build Vite)
+# 2. Sync le code vers le serveur (EXCLUT public/storage pour éviter bug symlink)
+# 3. Sync les images séparément vers leur destination finale (public/storage/images/)
+# 4. Sur le serveur : installe dépendances, migrations, recrée symlink storage, fixe permissions
 deploy: prod-optimize
 	@echo "📦 Déploiement en cours..."
 	@mkdir -p storage/app/public/images
-	@rm -f public/hot  # Remove Vite hot file to ensure production assets are used
+	@rm -f public/hot  # Supprime le fichier Vite hot pour forcer l'usage des assets compilés
+	# Rsync 1/2 : Sync tout le code SAUF public/storage (symlink) et .env (spécifique serveur)
 	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(SERVER_HOST)/
-	@if [ -d "storage/app/public/images" ]; then \\
-		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \\
-	else \\
-		echo "⚠️  Dossier images introuvable, ignoré"; \\
+	@if [ -d "storage/app/public/images" ]; then \
+		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \
+	else \
+		echo "⚠️  Dossier images introuvable, ignoré"; \
 	fi
-	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f public/hot && rm -rf public/storage && make install-prod && php-8.3 artisan storage:link'
+	# Commandes sur le serveur : fixe permissions racine + cleanup + install prod + symlink
+	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && chmod 755 . && rm -f public/hot && rm -rf public/storage && make install-prod && php-8.3 artisan storage:link'
 	@echo "🎉 Déploiement terminé !"
 
-# Déploiement preprod (branche develop)
+# Déploiement en preprod (branche develop) - Même logique que deploy prod
 deploy-preprod: prod-optimize
 	@echo "📦 Déploiement preprod en cours..."
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot
+	# Rsync 1/2 : Sync tout le code SAUF public/storage (symlink) et .env (spécifique serveur)
 	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(PREPROD_HOST)/
-	@if [ -d "storage/app/public/images" ]; then \\
-		rsync -avz storage/app/public/images/ $(SERVER_USER):$(PREPROD_HOST)/public/storage/images/; \\
-	else \\
-		echo "⚠️  Dossier images introuvable, ignoré"; \\
+	@if [ -d "storage/app/public/images" ]; then \
+		rsync -avz storage/app/public/images/ $(SERVER_USER):$(PREPROD_HOST)/public/storage/images/; \
+	else \
+		echo "⚠️  Dossier images introuvable, ignoré"; \
 	fi
-	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && rm -f public/hot && rm -rf public/storage && make install-preprod && php-8.3 artisan storage:link'
+	# Commandes sur le serveur : fixe permissions racine + cleanup + install preprod + symlink
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && chmod 755 . && rm -f public/hot && rm -rf public/storage && make install-preprod && php-8.3 artisan storage:link'
 	@echo "🎉 Déploiement preprod terminé !"
 
 # Installation pour la production (sur le serveur)
+# Exécuté automatiquement après deploy via SSH
+# Configure l'environnement en mode production et optimise Laravel
 install-prod: vendor/autoload.php .env public/storage
 	@echo "🔧 Installation en mode production..."
-	@echo "🔧 Fixing storage permissions..."
+	@echo "🔧 Fixing permissions..."
 	chmod -R 775 storage bootstrap/cache
+	find public -type f -exec chmod 644 {} \; || true
+	find public -type d -exec chmod 755 {} \; || true
 	@echo "🔧 Setting production environment..."
-	sed -i 's/APP_ENV=local/APP_ENV=production/' .env
-	sed -i 's/APP_DEBUG=true/APP_DEBUG=false/' .env
+	# Force APP_ENV=production (remplace n'importe quelle valeur existante)
+	sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env
+	# Force APP_DEBUG=false (remplace n'importe quelle valeur existante)
+	sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
 	@echo "🔧 Clearing cached config..."
 	rm -rf bootstrap/cache/config.php bootstrap/cache/routes*.php bootstrap/cache/packages.php bootstrap/cache/services.php || true
 	php-8.3 artisan config:clear || true
@@ -94,13 +110,19 @@ install-prod: vendor/autoload.php .env public/storage
 	@echo "✅ Installation production terminée"
 
 # Installation pour la preprod (sur le serveur)
+# Exécuté automatiquement après deploy-preprod via SSH
+# Configure l'environnement en mode staging (preprod) avec debug activé
 install-preprod: vendor/autoload.php .env public/storage
 	@echo "🔧 Installation en mode preprod..."
-	@echo "🔧 Fixing storage permissions..."
+	@echo "🔧 Fixing permissions..."
 	chmod -R 775 storage bootstrap/cache
+	find public -type f -exec chmod 644 {} \; || true
+	find public -type d -exec chmod 755 {} \; || true
 	@echo "🔧 Setting preprod environment..."
-	sed -i 's/APP_ENV=local/APP_ENV=staging/' .env
-	sed -i 's/APP_DEBUG=true/APP_DEBUG=true/' .env
+	# Force APP_ENV=staging (remplace n'importe quelle valeur existante)
+	sed -i 's/^APP_ENV=.*/APP_ENV=staging/' .env
+	# Force APP_DEBUG=true pour preprod (remplace n'importe quelle valeur existante)
+	sed -i 's/^APP_DEBUG=.*/APP_DEBUG=true/' .env
 	@echo "🔧 Clearing cached config..."
 	rm -rf bootstrap/cache/config.php bootstrap/cache/routes*.php bootstrap/cache/packages.php bootstrap/cache/services.php || true
 	php-8.3 artisan config:clear || true
@@ -131,13 +153,16 @@ public/build/manifest.json: package.json
 	npm install
 	npm run build
 
-# Cible pour synchroniser seulement les images de storage (à exécuter manuellement si nécessaire)
+# Synchroniser manuellement les images locales vers la production
+# Utilité : Si tu ajoutes/modifies des images en local et veux les pousser sans redéployer tout le code
+# Comportement : Ajoute/met à jour les images locales sur le serveur (ne supprime PAS les images serveur)
+# Attention : Si tu supprimes une image en local, elle restera présente sur le serveur
 sync-images:
 	@echo "📸 Synchronisation des images vers la production..."
 	rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/
 	@echo "✅ Images synchronisées vers la production"
 
-# Récupérer les images depuis la production
+# Récupérer les images depuis la production en local
 fetch-images:
 	@echo "📥 Récupération des images depuis la production..."
 	@mkdir -p storage/app/public/images
@@ -165,11 +190,8 @@ quick-deploy:
 	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && php-8.3 artisan migrate --force && php-8.3 artisan config:cache'
 	@echo "✅ Déploiement rapide terminé"
 
-# Rollback (revenir à la version précédente)
-rollback:
-	@echo "⏪ Rollback en cours..."
-	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && git reset --hard HEAD~1 && php-8.3 artisan migrate:rollback && make install-prod'
-	@echo "✅ Rollback terminé"
+# Rollback non implémenté (déploiement via rsync, pas git)
+# Pour rollback : redéployer manuellement une version antérieure depuis git local
 
 # Logs de production
 logs:
@@ -182,6 +204,42 @@ test-vars:
 	@echo "PREPROD_HOST: $(PREPROD_HOST)"
 
 
+# Exporter la base de données de prod vers le fichier sample local
+# Utilité : Mettre à jour mathsmanager-sample.sql.gz avec les données réelles de prod
+export-prod-to-sample:
+	@echo "📥 Export de la base de données prod..."
+	@echo "🗄️  Dump de la base prod sur le serveur (saisissez le mot de passe MySQL)..."
+	ssh -t $(SERVER_USER) 'cd $(SERVER_HOST) && mysqldump -h dm2blc.myd.infomaniak.com -u dm2blc_david -p dm2blc_mathsManager > temp-dump.sql && gzip -f temp-dump.sql'
+	@echo "📥 Téléchargement du dump..."
+	rsync -avz $(SERVER_USER):$(SERVER_HOST)/temp-dump.sql.gz mathsmanager-sample.sql.gz
+	@echo "🧹 Nettoyage du serveur..."
+	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f temp-dump.sql.gz'
+	@echo "✅ Base de données exportée dans mathsmanager-sample.sql.gz"
+
+# Importer les données sample en local
+# Utilité : Remplir la base de données locale avec les données sample (données de prod)
+# Supporte Docker (mathsmanager-db) et MySQL natif
+import-sample-local:
+	@echo "📥 Import des données sample en local..."
+	@echo "⚠️  Cette opération va écraser toutes les données locales !"
+	@if docker ps 2>/dev/null | grep -q mathsmanager-db; then \
+		echo "🐳 Détecté : Docker container (mathsmanager-db)"; \
+		echo "🗄️  Import via Docker..."; \
+		gunzip -c mathsmanager-sample.sql.gz | docker exec -i mathsmanager-db mysql -u root -proot mathsManager; \
+	elif command -v mysql >/dev/null 2>&1; then \
+		echo "💻 Détecté : MySQL natif"; \
+		echo "🗄️  Import en base locale (saisissez votre mot de passe)..."; \
+		gunzip -c mathsmanager-sample.sql.gz | mysql -u root -p mathsmanager; \
+	else \
+		echo "❌ Erreur : ni Docker ni MySQL trouvé"; \
+		exit 1; \
+	fi
+	@echo "🔄 Migrations et caches..."
+	$(PHP_BINARY) artisan migrate
+	$(PHP_BINARY) artisan config:clear
+	$(PHP_BINARY) artisan cache:clear
+	@echo "✅ Données sample importées en local"
+
 # Déployer les données sample vers la preprod
 deploy-sample-to-preprod:
 	@echo "🎯 Déploiement des données sample → preprod..."
@@ -191,9 +249,3 @@ deploy-sample-to-preprod:
 	@echo "🗄️  Import en base preprod (saisissez le mot de passe MySQL)..."
 	ssh -t $(SERVER_USER) 'cd $(PREPROD_HOST) && echo "Import des données sample..." && gunzip -c mathsmanager-sample.sql.gz | mysql -h dm2blc.myd.infomaniak.com -u dm2blc_david -p dm2blc_mathsManager_preprod'
 	@echo "🎉 Données sample déployées en preprod !"
-
-# Réinitialiser la preprod avec les données sample
-reset-preprod-with-sample: deploy-sample-to-preprod
-	@echo "🔄 Configuration post-import..."
-	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && php-8.3 artisan config:clear && php-8.3 artisan cache:clear'
-	@echo "✅ Preprod réinitialisée avec les données sample"
