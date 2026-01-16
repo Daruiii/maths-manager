@@ -7,6 +7,7 @@ class LatexToHtmlConverter
     const VARIANT_QUIZ = 'quiz';
     const VARIANT_EXERCISE = 'exercise';
     const VARIANT_DS_EXERCISE = 'ds_exercise';
+    const VARIANT_RECAP = 'recap';
 
     /**
      * Convertit le contenu LaTeX personnalisé en HTML
@@ -104,6 +105,16 @@ class LatexToHtmlConverter
                 $basePatterns["/\\{([0-9.]+)\\\\linewidth\\}/"] = "<style='width: calc($1% - 2em);'>";
                 $basePatterns["/\\{\\\\linewidth\\}\\{(.+?)\\}/"] = "<style='width: $1;'>";
                 break;
+
+            case self::VARIANT_RECAP:
+                // Spécificités pour les récapitulatifs (préserve comportement RecapController)
+                $basePatterns["/\\\\begin\\{center\\}/"] = "<div class='latex-center'>";
+                $basePatterns["/\\\\end\\{center\\}/"] = " </div>";
+                $basePatterns["/\\\\begin\\{tabularx\\}\\{(.+?)\\}/"] = "<span class='latex latex-tabularx' style='width: $1%;'>";
+                $basePatterns["/\\\\end\\{tabularx\\}/"] = "</span>";
+                $basePatterns["/\\{([0-9.]+)\\\\linewidth\\}/"] = "<style='width: calc($1% - 2em);'> </style>";
+                $basePatterns["/\\{\\\\linewidth\\}\\{(.+?)\\}/"] = "<style='width:'$1';'> </style>";
+                break;
         }
 
         return $basePatterns;
@@ -155,5 +166,10 @@ class LatexToHtmlConverter
     public static function convertForDsExercise(string $latexContent, array $images = []): string
     {
         return app(self::class)->convert($latexContent, $images, self::VARIANT_DS_EXERCISE);
+    }
+
+    public static function convertForRecap(string $latexContent): string
+    {
+        return app(self::class)->convert($latexContent, [], self::VARIANT_RECAP);
     }
 }

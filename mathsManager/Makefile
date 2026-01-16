@@ -60,7 +60,7 @@ deploy: prod-optimize
 	else \\
 		echo "⚠️  Dossier images introuvable, ignoré"; \\
 	fi
-	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f public/hot && make install-prod && (php-8.3 artisan storage:link || echo "Storage link already exists")'
+	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f public/hot && rm -rf public/storage && make install-prod && php-8.3 artisan storage:link'
 	@echo "🎉 Déploiement terminé !"
 
 # Déploiement preprod (branche develop)
@@ -74,7 +74,7 @@ deploy-preprod: prod-optimize
 	else \\
 		echo "⚠️  Dossier images introuvable, ignoré"; \\
 	fi
-	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && rm -f public/hot && make install-preprod && (php-8.3 artisan storage:link || echo "Storage link already exists")'
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && rm -f public/hot && rm -rf public/storage && make install-preprod && php-8.3 artisan storage:link'
 	@echo "🎉 Déploiement preprod terminé !"
 
 # Installation pour la production (sur le serveur)
