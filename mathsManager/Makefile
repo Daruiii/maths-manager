@@ -1,5 +1,3 @@
-# Ce fichier Makefile permet de déployer l'application sur le serveur de production et de synchroniser les images du dossier storage
-
 .PHONY: serve vite deploy install prod-optimize sync-images clean status help
 
 # Variables (peuvent être overridées via Makefile.local ou variables d'environnement)
@@ -54,7 +52,7 @@ deploy: prod-optimize
 	@echo "📦 Déploiement en cours..."
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot  # Remove Vite hot file to ensure production assets are used
-	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' . $(SERVER_USER):$(SERVER_HOST)/
+	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(SERVER_HOST)/
 	@if [ -d "storage/app/public/images" ]; then \\
 		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \\
 	else \\
@@ -68,7 +66,7 @@ deploy-preprod: prod-optimize
 	@echo "📦 Déploiement preprod en cours..."
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot
-	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' . $(SERVER_USER):$(PREPROD_HOST)/
+	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(PREPROD_HOST)/
 	@if [ -d "storage/app/public/images" ]; then \\
 		rsync -avz storage/app/public/images/ $(SERVER_USER):$(PREPROD_HOST)/public/storage/images/; \\
 	else \\
