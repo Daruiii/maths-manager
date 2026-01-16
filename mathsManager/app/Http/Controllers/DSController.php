@@ -110,22 +110,15 @@ class DSController extends Controller
         if (Auth::id() != $id) {
             return redirect()->route('ds.myDS', Auth::id());
         }
-        // with chapters and exercisesDS
-        $dsList = DS::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        foreach ($dsList as $ds) {
-            foreach ($ds->exercisesDS as $exerciseDS) {
-                $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
-            }
-        }
-        // get the corrections data, ds are linked to correction requests
-        $correctionRequests = CorrectionRequest::all();
-        foreach ($dsList as $ds) {
-            foreach ($correctionRequests as $correctionRequest) {
-                if ($ds->id == $correctionRequest->ds_id) {
-                    $ds->correctionRequest = $correctionRequest;
-                }
-            }
-        }
+        // Eager loading pour éviter N+1 queries (fix #14.2)
+        $dsList = DS::where('user_id', $id)
+            ->with([
+                'exercisesDS.multipleChapter',  // Charge exercices + leurs chapitres
+                'correctionRequest'              // Charge les demandes de correction
+            ])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('ds.myDS', compact('dsList'));
     }
