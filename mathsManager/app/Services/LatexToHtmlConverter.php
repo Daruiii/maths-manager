@@ -122,17 +122,84 @@ class LatexToHtmlConverter
 
     /**
      * Traite les images dans le contenu LaTeX
+     *
+     * Supporte 2 syntaxes:
+     * - Ancienne (index): \graph{0.5}{description}
+     * - Nouvelle (référence): \graph{img1}{0.5}{description}
      */
     private function processImages(string $content, array $images): string
     {
         $imageIndex = 0;
-        
-        return preg_replace_callback("/\\\\graph\\{(.*?)\\}\\{(.*?)\\}/", function ($matches) use (&$images, &$imageIndex) {
-            $imagePath = $images[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
-            $imageIndex++;
-            $percent = $matches[1] * 100;
-            return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='{$matches[2]}' class='png' style='width: {$percent}%;'></div>";
-        }, $content);
+
+        // Nouvelle syntaxe: \graph{identifier}{width}{description}
+        $content = preg_replace_callback(
+            "/\\\\graph\\{([a-zA-Z0-9_-]+)\\}\\{([0-9.]+)\\}\\{(.*?)\\}/",
+            function ($matches) use ($images) {
+                $identifier = $matches[1];  // ex: "img1", "statement_1", etc.
+                $width = $matches[2];       // ex: "0.5"
+                $description = $matches[3]; // ex: "Ma courbe"
+
+                // Chercher l'image par son identifiant
+                $imagePath = $this->findImageByIdentifier($images, $identifier);
+
+                if (!$imagePath) {
+                    // Image non trouvée, placeholder
+                    $imagePath = 'ds_exercises/img_placeholder.png';
+                }
+
+                $percent = $width * 100;
+                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='{$description}' class='png' style='width: {$percent}%;'></div>";
+            },
+            $content
+        );
+
+        // Ancienne syntaxe (backward compatibility): \graph{width}{description}
+        // Convertir le tableau associatif en tableau indexé pour la compatibilité
+        $imagesIndexed = array_values($images);
+
+        $content = preg_replace_callback(
+            "/\\\\graph\\{([0-9.]+)\\}\\{(.*?)\\}/",
+            function ($matches) use (&$imagesIndexed, &$imageIndex) {
+                $width = $matches[1];
+                $description = $matches[2];
+
+                // Utilise l'index comme avant (pour backward compatibility)
+                $imagePath = $imagesIndexed[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
+                $imageIndex++;
+
+                $percent = $width * 100;
+                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='{$description}' class='png' style='width: {$percent}%;'></div>";
+            },
+            $content
+        );
+
+        return $content;
+    }
+
+    /**
+     * Trouve une image par son identifiant dans le tableau d'images
+     *
+     * @param array $images Tableau d'images (chemins ou array avec identifiants)
+     * @param string $identifier Identifiant recherché (ex: "img1", "statement_1")
+     * @return string|null Le chemin de l'image ou null si non trouvé
+     */
+    private function findImageByIdentifier(array $images, string $identifier): ?string
+    {
+        // Si $images est un tableau associatif avec identifiants
+        if (isset($images[$identifier])) {
+            return $images[$identifier];
+        }
+
+        // Sinon, chercher dans les chemins (ex: "statement_1.jpg" matche "statement_1" ou "img1")
+        foreach ($images as $imagePath) {
+            $filename = basename($imagePath, '.' . pathinfo($imagePath, PATHINFO_EXTENSION));
+
+            if ($filename === $identifier || str_contains($imagePath, $identifier)) {
+                return $imagePath;
+            }
+        }
+
+        return null;
     }
 
     /**

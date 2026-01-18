@@ -6,9 +6,16 @@ use App\Models\Content;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
+use App\Services\FileUploadService;
 
 class ContentController extends Controller
 {
+    protected FileUploadService $fileUploadService;
+
+    public function __construct(FileUploadService $fileUploadService)
+    {
+        $this->fileUploadService = $fileUploadService;
+    }
     public function index()
     {
         // Récupérer toutes les sections de contenu
@@ -37,42 +44,44 @@ class ContentController extends Controller
         $request->validate([
             'title' => 'nullable|string|max:255',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Limité à 2 Mo
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
-    
+
         // Récupérer la section spécifique
         $content = Content::where('section', $section)->firstOrFail();
-    
-        // Chemin du dossier pour stocker l'image
-        $imageDirectory = 'storage/contents/';
-    
-        // Supprimer l'ancienne image si une nouvelle est téléchargée
+
+        // Gestion de l'image
         if ($request->hasFile('image')) {
-            // Supprimer l'image existante si elle est présente
-            if ($content->image && file_exists(public_path($content->image))) {
-                unlink(public_path($content->image));
+            // Supprimer l'ancienne image si elle existe
+            if ($content->image) {
+                $this->fileUploadService->delete($content->image, true);
             }
-    
-            // Enregistrer la nouvelle image
-            $newImage = $request->file('image');
-            $imageName = $content->section . '.' . $newImage->getClientOriginalExtension();
-            $newImage->move(public_path($imageDirectory), $imageName);
-    
-            // Mettre à jour le chemin de l'image dans la base de données
-            $content->image = $imageDirectory . $imageName;
+
+            // Upload la nouvelle image via le service
+            try {
+                $imagePath = $this->fileUploadService->upload(
+                    file: $request->file('image'),
+                    context: 'contents',
+                    identifier: $section,
+                    type: 'image',
+                    isPublic: true,
+                    customName: $section
+                );
+                $content->image = $imagePath;
+            } catch (\Exception $e) {
+                return back()->withErrors('Échec de l\'upload de l\'image : ' . $e->getMessage());
+            }
         } elseif ($request->input('remove_image') === 'true' && $content->image) {
-            // Si l'utilisateur a choisi de supprimer l'image actuelle
-            if (file_exists(public_path($content->image))) {
-                unlink(public_path($content->image));
-            }
-            $content->image = null; // Retirer l'image de la base de données
+            // Supprimer l'image actuelle
+            $this->fileUploadService->delete($content->image, true);
+            $content->image = null;
         }
-    
+
         // Mise à jour des autres champs
         $content->title = $request->input('title');
         $content->content = $request->input('content');
         $content->save();
-    
+
         return Redirect::route('content.edit', $section)->with('success', 'Contenu mis à jour avec succès');
     }
     

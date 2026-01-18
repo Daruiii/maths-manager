@@ -13,6 +13,13 @@ use App\Mail\CorrectionCorrectedMail;
 
 class CorrectionRequestController extends Controller
 {
+    protected \App\Services\FileUploadService $fileUploadService;
+
+    public function __construct(\App\Services\FileUploadService $fileUploadService)
+    {
+        $this->fileUploadService = $fileUploadService;
+    }
+
     private function destroyCorrectionFolder($id)
     {
         // there is a folder correction in the folder
@@ -114,17 +121,20 @@ class CorrectionRequestController extends Controller
         $correctionRequest->grade = 0;
         $correctionRequest->save();
 
-        $imagesPaths = [];
-        // si le folder 'correctionRequests/ds_id' existe supprimer son contenu et le folder
-        $this->destroyCorrectionFolder($ds_id);
+        // Supprimer l'ancien dossier de correction s'il existe
+        $this->fileUploadService->deleteDirectory('corrections', 'ds-' . $ds_id, false);
 
-        foreach ($request->file('pictures') as $key => $image) {
-            $img_name = $key + 1 . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('storage/correctionRequests/' . $ds_id);
-            $image->move($destinationPath, $img_name);
-            $imagesPaths[] = 'correctionRequests/' . $ds_id . '/' . $img_name;
-        }
-        $correctionRequest->pictures = json_encode($imagesPaths);
+        // Upload des photos élèves en PRIVÉ avec FileUploadService
+        $uploadedPaths = $this->fileUploadService->uploadMultiple(
+            files: $request->file('pictures'),
+            context: 'corrections',
+            identifier: 'ds-' . $ds_id,
+            type: 'image',
+            isPublic: false,  // PRIVÉ - accessible uniquement avec authentification
+            prefix: 'student_'
+        );
+
+        $correctionRequest->pictures = json_encode($uploadedPaths);
         $correctionRequest->message = $request->message;
         $correctionRequest->save();
 
@@ -185,34 +195,36 @@ class CorrectionRequestController extends Controller
         $correctionRequest->corrector_id = auth()->user()->id;
         $correctionRequest->correction_message = $request->correction_message;
 
-        $correctionsImagesPaths = [];
-
-
+        // Upload des images de correction en PRIVÉ
         if ($request->file('correction_pictures')) {
-            if (file_exists(public_path('storage/correctionRequests/' . $ds_id . '/correction'))) {
-                $this->destroyCorrectionFolder($ds_id);
-            }
-
-            foreach ($request->file('correction_pictures') as $key => $image) {
-                // enregistrer l'image dans le path 'public/storage/correctionRequests/ds_id/correction/1.jpg' then 2.jpg, 3.jpg, ...
-                $img_name = $key + 1 . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path('storage/correctionRequests/' . $ds_id . '/correction');
-                $image->move($destinationPath, $img_name);
-                $correctionsImagesPaths[] = 'correctionRequests/' . $ds_id . '/correction/' . $img_name;
-            }
-            $correctionRequest->correction_pictures = json_encode($correctionsImagesPaths);
+            $uploadedPaths = $this->fileUploadService->uploadMultiple(
+                files: $request->file('correction_pictures'),
+                context: 'corrections',
+                identifier: 'ds-' . $ds_id,
+                type: 'image',
+                isPublic: false,  // PRIVÉ - correction visible uniquement par l'élève/prof
+                prefix: 'corrected_'
+            );
+            $correctionRequest->correction_pictures = json_encode($uploadedPaths);
         }
+
+        // Upload du PDF de correction en PRIVÉ
         if ($request->file('correction_pdf')) {
-            // Supprime l'ancien PDF s'il existe
-            if ($correctionRequest->correction_pdf && file_exists(public_path('storage/' . $correctionRequest->correction_pdf))) {
-                unlink(public_path('storage/' . $correctionRequest->correction_pdf));
+            // Supprimer l'ancien PDF s'il existe
+            if ($correctionRequest->correction_pdf) {
+                $this->fileUploadService->delete($correctionRequest->correction_pdf, false);
             }
 
-            // Enregistre le nouveau PDF
-            $pdf_name = 'correction.pdf';
-            $destinationPath = public_path('storage/correctionRequests/' . $ds_id . '/correction');
-            $request->file('correction_pdf')->move($destinationPath, $pdf_name);
-            $correctionRequest->correction_pdf = 'correctionRequests/' . $ds_id . '/correction/' . $pdf_name;
+            // Upload le nouveau PDF
+            $pdfPath = $this->fileUploadService->upload(
+                file: $request->file('correction_pdf'),
+                context: 'corrections',
+                identifier: 'ds-' . $ds_id,
+                type: 'pdf',
+                isPublic: false,  // PRIVÉ
+                customName: 'correction'
+            );
+            $correctionRequest->correction_pdf = $pdfPath;
         }
         $correctionRequest->save();
 
@@ -238,7 +250,8 @@ class CorrectionRequestController extends Controller
         $ds->status = 'finished';
         $ds->save();
 
-        $this->destroyCorrectionFolder($ds_id);
+        // Supprimer tout le dossier de correction avec FileUploadService
+        $this->fileUploadService->deleteDirectory('corrections', 'ds-' . $ds_id, false);
 
         return redirect()->route('correctionRequest.index')->with('success', 'La demande de correction a été supprimée avec succès');
     }

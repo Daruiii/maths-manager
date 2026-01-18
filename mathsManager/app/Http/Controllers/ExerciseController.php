@@ -15,10 +15,12 @@ use App\Services\OrderingService;
 class ExerciseController extends Controller
 {
     protected OrderingService $orderingService;
-    
-    public function __construct(OrderingService $orderingService)
+    protected \App\Services\FileUploadService $fileUploadService;
+
+    public function __construct(OrderingService $orderingService, \App\Services\FileUploadService $fileUploadService)
     {
         $this->orderingService = $orderingService;
+        $this->fileUploadService = $fileUploadService;
     }
     public function decrementAllExercises()
     {
@@ -185,33 +187,45 @@ class ExerciseController extends Controller
             $exercise->statement = 'temp'; // Temporaire pour éviter les erreurs de validation
             $exercise->save(); // Sauvegarde pour générer l'ID
     
-            // Étape 2 : Gestion des images pour `statement`
+            // Étape 2 : Gestion des images pour `statement` avec FileUploadService
             $imagePathsStatement = [];
             if ($request->hasFile('images_statement')) {
-                foreach ($request->file('images_statement') as $key => $image) {
-                    $imageName = "statement_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
-                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id); // Utilise maintenant l'ID généré
-                    if (!file_exists($destinationPath)) {
-                        mkdir($destinationPath, 0755, true);
-                    }
-                    $image->move($destinationPath, $imageName);
-                    $imagePathsStatement[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                $uploadedPaths = $this->fileUploadService->uploadMultiple(
+                    files: $request->file('images_statement'),
+                    context: 'exercises',
+                    identifier: 'exercise-' . $exercise->id,
+                    type: 'image',
+                    isPublic: true,
+                    prefix: 'statement_'
+                );
+
+                // Créer un tableau associatif pour la nouvelle syntaxe \graph{statement-1}{0.5}{description}
+                // Utilise le nom de fichier réel comme clé (ex: "statement-1" depuis "statement-1.png")
+                foreach ($uploadedPaths as $index => $path) {
+                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+                    $imagePathsStatement[$filename] = $path;
                 }
             }
             $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
             $exercise->latex_statement = $request->statement;
     
-            // Étape 3 : Gestion des images pour `solution`
+            // Étape 3 : Gestion des images pour `solution` avec FileUploadService
             $imagePathsSolution = [];
             if ($request->hasFile('images_solution')) {
-                foreach ($request->file('images_solution') as $key => $image) {
-                    $imageName = "solution_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
-                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id);
-                    if (!file_exists($destinationPath)) {
-                        mkdir($destinationPath, 0755, true);
-                    }
-                    $image->move($destinationPath, $imageName);
-                    $imagePathsSolution[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                $uploadedPaths = $this->fileUploadService->uploadMultiple(
+                    files: $request->file('images_solution'),
+                    context: 'exercises',
+                    identifier: 'exercise-' . $exercise->id,
+                    type: 'image',
+                    isPublic: true,
+                    prefix: 'solution_'
+                );
+
+                // Créer un tableau associatif pour la nouvelle syntaxe \graph{solution-1}{0.5}{description}
+                // Utilise le nom de fichier réel comme clé (ex: "solution-1" depuis "solution-1.png")
+                foreach ($uploadedPaths as $index => $path) {
+                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+                    $imagePathsSolution[$filename] = $path;
                 }
             }
             $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
@@ -269,45 +283,67 @@ class ExerciseController extends Controller
     
             $exercise = Exercise::findOrFail($id);
     
-            // Mise à jour des images pour `statement`
+            // Mise à jour des images pour `statement` avec FileUploadService
             $imagePathsStatement = [];
             if ($request->hasFile('images_statement')) {
-                $oldImagesStatement = glob(public_path('storage/exercises/exercise_' . $exercise->id . '/statement_*'));
-                foreach ($oldImagesStatement as $image) {
-                    unlink($image);
-                }
-    
-                foreach ($request->file('images_statement') as $key => $image) {
-                    $imageName = "statement_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
-                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id);
-                    $image->move($destinationPath, $imageName);
-                    $imagePathsStatement[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                // Supprimer les anciennes images statement
+                $oldImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'statement-*');
+                $this->fileUploadService->deleteMultiple($oldImages, true);
+
+                // Upload les nouvelles images
+                $uploadedPaths = $this->fileUploadService->uploadMultiple(
+                    files: $request->file('images_statement'),
+                    context: 'exercises',
+                    identifier: 'exercise-' . $exercise->id,
+                    type: 'image',
+                    isPublic: true,
+                    prefix: 'statement_'
+                );
+
+                // Créer tableau associatif pour nouvelle syntaxe
+                foreach ($uploadedPaths as $index => $path) {
+                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+                    $imagePathsStatement[$filename] = $path;
                 }
             } else {
-                $imagePathsStatement = array_map(function ($path) use ($exercise) {
-                    return 'exercises/exercise_' . $exercise->id . '/' . basename($path);
-                }, glob(public_path('storage/exercises/exercise_' . $exercise->id . '/statement_*')));
+                // Garder les images existantes
+                $existingImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'statement-*');
+                foreach ($existingImages as $index => $path) {
+                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+                    $imagePathsStatement[$filename] = $path;
+                }
             }
             $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
     
-            // Mise à jour des images pour `solution`
+            // Mise à jour des images pour `solution` avec FileUploadService
             $imagePathsSolution = [];
             if ($request->hasFile('images_solution')) {
-                $oldImagesSolution = glob(public_path('storage/exercises/exercise_' . $exercise->id . '/solution_*'));
-                foreach ($oldImagesSolution as $image) {
-                    unlink($image);
-                }
-    
-                foreach ($request->file('images_solution') as $key => $image) {
-                    $imageName = "solution_" . ($key + 1) . '.' . $image->getClientOriginalExtension();
-                    $destinationPath = public_path('storage/exercises/exercise_' . $exercise->id);
-                    $image->move($destinationPath, $imageName);
-                    $imagePathsSolution[] = 'exercises/exercise_' . $exercise->id . '/' . $imageName;
+                // Supprimer les anciennes images solution
+                $oldImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'solution-*');
+                $this->fileUploadService->deleteMultiple($oldImages, true);
+
+                // Upload les nouvelles images
+                $uploadedPaths = $this->fileUploadService->uploadMultiple(
+                    files: $request->file('images_solution'),
+                    context: 'exercises',
+                    identifier: 'exercise-' . $exercise->id,
+                    type: 'image',
+                    isPublic: true,
+                    prefix: 'solution_'
+                );
+
+                // Créer tableau associatif pour nouvelle syntaxe
+                foreach ($uploadedPaths as $index => $path) {
+                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+                    $imagePathsSolution[$filename] = $path;
                 }
             } else {
-                $imagePathsSolution = array_map(function ($path) use ($exercise) {
-                    return 'exercises/exercise_' . $exercise->id . '/' . basename($path);
-                }, glob(public_path('storage/exercises/exercise_' . $exercise->id . '/solution_*')));
+                // Garder les images existantes
+                $existingImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'solution-*');
+                foreach ($existingImages as $index => $path) {
+                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+                    $imagePathsSolution[$filename] = $path;
+                }
             }
             $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
     
@@ -338,20 +374,13 @@ class ExerciseController extends Controller
     {
         try {
             $exercise = Exercise::findOrFail($id);
-    
-            // Supprimer les images associées
-            $images = glob(public_path('storage/exercises/exercise_' . $exercise->id . '/*'));
-            foreach ($images as $image) {
-                unlink($image);
-            }
-            $folderPath = public_path('storage/exercises/exercise_' . $exercise->id);
-            if (is_dir($folderPath)) {
-                rmdir($folderPath);
-            }
-    
+
+            // Supprimer tout le dossier de l'exercice avec FileUploadService
+            $this->fileUploadService->deleteDirectory('exercises', 'exercise-' . $exercise->id, true);
+
             $deletedOrder = $exercise->order;
             $subchapterId = $exercise->subchapter_id;
-    
+
             $exercise->delete();
     
             // Décaler les exercices suivants

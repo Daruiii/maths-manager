@@ -110,9 +110,18 @@
                 <div class="image-carousel">
                     @foreach ($pictures as $index => $picture)
                         <div class="item">
-                            <a href="{{ asset('storage/' . $picture) }}" data-fancybox="gallery"
+                            @php
+                                // Extraire context, identifier, filename depuis le chemin
+                                // Format: corrections/ds-368/student-1.png
+                                $parts = explode('/', $picture);
+                                $context = $parts[0]; // corrections
+                                $identifier = $parts[1]; // ds-368
+                                $filename = $parts[2]; // student-1.png
+                                $privateUrl = route('private.file.serve', ['context' => $context, 'identifier' => $identifier, 'filename' => $filename]);
+                            @endphp
+                            <a href="{{ $privateUrl }}" data-fancybox="gallery"
                                 class="w-full flex flex-row items-center justify-start">
-                                <img src="{{ asset('storage/' . $picture) }}" alt="Image de la demande de correction">
+                                <img src="{{ $privateUrl }}" alt="Image de la demande de correction">
                                 <p class="text-center text-xs md:text-sm">Image {{ $index + 1 }}</p>
                             </a>
                         </div>
@@ -161,9 +170,18 @@
                         @if ($correctedPictures)
                             @foreach ($correctedPictures as $index => $correctionPicture)
                                 <div class="item">
-                                    <a href="{{ asset('storage/' . $correctionPicture) }}" data-fancybox="gallery2"
+                                    @php
+                                        // Extraire context, identifier, filename depuis le chemin
+                                        // Format: corrections/ds-368/corrected-1.png
+                                        $parts = explode('/', $correctionPicture);
+                                        $context = $parts[0]; // corrections
+                                        $identifier = $parts[1]; // ds-368
+                                        $filename = $parts[2]; // corrected-1.png
+                                        $privateUrl = route('private.file.serve', ['context' => $context, 'identifier' => $identifier, 'filename' => $filename]);
+                                    @endphp
+                                    <a href="{{ $privateUrl }}" data-fancybox="gallery2"
                                         class="w-full flex flex-row items-center justify-start">
-                                        <img src="{{ asset('storage/' . $correctionPicture) }}"
+                                        <img src="{{ $privateUrl }}"
                                             alt="Image de la correction">
                                         <p class="text-center text-xs md:text-sm">Image {{ $index + 1 }}</p>
                                     </a>
