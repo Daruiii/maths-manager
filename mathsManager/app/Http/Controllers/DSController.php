@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Mail;
 
 class DSController extends Controller
 {
+    protected \App\Services\FileUploadService $fileUploadService;
+
+    public function __construct(\App\Services\FileUploadService $fileUploadService)
+    {
+        $this->fileUploadService = $fileUploadService;
+    }
+
     // Méthode pour afficher tous les DS
     public function index(Request $request)
     {
@@ -430,40 +437,14 @@ class DSController extends Controller
         return redirect()->route('ds.myDS', Auth::id());
     }
 
-    private function destroyCorrectionFolder($id)
-    {
-        // there is a folder correction in the folder
-        // $path = public_path('storage/correctionRequests/' . $id . '/correction');
-        // $path2 = public_path('storage/correctionRequests/' . $id);
-        $path = file_exists(public_path('storage/correctionRequests/' . $id . '/correction')) ? public_path('storage/correctionRequests/' . $id . '/correction') : null;
-        $path2 = file_exists(public_path('storage/correctionRequests/' . $id)) ? public_path('storage/correctionRequests/' . $id) : null;
-        // foreach path != null, delete the content of the folder and the folder
-        if ($path != null) {
-            $files = glob($path . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-            rmdir($path);
-        }
-        if ($path2 != null) {
-            $files = glob($path2 . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-            rmdir($path2);
-        }
-    }
-
     // Méthode pour supprimer un DS
     public function destroy($id)
     {
-        // if correction exists, delete his pictures folder
-        $this->destroyCorrectionFolder($id);
         $ds = DS::find($id);
+
+        // Supprimer le dossier de correction s'il existe
+        $this->fileUploadService->deleteDirectory('corrections', 'ds-' . $id, false);
+
         $ds->delete();
 
         return redirect()->route('ds.index');

@@ -11,6 +11,13 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    protected \App\Services\FileUploadService $fileUploadService;
+
+    public function __construct(\App\Services\FileUploadService $fileUploadService)
+    {
+        $this->fileUploadService = $fileUploadService;
+    }
+
     /**
      * Display the user's profile form.
      */
@@ -31,29 +38,26 @@ public function update(ProfileUpdateRequest $request): RedirectResponse
     
     // Vérifier si l'avatar doit être supprimé
     if ($request->input('remove_avatar') === 'true') {
-        // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
         if ($user->avatar && $user->avatar != 'default.jpg') {
-            $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
-            if (file_exists($oldAvatarPath)) {
-                unlink($oldAvatarPath);
-            }
+            $this->fileUploadService->delete('images/' . $user->avatar, true);
         }
         $user->avatar = 'default.jpg';
     } elseif ($request->hasFile('avatar')) {
         // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
         if ($user->avatar && $user->avatar != 'default.jpg') {
-            $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
-            if (file_exists($oldAvatarPath)) {
-                unlink($oldAvatarPath);
-            }
+            $this->fileUploadService->delete('images/' . $user->avatar, true);
         }
 
-        // Stocke le nouvel avatar
-        $newAvatar = $request->file('avatar');
-        $destinationPath = public_path('/storage/images');
-        $avatarName = $user->email . '-' . time() . '.' . $newAvatar->getClientOriginalExtension();
-        $newAvatar->move($destinationPath, $avatarName);
-        $user->avatar = $avatarName;
+        // Upload le nouvel avatar
+        $avatarPath = $this->fileUploadService->upload(
+            file: $request->file('avatar'),
+            context: 'images',
+            identifier: '',
+            type: 'image',
+            isPublic: true,
+            customName: str_replace(['@', '.'], '-', $user->email) . '-' . time()
+        );
+        $user->avatar = basename($avatarPath);
     }
 
     $user->save();
@@ -77,12 +81,8 @@ public function destroy(Request $request): RedirectResponse
 
     $user = $request->user();
 
-    $destinationPath = public_path('/storage/images');
-
-    $avatarPath = $destinationPath.'/'.$user->avatar;
-
-    if ($user->avatar !== 'default.jpg' && file_exists($avatarPath)) {
-        unlink($avatarPath);
+    if ($user->avatar !== 'default.jpg') {
+        $this->fileUploadService->delete('images/' . $user->avatar, true);
     }
 
     Auth::logout();

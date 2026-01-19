@@ -323,9 +323,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/private/{context}/{identifier}/{filename}', [\App\Http\Controllers\PrivateFileController::class, 'serve'])
         ->where('filename', '.*')
         ->name('private.file.serve');
-    Route::get('/private/{context}/{identifier}/{filename}/download', [\App\Http\Controllers\PrivateFileController::class, 'download'])
-        ->where('filename', '.*')
-        ->name('private.file.download');
 });
 
 require __DIR__ . '/auth.php';

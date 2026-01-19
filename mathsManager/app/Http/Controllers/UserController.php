@@ -8,6 +8,12 @@ use App\Models\Quizze;
 
 class UserController extends Controller
 {
+    protected \App\Services\FileUploadService $fileUploadService;
+
+    public function __construct(\App\Services\FileUploadService $fileUploadService)
+    {
+        $this->fileUploadService = $fileUploadService;
+    }
     // Affiche la liste paginée des utilisateurs
     public function index(Request $request)
     {
@@ -124,18 +130,19 @@ class UserController extends Controller
         if ($request->hasFile('avatar')) {
             // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
             if ($user->avatar && $user->avatar != 'default.jpg') {
-                $oldAvatarPath = public_path('/storage/images/' . $user->avatar);
-                if (file_exists($oldAvatarPath)) {
-                    unlink($oldAvatarPath);
-                }
+                $this->fileUploadService->delete('images/' . $user->avatar, true);
             }
 
-            // Stocke le nouvel avatar
-            $newAvatar = $request->file('avatar');
-            $destinationPath = public_path('/storage/images');
-            $avatarName = $user->email . '-' . $newAvatar->getClientOriginalName();
-            $newAvatar->move($destinationPath, $avatarName);
-            $user->avatar = basename($avatarName);
+            // Upload le nouvel avatar avec FileUploadService
+            $avatarPath = $this->fileUploadService->upload(
+                file: $request->file('avatar'),
+                context: 'images',
+                identifier: '',
+                type: 'image',
+                isPublic: true,
+                customName: str_replace(['@', '.'], '-', $user->email)
+            );
+            $user->avatar = basename($avatarPath);
         }
 
         $user->update($validatedData);
@@ -155,10 +162,7 @@ class UserController extends Controller
         $user->quizzes()->delete();
 
         if ($user->avatar && $user->avatar != 'default.jpg') {
-            $avatarPath = public_path('/storage/images/' . $user->avatar);
-            if (file_exists($avatarPath)) {
-                unlink($avatarPath);
-            }
+            $this->fileUploadService->delete('images/' . $user->avatar, true);
         }
 
         $user->delete();

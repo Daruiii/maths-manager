@@ -54,49 +54,6 @@ class PrivateFileController extends Controller
     }
 
     /**
-     * Télécharger un fichier privé
-     *
-     * @param Request $request
-     * @param string $context
-     * @param string $identifier
-     * @param string $filename
-     * @return StreamedResponse
-     */
-    public function download(Request $request, string $context, string $identifier, string $filename)
-    {
-        // Vérifier que l'utilisateur est authentifié
-        if (!Auth::check()) {
-            abort(401, 'Unauthorized');
-        }
-
-        $user = Auth::user();
-        $filePath = "{$context}/{$identifier}/{$filename}";
-
-        // Vérification des droits selon le contexte
-        if (!$this->canAccessFile($user, $context, $identifier)) {
-            Log::warning('Unauthorized file download attempt', [
-                'user_id' => $user->id,
-                'file_path' => $filePath,
-            ]);
-            abort(403, 'Forbidden');
-        }
-
-        // Vérifier que le fichier existe
-        if (!Storage::disk('private')->exists($filePath)) {
-            abort(404, 'File not found');
-        }
-
-        // Log du téléchargement
-        Log::info('Private file downloaded', [
-            'user_id' => $user->id,
-            'file_path' => $filePath,
-        ]);
-
-        // Télécharger le fichier
-        return Storage::disk('private')->download($filePath);
-    }
-
-    /**
      * Vérifier si l'utilisateur peut accéder au fichier
      *
      * @param \App\Models\User $user

@@ -20,34 +20,6 @@ class CorrectionRequestController extends Controller
         $this->fileUploadService = $fileUploadService;
     }
 
-    private function destroyCorrectionFolder($id)
-    {
-        // there is a folder correction in the folder
-        // $path = public_path('storage/correctionRequests/' . $id . '/correction');
-        // $path2 = public_path('storage/correctionRequests/' . $id);
-        $path = file_exists(public_path('storage/correctionRequests/' . $id . '/correction')) ? public_path('storage/correctionRequests/' . $id . '/correction') : null;
-        $path2 = file_exists(public_path('storage/correctionRequests/' . $id)) ? public_path('storage/correctionRequests/' . $id) : null;
-        // foreach path != null, delete the content of the folder and the folder
-        if ($path != null) {
-            $files = glob($path . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-            rmdir($path);
-        }
-        if ($path2 != null) {
-            $files = glob($path2 . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-            rmdir($path2);
-        }
-    }
-
     // Méthode pour afficher toutes les demandes de correction (pour l'admin ou les professeurs)
     public function index()
     {
@@ -111,10 +83,10 @@ class CorrectionRequestController extends Controller
 
         $ds = DS::where('id', $ds_id)->firstOrFail();
         if ($correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->first()) {
-            return redirect()->route('ds.myDS', Auth::user()->id)->with('error', 'You have already sent a correction request for this DS');
+            return redirect()->route('ds.myDS', Auth::id())->with('error', 'You have already sent a correction request for this DS');
         }
         $correctionRequest = new CorrectionRequest();
-        $correctionRequest->user_id = auth()->user()->id;
+        $correctionRequest->user_id = Auth::user()->id;
         $correctionRequest->ds_id = $ds->id;
         $correctionRequest->status = 'pending';
         $correctionRequest->pictures = 'null'; // to avoid 'Array to string conversion' error
@@ -156,7 +128,7 @@ class CorrectionRequestController extends Controller
         $mail = new CorrectionRequestMail($correctionRequest);
         Mail::to('maxime@mathsmanager.fr')->send($mail);
 
-        return redirect()->route('ds.myDS', Auth::user()->id)->with('success', 'Votre demande de correction a été envoyée avec succès');
+        return redirect()->route('ds.myDS', Auth::id())->with('success', 'Votre demande de correction a été envoyée avec succès');
     }
 
     // Méthode for show the correction request
@@ -167,7 +139,21 @@ class CorrectionRequestController extends Controller
         $corrector = User::where('id', $correctionRequest->corrector_id)->first() ?? User::where('role', 'admin')->first();
         $pictures = json_decode($correctionRequest->pictures) ?? null;
         $correctedPictures = json_decode($correctionRequest->correction_pictures) ?? null;
-        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector'));
+
+        // Générer l'URL pour le PDF s'il existe
+        $pdfUrl = null;
+        if ($correctionRequest->correction_pdf) {
+            $pdfParts = explode('/', $correctionRequest->correction_pdf);
+            if (count($pdfParts) === 3) {
+                $pdfUrl = route('private.file.serve', [
+                    'context' => $pdfParts[0],
+                    'identifier' => $pdfParts[1],
+                    'filename' => $pdfParts[2]
+                ]);
+            }
+        }
+
+        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector', 'pdfUrl'));
     }
 
     // Méthode pour formulaire de correction
@@ -192,7 +178,7 @@ class CorrectionRequestController extends Controller
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
         $correctionRequest->status = 'corrected';
         $correctionRequest->grade = $request->grade;
-        $correctionRequest->corrector_id = auth()->user()->id;
+        $correctionRequest->corrector_id = Auth::user()->id;
         $correctionRequest->correction_message = $request->correction_message;
 
         // Upload des images de correction en PRIVÉ
