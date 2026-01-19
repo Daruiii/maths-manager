@@ -58,6 +58,7 @@
     @include('layouts.header')
 
     <main class="fade-in">
+        <x-flash-messages />
         @yield('content')
     </main>
     

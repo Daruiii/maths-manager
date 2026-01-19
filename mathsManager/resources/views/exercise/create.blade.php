@@ -25,7 +25,15 @@
                 </div>
 
                 <div class="form-group">
-                    <x-multiple-file-input type="file" name="images_statement" id="images" label="Images de l'énoncé" />
+                    <x-image-manager
+                        name="images_statement"
+                        label="Images de l'énoncé"
+                        context="exercises"
+                        identifier=""
+                        prefix="img-"
+                        :existingImages="[]"
+                        :isPublic="true"
+                    />
                  </div>
 
                 <div class="form-group">
@@ -34,7 +42,15 @@
                 </div>
 
                 <div class="form-group">
-                    <x-multiple-file-input type="file" name="images_solution" id="images" label="Images de la solution" />
+                    <x-image-manager
+                        name="images_solution"
+                        label="Images de la solution"
+                        context="exercises"
+                        identifier=""
+                        prefix="img-"
+                        :existingImages="[]"
+                        :isPublic="true"
+                    />
                  </div>
 
                 <div class="form-group">

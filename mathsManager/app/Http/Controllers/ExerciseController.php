@@ -16,11 +16,16 @@ class ExerciseController extends Controller
 {
     protected OrderingService $orderingService;
     protected \App\Services\FileUploadService $fileUploadService;
+    protected \App\Services\ImageManagementService $imageManagementService;
 
-    public function __construct(OrderingService $orderingService, \App\Services\FileUploadService $fileUploadService)
-    {
+    public function __construct(
+        OrderingService $orderingService,
+        \App\Services\FileUploadService $fileUploadService,
+        \App\Services\ImageManagementService $imageManagementService
+    ) {
         $this->orderingService = $orderingService;
         $this->fileUploadService = $fileUploadService;
+        $this->imageManagementService = $imageManagementService;
     }
     public function decrementAllExercises()
     {
@@ -187,47 +192,45 @@ class ExerciseController extends Controller
             $exercise->statement = 'temp'; // Temporaire pour éviter les erreurs de validation
             $exercise->save(); // Sauvegarde pour générer l'ID
     
-            // Étape 2 : Gestion des images pour `statement` avec FileUploadService
-            $imagePathsStatement = [];
-            if ($request->hasFile('images_statement')) {
-                $uploadedPaths = $this->fileUploadService->uploadMultiple(
-                    files: $request->file('images_statement'),
-                    context: 'exercises',
-                    identifier: 'exercise-' . $exercise->id,
-                    type: 'image',
-                    isPublic: true,
-                    prefix: 'statement_'
-                );
+            // Étape 2 : Gestion des images pour statement via ImageManagementService
+            $imagePathsStatement = $this->imageManagementService->handleImageUpload(
+                request: $request,
+                inputName: 'images_statement',
+                deleteInputName: 'delete_images_statement',
+                context: 'exercises',
+                identifier: 'exercise-' . $exercise->id . '/statement',
+                prefix: 'img-',
+                isPublic: true
+            );
 
-                // Créer un tableau associatif pour la nouvelle syntaxe \graph{statement-1}{0.5}{description}
-                // Utilise le nom de fichier réel comme clé (ex: "statement-1" depuis "statement-1.png")
-                foreach ($uploadedPaths as $index => $path) {
-                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                    $imagePathsStatement[$filename] = $path;
-                }
-            }
+            $this->imageManagementService->validateLatexReferencesOrFail(
+                $request->statement,
+                $imagePathsStatement,
+                'statement'
+            );
+
             $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
             $exercise->latex_statement = $request->statement;
-    
-            // Étape 3 : Gestion des images pour `solution` avec FileUploadService
-            $imagePathsSolution = [];
-            if ($request->hasFile('images_solution')) {
-                $uploadedPaths = $this->fileUploadService->uploadMultiple(
-                    files: $request->file('images_solution'),
-                    context: 'exercises',
-                    identifier: 'exercise-' . $exercise->id,
-                    type: 'image',
-                    isPublic: true,
-                    prefix: 'solution_'
-                );
 
-                // Créer un tableau associatif pour la nouvelle syntaxe \graph{solution-1}{0.5}{description}
-                // Utilise le nom de fichier réel comme clé (ex: "solution-1" depuis "solution-1.png")
-                foreach ($uploadedPaths as $index => $path) {
-                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                    $imagePathsSolution[$filename] = $path;
-                }
+            // Étape 3 : Gestion des images pour solution via ImageManagementService
+            $imagePathsSolution = $this->imageManagementService->handleImageUpload(
+                request: $request,
+                inputName: 'images_solution',
+                deleteInputName: 'delete_images_solution',
+                context: 'exercises',
+                identifier: 'exercise-' . $exercise->id . '/solution',
+                prefix: 'img-',
+                isPublic: true
+            );
+
+            if ($request->solution) {
+                $this->imageManagementService->validateLatexReferencesOrFail(
+                    $request->solution,
+                    $imagePathsSolution,
+                    'solution'
+                );
             }
+
             $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
             $exercise->latex_solution = $request->solution;
     
@@ -241,6 +244,9 @@ class ExerciseController extends Controller
                 'id' => $request->subchapter_id,
                 'exercise' => $exercise->id,
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Relancer les ValidationException (validation LaTeX)
+            throw $e;
         } catch (\Exception $e) {
             Log::error("Failed to store exercise: " . $e->getMessage());
             return back()->withErrors('Failed to store exercise. ' . $e->getMessage());
@@ -258,7 +264,23 @@ class ExerciseController extends Controller
     {
         try {
             $exercise = Exercise::findOrFail($id);
-            return view('exercise.edit', compact('exercise'));
+
+            // Récupérer les images existantes via ImageManagementService
+            $existingImagesStatementFormatted = $this->imageManagementService->getFormattedImagesForComponent(
+                context: 'exercises',
+                identifier: 'exercise-' . $exercise->id . '/statement',
+                isPublic: true,
+                pattern: 'img-*'
+            );
+
+            $existingImagesSolutionFormatted = $this->imageManagementService->getFormattedImagesForComponent(
+                context: 'exercises',
+                identifier: 'exercise-' . $exercise->id . '/solution',
+                isPublic: true,
+                pattern: 'img-*'
+            );
+
+            return view('exercise.edit', compact('exercise', 'existingImagesStatementFormatted', 'existingImagesSolutionFormatted'));
         } catch (\Exception $e) {
             Log::error("Failed to load edit exercise view: " . $e->getMessage());
             return back()->withErrors('Failed to load edit exercise view.');
@@ -277,74 +299,50 @@ class ExerciseController extends Controller
                 'difficulty' => 'required|numeric|min:1|max:5',
                 'images_statement' => 'nullable|array',
                 'images_statement.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'delete_images_statement' => 'nullable|array',
                 'images_solution' => 'nullable|array',
                 'images_solution.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'delete_images_solution' => 'nullable|array',
             ]);
     
             $exercise = Exercise::findOrFail($id);
     
-            // Mise à jour des images pour `statement` avec FileUploadService
-            $imagePathsStatement = [];
-            if ($request->hasFile('images_statement')) {
-                // Supprimer les anciennes images statement
-                $oldImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'statement-*');
-                $this->fileUploadService->deleteMultiple($oldImages, true);
+            $imagePathsStatement = $this->imageManagementService->handleImageUpload(
+                request: $request,
+                inputName: 'images_statement',
+                deleteInputName: 'delete_images_statement',
+                context: 'exercises',
+                identifier: 'exercise-' . $exercise->id . '/statement',
+                prefix: 'img-',
+                isPublic: true
+            );
 
-                // Upload les nouvelles images
-                $uploadedPaths = $this->fileUploadService->uploadMultiple(
-                    files: $request->file('images_statement'),
-                    context: 'exercises',
-                    identifier: 'exercise-' . $exercise->id,
-                    type: 'image',
-                    isPublic: true,
-                    prefix: 'statement_'
-                );
+            $this->imageManagementService->validateLatexReferencesOrFail(
+                $request->statement,
+                $imagePathsStatement,
+                'statement'
+            );
 
-                // Créer tableau associatif pour nouvelle syntaxe
-                foreach ($uploadedPaths as $index => $path) {
-                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                    $imagePathsStatement[$filename] = $path;
-                }
-            } else {
-                // Garder les images existantes
-                $existingImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'statement-*');
-                foreach ($existingImages as $index => $path) {
-                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                    $imagePathsStatement[$filename] = $path;
-                }
-            }
             $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
-    
-            // Mise à jour des images pour `solution` avec FileUploadService
-            $imagePathsSolution = [];
-            if ($request->hasFile('images_solution')) {
-                // Supprimer les anciennes images solution
-                $oldImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'solution-*');
-                $this->fileUploadService->deleteMultiple($oldImages, true);
 
-                // Upload les nouvelles images
-                $uploadedPaths = $this->fileUploadService->uploadMultiple(
-                    files: $request->file('images_solution'),
-                    context: 'exercises',
-                    identifier: 'exercise-' . $exercise->id,
-                    type: 'image',
-                    isPublic: true,
-                    prefix: 'solution_'
+            $imagePathsSolution = $this->imageManagementService->handleImageUpload(
+                request: $request,
+                inputName: 'images_solution',
+                deleteInputName: 'delete_images_solution',
+                context: 'exercises',
+                identifier: 'exercise-' . $exercise->id . '/solution',
+                prefix: 'img-',
+                isPublic: true
+            );
+
+            if ($request->solution) {
+                $this->imageManagementService->validateLatexReferencesOrFail(
+                    $request->solution,
+                    $imagePathsSolution,
+                    'solution'
                 );
-
-                // Créer tableau associatif pour nouvelle syntaxe
-                foreach ($uploadedPaths as $index => $path) {
-                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                    $imagePathsSolution[$filename] = $path;
-                }
-            } else {
-                // Garder les images existantes
-                $existingImages = $this->fileUploadService->getFiles('exercises', 'exercise-' . $exercise->id, true, 'solution-*');
-                foreach ($existingImages as $index => $path) {
-                    $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                    $imagePathsSolution[$filename] = $path;
-                }
             }
+
             $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
     
             // Mise à jour des indices (`clue`)
@@ -364,9 +362,12 @@ class ExerciseController extends Controller
                 'id' => $request->subchapter_id,
                 'exercise' => $exercise->id,
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Relancer les ValidationException (validation LaTeX)
+            throw $e;
         } catch (\Exception $e) {
             Log::error("Failed to update exercise: " . $e->getMessage());
-            return back()->withErrors('Failed to update exercise.');
+            return back()->withErrors('Failed to update exercise. ' . $e->getMessage());
         }
     }
     

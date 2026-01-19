@@ -12,10 +12,14 @@ use App\Services\LatexToHtmlConverter;
 class DsExerciseController extends Controller
 {
     protected \App\Services\FileUploadService $fileUploadService;
+    protected \App\Services\ImageManagementService $imageManagementService;
 
-    public function __construct(\App\Services\FileUploadService $fileUploadService)
-    {
+    public function __construct(
+        \App\Services\FileUploadService $fileUploadService,
+        \App\Services\ImageManagementService $imageManagementService
+    ) {
         $this->fileUploadService = $fileUploadService;
+        $this->imageManagementService = $imageManagementService;
     }
 
     public function index(Request $request)
@@ -127,30 +131,24 @@ class DsExerciseController extends Controller
         $dsExercise->id = $newExerciseId;
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->latex_statement = $dsExercise->statement;
-  
-        // Gestion des images avec FileUploadService
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            $uploadedPaths = $this->fileUploadService->uploadMultiple(
-                files: $request->file('images'),
-                context: 'ds-exercises',
-                identifier: 'ds-exercise-' . $dsExercise->id,
-                type: 'image',
-                isPublic: true,
-                prefix: 'img_'
-            );
 
-            // Créer tableau associatif pour nouvelle syntaxe
-            // Utilise le nom de fichier réel (ex: "img-1" depuis "img-1.png") comme clé
-            foreach ($uploadedPaths as $index => $path) {
-                $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                $imagePaths[$filename] = $path;
-            }
-        }
+        $imagePaths = $this->imageManagementService->handleImageUpload(
+            request: $request,
+            inputName: 'images',
+            deleteInputName: 'delete_images',
+            context: 'ds-exercises',
+            identifier: 'ds-exercise-' . $dsExercise->id,
+            prefix: 'img-',
+            isPublic: true
+        );
+
+        $this->imageManagementService->validateLatexReferencesOrFail(
+            $request->statement,
+            $imagePaths,
+            'statement'
+        );
 
         $dsExercise->statement = LatexToHtmlConverter::convertForDsExercise($dsExercise->statement, $imagePaths);
-
-        // Gestion du PDF de correction avec FileUploadService
         if ($request->hasFile('correction_pdf')) {
             $pdfPath = $this->fileUploadService->upload(
                 file: $request->file('correction_pdf'),
@@ -193,14 +191,13 @@ class DsExerciseController extends Controller
         $dsExercise = DsExercise::findOrFail($id);
         $multipleChapters = MultipleChapter::all();
 
-        // Récupérer les images existantes pour le composant image-manager
-        $existingImages = $this->fileUploadService->getFiles('ds-exercises', 'ds-exercise-' . $dsExercise->id, true, 'img-*');
-        $existingImagesFormatted = array_values(array_map(function($path) {
-            return [
-                'name' => basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)),
-                'path' => $path
-            ];
-        }, $existingImages));
+        // Récupérer les images existantes pour le composant image-manager via le service
+        $existingImagesFormatted = $this->imageManagementService->getFormattedImagesForComponent(
+            context: 'ds-exercises',
+            identifier: 'ds-exercise-' . $dsExercise->id,
+            isPublic: true,
+            pattern: 'img-*'
+        );
 
         return view('dsExercise.edit', compact('dsExercise', 'multipleChapters', 'filter', 'existingImagesFormatted'));
     }
@@ -237,55 +234,21 @@ class DsExerciseController extends Controller
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->latex_statement = $request->statement;
 
-        // Gestion des images avec FileUploadService
-        $imagePaths = [];
+        $imagePaths = $this->imageManagementService->handleImageUpload(
+            request: $request,
+            inputName: 'images',
+            deleteInputName: 'delete_images',
+            context: 'ds-exercises',
+            identifier: 'ds-exercise-' . $dsExercise->id,
+            prefix: 'img-',
+            isPublic: true
+        );
 
-        // 1. Supprimer les images marquées pour suppression (si envoyées par le nouveau component)
-        if ($request->has('delete_images')) {
-            $imagesToDelete = $request->input('delete_images');
-            foreach ($imagesToDelete as $imageName) {
-                $files = $this->fileUploadService->getFiles('ds-exercises', 'ds-exercise-' . $dsExercise->id, true, $imageName . '.*');
-                $this->fileUploadService->deleteMultiple($files, true);
-            }
-        }
-
-        // 2. Récupérer les images existantes (non supprimées)
-        $existingImages = $this->fileUploadService->getFiles('ds-exercises', 'ds-exercise-' . $dsExercise->id, true, 'img-*');
-        foreach ($existingImages as $path) {
-            $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-            $imagePaths[$filename] = $path;
-        }
-
-        // 3. Upload les nouvelles images
-        if ($request->hasFile('images')) {
-            // Trouver le numéro le plus élevé parmi les images existantes
-            $maxImageNumber = 0;
-            foreach ($existingImages as $path) {
-                $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                // Extraire le numéro de "img-X"
-                if (preg_match('/img-(\d+)/', $filename, $matches)) {
-                    $maxImageNumber = max($maxImageNumber, (int)$matches[1]);
-                }
-            }
-
-            $newFiles = $request->file('images');
-            foreach ($newFiles as $index => $file) {
-                $nextIndex = $maxImageNumber + $index + 1;
-                $customName = 'img-' . $nextIndex;
-
-                $path = $this->fileUploadService->upload(
-                    file: $file,
-                    context: 'ds-exercises',
-                    identifier: 'ds-exercise-' . $dsExercise->id,
-                    type: 'image',
-                    isPublic: true,
-                    customName: $customName
-                );
-
-                $filename = basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
-                $imagePaths[$filename] = $path;
-            }
-        }
+        $this->imageManagementService->validateLatexReferencesOrFail(
+            $request->statement,
+            $imagePaths,
+            'statement'
+        );
 
         $dsExercise->statement = LatexToHtmlConverter::convertForDsExercise($request->statement, $imagePaths);
 
@@ -295,7 +258,6 @@ class DsExerciseController extends Controller
             $dsExercise->correction_pdf = null;
         }
 
-        // Gestion du PDF de correction avec FileUploadService
         if ($request->hasFile('correction_pdf')) {
             // Supprimer l'ancien PDF s'il existe
             if ($dsExercise->correction_pdf) {
