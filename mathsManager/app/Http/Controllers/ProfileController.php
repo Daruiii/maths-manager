@@ -28,27 +28,21 @@ class ProfileController extends Controller
         ]);
     }
 
-   /**
- * Update the user's profile information.
- */
 public function update(ProfileUpdateRequest $request): RedirectResponse
 {
     $user = $request->user();
     $user->fill($request->validated());
     
-    // Vérifier si l'avatar doit être supprimé
     if ($request->input('remove_avatar') === 'true') {
         if ($user->avatar && $user->avatar != 'default.jpg') {
             $this->fileUploadService->delete('images/' . $user->avatar, true);
         }
         $user->avatar = 'default.jpg';
     } elseif ($request->hasFile('avatar')) {
-        // Supprime l'ancien avatar si ce n'est pas l'avatar par défaut
         if ($user->avatar && $user->avatar != 'default.jpg') {
             $this->fileUploadService->delete('images/' . $user->avatar, true);
         }
 
-        // Upload le nouvel avatar
         $avatarPath = $this->fileUploadService->upload(
             file: $request->file('avatar'),
             context: 'images',
@@ -66,16 +60,9 @@ public function update(ProfileUpdateRequest $request): RedirectResponse
 }
 
 
-    /**
-     * Delete the user's account.
-     */
- /**
- * Delete the user's account.
- */
 public function destroy(Request $request): RedirectResponse
 {
     $request->validateWithBag('userDeletion', [
-        // must write "supprimer mon compte"
         'confirmation' => ['required', 'string', 'regex:/supprimer mon compte/'],
     ]);
 

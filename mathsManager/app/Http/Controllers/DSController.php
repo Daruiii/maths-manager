@@ -10,7 +10,6 @@ use App\Models\DsExercise;
 use App\Models\MultipleChapter;
 use App\Models\CorrectionRequest;
 use App\Models\User;
-use Illuminate\Pagination\Paginator;
 use App\Mail\AssignDSMail;
 use Illuminate\Support\Facades\Mail;
 
@@ -200,16 +199,7 @@ class DSController extends Controller
         }
         $ds->save();
         $timerAction = "pause";
-        // get list of user's DS
-        // $dsList = Auth::user()->ds;
-        // $dsList = $dsList->sortByDesc('created_at');
-        // foreach ($dsList as $ds) {
-        //     foreach ($ds->exercisesDS as $exerciseDS) {
-        //         $exerciseDS->multipleChapter = MultipleChapter::find($exerciseDS->multiple_chapter_id);
-        //     }
-        // }
         return response()->json(['timerAction' => $timerAction, 'ds' => $ds]);
-        // return view('ds.myDS', compact('ds', 'timerAction', 'dsList'));
     }
 
     public function finish($id)

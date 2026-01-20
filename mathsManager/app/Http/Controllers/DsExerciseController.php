@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\DsExercise;
 use App\Models\Chapter;
 use App\Models\MultipleChapter;
-use Illuminate\Pagination\Paginator;
 use App\Services\LatexToHtmlConverter;
 
 class DsExerciseController extends Controller
@@ -162,7 +161,6 @@ class DsExerciseController extends Controller
         }
         $dsExercise->save();
 
-        // $dsExercise->chapters()->attach($request->chapters);
         return redirect()->route('ds_exercises.index');
     }
 
@@ -227,8 +225,6 @@ class DsExerciseController extends Controller
             'date_data' => 'nullable|string',
         ]);
 
-        // dd($request->existing_images); // (string) "ds_exercises/ds_exercise_1/1.jpg" par exemple
-        // dd($request->images); // fichier image ou null
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->fill($request->except('images', 'statement'));
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
@@ -278,7 +274,6 @@ class DsExerciseController extends Controller
 
         $dsExercise->save();
 
-        // $dsExercise->chapters()->sync($request->chapters);
         return redirect()->route('ds_exercises.index', ['filter' => $request->filter]);
     }
 

@@ -52,8 +52,6 @@ class QuizzController extends Controller
         session(['currentQuestion' => 0]);
         session(['score' => 0]);
 
-        // dd($selectedQuestions->pluck('subchapter_id'));
-
         return redirect()->route('show_question');
     }
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MultipleChapter;
-use Illuminate\Contracts\Support\ValidatedData;
 
 class MultipleChapterController extends Controller
 {
