@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DS;
-use App\Models\Chapter;
 use App\Models\DsExercise;
 use App\Models\MultipleChapter;
-use App\Models\CorrectionRequest;
 use App\Models\User;
 use App\Mail\AssignDSMail;
 use Illuminate\Support\Facades\Mail;
@@ -20,10 +18,14 @@ use App\Http\Requests\DS\AssignDSRequest;
 class DSController extends Controller
 {
     protected \App\Services\FileUploadService $fileUploadService;
+    protected \App\Services\DSGenerationService $dsGenerationService;
 
-    public function __construct(\App\Services\FileUploadService $fileUploadService)
-    {
+    public function __construct(
+        \App\Services\FileUploadService $fileUploadService,
+        \App\Services\DSGenerationService $dsGenerationService
+    ) {
         $this->fileUploadService = $fileUploadService;
+        $this->dsGenerationService = $dsGenerationService;
     }
 
     // Méthode pour afficher tous les DS
@@ -221,136 +223,12 @@ class DSController extends Controller
     // Méthode pour enregistrer un DS
     public function store(StoreDSRequest $request)
     {
-        $ds = $this->generateDS($request);
-        return redirect()->route('ds.myDS', Auth::id());
-    }
-
-    // private function for générate DS like in store method
-    private function generateDS(StoreDSRequest|UpdateDSRequest $request, DS $ds = null)
-    {
-
-        if ($ds != null) {
-            $ds->multipleChapters()->detach();
-            $ds->exercisesDS()->detach();
+        try {
+            $ds = $this->dsGenerationService->generate($request, null, Auth::user());
+            return redirect()->route('ds.myDS', Auth::id());
+        } catch (\DomainException $e) {
+            return redirect()->route('ds.create')->with('error', $e->getMessage());
         }
-
-        // Select all exercises from the selected chapters with eager loading
-        $multipleChapters = MultipleChapter::with('dsExercises')
-            ->whereIn('id', $request->multiple_chapters)
-            ->get();
-
-        $exercisesDS = [];
-        foreach ($multipleChapters as $multipleChapter) {
-            $exercises = $multipleChapter->dsExercises;
-            $exercises = $request->harder_exercises ? $exercises->where('harder_exercise', 1) : $exercises->where('harder_exercise', 0);
-            $exercisesDS = array_merge($exercisesDS, $exercises->toArray());
-        }
-        // Shuffle the exercisesDS and remove duplicates
-        shuffle($exercisesDS);
-        $exercisesDS = array_unique($exercisesDS, SORT_REGULAR);
-
-        if ($request->type_bac) {
-            // Load all multipleChapters in one query
-            $multipleChapterIds = array_unique(array_column($exercisesDS, 'multiple_chapter_id'));
-            $multipleChaptersMap = MultipleChapter::whereIn('id', $multipleChapterIds)->get()->keyBy('id');
-
-            foreach ($exercisesDS as $key => $exercise) {
-            $exercisesDS[$key]['multipleChapter'] = $multipleChaptersMap[$exercise['multiple_chapter_id']];
-            }
-            // Exclude specific multipleChapters
-            $excludedChapters = [
-            'ARITHMETIQUE (MATHS EXPERTES)',
-            'COMPLEXES',
-            'MATRICES (MATHS EXPERTES)',
-            'Vers la prépa'
-            ];
-            foreach ($exercisesDS as $key => $exercise) {
-            if (in_array($exercise['multipleChapter']['title'], $excludedChapters)) {
-                unset($exercisesDS[$key]);
-            }
-            }
-            // Remove duplicates based on the same multipleChapter->theme
-            foreach ($exercisesDS as $key => $exercise) {
-            foreach ($exercisesDS as $key2 => $exercise2) {
-                if ($key != $key2 && $exercise['multipleChapter']['theme'] == $exercise2['multipleChapter']['theme']) {
-                unset($exercisesDS[$key]);
-                }
-            }
-            }
-        } else {
-            // Créez un tableau pour stocker les id des chapitres déjà sélectionnés
-            $selectedChapters = [];
-            $selectedExercises = [];
-
-            // Récupérez tous les chapitres en une seule requête
-            $allChapters = MultipleChapter::all();
-
-            foreach ($exercisesDS as $key => $exercise) {
-                $multipleChapter = $allChapters->firstWhere('id', $exercise['multiple_chapter_id']);
-                if ($multipleChapter) {
-                    // Si le chapitre n'a pas encore été sélectionné, ajoutez l'exercice
-                    if (!in_array($multipleChapter->id, $selectedChapters)) {
-                        $selectedChapters[] = $multipleChapter->id;
-                        $selectedExercises[] = $exercise;
-                        unset($exercisesDS[$key]);
-                    }
-                } else {
-                    throw new \Exception("Le chapitre de l'exercice n'a pas été trouvé");
-                }
-            }
-            // Si nous n'avons pas encore atteint le nombre d'exercices demandé, ajoutez des exercices supplémentaires
-            while (count($selectedExercises) < $request->exercises_number && count($exercisesDS) > 0) {
-                $selectedExercises[] = array_shift($exercisesDS);
-            }
-            $exercisesDS = $selectedExercises;
-        }
-
-        // If there are fewer exercises than the number of exercises, select the number of exercises we have and reduce the number of exercises
-        $exercisesDS = array_slice($exercisesDS, 0, min(count($exercisesDS), $request->exercises_number));
-
-        // Calculate the total time of all exercises
-        $TotalTime = array_sum(array_column($exercisesDS, 'time'));
-
-        // il y aura la plus part du temps plus de multiple_chapters que nécessaire
-        // on va donc sélectionner seulement les multiple_chapters des exos sélectionnés
-        $multiple_chapters = array_unique(array_column($exercisesDS, 'multiple_chapter_id'));
-
-        // Store only the id of the exercisesDS
-        $exercisesDS = array_column($exercisesDS, 'id');
-
-        $user = Auth::user();
-
-        if ($ds == null) { // if we are creating a new DS
-
-            // check if user last_ds_generated_at was today
-            if ($user->last_ds_generated_at != null) {
-                $last_ds_generated_at = new \DateTime($user->last_ds_generated_at);
-                $today = new \DateTime();
-                if ($last_ds_generated_at->format('Y-m-d') == $today->format('Y-m-d')) {
-                    return redirect()->route('ds.create')->with('error', 'Vous avez déjà généré un DS aujourd\'hui');
-                }
-            }
-            $ds = new DS;
-            $ds->user_id = Auth::id();
-        }
-        $ds->type_bac =  $request->has('type_bac') ? true : false;
-        $ds->exercises_number = count($exercisesDS);
-        $ds->harder_exercises = $request->has('harder_exercises') ? true : false;
-        $ds->time = $TotalTime;
-        $ds->timer = $TotalTime * 60; // timer in seconds
-        $ds->chrono = "0";
-        $ds->status = "not_started";
-        $ds->save();
-
-        // Attach the multiple chapters and exercises to the DS
-        $ds->multipleChapters()->attach($multiple_chapters);
-        $ds->exercisesDS()->attach($exercisesDS);
-
-        // Update the user's last_ds_generated_at property and save the user
-        $user->last_ds_generated_at = ($user->role == 'admin' || $user->role == 'teacher') ? null : now();
-        $user->save();
-
-        return $ds;
     }
 
     // méthode pour afficher le formulaire d'assignation manuelle de DS
@@ -418,7 +296,7 @@ class DSController extends Controller
     public function update(UpdateDSRequest $request, $id)
     {
         $ds = DS::find($id);
-        $ds = $this->generateDS($request, $ds);
+        $this->dsGenerationService->generate($request, $ds, Auth::user());
         return redirect()->route('ds.myDS', Auth::id());
     }
 
