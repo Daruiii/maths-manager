@@ -9,6 +9,8 @@ use App\Models\Classe;
 use App\Models\Exercise;
 use App\Models\QuizzQuestion;
 use App\Models\QuizzDetail;
+use App\Http\Requests\Subchapter\StoreSubchapterRequest;
+use App\Http\Requests\Subchapter\UpdateSubchapterRequest;
 
 class SubchapterController extends Controller
 {
@@ -37,16 +39,9 @@ class SubchapterController extends Controller
         return view('subchapter.create', compact('chapter_id', 'chapters', 'nextOrder'));
     }
 
-    public function store(Request $request) // admin
+    public function store(StoreSubchapterRequest $request) // admin
     {
-        $request->validate([
-            'title' => 'required',
-            'chapter_id' => 'required',
-            'order' => 'required',
-            'description' => 'nullable'
-        ]);
-
-        Subchapter::create($request->only(['title', 'chapter_id', 'order', 'description']));
+        Subchapter::create($request->validated());
         $chapter_id = $request->chapter_id;
         $class_id = Chapter::findOrFail($chapter_id)->class_id;
         $class_level = Classe::findOrFail($class_id)->level;
@@ -62,17 +57,11 @@ class SubchapterController extends Controller
         return view('subchapter.edit', compact('subchapter', 'chapter_id', 'chapters'));
     }
 
-    public function update(Request $request, $id) // admin
+    public function update(UpdateSubchapterRequest $request, $id) // admin
     {
         $subchapter = Subchapter::findOrFail($id);
 
-        $request->validate([
-            'title' => 'required',
-            'chapter_id' => 'required',
-            'description' => 'nullable'
-        ]);
-
-        $subchapter->update($request->only(['title', 'chapter_id', 'description']));
+        $subchapter->update($request->validated());
         $chapter_id = $subchapter->chapter_id;
         $class_id = Chapter::findOrFail($chapter_id)->class_id;
         $class_level = Classe::findOrFail($class_id)->level;

@@ -12,6 +12,10 @@ use App\Models\CorrectionRequest;
 use App\Models\User;
 use App\Mail\AssignDSMail;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\DS\ReAssignDSRequest;
+use App\Http\Requests\DS\StoreDSRequest;
+use App\Http\Requests\DS\UpdateDSRequest;
+use App\Http\Requests\DS\AssignDSRequest;
 
 class DSController extends Controller
 {
@@ -67,12 +71,8 @@ class DSController extends Controller
     }
 
     // Méthode pour assigner un DS existant (soit avec les mêmes exercices) à un autre élève
-    public function reAssign(Request $request)
+    public function reAssign(ReAssignDSRequest $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'ds_id' => 'required|exists:DS,id',
-        ]);
 
         $oldDs = DS::find($request->input('ds_id'));
         $newDs = $oldDs->replicate();
@@ -219,22 +219,15 @@ class DSController extends Controller
     }
 
     // Méthode pour enregistrer un DS
-    public function store(Request $request)
+    public function store(StoreDSRequest $request)
     {
         $ds = $this->generateDS($request);
         return redirect()->route('ds.myDS', Auth::id());
     }
 
     // private function for générate DS like in store method
-    private function generateDS(Request $request, DS $ds = null)
+    private function generateDS(StoreDSRequest|UpdateDSRequest $request, DS $ds = null)
     {
-        $request->validate([
-            'type_bac' => 'boolean',
-            'exercises_number' => 'required|integer|min:1|max:4',
-            'harder_exercises' => 'boolean',
-            'multiple_chapters' => 'required|array',
-            'multiple_chapters.*' => 'exists:multiple_chapters,id',
-        ]);
 
         if ($ds != null) {
             $ds->multipleChapters()->detach();
@@ -352,55 +345,9 @@ class DSController extends Controller
         return $ds;
     }
 
-    // méthode pour créer un ds manuellement et l'assigner à un élève
-    public function assignDS(Request $request)
+    // méthode pour afficher le formulaire d'assignation manuelle de DS
+    public function assignDSForm(Request $request)
     {
-        if ($request->isMethod('post')) {
-            $request->validate([
-                'exercisesDS' => 'required|array',
-                'exercisesDS.*' => 'exists:ds_exercises,id',
-                'user_id' => 'required|exists:users,id',
-            ]);
-
-            // Récupérez les IDs des exercices sélectionnés
-            $exercisesDSIds = $request->input('exercisesDS');
-
-            $number_exercises = count($exercisesDSIds);
-
-            // Récupérez les exercices correspondants de la base de données
-            $exercises = DsExercise::findMany($exercisesDSIds);
-
-            // récupérez les multiple_chapters_id des exercices sélectionnés
-            $multiple_chapters = array_unique(array_column($exercises->toArray(), 'multiple_chapter_id'));
-            // Calculez la somme de leur temps
-            $time = $exercises->sum('time');
-
-            // Créez un nouveau DS avec les exercices sélectionnés
-            $ds = new DS;
-            $ds->user_id = $request->input('user_id');
-            $ds->type_bac = false;
-            $ds->exercises_number = $number_exercises;
-            $ds->harder_exercises = false;
-            $ds->time = $time; // Ajoutez cette ligne
-            $ds->timer = $time * 60; // timer in seconds
-            $ds->chrono = 10;
-            $ds->status = "not_started";
-            $ds->save();
-
-            $ds->multipleChapters()->attach($multiple_chapters);
-            $ds->exercisesDS()->attach($exercisesDSIds);
-
-            // Envoyez un e-mail à l'élève
-            $student = User::find($request->input('user_id'));
-            try {
-                Mail::to($student->email)->send(new AssignDSMail($ds));
-            } catch (\Exception $e) {
-                \Log::error('Erreur envoi email DS assign: ' . $e->getMessage());
-            }
-
-            return redirect()->route('students.show')->with('success', 'DS assigné avec succès.');
-        }
-
         // Récupérez tous les exercices et tous les utilisateurs
         $exercises = DsExercise::with('multipleChapter')->get();
         $users = User::all();
@@ -408,6 +355,46 @@ class DSController extends Controller
 
         // Passez les données à la vue
         return view('ds.assign', compact('exercises', 'users', 'student'));
+    }
+
+    // méthode pour créer un ds manuellement et l'assigner à un élève
+    public function assignDS(AssignDSRequest $request)
+    {
+        // Récupérez les IDs des exercices sélectionnés
+        $exercisesDSIds = $request->input('exercisesDS');
+
+        $number_exercises = count($exercisesDSIds);
+
+        // Récupérez les exercices correspondants de la base de données
+        $exercises = DsExercise::findMany($exercisesDSIds);
+
+        // récupérez les multiple_chapters_id des exercices sélectionnés
+        $multiple_chapters = array_unique(array_column($exercises->toArray(), 'multiple_chapter_id'));
+        // Calculez la somme de leur temps
+        $time = $exercises->sum('time');
+
+        $ds = new DS;
+        $ds->user_id = $request->input('user_id');
+        $ds->type_bac = false;
+        $ds->exercises_number = $number_exercises;
+        $ds->harder_exercises = false;
+        $ds->time = $time;
+        $ds->timer = $time * 60;
+        $ds->chrono = 10;
+        $ds->status = "not_started";
+        $ds->save();
+
+        $ds->multipleChapters()->attach($multiple_chapters);
+        $ds->exercisesDS()->attach($exercisesDSIds);
+
+        $student = User::find($request->input('user_id'));
+        try {
+            Mail::to($student->email)->send(new AssignDSMail($ds));
+        } catch (\Exception $e) {
+            \Log::error('Erreur envoi email DS assign: ' . $e->getMessage());
+        }
+
+        return redirect()->route('students.show')->with('success', 'DS assigné avec succès.');
     }
 
     // Méthode pour éditer un DS
@@ -420,7 +407,7 @@ class DSController extends Controller
     }
 
     // Méthode pour mettre à jour un DS
-    public function update(Request $request, $id)
+    public function update(UpdateDSRequest $request, $id)
     {
         $ds = DS::find($id);
         $ds = $this->generateDS($request, $ds);

@@ -10,6 +10,10 @@ use App\Models\QuizzDetail;
 use App\Models\Chapter;
 use App\Models\Subchapter;
 use App\Services\LatexToHtmlConverter;
+use App\Http\Requests\Quizz\StoreQuestionRequest;
+use App\Http\Requests\Quizz\UpdateQuestionRequest;
+use App\Http\Requests\Quizz\StoreAnswerRequest;
+use App\Http\Requests\Quizz\UpdateAnswerRequest;
 
 class QuizzController extends Controller
 {
@@ -327,15 +331,8 @@ class QuizzController extends Controller
     }
 
     // Méthode pour stocker une nouvelle question
-    public function storeQuestion(Request $request)
+    public function storeQuestion(StoreQuestionRequest $request)
     {
-        $request->validate([
-            'name' => 'nullable',
-            'question' => 'required',
-            'chapter_id' => 'required',
-            'subchapter_id' => 'nullable'
-        ]);
-
         $question = new QuizzQuestion();
         $question->name = $request->name;
         $question->latex_question = $request->question;
@@ -375,15 +372,8 @@ class QuizzController extends Controller
     }
 
     // Méthode pour mettre à jour une question
-    public function updateQuestion(Request $request, $id)
+    public function updateQuestion(UpdateQuestionRequest $request, $id)
     {
-        $request->validate([
-            'name' => 'nullable',
-            'question' => 'required',
-            'chapter_id' => 'required',
-            'subchapter_id' => 'nullable'
-        ]);
-
         $question = QuizzQuestion::find($id);
         $question->name = $request->name;
         $question->latex_question = $request->question;
@@ -428,14 +418,8 @@ class QuizzController extends Controller
     }
 
     // Méthode pour stocker une nouvelle réponse
-    public function storeAnswer(Request $request, $id)
+    public function storeAnswer(StoreAnswerRequest $request, $id)
     {
-        $request->validate([
-            'answer' => 'required',
-            'explanation' => 'nullable',
-            'is_correct' => 'required'
-        ]);
-
         $answer = new QuizzAnswer();
         $answer->latex_answer = $request->answer;
         $answer->latex_explanation = $request->explanation;
@@ -459,14 +443,8 @@ class QuizzController extends Controller
     }
 
     // Méthode pour mettre à jour une réponse
-    public function updateAnswer(Request $request, $id)
+    public function updateAnswer(UpdateAnswerRequest $request, $id)
     {
-        $request->validate([
-            'answer' => 'required',
-            'explanation' => 'nullable',
-            'is_correct' => 'required'
-        ]);
-
         $answer = QuizzAnswer::find($id);
         $answer->latex_answer = $request->answer;
         $answer->latex_explanation = $request->explanation;
@@ -484,12 +462,15 @@ class QuizzController extends Controller
     public function destroyAnswer($id, Request $request)
     {
         $answer = QuizzAnswer::find($id);
-        // unlink the answer from the question, bcs it's a foreign key
-        $answer->quizz_question_id = null;
+        $questionId = $answer->quizz_question_id;
+
+        // Delete associated QuizzDetails before deleting the answer
+        QuizzDetail::where('chosen_answer_id', $answer->id)->delete();
+
         $answer->delete();
 
         $filter = $request->get('filter');
 
-        return redirect()->route('quizz.show', ['id' => $answer->quizz_question_id, 'filter' => $filter]);
+        return redirect()->route('quizz.show', ['id' => $questionId, 'filter' => $filter]);
     }
 }

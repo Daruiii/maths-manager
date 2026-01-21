@@ -11,6 +11,8 @@ use App\Models\Classe;
 use Illuminate\Support\Facades\Log;
 use App\Services\LatexToHtmlConverter;
 use App\Services\OrderingService;
+use App\Http\Requests\Exercise\StoreExerciseRequest;
+use App\Http\Requests\Exercise\UpdateExerciseRequest;
 
 class ExerciseController extends Controller
 {
@@ -161,21 +163,9 @@ class ExerciseController extends Controller
         return $maxOrder;
     }
 
-    public function store(Request $request)
+    public function store(StoreExerciseRequest $request)
     {
         try {
-            $request->validate([
-                'subchapter_id' => 'required',
-                'statement' => 'required',
-                'clue' => 'nullable',
-                'solution' => 'nullable',
-                'name' => 'nullable',
-                'difficulty' => 'required|numeric|min:1|max:5',
-                'images_statement' => 'nullable|array',
-                'images_statement.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'images_solution' => 'nullable|array',
-                'images_solution.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
     
             $maxOrder = $this->getMaxOrder(Subchapter::find($request->subchapter_id));
             // Décaler les exercices existants
@@ -287,23 +277,9 @@ class ExerciseController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateExerciseRequest $request, $id)
     {
         try {
-            $request->validate([
-                'subchapter_id' => 'required',
-                'statement' => 'required',
-                'solution' => 'nullable',
-                'clue' => 'nullable',
-                'name' => 'nullable',
-                'difficulty' => 'required|numeric|min:1|max:5',
-                'images_statement' => 'nullable|array',
-                'images_statement.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'delete_images_statement' => 'nullable|array',
-                'images_solution' => 'nullable|array',
-                'images_solution.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'delete_images_solution' => 'nullable|array',
-            ]);
     
             $exercise = Exercise::findOrFail($id);
     

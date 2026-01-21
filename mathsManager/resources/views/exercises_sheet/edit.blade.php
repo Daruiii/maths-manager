@@ -68,7 +68,7 @@
                                         <input type="checkbox" class="multiselect__checkbox" value="{{ $exercise->id }}"
                                             name="exercises[]" {{ in_array($exercise->id, $exercisesSheet->exercises->pluck('id')->toArray()) ? 'checked' : '' }}>
                                         <span class="multiselect__label comfortaa-light text-sm p-2 rounded">
-                                            {{ $exercise->name }} #{{ $exercise->id }}
+                                            {{ $exercise->name }} #{{ $exercise->order }}
                                         </span>
                                     </div>
                                 @endforeach

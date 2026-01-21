@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MultipleChapter;
+use App\Http\Requests\MultipleChapter\StoreMultipleChapterRequest;
+use App\Http\Requests\MultipleChapter\UpdateMultipleChapterRequest;
 
 class MultipleChapterController extends Controller
 {
@@ -70,15 +72,9 @@ class MultipleChapterController extends Controller
         return view('multipleChapter.create', compact('themeColors'));
     }
 
-    public function store(Request $request)
+    public function store(StoreMultipleChapterRequest $request)
     {
-        $validatedData = $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'theme' => 'nullable'
-        ]);
-
-        MultipleChapter::create($validatedData);
+        MultipleChapter::create($request->validated());
         return redirect()->route('multiple_chapters.index');
     }
 
@@ -89,17 +85,11 @@ class MultipleChapterController extends Controller
         return view('multipleChapter.edit', compact('multipleChapter', 'themeColors'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateMultipleChapterRequest $request, $id)
     {
         $multipleChapter = MultipleChapter::findOrFail($id);
 
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'theme' => 'nullable'
-        ]);
-
-        $multipleChapter->update($request->only(['title', 'description', 'theme']));
+        $multipleChapter->update($request->validated());
         return redirect()->route('multiple_chapters.index');
     }
 

@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CorrectionRequestMail;
 use App\Mail\CorrectionCorrectedMail;
+use App\Http\Requests\CorrectionRequest\SendCorrectionRequest;
+use App\Http\Requests\CorrectionRequest\CorrectCorrectionRequest;
 
 class CorrectionRequestController extends Controller
 {
@@ -45,14 +47,8 @@ class CorrectionRequestController extends Controller
     }
 
     // Méthode to send a correction request
-    public function sendCorrectionRequest(Request $request, $ds_id)
+    public function sendCorrectionRequest(SendCorrectionRequest $request, $ds_id)
     {
-        $request->validate([
-            'pictures' => 'required|array|min:1',
-            'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
-            'message' => 'nullable|string|max:255',
-        ]);
-
         $ds = DS::where('id', $ds_id)->firstOrFail();
         if ($correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->first()) {
             return redirect()->route('ds.myDS', Auth::id())->with('error', 'You have already sent a correction request for this DS');
@@ -138,15 +134,8 @@ class CorrectionRequestController extends Controller
     }
 
     // Méthode pour qu'un professeur puisse corriger une demande de correction
-    public function correctCorrectionRequest(Request $request, $ds_id)
+    public function correctCorrectionRequest(CorrectCorrectionRequest $request, $ds_id)
     {
-        $request->validate([
-            'correction_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
-            'correction_pdf' => 'nullable|mimes:pdf',
-            'grade' => 'required|numeric|min:0|max:20',
-            'correction_message' => 'nullable|string|max:255',
-        ]);
-
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
         $correctionRequest->status = 'corrected';
         $correctionRequest->grade = $request->grade;

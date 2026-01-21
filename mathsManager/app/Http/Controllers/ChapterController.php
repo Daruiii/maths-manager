@@ -8,6 +8,8 @@ use App\Models\Classe;
 use App\Models\Subchapter;
 use App\Models\Exercise;
 use App\Services\OrderingService;
+use App\Http\Requests\Chapter\StoreChapterRequest;
+use App\Http\Requests\Chapter\UpdateChapterRequest;
 
 class ChapterController extends Controller
 {
@@ -55,29 +57,22 @@ class ChapterController extends Controller
     
         return view('chapter.create', compact('classes', 'classeActive', 'themeColors', 'nextOrder'));
     }
-    public function store(Request $request) // admin
+    public function store(StoreChapterRequest $request) // admin
     {
-        $request->validate([
-            'title' => 'required',
-            'class_id' => 'required',
-            'order' => 'required|integer',
-            'theme' => 'nullable'
-        ]);
-    
         $classId = $request->class_id;
         $newOrder = $request->order;
-        
+
         // Décaler les chapitres existants dans la classe si nécessaire
         Chapter::where('class_id', $classId)
                ->where('order', '>=', $newOrder)
                ->increment('order');
 
         // Créer le nouveau chapitre
-        Chapter::create($request->only(['title', 'class_id', 'order', 'theme']));
-        
+        Chapter::create($request->validated());
+
         // Recalculer les ordres globaux des exercices
         $this->orderingService->recalculateAllGlobalExerciseOrders();
-        
+
         $classLevel = Classe::findOrFail($classId)->level;
         return redirect()->route('classe.show', $classLevel);
     }
@@ -90,17 +85,11 @@ class ChapterController extends Controller
         return view('chapter.edit', compact('chapter', 'classes', 'themeColors'));
     }
 
-    public function update(Request $request, $id) // admin
+    public function update(UpdateChapterRequest $request, $id) // admin
     {
         $chapter = Chapter::findOrFail($id);
 
-        $request->validate([
-            'title' => 'required',
-            'class_id' => 'required',
-            'theme' => 'nullable'
-        ]);
-
-        $chapter->update($request->only(['title', 'class_id', 'theme']));
+        $chapter->update($request->validated());
         $classLevel = Classe::findOrFail($request->class_id)->level;
 
         return redirect()->route('classe.show', $classLevel);

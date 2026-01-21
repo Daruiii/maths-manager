@@ -218,7 +218,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/ds', [DSController::class, 'index'])->name('ds.index');
-        Route::get('/ds/assign', [DSController::class, 'assignDS'])->name('ds.assign');
+        Route::get('/ds/assign', [DSController::class, 'assignDSForm'])->name('ds.assign');
         Route::post('/ds/assign', [DSController::class, 'assignDS'])->name('ds.assign.store');
         Route::get('/ds/reAssign/{id}', [DSController::class, 'reAssignForm'])->name('ds.reAssignForm');
         Route::post('/ds/reAssign', [DSController::class, 'reAssign'])->name('ds.reAssign');

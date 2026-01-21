@@ -7,6 +7,8 @@ use App\Models\DsExercise;
 use App\Models\Chapter;
 use App\Models\MultipleChapter;
 use App\Services\LatexToHtmlConverter;
+use App\Http\Requests\DsExercise\StoreDsExerciseRequest;
+use App\Http\Requests\DsExercise\UpdateDsExerciseRequest;
 
 class DsExerciseController extends Controller
 {
@@ -100,25 +102,8 @@ class DsExerciseController extends Controller
         return view('dsExercise.create', compact('multipleChapters'));
     }
 
-    public function store(Request $request)
+    public function store(StoreDsExerciseRequest $request)
     {
-        $request->validate([
-            'multiple_chapter_id' => 'required|exists:multiple_chapters,id',
-            'harder_exercise' => 'boolean',
-            'time' => 'required|integer',
-            'name' => 'nullable|max:255',
-            'statement' => 'required',
-            'latex_statement' => 'nullable',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'correction_pdf' => 'nullable|file|mimes:pdf|max:2048',
-            'type' => 'nullable|string',
-            'year' => 'nullable|integer',
-            'academy' => 'nullable|string',
-            'date_data' => 'nullable|string',
-            // 'chapters' => 'required|array',
-            // 'chapters.*' => 'exists:chapters,id'
-        ]);
         $lastExercise = DsExercise::orderBy('id', 'desc')->first();
         $newExerciseId = $lastExercise ? $lastExercise->id + 1 : 1;
         while (DsExercise::find($newExerciseId)) {
@@ -200,31 +185,8 @@ class DsExerciseController extends Controller
         return view('dsExercise.edit', compact('dsExercise', 'multipleChapters', 'filter', 'existingImagesFormatted'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateDsExerciseRequest $request, string $id)
     {
-        $request->validate([
-            'multiple_chapter_id' => 'required|exists:multiple_chapters,id',
-            'harder_exercise' => 'boolean',
-            'time' => 'required|integer',
-            'name' => 'nullable|max:255',
-            'statement' => 'required',
-            'latex_statement' => 'nullable',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'existing_images' => 'nullable|array',
-            'existing_images.*' => 'string',
-            'filter' => 'nullable|string',
-            'image_order' => 'nullable|string',
-            // 'chapters' => 'required|array',
-            // 'chapters.*' => 'exists:chapters,id'
-            'correction_pdf' => 'nullable|file|mimes:pdf|max:2048',
-            'delete_correction_pdf' => 'nullable|boolean',
-            'type' => 'nullable|string',
-            'year' => 'nullable|integer',
-            'academy' => 'nullable|string',
-            'date_data' => 'nullable|string',
-        ]);
-
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->fill($request->except('images', 'statement'));
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;

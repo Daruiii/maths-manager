@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\AssignSheetMail;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\ExercisesSheet\StoreExercisesSheetRequest;
+use App\Http\Requests\ExercisesSheet\UpdateExercisesSheetRequest;
 
 class ExercisesSheetController extends Controller
 {
@@ -75,16 +77,8 @@ class ExercisesSheetController extends Controller
     }
 
     // Méthode pour enregistrer une fiche d'exercices
-    public function store(Request $request)
+    public function store(StoreExercisesSheetRequest $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'exercises' => 'required|array',
-            'exercises.*' => 'exists:exercises,id',
-            'chapter_id' => 'required|exists:chapters,id',
-            'title' => 'nullable|string|max:255',
-        ]);
-
         $exercisesSheet = new ExercisesSheet();
         $exercisesSheet->user_id = $request->user_id;
         $exercisesSheet->chapter_id = $request->chapter_id;
@@ -117,16 +111,9 @@ class ExercisesSheetController extends Controller
     }
 
     // Méthode pour mettre à jour une fiche d'exercices
-    public function update(Request $request, $id)
+    public function update(UpdateExercisesSheetRequest $request, $id)
     {
         $exercisesSheet = ExercisesSheet::find($id);
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'exercises' => 'required|array',
-            'exercises.*' => 'exists:exercises,id',
-            'chapter_id' => 'required|exists:chapters,id',
-            'title' => 'nullable|string|max:255',
-        ]);
 
         $exercisesSheet->user_id = $request->user_id;
         $exercisesSheet->chapter_id = $request->chapter_id;

@@ -7,18 +7,17 @@ use App\Models\WhitelistRequest;
 use App\Models\Exercise;
 use App\Models\ExerciseWhitelist;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\WhitelistRequest\StoreWhitelistRequest;
+use App\Http\Requests\WhitelistRequest\ApproveWhitelistRequest;
+use App\Http\Requests\WhitelistRequest\RejectWhitelistRequest;
 
 class WhitelistRequestController extends Controller
 {
     /**
      * Soumettre une demande de whitelist pour un exercice
      */
-    public function store(Request $request, $exerciseId)
+    public function store(StoreWhitelistRequest $request, $exerciseId)
     {
-        $request->validate([
-            'message' => 'nullable|string|max:1000'
-        ]);
-        
         $exercise = Exercise::findOrFail($exerciseId);
         
         // Vérifier que l'utilisateur est un étudiant
@@ -69,7 +68,7 @@ class WhitelistRequestController extends Controller
     /**
      * Approuver une demande de whitelist
      */
-    public function approve(Request $request, $requestId)
+    public function approve(ApproveWhitelistRequest $request, $requestId)
     {
         $whitelistRequest = WhitelistRequest::findOrFail($requestId);
         
@@ -102,12 +101,8 @@ class WhitelistRequestController extends Controller
     /**
      * Rejeter une demande de whitelist
      */
-    public function reject(Request $request, $requestId)
+    public function reject(RejectWhitelistRequest $request, $requestId)
     {
-        $request->validate([
-            'admin_response' => 'required|string|max:500'
-        ]);
-        
         $whitelistRequest = WhitelistRequest::findOrFail($requestId);
         
         if (!$whitelistRequest->isPending()) {

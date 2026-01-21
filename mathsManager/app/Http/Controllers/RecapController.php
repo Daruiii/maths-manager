@@ -8,6 +8,11 @@ use App\Models\RecapPart;
 use App\Models\RecapPartBlock;
 use App\Models\Chapter;
 use App\Services\LatexToHtmlConverter;
+use App\Http\Requests\Recap\StoreRecapRequest;
+use App\Http\Requests\Recap\StoreRecapPartRequest;
+use App\Http\Requests\Recap\UpdateRecapPartRequest;
+use App\Http\Requests\Recap\StoreRecapPartBlockRequest;
+use App\Http\Requests\Recap\UpdateRecapPartBlockRequest;
 
 class RecapController extends Controller
 {
@@ -32,14 +37,8 @@ class RecapController extends Controller
     }
 
     // Méthode pour stocker un récap
-    public function store(Request $request)
+    public function store(StoreRecapRequest $request)
     {
-        // title et chapter
-        $request->validate([
-            'title' => 'nullable',
-            'chapter_id' => 'required'
-        ]);
-
         // Création du récap
         $recap = new Recap();
         $recap->title = $request->title ?? 'Récapitulatif';
@@ -65,15 +64,8 @@ class RecapController extends Controller
     }
 
     // Méthode pour stocker une partie de récap
-    public function storePart(Request $request)
+    public function storePart(StoreRecapPartRequest $request)
     {
-        // title et description
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'recap_id' => 'required'
-        ]);
-
         // Création de la partie de récap
         $recapPart = new RecapPart();
         $recapPart->title = $request->title;
@@ -92,14 +84,8 @@ class RecapController extends Controller
     }
 
     // Méthode pour mettre à jour une partie de récap
-    public function updatePart(Request $request, $id)
+    public function updatePart(UpdateRecapPartRequest $request, $id)
     {
-        // title et description
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable'
-        ]);
-
         // Mise à jour de la partie de récap
         $recapPart = RecapPart::find($id);
         $recapPart->title = $request->title;
@@ -127,26 +113,16 @@ class RecapController extends Controller
     }
 
     // Méthode pour stocker un bloc de partie de récap
-    public function storePartBlock(Request $request)
+    public function storePartBlock(StoreRecapPartBlockRequest $request)
     {
-        // title et theme
-        $request->validate([
-            'title' => 'required',
-            'theme' => 'nullable',
-            'content' => 'nullable',
-            'example' => 'nullable',
-            'recap_part_id' => 'required',
-            'subchapter_id' => 'nullable'
-        ]);
-
         // Création du bloc de partie de récap
         $recapPartBlock = new RecapPartBlock();
         $recapPartBlock->title = $request->title;
         $recapPartBlock->theme = $request->theme ?? 'grey';
         $recapPartBlock->latex_content = $request->content;
         $recapPartBlock->latex_example = $request->example;
-        $recapPartBlock->content = LatexToHtmlConverter::convertForRecap($request->content);
-        $recapPartBlock->example = LatexToHtmlConverter::convertForRecap($request->example);
+        $recapPartBlock->content = $request->content ? LatexToHtmlConverter::convertForRecap($request->content) : null;
+        $recapPartBlock->example = $request->example ? LatexToHtmlConverter::convertForRecap($request->example) : null;
         $recapPartBlock->recap_part_id = $request->recap_part_id;
         $recapPartBlock->subchapter_id = $request->subchapter_id;
         $recapPartBlock->save();
@@ -164,27 +140,16 @@ class RecapController extends Controller
     }
 
     // Méthode pour mettre à jour un bloc de partie de récap
-    public function updatePartBlock(Request $request, $id)
+    public function updatePartBlock(UpdateRecapPartBlockRequest $request, $id)
     {
-        // title et theme
-        $request->validate([
-            'title' => 'required',
-            'theme' => 'nullable',
-            'example' => 'nullable',
-            'latex_example' => 'nullable',
-            'content' => 'nullable',
-            'latex_content' => 'nullable',
-            'subchapter_id' => 'nullable'
-        ]);
-
         // Mise à jour du bloc de partie de récap
         $recapPartBlock = RecapPartBlock::find($id);
         $recapPartBlock->title = $request->title;
         $recapPartBlock->theme = $request->theme ?? 'grey';
         $recapPartBlock->latex_example = $request->example;
-        $recapPartBlock->example = LatexToHtmlConverter::convertForRecap($request->example);
+        $recapPartBlock->example = $request->example ? LatexToHtmlConverter::convertForRecap($request->example) : null;
         $recapPartBlock->latex_content = $request->content;
-        $recapPartBlock->content = LatexToHtmlConverter::convertForRecap($request->content);
+        $recapPartBlock->content = $request->content ? LatexToHtmlConverter::convertForRecap($request->content) : null;
         $recapPartBlock->subchapter_id = $request->subchapter_id;
         $recapPartBlock->save();
 

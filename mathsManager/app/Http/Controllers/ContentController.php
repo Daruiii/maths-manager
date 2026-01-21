@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\Services\FileUploadService;
+use App\Http\Requests\Content\UpdateContentRequest;
 
 class ContentController extends Controller
 {
@@ -38,15 +39,8 @@ class ContentController extends Controller
      * Met à jour une section de contenu dans la base de données.
      */
     
-    public function update(Request $request, $section)
+    public function update(UpdateContentRequest $request, $section)
     {
-        // Validation des données du formulaire
-        $request->validate([
-            'title' => 'nullable|string|max:255',
-            'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-        ]);
-
         // Récupérer la section spécifique
         $content = Content::where('section', $section)->firstOrFail();
 
