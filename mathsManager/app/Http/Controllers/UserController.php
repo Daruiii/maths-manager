@@ -15,6 +15,7 @@ class UserController extends Controller
         $this->fileUploadService = $fileUploadService;
     }
     // Affiche la liste paginée des utilisateurs
+    
     public function index(Request $request)
     {
         $search = $request->get('search');
@@ -33,7 +34,7 @@ class UserController extends Controller
     // Affiche les détails d'un utilisateur
     public function show($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with(['quizzes', 'ds'])->findOrFail($id);
         $quizzes = $user->quizzes();
         $ds = $user->ds;
 
@@ -72,15 +73,11 @@ class UserController extends Controller
     // Affiche les détails d'un quiz spécifique
     public function showQuizDetails($quiz_id)
     {
-        // Get the quiz
-        $quiz = Quizze::find($quiz_id);
+        // Get the quiz with eager loading
+        $quiz = Quizze::with('details.chosenAnswer')->find($quiz_id);
 
         // Get the details of the quiz
         $quizDetails = $quiz->details;
-        // get his chosenAnswer
-        foreach ($quizDetails as $detail) {
-            $detail->chosenAnswer;
-        }
 
         // Return the view
         return view('user.userQuizzes.details', compact('quiz', 'quizDetails'));

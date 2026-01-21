@@ -32,7 +32,7 @@ class DSController extends Controller
         $sort_by_student = request()->query('sort_by_student');
         $sort_by_status = request()->query('sort_by_status');
 
-        $dsList = DS::query();
+        $dsList = DS::query()->with(['exercisesDS.multipleChapter', 'user', 'correctionRequest']);
 
         // Check if the request has sort_by_student
         if ($request->filled('sort_by_student')) {
@@ -234,10 +234,14 @@ class DSController extends Controller
             $ds->exercisesDS()->detach();
         }
 
-        // Select all exercises from the selected chapters
+        // Select all exercises from the selected chapters with eager loading
+        $multipleChapters = MultipleChapter::with('dsExercises')
+            ->whereIn('id', $request->multiple_chapters)
+            ->get();
+
         $exercisesDS = [];
-        foreach ($request->multiple_chapters as $multiple_chapter) {
-            $exercises = MultipleChapter::find($multiple_chapter)->dsExercises;
+        foreach ($multipleChapters as $multipleChapter) {
+            $exercises = $multipleChapter->dsExercises;
             $exercises = $request->harder_exercises ? $exercises->where('harder_exercise', 1) : $exercises->where('harder_exercise', 0);
             $exercisesDS = array_merge($exercisesDS, $exercises->toArray());
         }
@@ -246,8 +250,12 @@ class DSController extends Controller
         $exercisesDS = array_unique($exercisesDS, SORT_REGULAR);
 
         if ($request->type_bac) {
+            // Load all multipleChapters in one query
+            $multipleChapterIds = array_unique(array_column($exercisesDS, 'multiple_chapter_id'));
+            $multipleChaptersMap = MultipleChapter::whereIn('id', $multipleChapterIds)->get()->keyBy('id');
+
             foreach ($exercisesDS as $key => $exercise) {
-            $exercisesDS[$key]['multipleChapter'] = MultipleChapter::find($exercise['multiple_chapter_id']);
+            $exercisesDS[$key]['multipleChapter'] = $multipleChaptersMap[$exercise['multiple_chapter_id']];
             }
             // Exclude specific multipleChapters
             $excludedChapters = [
