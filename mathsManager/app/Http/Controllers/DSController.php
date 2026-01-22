@@ -19,13 +19,16 @@ class DSController extends Controller
 {
     protected \App\Services\FileUploadService $fileUploadService;
     protected \App\Services\DSGenerationService $dsGenerationService;
+    protected \App\Services\TimerFormattingService $timerService;
 
     public function __construct(
         \App\Services\FileUploadService $fileUploadService,
-        \App\Services\DSGenerationService $dsGenerationService
+        \App\Services\DSGenerationService $dsGenerationService,
+        \App\Services\TimerFormattingService $timerService
     ) {
         $this->fileUploadService = $fileUploadService;
         $this->dsGenerationService = $dsGenerationService;
+        $this->timerService = $timerService;
     }
 
     // Méthode pour afficher tous les DS
@@ -135,45 +138,21 @@ class DSController extends Controller
     public function show($id)
     {
         $ds = DS::find($id);
-        
+
         if (!$ds) {
             return redirect()->route('ds.myDS', Auth::id())->with('error', 'DS non trouvé.');
         }
-        
-        $timerFormatted = $this->formatTimer($ds->timer);
+
+        $timerFormatted = $this->timerService->format($ds->timer);
         $timerAction = "show";
         return view('ds.show', compact('ds', 'timerFormatted', 'timerAction'));
-    }
-
-    private function formatTimer($timerInSeconds)
-    {
-        $hours = floor($timerInSeconds / 3600);
-        $minutes = floor(($timerInSeconds - $hours * 3600) / 60);
-        $seconds = $timerInSeconds - $hours * 3600 - $minutes * 60;
-        $timerFormatted = "";
-        if ($hours < 10) {
-            $timerFormatted .= "0" . $hours . ":";
-        } else {
-            $timerFormatted .= $hours . ":";
-        }
-        if ($minutes < 10) {
-            $timerFormatted .= "0" . $minutes . ":";
-        } else {
-            $timerFormatted .= $minutes . ":";
-        }
-        if ($seconds < 10) {
-            $timerFormatted .= "0" . $seconds;
-        } else {
-            $timerFormatted .= $seconds;
-        }
-        return $timerFormatted;
     }
 
     // Méthode pour démarrer un DS
     public function start($id)
     {
         $ds = DS::find($id);
-        $timerFormatted = $this->formatTimer($ds->timer);
+        $timerFormatted = $this->timerService->format($ds->timer);
         $ds->status = "ongoing";
         $ds->save();
         $timerAction = "start";
@@ -181,18 +160,10 @@ class DSController extends Controller
         return view('ds.show', compact('ds', 'timerAction', 'timerFormatted'));
     }
 
-    private function resetTimerToSeconds($timer)
-    {
-        $timerArray = explode(":", $timer);
-        // convert timer to seconds
-        $timerInSeconds = $timerArray[0] * 3600 + $timerArray[1] * 60 + $timerArray[2];
-        return $timerInSeconds;
-    }
-
     // Méthode pour mettre en pause un DS
     public function pause($id, $timer)
     {
-        $timerInSeconds = $this->resetTimerToSeconds($timer);
+        $timerInSeconds = $this->timerService->parseToSeconds($timer);
         $ds = DS::find($id);
         $ds->timer = $timerInSeconds;
         // timer = 0 means the DS is finished so set status to finished
