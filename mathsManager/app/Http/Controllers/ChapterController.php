@@ -19,17 +19,6 @@ class ChapterController extends Controller
     {
         $this->orderingService = $orderingService;
     }
-    protected $themeColors = [
-        'analyse1' => '#318CE7',
-        'analyse2' => '#CCA9DD',
-        'suites' => '#80CEE1',
-        'geometrie' => '#E6D07C',
-        'probabilites' => '#E67C7C',
-        'trigonometrie' => '#E6AA74',
-        'complexes' => '#794A11',
-        'arithmetique' => '#CF8FE6',
-        'matrices' => '#EC9CDB',
-    ];
 
     public function index() // students
     {
@@ -47,7 +36,7 @@ class ChapterController extends Controller
     {
         $classes = Classe::all();
         $classeActive = Classe::findOrFail($id)->id;
-        $themeColors = $this->themeColors;
+        $themeColors = config('themes.chapter_colors');
     
         // Ordre local dans la classe : prochaine position disponible
         $nextOrder = Chapter::where('class_id', $classeActive)->max('order') + 1;
@@ -81,7 +70,7 @@ class ChapterController extends Controller
     {
         $chapter = Chapter::findOrFail($id);
         $classes = Classe::all();
-        $themeColors = $this->themeColors;
+        $themeColors = config('themes.chapter_colors');
         return view('chapter.edit', compact('chapter', 'classes', 'themeColors'));
     }
 

@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ExercisesSheet;
-use App\Models\Exercise;
-use App\Models\User;
-use App\Models\Chapter;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Mail\AssignSheetMail;
-use Illuminate\Support\Facades\Mail;
+use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\ExercisesSheet\StoreExercisesSheetRequest;
 use App\Http\Requests\ExercisesSheet\UpdateExercisesSheetRequest;
+use App\Mail\AssignSheetMail;
+use App\Models\Chapter;
+use App\Models\Exercise;
+use App\Models\ExercisesSheet;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class ExercisesSheetController extends Controller
 {
@@ -104,7 +105,7 @@ class ExercisesSheetController extends Controller
         try {
             Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
         } catch (\Exception $e) {
-            \Log::error('Erreur envoi email fiche exercices create: ' . $e->getMessage());
+            ErrorResponseHelper::mailError($e, 'Exercises sheet create');
         }
 
         return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices créée avec succès');
@@ -139,7 +140,7 @@ class ExercisesSheetController extends Controller
         try {
             Mail::to($student->email)->send(new AssignSheetMail($exercisesSheet));
         } catch (\Exception $e) {
-            \Log::error('Erreur envoi email fiche exercices update: ' . $e->getMessage());
+            ErrorResponseHelper::mailError($e, 'Exercises sheet update');
         }
 
         return redirect()->route('exercises_sheet.index')->with('success', 'Fiche d\'exercices modifiée avec succès');

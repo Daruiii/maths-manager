@@ -10,6 +10,7 @@ use App\Models\MultipleChapter;
 use App\Models\User;
 use App\Mail\AssignDSMail;
 use Illuminate\Support\Facades\Mail;
+use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\DS\ReAssignDSRequest;
 use App\Http\Requests\DS\StoreDSRequest;
 use App\Http\Requests\DS\UpdateDSRequest;
@@ -115,7 +116,7 @@ class DSController extends Controller
         try {
             Mail::to($student->email)->send(new AssignDSMail($newDs));
         } catch (\Exception $e) {
-            \Log::error('Erreur envoi email DS re-assign: ' . $e->getMessage());
+            ErrorResponseHelper::mailError($e, 'DS re-assign');
         }
 
         return redirect()->route('ds.index')->with('success', 'DS réassigné avec succès.');
@@ -255,7 +256,7 @@ class DSController extends Controller
         try {
             Mail::to($student->email)->send(new AssignDSMail($ds));
         } catch (\Exception $e) {
-            \Log::error('Erreur envoi email DS assign: ' . $e->getMessage());
+            ErrorResponseHelper::mailError($e, 'DS assign');
         }
 
         return redirect()->route('students.show')->with('success', 'DS assigné avec succès.');

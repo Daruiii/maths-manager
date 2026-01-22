@@ -9,17 +9,6 @@ use App\Http\Requests\MultipleChapter\UpdateMultipleChapterRequest;
 
 class MultipleChapterController extends Controller
 {
-    protected $themeColors = [
-        'analyse1' => '#318CE7',
-        'analyse2' => '#CCA9DD',
-        'suites' => '#80CEE1',
-        'geometrie' => '#E6D07C',
-        'probabilites' => '#E67C7C',
-        'trigonometrie' => '#E6AA74',
-        'complexes' => '#794A11',
-        'arithmetique' => '#CF8FE6',
-        'matrices' => '#EC9CDB',
-    ];
 
     public function changeAnalyse2Color() // admin
     {
@@ -68,7 +57,7 @@ class MultipleChapterController extends Controller
 
     public function create()
     {
-        $themeColors = $this->themeColors;
+        $themeColors = config('themes.chapter_colors');
         return view('multipleChapter.create', compact('themeColors'));
     }
 
@@ -81,7 +70,7 @@ class MultipleChapterController extends Controller
     public function edit($id)
     {
         $multipleChapter = MultipleChapter::findOrFail($id);
-        $themeColors = $this->themeColors;
+        $themeColors = config('themes.chapter_colors');
         return view('multipleChapter.edit', compact('multipleChapter', 'themeColors'));
     }
 

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Content;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
-use App\Services\FileUploadService;
+use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\Content\UpdateContentRequest;
+use App\Models\Content;
+use App\Services\FileUploadService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 
 class ContentController extends Controller
 {
@@ -63,7 +64,7 @@ class ContentController extends Controller
                 );
                 $content->image = $imagePath;
             } catch (\Exception $e) {
-                return back()->withErrors('Échec de l\'upload de l\'image : ' . $e->getMessage());
+                return ErrorResponseHelper::systemError($e, 'Upload content image');
             }
         } elseif ($request->input('remove_image') === 'true' && $content->image) {
             // Supprimer l'image actuelle

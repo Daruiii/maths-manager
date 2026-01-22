@@ -11,6 +11,7 @@ use App\Models\Classe;
 use Illuminate\Support\Facades\Log;
 use App\Services\LatexToHtmlConverter;
 use App\Services\OrderingService;
+use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\Exercise\StoreExerciseRequest;
 use App\Http\Requests\Exercise\UpdateExerciseRequest;
 
@@ -46,8 +47,7 @@ class ExerciseController extends Controller
 
             return redirect()->back()->with('success', 'Exercises order decremented successfully');
         } catch (\Exception $e) {
-            Log::error("Failed to decrement exercises: " . $e->getMessage());
-            return back()->withErrors('Failed to decrement exercises.');
+            return ErrorResponseHelper::systemError($e, 'Decrement exercises');
         }
     }
     public function updateOrder(Request $request)
@@ -73,6 +73,7 @@ class ExerciseController extends Controller
                 Log::info("Saved exercise $id with order $order");
             } catch (\Exception $e) {
                 Log::error("Failed to save exercise $id: " . $e->getMessage());
+                // Continue processing other exercises
             }
         }
 
@@ -94,8 +95,7 @@ class ExerciseController extends Controller
             $subchapters = Subchapter::all();
             return view('exercise.index', compact('exercises', 'subchapters'));
         } catch (\Exception $e) {
-            Log::error("Failed to load exercises: " . $e->getMessage());
-            return back()->withErrors('Failed to load exercises.');
+            return ErrorResponseHelper::systemError($e, 'Load exercises index');
         }
     }
 
@@ -106,8 +106,7 @@ class ExerciseController extends Controller
             $subchapters = Subchapter::all();
             return view('exercise.create', compact('subchapter_id', 'subchapters'));
         } catch (\Exception $e) {
-            Log::error("Failed to load create exercise view: " . $e->getMessage());
-            return back()->withErrors('Failed to load create exercise view.');
+            return ErrorResponseHelper::systemError($e, 'Load create exercise view');
         }
     }
 
@@ -238,8 +237,7 @@ class ExerciseController extends Controller
             // Relancer les ValidationException (validation LaTeX)
             throw $e;
         } catch (\Exception $e) {
-            Log::error("Failed to store exercise: " . $e->getMessage());
-            return back()->withErrors('Failed to store exercise. ' . $e->getMessage());
+            return ErrorResponseHelper::systemError($e, 'Store exercise');
         }
     }    
 
@@ -272,8 +270,7 @@ class ExerciseController extends Controller
 
             return view('exercise.edit', compact('exercise', 'existingImagesStatementFormatted', 'existingImagesSolutionFormatted'));
         } catch (\Exception $e) {
-            Log::error("Failed to load edit exercise view: " . $e->getMessage());
-            return back()->withErrors('Failed to load edit exercise view.');
+            return ErrorResponseHelper::systemError($e, 'Load edit exercise view');
         }
     }
 
@@ -342,8 +339,7 @@ class ExerciseController extends Controller
             // Relancer les ValidationException (validation LaTeX)
             throw $e;
         } catch (\Exception $e) {
-            Log::error("Failed to update exercise: " . $e->getMessage());
-            return back()->withErrors('Failed to update exercise. ' . $e->getMessage());
+            return ErrorResponseHelper::systemError($e, 'Update exercise');
         }
     }
     
@@ -368,8 +364,7 @@ class ExerciseController extends Controller
     
             return redirect()->route('subchapter.show', $subchapterId);
         } catch (\Exception $e) {
-            Log::error("Failed to destroy exercise: " . $e->getMessage());
-            return back()->withErrors('Failed to destroy exercise.');
+            return ErrorResponseHelper::systemError($e, 'Destroy exercise');
         }
     }
     
