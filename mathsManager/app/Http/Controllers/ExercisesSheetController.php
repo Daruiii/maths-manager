@@ -15,6 +15,13 @@ use App\Http\Requests\ExercisesSheet\UpdateExercisesSheetRequest;
 
 class ExercisesSheetController extends Controller
 {
+    protected \App\Services\SheetFormattingService $sheetFormattingService;
+
+    public function __construct(\App\Services\SheetFormattingService $sheetFormattingService)
+    {
+        $this->sheetFormattingService = $sheetFormattingService;
+    }
+
     // Méthode pour afficher toutes les fiches d'exercices
     public function index(Request $request)
     {
@@ -144,33 +151,15 @@ class ExercisesSheetController extends Controller
     public function show($id)
     {
         $exercisesSheet = ExercisesSheet::with('exercises.subchapter')->find($id);
-    
-        $globalIndex = 0;
-    
-        $subChapterIndex = 0;
-    
-        $exercises = $exercisesSheet->exercises
-            ->groupBy('subchapter_id')
-            ->map(function ($group) use (&$globalIndex, &$subChapterIndex) {
-                $group->each(function ($item) use (&$globalIndex) {
-                    $item->globalIndex = ++$globalIndex;
-                });
-                $subChapterIndex++;
-                return [
-                    'subChapterIndex' => $subChapterIndex,
-                    'subChapterTitle' => $group->first()->subchapter->title,
-                    'exercises' => $group,
-                    'subChapterOrder' => $group->first()->subchapter->order,
-                ];
-            })
-            ->sortBy('subChapterOrder');
-    
+
+        $exercises = $this->sheetFormattingService->formatExercisesBySubchapter($exercisesSheet);
+
         // Mettre à jour le statut à "opened" ssi l'utilisateur connecté est le propriétaire de la fiche
         if (Auth::id() == $exercisesSheet->user_id) {
             $exercisesSheet->status = 'opened';
             $exercisesSheet->save();
         }
-    
+
         return view('exercises_sheet.show', compact('exercisesSheet', 'exercises'));
     }
 }
