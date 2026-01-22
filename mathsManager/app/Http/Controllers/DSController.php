@@ -20,15 +20,18 @@ class DSController extends Controller
     protected \App\Services\FileUploadService $fileUploadService;
     protected \App\Services\DSGenerationService $dsGenerationService;
     protected \App\Services\TimerFormattingService $timerService;
+    protected \App\Services\QueryFiltersService $queryFiltersService;
 
     public function __construct(
         \App\Services\FileUploadService $fileUploadService,
         \App\Services\DSGenerationService $dsGenerationService,
-        \App\Services\TimerFormattingService $timerService
+        \App\Services\TimerFormattingService $timerService,
+        \App\Services\QueryFiltersService $queryFiltersService
     ) {
         $this->fileUploadService = $fileUploadService;
         $this->dsGenerationService = $dsGenerationService;
         $this->timerService = $timerService;
+        $this->queryFiltersService = $queryFiltersService;
     }
 
     // Méthode pour afficher tous les DS
@@ -38,6 +41,20 @@ class DSController extends Controller
         $sort_by_status = request()->query('sort_by_status');
 
         $dsList = DS::query()->with(['exercisesDS.multipleChapter', 'user', 'correctionRequest']);
+
+        // Appliquer la recherche via le service
+        $dsList = $this->queryFiltersService->applySearch(
+            $dsList,
+            $request->query('search'),
+            ['type_bac', 'exercises_number', 'status']
+        );
+
+        // Recherche dans la relation user (si nécessaire, garder whereHas pour les relations)
+        if ($request->query('search')) {
+            $dsList->orWhereHas('user', function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->query('search') . '%');
+            });
+        }
 
         // Check if the request has sort_by_student
         if ($request->filled('sort_by_student')) {
@@ -51,16 +68,6 @@ class DSController extends Controller
 
         // Default sort by created_at
         $dsList = $dsList->orderBy('created_at', 'desc');
-
-        // Existing search functionality
-        if (request()->query('search')) {
-            $dsList = $dsList->where('type_bac', 'like', '%' . request()->query('search') . '%')
-                ->orWhere('exercises_number', 'like', '%' . request()->query('search') . '%')
-                ->orWhere('status', 'like', '%' . request()->query('search') . '%')
-                ->orWhereHas('user', function ($query) {
-                    $query->where('name', 'like', '%' . request()->query('search') . '%');
-                });
-        }
 
         $dsList = $dsList->paginate(10)->withQueryString();
 

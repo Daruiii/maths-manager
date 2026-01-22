@@ -14,13 +14,16 @@ class DsExerciseController extends Controller
 {
     protected \App\Services\FileUploadService $fileUploadService;
     protected \App\Services\ImageManagementService $imageManagementService;
+    protected \App\Services\QueryFiltersService $queryFiltersService;
 
     public function __construct(
         \App\Services\FileUploadService $fileUploadService,
-        \App\Services\ImageManagementService $imageManagementService
+        \App\Services\ImageManagementService $imageManagementService,
+        \App\Services\QueryFiltersService $queryFiltersService
     ) {
         $this->fileUploadService = $fileUploadService;
         $this->imageManagementService = $imageManagementService;
+        $this->queryFiltersService = $queryFiltersService;
     }
 
     public function index(Request $request)
@@ -28,71 +31,37 @@ class DsExerciseController extends Controller
         $search = $request->get('search');
         $dsExercises = DsExercise::with('chapters')->orderBy('created_at', 'desc');
 
-        if ($search) {
-            $dsExercises->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('id', 'like', '%' . $search . '%');
-            });
-        }
+        // Appliquer la recherche via le service
+        $dsExercises = $this->queryFiltersService->applySearch($dsExercises, $search, ['name', 'id']);
 
-        if ($request->filled('multiple_chapter_id')) {
-            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id);
-            $filterActivated = true;
-            $chapterActivated = MultipleChapter::findOrFail($request->multiple_chapter_id);
-        } else {
-            $filterActivated = false;
-            $chapterActivated = null;
-        }
+        // Appliquer les filtres dynamiques via le service (remplace les 51 lignes de duplication)
+        $filterFields = [
+            'multiple_chapter_id' => 'multiple_chapter_id',
+            'type' => 'type',
+            'academy' => 'academy',
+        ];
+        $dsExercises = $this->queryFiltersService->applyFilters($dsExercises, $request, $filterFields);
 
-        if ($request->filled('type')) {
-            $dsExercises->where('type', $request->type);
-            $typeActivated = $request->type;
-            $typeFilterActivated = true;
-        } else {
-            $typeActivated = null;
-            $typeFilterActivated = false;
-        }
+        // Récupérer les filtres actifs pour la vue
+        $activeFilters = $this->queryFiltersService->getActiveFilters($request, $filterFields);
 
-        if ($request->filled('academy')) {
-            $dsExercises->where('academy', $request->academy);
-            $academyActivated = $request->academy;
-            $academyFilterActivated = true;
-        } else {
-            $academyActivated = null;
-            $academyFilterActivated = false;
-        }
+        // Construire les variables pour la vue
+        $filterActivated = isset($activeFilters['multiple_chapter_id']);
+        $chapterActivated = $filterActivated
+            ? MultipleChapter::findOrFail($activeFilters['multiple_chapter_id'])
+            : null;
 
-        // Filter by both `type` and `academy` if both are provided
-        if ($request->filled('type') && $request->filled('academy')) {
-            $dsExercises->where('type', $request->type)
-                        ->where('academy', $request->academy);
-        }
+        $typeActivated = $activeFilters['type'] ?? null;
+        $typeFilterActivated = !empty($activeFilters['type']);
 
-        // Filter by both `multiple_chapter_id` and `type` if both are provided
-        if ($request->filled('multiple_chapter_id') && $request->filled('type')) {
-            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id)
-                        ->where('type', $request->type);
-        }
-
-        // Filter by both `multiple_chapter_id` and `academy` if both are provided
-        if ($request->filled('multiple_chapter_id') && $request->filled('academy')) {
-            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id)
-                        ->where('academy', $request->academy);
-        }
-
-        // Filter by all three `multiple_chapter_id`, `type`, and `academy` if all are provided
-        if ($request->filled('multiple_chapter_id') && $request->filled('type') && $request->filled('academy')) {
-            $dsExercises->where('multiple_chapter_id', $request->multiple_chapter_id)
-                        ->where('type', $request->type)
-                        ->where('academy', $request->academy);
-        }
+        $academyActivated = $activeFilters['academy'] ?? null;
+        $academyFilterActivated = !empty($activeFilters['academy']);
 
         $academies = DsExercise::distinct('academy')->pluck('academy');
-
         $dsExercises = $dsExercises->paginate(10)->withQueryString();
         $multipleChapters = MultipleChapter::all();
 
-        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated', 
+        return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated',
         'typeActivated', 'typeFilterActivated', 'academyActivated', 'academyFilterActivated', 'academies'));
     }
 

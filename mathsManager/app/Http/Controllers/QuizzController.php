@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\QuizzQuestion;
 use App\Models\QuizzAnswer;
-use App\Models\Quizze;
 use App\Models\QuizzDetail;
 use App\Models\Chapter;
 use App\Models\Subchapter;
@@ -17,40 +16,25 @@ use App\Http\Requests\Quizz\UpdateAnswerRequest;
 
 class QuizzController extends Controller
 {
+    protected \App\Services\QuizzManagementService $quizzManagementService;
+    protected \App\Services\QuizzSelectionService $quizzSelectionService;
+    protected \App\Services\QueryFiltersService $queryFiltersService;
+
+    public function __construct(
+        \App\Services\QuizzManagementService $quizzManagementService,
+        \App\Services\QuizzSelectionService $quizzSelectionService,
+        \App\Services\QueryFiltersService $queryFiltersService
+    ) {
+        $this->quizzManagementService = $quizzManagementService;
+        $this->quizzSelectionService = $quizzSelectionService;
+        $this->queryFiltersService = $queryFiltersService;
+    }
 
     // Méthode pour commencer un quizz sur un chapitre en particulier (question par question avec bouton suivant une fois qu'on a rep)
     public function startQuizz($chapter_id)
     {
-        $questions = QuizzQuestion::where('chapter_id', $chapter_id)
-            ->get()
-            ->groupBy('subchapter_id')
-            ->shuffle();
-
-        $selectedQuestions = collect();
-
-        foreach ($questions as $subchapterId => $subchapterQuestions) {
-            $subchapterQuestions = $subchapterQuestions->shuffle();
-            if (!$subchapterQuestions->isEmpty()) {
-                $selectedQuestions->push($subchapterQuestions->pop());
-                $questions[$subchapterId] = $subchapterQuestions;
-            }
-        }
-
-        while ($selectedQuestions->count() < 10 && !$questions->isEmpty()) {
-            foreach ($questions as $subchapterId => $subchapterQuestions) {
-                if ($selectedQuestions->count() >= 10) {
-                    break;
-                }
-                if (!$subchapterQuestions->isEmpty()) {
-                    $selectedQuestions->push($subchapterQuestions->pop());
-                    $questions[$subchapterId] = $subchapterQuestions;
-                } else {
-                    $questions->forget($subchapterId);
-                }
-            }
-        }
-
-        $selectedQuestions = $selectedQuestions->shuffle();
+        // Sélectionner les questions via le service (algorithme de sélection intelligent)
+        $selectedQuestions = $this->quizzSelectionService->selectQuestionsForChapter($chapter_id);
 
         session(['questions' => $selectedQuestions]);
         session(['currentQuestion' => 0]);
@@ -96,59 +80,29 @@ class QuizzController extends Controller
         return view('quizz.showQuestion', compact('question', 'answers', 'currentQuestion', 'questions', 'score', 'correctAnswer'));
     }
 
-    protected function createOrUpdateQuiz($currentQuestion, $score, $question, $questions, $answer) 
+    protected function createOrUpdateQuiz($currentQuestion, $score, $question, $questions, $answer)
     {
         // Check if it's the first question
         if ($currentQuestion == 0) {
-            // Get the count of quizzes for the student
-            $quizzesCount = Quizze::where('student_id', auth()->id())->count();
-
-            // If the student already has 10 quizzes, delete the oldest one
-            if ($quizzesCount >= 10) {
-                $oldestQuiz = Quizze::where('student_id', auth()->id())
-                    ->oldest()
-                    ->first();
-
-                // Delete the associated QuizzDetails
-                $oldestQuiz->details()->delete();
-
-                // Delete the Quizze
-                $oldestQuiz->delete();
-            }
-
-            // Create a new quizz
-            $quizz = Quizze::create([
-                'student_id' => auth()->id(),
-                'chapter_id' => $question->chapter_id,
-                'score' => $score
-            ]);
-
-            // Create QuizzDetails for all questions
-            foreach ($questions as $quizQuestion) {
-                $quizzDetail = new QuizzDetail();
-                $quizzDetail->quizz_id = $quizz->id;
-                $quizzDetail->question_id = $quizQuestion->id;
-                $quizzDetail->chosen_answer_id = $answer ?? null;
-                $quizzDetail->save();
-            }
+            // Créer le quiz via le service (gère le quota automatiquement)
+            $quizz = $this->quizzManagementService->createQuiz(
+                auth()->id(),
+                $question->chapter_id,
+                $questions,
+                $score
+            );
 
             // Store the quiz ID in the session
             session(['quizz_id' => $quizz->id]);
         } else {
-            // Update the existing quizz
-            $quizz = Quizze::where('id', session('quizz_id'))->first();
-            $quizz->score = $score;
-            $quizz->save();
-
-            // Update the QuizzDetail when the user answers a question
-            $quizzDetail = QuizzDetail::where('quizz_id', $quizz->id)
-                ->where('question_id', $question->id)
-                ->first();
-            $quizzDetail->chosen_answer_id = $answer;
-            $quizzDetail->save();
+            // Mettre à jour la progression via le service
+            $this->quizzManagementService->updateQuizProgress(
+                session('quizz_id'),
+                $question->id,
+                $answer,
+                $score
+            );
         }
-
-        return $quizz;
     }
 
     // Méthode pour vérifier la réponse donnée par l'utilisateur
@@ -264,22 +218,19 @@ class QuizzController extends Controller
         $search = $request->get('search');
         $quizzQuestions = QuizzQuestion::with('answers', 'chapter', 'subchapter');
 
-        if ($search) {
-            $quizzQuestions->where(function ($query) use ($search) {
-                $query->where('question', 'like', '%' . $search . '%')
-                    ->orWhere('id', 'like', '%' . $search . '%');
-            });
-        }
+        // Appliquer la recherche via le service
+        $quizzQuestions = $this->queryFiltersService->applySearch($quizzQuestions, $search, ['question', 'id']);
 
-        if ($request->filled('chapter_id')) {
-            $quizzQuestions->where('chapter_id', $request->chapter_id);
-            $filterActivated = true;
-            $chapterActivated = Chapter::findOrFail($request->chapter_id);
-        } else {
-            $filterActivated = false;
-            $chapterActivated = null;
-        }
+        // Appliquer le filtre de chapitre via le service
+        $filterFields = ['chapter_id' => 'chapter_id'];
+        $quizzQuestions = $this->queryFiltersService->applyFilters($quizzQuestions, $request, $filterFields);
 
+        // Récupérer les filtres actifs
+        $activeFilters = $this->queryFiltersService->getActiveFilters($request, $filterFields);
+        $filterActivated = isset($activeFilters['chapter_id']);
+        $chapterActivated = $filterActivated ? Chapter::findOrFail($activeFilters['chapter_id']) : null;
+
+        // Gestion du tri
         if ($request->filled('sort_by_subchapter')) {
             $quizzQuestions = $quizzQuestions->orderBy('subchapter_id', 'asc')->orderBy('created_at', 'desc');
             $sort_by_subchapter = true;
@@ -287,9 +238,8 @@ class QuizzController extends Controller
             $quizzQuestions = $quizzQuestions->orderBy('created_at', 'desc');
             $sort_by_subchapter = false;
         }
-        
-        $quizzQuestions = $quizzQuestions->paginate(10)->withQueryString();
 
+        $quizzQuestions = $quizzQuestions->paginate(10)->withQueryString();
         $chapters = Chapter::all();
 
         return view('quizz.index', compact('quizzQuestions', 'chapters', 'filterActivated', 'chapterActivated', 'sort_by_subchapter'));

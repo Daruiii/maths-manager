@@ -19,6 +19,7 @@ class DSGenerationService
         'MATRICES (MATHS EXPERTES)',
         'Vers la prépa'
     ];
+    
 
     /**
      * Génère un DS basé sur les critères de la requête

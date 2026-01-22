@@ -16,10 +16,14 @@ use App\Http\Requests\ExercisesSheet\UpdateExercisesSheetRequest;
 class ExercisesSheetController extends Controller
 {
     protected \App\Services\SheetFormattingService $sheetFormattingService;
+    protected \App\Services\QueryFiltersService $queryFiltersService;
 
-    public function __construct(\App\Services\SheetFormattingService $sheetFormattingService)
-    {
+    public function __construct(
+        \App\Services\SheetFormattingService $sheetFormattingService,
+        \App\Services\QueryFiltersService $queryFiltersService
+    ) {
         $this->sheetFormattingService = $sheetFormattingService;
+        $this->queryFiltersService = $queryFiltersService;
     }
 
     // Méthode pour afficher toutes les fiches d'exercices
@@ -27,6 +31,14 @@ class ExercisesSheetController extends Controller
     {
         $sort_by_student = $request->query('sort_by_student');
         $exercisesSheetList = ExercisesSheet::query();
+
+        // Recherche dans la relation user via le service
+        if ($request->query('search')) {
+            $exercisesSheetList = $exercisesSheetList->whereHas('user', function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->query('search') . '%');
+            });
+        }
+
         // Tri par étudiant
         if ($request->filled('sort_by_student')) {
             $exercisesSheetList = $exercisesSheetList->orderBy('user_id');
@@ -35,12 +47,6 @@ class ExercisesSheetController extends Controller
         // Tri par date de création par défaut
         $exercisesSheetList = $exercisesSheetList->orderBy('created_at', 'desc');
 
-        // Recherche
-        if ($request->query('search')) {
-            $exercisesSheetList = $exercisesSheetList->whereHas('user', function ($query) {
-                $query->where('name', 'like', '%' . request()->query('search') . '%');
-            });
-        }
         $exercisesSheetList = $exercisesSheetList->paginate(10)->withQueryString();
 
         return view('exercises_sheet.index', compact('exercisesSheetList', 'sort_by_student'));
