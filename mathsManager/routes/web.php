@@ -13,11 +13,11 @@ use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\ExercisesSheetController;
 use App\Http\Controllers\DsExerciseController;
 use App\Http\Controllers\MultipleChapterController;
-use App\Http\Controllers\DSController;
+
 use App\Http\Middleware\IsVerified;
 use App\Http\Controllers\CorrectionRequestController;
 use App\Http\Controllers\RecapController;
-use App\Http\Controllers\QuizzController;
+
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\OrderingController;
 use App\Http\Controllers\ExerciseWhitelistController;
@@ -214,28 +214,10 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// DS routes
-Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
-        Route::get('/ds', [DSController::class, 'index'])->name('ds.index');
-        Route::get('/ds/assign', [DSController::class, 'assignDSForm'])->name('ds.assign');
-        Route::post('/ds/assign', [DSController::class, 'assignDS'])->name('ds.assign.store');
-        Route::get('/ds/reAssign/{id}', [DSController::class, 'reAssignForm'])->name('ds.reAssignForm');
-        Route::post('/ds/reAssign', [DSController::class, 'reAssign'])->name('ds.reAssign');
-        Route::get('/ds/{id}/edit', [DSController::class, 'edit'])->name('ds.edit');
-        Route::patch('/ds/{id}', [DSController::class, 'update'])->name('ds.update');
-    });
-    Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/ds/create', [DSController::class, 'create'])->name('ds.create');
-        Route::post('/ds', [DSController::class, 'store'])->name('ds.store');
-        Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');
-        Route::delete('/ds/{id}', [DSController::class, 'destroy'])->name('ds.destroy');
-        Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
-        Route::get('/ds/{id}/start', [DSController::class, 'start'])->name('ds.start');
-        Route::get('/ds/{id}/pause/{timer}', [DSController::class, 'pause'])->name('ds.pause');
-        Route::get('/ds/{id}/finish', [DSController::class, 'finish'])->name('ds.finish');
-    });
-});
+// ============================================
+// DS ROUTES (Modular)
+// ============================================
+require __DIR__.'/web/ds.php';
 
 //CorrectionsRequest routes
 Route::middleware('auth')->group(function () {
@@ -258,33 +240,10 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Quizzes routes
-Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
-        Route::get('/quizz', [QuizzController::class, 'index'])->name('quizz.index');
-        Route::get('/quizz/create', [QuizzController::class, 'createQuestion'])->name('quizz.create');
-        Route::post('/quizz', [QuizzController::class, 'storeQuestion'])->name('quizz.store');
-        Route::get('/quizz/edit/{id}', [QuizzController::class, 'editQuestion'])->name('quizz.edit');
-        Route::put('/quizz/{id}', [QuizzController::class, 'updateQuestion'])->name('quizz.update');
-        Route::delete('/quizz/{id}', [QuizzController::class, 'destroyQuestion'])->name('quizz.destroy');
-        Route::get('/quizz/{id}/answer/create', [QuizzController::class, 'createAnswer'])->name('quizz.answer.create');
-        Route::post('/quizz/{id}/answer', [QuizzController::class, 'storeAnswer'])->name('quizz.answer.store');
-        Route::get('/quizz/answer/edit/{id}', [QuizzController::class, 'editAnswer'])->name('quizz.answer.edit');
-        Route::put('/quizz/answer/{id}', [QuizzController::class, 'updateAnswer'])->name('quizz.answer.update');
-        Route::delete('/quizz/answer/{id}', [QuizzController::class, 'destroyAnswer'])->name('quizz.answer.destroy');
-        Route::get('/quizz/{id}', [QuizzController::class, 'show'])->name('quizz.show');
-        Route::post('/questions/{id}/duplicate', [QuizzController::class, 'duplicateQuestion'])->name('duplicate_question');
-    });
-
-    Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/myQuizz', [QuizzController::class, 'showQuestion'])->name('show_question');
-        Route::post('/quizz/check', [QuizzController::class, 'checkAnswer'])->name('check_answer');
-        Route::get('/quizzResult', [QuizzController::class, 'showResult'])->name('show_result');
-        Route::get('/quizzEnd', [QuizzController::class, 'endQuizz'])->name('end_quizz');
-        Route::get('/quizz/start/{chapter_id}', [QuizzController::class, 'startQuizz'])->name('start_quizz');
-        Route::get('/quizz/answer/{answer_id}/{correct_answer}', [QuizzController::class, 'showAnswer'])->name('show_answer');
-    });
-});
+// ============================================
+// QUIZZ ROUTES (Modular)
+// ============================================
+require __DIR__.'/web/quizz.php';
 
 // Users routes
 Route::middleware('auth')->group(function () {
