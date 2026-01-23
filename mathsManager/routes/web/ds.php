@@ -5,6 +5,7 @@ use App\Http\Controllers\DS\DSController;
 use App\Http\Controllers\DS\DSPlayController;
 use App\Http\Controllers\DS\DSManagementController;
 use App\Http\Controllers\DS\DsExerciseController;
+use App\Http\Controllers\DS\MultipleChapterController;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsVerified;
 
@@ -20,6 +21,11 @@ use App\Http\Middleware\IsVerified;
 | - DSManagementController : CRUD et assignation (admin/teacher)
 |
 */
+
+// Public routes for MultipleChapter color changes (legacy utility routes)
+Route::get('/changeAnalyse2Color', [MultipleChapterController::class, 'changeAnalyse2Color'])->name('changeAnalyse2Color');
+Route::get('/changeSuitesColor', [MultipleChapterController::class, 'changeSuitesColor'])->name('changeSuitesColor');
+Route::get('/changeAnalyse1Color', [MultipleChapterController::class, 'changeAnalyse1Color'])->name('changeAnalyse1Color');
 
 Route::middleware('auth')->group(function () {
     
@@ -49,6 +55,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/ds_exercise/{id}/filter/{filter}', [DsExerciseController::class, 'show'])->name('ds_exercise.show');
         Route::patch('/ds_exercise/{id}', [DsExerciseController::class, 'update'])->name('ds_exercise.update');
         Route::delete('/ds_exercise/{id}', [DsExerciseController::class, 'destroy'])->name('ds_exercise.destroy');
+        
+        // Multiple Chapters CRUD (admin only - used for DS creation)
+        Route::get('/multiple_chapters/create', [MultipleChapterController::class, 'create'])->name('multiple_chapter.create');
+        Route::post('/multiple_chapters', [MultipleChapterController::class, 'store'])->name('multiple_chapter.store');
+        Route::get('/multiple_chapters', [MultipleChapterController::class, 'index'])->name('multiple_chapters.index');
+        Route::get('/multiple_chapters/{id}', [MultipleChapterController::class, 'show'])->name('multiple_chapters.show');
+        Route::get('/multiple_chapters/{id}/edit', [MultipleChapterController::class, 'edit'])->name('multiple_chapter.edit');
+        Route::patch('/multiple_chapters/{id}', [MultipleChapterController::class, 'update'])->name('multiple_chapter.update');
+        Route::delete('/multiple_chapters/{id}', [MultipleChapterController::class, 'destroy'])->name('multiple_chapter.destroy');
     });
     
     // ============================================
