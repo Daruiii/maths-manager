@@ -1,7 +1,9 @@
 <?php
 
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Exercise;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Exercise;
 use Illuminate\Http\Request;

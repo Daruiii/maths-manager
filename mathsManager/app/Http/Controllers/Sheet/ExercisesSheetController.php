@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sheet;
+
+use App\Http\Controllers\Controller;
 
 use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\ExercisesSheet\StoreExercisesSheetRequest;

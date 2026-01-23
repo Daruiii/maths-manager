@@ -2,17 +2,17 @@
 
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ClasseController;
-use App\Http\Controllers\ChapterController;
-use App\Http\Controllers\SubchapterController;
+use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\Classe\ClasseController;
+use App\Http\Controllers\Chapter\ChapterController;
+use App\Http\Controllers\Chapter\SubchapterController;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ExerciseController;
-use App\Http\Controllers\ExercisesSheetController;
-use App\Http\Controllers\DsExerciseController;
-use App\Http\Controllers\MultipleChapterController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Exercise\ExerciseController;
+use App\Http\Controllers\Sheet\ExercisesSheetController;
+use App\Http\Controllers\DS\DsExerciseController;
+use App\Http\Controllers\DS\MultipleChapterController;
 
 use App\Http\Middleware\IsVerified;
 use App\Http\Controllers\CorrectionRequestController;
@@ -20,8 +20,8 @@ use App\Http\Controllers\RecapController;
 
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\OrderingController;
-use App\Http\Controllers\ExerciseWhitelistController;
-use App\Http\Controllers\WhitelistRequestController;
+use App\Http\Controllers\Whitelist\ExerciseWhitelistController;
+use App\Http\Controllers\Whitelist\WhitelistRequestController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -185,19 +185,6 @@ Route::middleware('auth')->group(function () {
     });
     Route::middleware([IsVerified::class])->group(function () {
         Route::get('/recap/{id}', [RecapController::class, 'show'])->name('recap.show');
-    });
-});
-
-// DS_Exercise routes
-Route::middleware('auth')->group(function () {
-    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
-        Route::get('/ds_exercise/create', [DsExerciseController::class, 'create'])->name('ds_exercise.create');
-        Route::post('/ds_exercise', [DsExerciseController::class, 'store'])->name('ds_exercise.store');
-        Route::get('/ds_exercises', [DsExerciseController::class, 'index'])->name('ds_exercises.index');
-        Route::get('/ds_exercise/{id}/edit/{filter}', [DsExerciseController::class, 'edit'])->name('ds_exercise.edit');
-        Route::get('/ds_exercise/{id}/filter/{filter}', [DsExerciseController::class, 'show'])->name('ds_exercise.show');
-        Route::patch('/ds_exercise/{id}', [DsExerciseController::class, 'update'])->name('ds_exercise.update');
-        Route::delete('/ds_exercise/{id}', [DsExerciseController::class, 'destroy'])->name('ds_exercise.destroy');
     });
 });
 
