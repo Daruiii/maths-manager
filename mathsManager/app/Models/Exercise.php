@@ -48,6 +48,17 @@ class Exercise extends Model
     
     public function hasWhitelistRequest($userId)
     {
-        return $this->whitelistRequests()->where('user_id', $userId)->exists();
+        return $this->whitelistRequests()
+            ->where('user_id', $userId)
+            ->where('status', 'pending') // ✅ Only check pending requests, not rejected ones
+            ->exists();
+    }
+    
+    public function hasRejectedWhitelistRequest($userId)
+    {
+        return $this->whitelistRequests()
+            ->where('user_id', $userId)
+            ->where('status', 'rejected')
+            ->exists();
     }
 }

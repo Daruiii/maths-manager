@@ -152,6 +152,11 @@
                                                                 <span class="text-xs text-yellow-600 font-normal bg-yellow-100 px-2 py-1 rounded whitespace-nowrap">
                                                                     ⏳ En cours
                                                                 </span>
+                                                            @elseif ($ex->hasRejectedWhitelistRequest(Auth::id()))
+                                                                <button onclick="openRequestModal({{ $ex->id }}, '{{ $ex->name }}', {{ $ex->order }})" 
+                                                                        class="text-xs bg-orange-600 hover:bg-orange-700 text-white px-2 py-1 rounded transition-colors whitespace-nowrap">
+                                                                    🔄 Demander
+                                                                </button>
                                                             @else
                                                                 <button onclick="openRequestModal({{ $ex->id }}, '{{ $ex->name }}', {{ $ex->order }})" 
                                                                         class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded transition-colors whitespace-nowrap">

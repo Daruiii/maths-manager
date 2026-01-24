@@ -74,18 +74,15 @@ class DsExerciseController extends Controller
 
     public function store(StoreDsExerciseRequest $request)
     {
-        $lastExercise = DsExercise::orderBy('id', 'desc')->first();
-        $newExerciseId = $lastExercise ? $lastExercise->id + 1 : 1;
-        while (DsExercise::find($newExerciseId)) {
-            $newExerciseId++;
-        }
-
+        // Create and save the exercise first to get auto-generated ID
         $dsExercise = new DsExercise();
         $dsExercise->fill($request->except('images'));
-        $dsExercise->id = $newExerciseId;
         $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
-        $dsExercise->latex_statement = $dsExercise->statement;
+        $dsExercise->latex_statement = $request->statement;
+        $dsExercise->statement = $request->statement; // Temporary, will be updated after image upload
+        $dsExercise->save(); // ✅ Get auto-generated ID from database
 
+        // Now handle image uploads with the generated ID
         $imagePaths = $this->imageManagementService->handleImageUpload(
             request: $request,
             inputName: 'images',
@@ -102,7 +99,10 @@ class DsExerciseController extends Controller
             'statement'
         );
 
+        // Update statement with converted LaTeX
         $dsExercise->statement = LatexToHtmlConverter::convertForDsExercise($dsExercise->statement, $imagePaths);
+        
+        // Handle PDF upload if present
         if ($request->hasFile('correction_pdf')) {
             $pdfPath = $this->fileUploadService->upload(
                 file: $request->file('correction_pdf'),
@@ -114,6 +114,8 @@ class DsExerciseController extends Controller
             );
             $dsExercise->correction_pdf = $pdfPath;
         }
+        
+        // Save again with updated statement and PDF path
         $dsExercise->save();
 
         return redirect()->route('ds_exercises.index');

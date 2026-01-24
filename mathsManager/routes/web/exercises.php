@@ -12,7 +12,9 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::middleware([IsAdmin::class])->group(function () {
         // Exercise CRUD
         Route::get('/exercise/{id}/create', [ExerciseController::class, 'create'])->name('exercise.create');
-        Route::post('/exercise', [ExerciseController::class, 'store'])->name('exercise.store');
+        Route::post('/exercise', [ExerciseController::class, 'store'])
+            ->middleware('throttle:30,1') // 30 exercise creations per minute max (file uploads)
+            ->name('exercise.store');
         Route::get('/exercises', [ExerciseController::class, 'index'])->name('exercises.index');
         Route::get('/exercises/decrement', [ExerciseController::class, 'decrementAllExercises'])->name('exercises.decrement');
         Route::post('/exercises/update-order', [ExerciseController::class, 'updateOrder'])->name('exercises.updateOrder');

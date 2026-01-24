@@ -48,7 +48,9 @@ Route::middleware('auth')->group(function () {
     // STUDENT - Quiz Play
     // ============================================
     Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/quizz/start/{chapter_id}', [QuizzPlayController::class, 'start'])->name('start_quizz');
+        Route::get('/quizz/start/{chapter_id}', [QuizzPlayController::class, 'start'])
+            ->middleware('throttle:20,1') // 20 quiz starts per minute max
+            ->name('start_quizz');
         Route::get('/myQuizz', [QuizzPlayController::class, 'showQuestion'])->name('show_question');
         Route::post('/quizz/check', [QuizzPlayController::class, 'checkAnswer'])->name('check_answer');
         Route::get('/quizz/answer/{answer_id}/{correct_answer}', [QuizzPlayController::class, 'showAnswer'])->name('show_answer');

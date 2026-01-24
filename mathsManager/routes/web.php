@@ -124,7 +124,9 @@ Route::middleware('auth')->group(function () {
     });
     Route::middleware([IsVerified::class])->group(function () {
         Route::get('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequestForm'])->name('correctionRequest.showCorrectionRequestForm');
-        Route::post('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'sendCorrectionRequest'])->name('correctionRequest.sendCorrectionRequest');
+        Route::post('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'sendCorrectionRequest'])
+            ->middleware('throttle:10,1') // 10 correction requests per minute max
+            ->name('correctionRequest.sendCorrectionRequest');
         Route::get('/correctionRequest/show/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequest'])->name('correctionRequest.show');
     });
 });

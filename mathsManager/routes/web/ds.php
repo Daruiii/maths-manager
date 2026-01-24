@@ -49,7 +49,9 @@ Route::middleware('auth')->group(function () {
         
         // DS Exercises CRUD (admin only)
         Route::get('/ds_exercise/create', [DsExerciseController::class, 'create'])->name('ds_exercise.create');
-        Route::post('/ds_exercise', [DsExerciseController::class, 'store'])->name('ds_exercise.store');
+        Route::post('/ds_exercise', [DsExerciseController::class, 'store'])
+            ->middleware('throttle:30,1') // 30 DS exercise creations per minute max (file uploads)
+            ->name('ds_exercise.store');
         Route::get('/ds_exercises', [DsExerciseController::class, 'index'])->name('ds_exercises.index');
         Route::get('/ds_exercise/{id}/edit/{filter}', [DsExerciseController::class, 'edit'])->name('ds_exercise.edit');
         Route::get('/ds_exercise/{id}/filter/{filter}', [DsExerciseController::class, 'show'])->name('ds_exercise.show');
@@ -72,7 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware([IsVerified::class])->group(function () {
         // Create (students can create 1 DS per day)
         Route::get('/ds/create', [DSManagementController::class, 'create'])->name('ds.create');
-        Route::post('/ds', [DSManagementController::class, 'store'])->name('ds.store');
+        Route::post('/ds', [DSManagementController::class, 'store'])
+            ->middleware('throttle:10,1') // 10 DS creation attempts per minute max
+            ->name('ds.store');
         
         // View
         Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');

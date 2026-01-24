@@ -32,12 +32,31 @@ class WhitelistRequestController extends Controller
             return redirect()->back()->with('error', 'Vous avez déjà accès à la correction de cet exercice.');
         }
         
-        // Vérifier qu'il n'a pas déjà fait une demande
+        // Vérifier qu'il n'a pas déjà une demande PENDING
         if ($exercise->hasWhitelistRequest(Auth::id())) {
-            return redirect()->back()->with('error', 'Vous avez déjà soumis une demande pour cet exercice.');
+            return redirect()->back()->with('error', 'Vous avez déjà soumis une demande en cours pour cet exercice.');
         }
         
-        // Créer la demande
+        // ✅ Vérifier s'il existe une demande rejetée pour la réutiliser
+        $existingRejectedRequest = WhitelistRequest::where('user_id', Auth::id())
+            ->where('exercise_id', $exerciseId)
+            ->where('status', WhitelistRequest::STATUS_REJECTED)
+            ->first();
+        
+        if ($existingRejectedRequest) {
+            // Réutiliser la demande existante en la repassant en pending
+            $existingRejectedRequest->update([
+                'message' => $request->message,
+                'status' => WhitelistRequest::STATUS_PENDING,
+                'admin_response' => null,
+                'processed_by' => null,
+                'processed_at' => null,
+            ]);
+            
+            return redirect()->back()->with('success', 'Votre nouvelle demande d\'accès a été soumise avec succès.');
+        }
+        
+        // Créer une nouvelle demande si aucune demande rejetée n'existe
         WhitelistRequest::create([
             'user_id' => Auth::id(),
             'exercise_id' => $exerciseId,

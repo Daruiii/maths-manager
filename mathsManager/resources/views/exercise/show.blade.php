@@ -65,6 +65,11 @@
                                             <span class="inline-flex items-center px-3 py-2 bg-yellow-100 rounded-lg border border-yellow-300 text-yellow-600 text-sm font-medium">
                                                 ⏳ Demande en cours
                                             </span>
+                                        @elseif ($exercise->hasRejectedWhitelistRequest(Auth::id()))
+                                            <button onclick="openRequestModal({{ $exercise->id }}, '{{ $exercise->name }}', {{ $exercise->order }})" 
+                                                    class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                                🔄 Demander à nouveau
+                                            </button>
                                         @else
                                             <button onclick="openRequestModal({{ $exercise->id }}, '{{ $exercise->name }}', {{ $exercise->order }})" 
                                                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">

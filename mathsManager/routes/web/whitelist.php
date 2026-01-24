@@ -28,7 +28,9 @@ Route::middleware('auth')->group(function () {
     
     // Student routes - submit and view own requests
     Route::middleware([IsVerified::class])->group(function () {
-        Route::post('/exercise/{exerciseId}/request-whitelist', [WhitelistRequestController::class, 'store'])->name('whitelist-request.store');
+        Route::post('/exercise/{exerciseId}/request-whitelist', [WhitelistRequestController::class, 'store'])
+            ->middleware('throttle:5,1') // 5 whitelist requests per minute max
+            ->name('whitelist-request.store');
         Route::get('/my-whitelist-requests', [WhitelistRequestController::class, 'myRequests'])->name('whitelist-requests.my');
     });
 });
