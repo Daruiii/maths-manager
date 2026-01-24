@@ -23,7 +23,7 @@ class SendCorrectionRequest extends FormRequest
     {
         return [
             'pictures' => 'required|array|min:1',
-            'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'message' => 'nullable|string|max:255',
         ];
     }

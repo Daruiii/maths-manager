@@ -38,6 +38,27 @@
                 </button>
             </form>
 
+            <style>
+                /* Force la visibilité des boutons SweetAlert */
+                .swal2-confirm {
+                    background-color: #28a745 !important;
+                    color: white !important;
+                    border: 1px solid #1e7e34 !important;
+                    font-weight: 600 !important;
+                }
+
+                .swal2-cancel {
+                    background-color: #dc3545 !important;
+                    color: white !important;
+                    border: 1px solid #c82333 !important;
+                    font-weight: 600 !important;
+                }
+
+                .swal2-popup {
+                    background-color: #ffffff !important;
+                    color: #333333 !important;
+                }
+            </style>
             <script>
                 function showConfirmation() {
                     Swal.fire({
@@ -46,8 +67,10 @@
                         showCancelButton: true,
                         confirmButtonText: 'Oui',
                         cancelButtonText: 'Non',
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#dc3545',
+                        background: '#ffffff',
+                        color: '#333333',
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // Si l'utilisateur confirme, soumettre le formulaire

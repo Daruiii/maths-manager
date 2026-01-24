@@ -34,10 +34,12 @@ class CorrectionRequestPolicy
 
     /**
      * Determine whether the user can update the model.
+     * Autorise uniquement si la demande est en attente ET l'utilisateur est le propriétaire
      */
     public function update(User $user, CorrectionRequest $correctionRequest): bool
     {
-        return false;
+        return $correctionRequest->status === 'pending'
+            && $correctionRequest->user_id === $user->id;
     }
 
     /**

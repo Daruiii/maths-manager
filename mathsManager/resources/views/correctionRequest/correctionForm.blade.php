@@ -33,7 +33,16 @@
             </div>
 
             <div class="form-group">
-                <x-multiple-file-input-carousel type="file" name="correction_pictures" id="images" />
+                <x-image-manager
+                    name="correction_pictures"
+                    label="Images de la correction"
+                    context="corrections"
+                    identifier="ds-{{ $ds->id }}"
+                    prefix="corrected-"
+                    :existingImages="$existingCorrectionPictures"
+                    :isPublic="false"
+                    :hideLatex="true"
+                />
             </div>
 
             <div class="form-group">
@@ -43,16 +52,16 @@
                     <div class="text-red-500 text-sm">{{ $message }}</div>
                 @enderror
             </div>
-            
+
 
             {{-- grade int with min 0 max 20 --}}
             <div class="form-group">
                 <label for="grade">Note /20</label>
                 <input type="float" id="grade" class="form-control" name="grade" min="0" max="20" required value="{{ $correctionRequest->grade ?? '' }}">
             </div>
-        
+
             {{-- <button type="submit" class="submit-btn-form">Envoyer la correction</button> --}}
-            <x-btn-send />            
+            <x-btn-send />
         </form>
     </div>
 </section>

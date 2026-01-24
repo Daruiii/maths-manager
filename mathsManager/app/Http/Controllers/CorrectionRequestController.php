@@ -12,14 +12,19 @@ use App\Mail\CorrectionRequestMail;
 use App\Mail\CorrectionCorrectedMail;
 use App\Http\Requests\CorrectionRequest\SendCorrectionRequest;
 use App\Http\Requests\CorrectionRequest\CorrectCorrectionRequest;
+use App\Http\Requests\CorrectionRequest\UpdateCorrectionRequest;
 
 class CorrectionRequestController extends Controller
 {
     protected \App\Services\FileUploadService $fileUploadService;
+    protected \App\Services\ImageManagementService $imageManagementService;
 
-    public function __construct(\App\Services\FileUploadService $fileUploadService)
-    {
+    public function __construct(
+        \App\Services\FileUploadService $fileUploadService,
+        \App\Services\ImageManagementService $imageManagementService
+    ) {
         $this->fileUploadService = $fileUploadService;
+        $this->imageManagementService = $imageManagementService;
     }
 
     // Méthode pour afficher toutes les demandes de correction (pour l'admin ou les professeurs)
@@ -129,31 +134,40 @@ class CorrectionRequestController extends Controller
     {
         $ds = DS::where('id', $ds_id)->firstOrFail();
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
-        $pictures = json_decode($correctionRequest->pictures) ?? null;
-        return view('correctionRequest.correctionForm', compact('ds', 'correctionRequest', 'pictures'));
+
+        // Récupérer les images de correction existantes via ImageManagementService
+        $existingCorrectionPictures = $this->imageManagementService->getFormattedImagesForComponent(
+            context: 'corrections',
+            identifier: 'ds-' . $ds_id,
+            isPublic: false,
+            pattern: 'corrected-*'
+        );
+
+        return view('correctionRequest.correctionForm', compact('ds', 'correctionRequest', 'existingCorrectionPictures'));
     }
 
     // Méthode pour qu'un professeur puisse corriger une demande de correction
     public function correctCorrectionRequest(CorrectCorrectionRequest $request, $ds_id)
     {
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
+
         $correctionRequest->status = 'corrected';
         $correctionRequest->grade = $request->grade;
         $correctionRequest->corrector_id = Auth::user()->id;
         $correctionRequest->correction_message = $request->correction_message;
 
-        // Upload des images de correction en PRIVÉ
-        if ($request->file('correction_pictures')) {
-            $uploadedPaths = $this->fileUploadService->uploadMultiple(
-                files: $request->file('correction_pictures'),
-                context: 'corrections',
-                identifier: 'ds-' . $ds_id,
-                type: 'image',
-                isPublic: false,  // PRIVÉ - correction visible uniquement par l'élève/prof
-                prefix: 'corrected_'
-            );
-            $correctionRequest->correction_pictures = json_encode($uploadedPaths);
-        }
+        // Gestion des images de correction avec ImageManagementService
+        $correctionImagePaths = $this->imageManagementService->handleImageUpload(
+            request: $request,
+            inputName: 'correction_pictures',
+            deleteInputName: 'delete_correction_pictures',
+            context: 'corrections',
+            identifier: 'ds-' . $ds_id,
+            prefix: 'corrected-',
+            isPublic: false
+        );
+
+        $correctionRequest->correction_pictures = json_encode(array_values($correctionImagePaths));
 
         // Upload du PDF de correction en PRIVÉ
         if ($request->file('correction_pdf')) {
@@ -185,6 +199,71 @@ class CorrectionRequestController extends Controller
         Mail::to(User::find($correctionRequest->user_id)->email)->send($mail);
 
         return redirect()->route('home')->with('success', 'La correction a été envoyée avec succès');
+    }
+
+    // Méthode pour afficher le formulaire d'édition d'une demande de correction
+    public function edit($ds_id)
+    {
+        $ds = DS::where('id', $ds_id)->firstOrFail();
+        $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
+
+        // Vérifier que la demande est en attente
+        if ($correctionRequest->status !== 'pending') {
+            return redirect()->route('correctionRequest.show', $ds_id)
+                ->withErrors(['error' => 'Vous ne pouvez modifier qu\'une demande en attente de correction.']);
+        }
+
+        // Vérifier que l'utilisateur est bien le propriétaire
+        if ($correctionRequest->user_id !== Auth::id()) {
+            return redirect()->route('correctionRequest.show', $ds_id)
+                ->withErrors(['error' => 'Vous ne pouvez pas modifier cette demande.']);
+        }
+
+        // Récupérer les images existantes via ImageManagementService
+        $existingPictures = $this->imageManagementService->getFormattedImagesForComponent(
+            context: 'corrections',
+            identifier: 'ds-' . $ds_id,
+            isPublic: false,
+            pattern: 'student-*'
+        );
+
+        return view('correctionRequest.edit', compact('ds', 'correctionRequest', 'existingPictures'));
+    }
+
+    // Méthode pour mettre à jour une demande de correction
+    public function update(UpdateCorrectionRequest $request, $ds_id)
+    {
+        $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
+
+        // Vérifier que la demande est en attente
+        if ($correctionRequest->status !== 'pending') {
+            return redirect()->route('correctionRequest.show', $ds_id)
+                ->withErrors(['error' => 'Vous ne pouvez modifier qu\'une demande en attente de correction.']);
+        }
+
+        // Vérifier que l'utilisateur est bien le propriétaire
+        if ($correctionRequest->user_id !== Auth::id()) {
+            return redirect()->route('correctionRequest.show', $ds_id)
+                ->withErrors(['error' => 'Vous ne pouvez pas modifier cette demande.']);
+        }
+
+        // Gestion des images avec ImageManagementService
+        $imagePaths = $this->imageManagementService->handleImageUpload(
+            request: $request,
+            inputName: 'pictures',
+            deleteInputName: 'delete_pictures',
+            context: 'corrections',
+            identifier: 'ds-' . $ds_id,
+            prefix: 'student-',
+            isPublic: false
+        );
+
+        $correctionRequest->pictures = json_encode(array_values($imagePaths));
+        $correctionRequest->message = $request->message;
+        $correctionRequest->save();
+
+        return redirect()->route('correctionRequest.show', $ds_id)
+            ->with('success', 'Votre demande de correction a été mise à jour avec succès');
     }
 
     // Méthode to destroy a correction request and his pictures and his folder
