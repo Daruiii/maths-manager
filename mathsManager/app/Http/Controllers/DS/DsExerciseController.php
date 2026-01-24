@@ -77,7 +77,6 @@ class DsExerciseController extends Controller
         // Create and save the exercise first to get auto-generated ID
         $dsExercise = new DsExercise();
         $dsExercise->fill($request->except('images'));
-        $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->latex_statement = $request->statement;
         $dsExercise->statement = $request->statement; // Temporary, will be updated after image upload
         $dsExercise->save(); // ✅ Get auto-generated ID from database
@@ -161,7 +160,6 @@ class DsExerciseController extends Controller
     {
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->fill($request->except('images', 'statement'));
-        $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->latex_statement = $request->statement;
 
         $imagePaths = $this->imageManagementService->handleImageUpload(

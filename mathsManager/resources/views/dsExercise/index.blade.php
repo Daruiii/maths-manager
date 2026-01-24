@@ -154,7 +154,7 @@
                                     </th> --}}
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Inj
+                                    Difficulté
                                 </th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -220,17 +220,13 @@
                                             @endforeach
                                         </td> --}}
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                        @if ($ex->harder_exercise)
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Oui
+                                        <div class="flex items-center gap-2">
+                                            <span class="stars-display">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <span class="star {{ $i <= $ex->difficulty ? 'filled' : 'empty' }}">★</span>
+                                                @endfor
                                             </span>
-                                        @else
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Non
-                                            </span>
-                                        @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $ex->time }} min</td>
@@ -273,4 +269,21 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .stars-display {
+            display: inline-flex;
+            gap: 0.125rem;
+        }
+        .star {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+        .star.filled {
+            color: #fbbf24;
+        }
+        .star.empty {
+            color: #d1d5db;
+        }
+    </style>
 @endsection
