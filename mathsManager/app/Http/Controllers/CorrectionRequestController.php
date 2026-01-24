@@ -10,35 +10,16 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CorrectionRequestMail;
 use App\Mail\CorrectionCorrectedMail;
+use App\Http\Requests\CorrectionRequest\SendCorrectionRequest;
+use App\Http\Requests\CorrectionRequest\CorrectCorrectionRequest;
 
 class CorrectionRequestController extends Controller
 {
-    private function destroyCorrectionFolder($id)
+    protected \App\Services\FileUploadService $fileUploadService;
+
+    public function __construct(\App\Services\FileUploadService $fileUploadService)
     {
-        // there is a folder correction in the folder
-        // $path = public_path('storage/correctionRequests/' . $id . '/correction');
-        // $path2 = public_path('storage/correctionRequests/' . $id);
-        $path = file_exists(public_path('storage/correctionRequests/' . $id . '/correction')) ? public_path('storage/correctionRequests/' . $id . '/correction') : null;
-        $path2 = file_exists(public_path('storage/correctionRequests/' . $id)) ? public_path('storage/correctionRequests/' . $id) : null;
-        // foreach path != null, delete the content of the folder and the folder
-        if ($path != null) {
-            $files = glob($path . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-            rmdir($path);
-        }
-        if ($path2 != null) {
-            $files = glob($path2 . '/*');
-            foreach ($files as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-            rmdir($path2);
-        }
+        $this->fileUploadService = $fileUploadService;
     }
 
     // Méthode pour afficher toutes les demandes de correction (pour l'admin ou les professeurs)
@@ -58,34 +39,6 @@ class CorrectionRequestController extends Controller
         return view('correctionRequest.index', compact('correctionRequests'));
     }
 
-    // Méthode qui affichent les corrections en attente dans la page myCorrections
-    // public function myCorrections(Request $request)
-    // {
-    //     $search = $request->get('search');
-    //     $status = $request->get('status', 'pending'); // Par défaut, le statut est 'pending'
-
-    //     $correctionRequests = CorrectionRequest::where('status', $status)
-    //         ->when($search, function ($query, $search) {
-    //             $query->whereHas('user', function ($query) use ($search) {
-    //                 $query->where('name', 'LIKE', "%{$search}%");
-    //             });
-    //         })
-    //         ->orderBy('created_at', 'desc')
-    //         ->paginate(10)->withQueryString();
-
-    //     // get all ds not_started and ongoing
-    //     $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
-    //     ->where('status', 'not_started')
-    //     ->orWhere('status', 'ongoing')
-    //     ->orwhere('status', 'finished')
-    //     ->select('DS.*', 'users.name')
-    //     ->orderBy('users.name', 'asc')
-    //     ->orderBy('status', 'asc')
-    //     ->get();
-
-    //     return view('correctionRequest.myCorrections', compact('correctionRequests', 'ds'));
-    // }
-
     // Méthode to display the correction request form
     public function showCorrectionRequestForm($ds_id)
     {
@@ -94,37 +47,34 @@ class CorrectionRequestController extends Controller
     }
 
     // Méthode to send a correction request
-    public function sendCorrectionRequest(Request $request, $ds_id)
+    public function sendCorrectionRequest(SendCorrectionRequest $request, $ds_id)
     {
-        $request->validate([
-            'pictures' => 'required|array|min:1',
-            'pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
-            'message' => 'nullable|string|max:255',
-        ]);
-
         $ds = DS::where('id', $ds_id)->firstOrFail();
         if ($correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->first()) {
-            return redirect()->route('ds.myDS', Auth::user()->id)->with('error', 'You have already sent a correction request for this DS');
+            return redirect()->route('ds.myDS', Auth::id())->with('error', 'You have already sent a correction request for this DS');
         }
         $correctionRequest = new CorrectionRequest();
-        $correctionRequest->user_id = auth()->user()->id;
+        $correctionRequest->user_id = Auth::user()->id;
         $correctionRequest->ds_id = $ds->id;
         $correctionRequest->status = 'pending';
         $correctionRequest->pictures = 'null'; // to avoid 'Array to string conversion' error
         $correctionRequest->grade = 0;
         $correctionRequest->save();
 
-        $imagesPaths = [];
-        // si le folder 'correctionRequests/ds_id' existe supprimer son contenu et le folder
-        $this->destroyCorrectionFolder($ds_id);
+        // Supprimer l'ancien dossier de correction s'il existe
+        $this->fileUploadService->deleteDirectory('corrections', 'ds-' . $ds_id, false);
 
-        foreach ($request->file('pictures') as $key => $image) {
-            $img_name = $key + 1 . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('storage/correctionRequests/' . $ds_id);
-            $image->move($destinationPath, $img_name);
-            $imagesPaths[] = 'correctionRequests/' . $ds_id . '/' . $img_name;
-        }
-        $correctionRequest->pictures = json_encode($imagesPaths);
+        // Upload des photos élèves en PRIVÉ avec FileUploadService
+        $uploadedPaths = $this->fileUploadService->uploadMultiple(
+            files: $request->file('pictures'),
+            context: 'corrections',
+            identifier: 'ds-' . $ds_id,
+            type: 'image',
+            isPublic: false,  // PRIVÉ - accessible uniquement avec authentification
+            prefix: 'student_'
+        );
+
+        $correctionRequest->pictures = json_encode($uploadedPaths);
         $correctionRequest->message = $request->message;
         $correctionRequest->save();
 
@@ -146,7 +96,7 @@ class CorrectionRequestController extends Controller
         $mail = new CorrectionRequestMail($correctionRequest);
         Mail::to('maxime@mathsmanager.fr')->send($mail);
 
-        return redirect()->route('ds.myDS', Auth::user()->id)->with('success', 'Votre demande de correction a été envoyée avec succès');
+        return redirect()->route('ds.myDS', Auth::id())->with('success', 'Votre demande de correction a été envoyée avec succès');
     }
 
     // Méthode for show the correction request
@@ -157,7 +107,21 @@ class CorrectionRequestController extends Controller
         $corrector = User::where('id', $correctionRequest->corrector_id)->first() ?? User::where('role', 'admin')->first();
         $pictures = json_decode($correctionRequest->pictures) ?? null;
         $correctedPictures = json_decode($correctionRequest->correction_pictures) ?? null;
-        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector'));
+
+        // Générer l'URL pour le PDF s'il existe
+        $pdfUrl = null;
+        if ($correctionRequest->correction_pdf) {
+            $pdfParts = explode('/', $correctionRequest->correction_pdf);
+            if (count($pdfParts) === 3) {
+                $pdfUrl = route('private.file.serve', [
+                    'context' => $pdfParts[0],
+                    'identifier' => $pdfParts[1],
+                    'filename' => $pdfParts[2]
+                ]);
+            }
+        }
+
+        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector', 'pdfUrl'));
     }
 
     // Méthode pour formulaire de correction
@@ -170,49 +134,44 @@ class CorrectionRequestController extends Controller
     }
 
     // Méthode pour qu'un professeur puisse corriger une demande de correction
-    public function correctCorrectionRequest(Request $request, $ds_id)
+    public function correctCorrectionRequest(CorrectCorrectionRequest $request, $ds_id)
     {
-        $request->validate([
-            'correction_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
-            'correction_pdf' => 'nullable|mimes:pdf',
-            'grade' => 'required|numeric|min:0|max:20',
-            'correction_message' => 'nullable|string|max:255',
-        ]);
-
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
         $correctionRequest->status = 'corrected';
         $correctionRequest->grade = $request->grade;
-        $correctionRequest->corrector_id = auth()->user()->id;
+        $correctionRequest->corrector_id = Auth::user()->id;
         $correctionRequest->correction_message = $request->correction_message;
 
-        $correctionsImagesPaths = [];
-
-
+        // Upload des images de correction en PRIVÉ
         if ($request->file('correction_pictures')) {
-            if (file_exists(public_path('storage/correctionRequests/' . $ds_id . '/correction'))) {
-                $this->destroyCorrectionFolder($ds_id);
-            }
-
-            foreach ($request->file('correction_pictures') as $key => $image) {
-                // enregistrer l'image dans le path 'public/storage/correctionRequests/ds_id/correction/1.jpg' then 2.jpg, 3.jpg, ...
-                $img_name = $key + 1 . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path('storage/correctionRequests/' . $ds_id . '/correction');
-                $image->move($destinationPath, $img_name);
-                $correctionsImagesPaths[] = 'correctionRequests/' . $ds_id . '/correction/' . $img_name;
-            }
-            $correctionRequest->correction_pictures = json_encode($correctionsImagesPaths);
+            $uploadedPaths = $this->fileUploadService->uploadMultiple(
+                files: $request->file('correction_pictures'),
+                context: 'corrections',
+                identifier: 'ds-' . $ds_id,
+                type: 'image',
+                isPublic: false,  // PRIVÉ - correction visible uniquement par l'élève/prof
+                prefix: 'corrected_'
+            );
+            $correctionRequest->correction_pictures = json_encode($uploadedPaths);
         }
+
+        // Upload du PDF de correction en PRIVÉ
         if ($request->file('correction_pdf')) {
-            // Supprime l'ancien PDF s'il existe
-            if ($correctionRequest->correction_pdf && file_exists(public_path('storage/' . $correctionRequest->correction_pdf))) {
-                unlink(public_path('storage/' . $correctionRequest->correction_pdf));
+            // Supprimer l'ancien PDF s'il existe
+            if ($correctionRequest->correction_pdf) {
+                $this->fileUploadService->delete($correctionRequest->correction_pdf, false);
             }
 
-            // Enregistre le nouveau PDF
-            $pdf_name = 'correction.pdf';
-            $destinationPath = public_path('storage/correctionRequests/' . $ds_id . '/correction');
-            $request->file('correction_pdf')->move($destinationPath, $pdf_name);
-            $correctionRequest->correction_pdf = 'correctionRequests/' . $ds_id . '/correction/' . $pdf_name;
+            // Upload le nouveau PDF
+            $pdfPath = $this->fileUploadService->upload(
+                file: $request->file('correction_pdf'),
+                context: 'corrections',
+                identifier: 'ds-' . $ds_id,
+                type: 'pdf',
+                isPublic: false,  // PRIVÉ
+                customName: 'correction'
+            );
+            $correctionRequest->correction_pdf = $pdfPath;
         }
         $correctionRequest->save();
 
@@ -238,7 +197,8 @@ class CorrectionRequestController extends Controller
         $ds->status = 'finished';
         $ds->save();
 
-        $this->destroyCorrectionFolder($ds_id);
+        // Supprimer tout le dossier de correction avec FileUploadService
+        $this->fileUploadService->deleteDirectory('corrections', 'ds-' . $ds_id, false);
 
         return redirect()->route('correctionRequest.index')->with('success', 'La demande de correction a été supprimée avec succès');
     }

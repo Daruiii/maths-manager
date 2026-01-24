@@ -9,6 +9,12 @@
             {{-- <img src="{{ asset('storage/images/professor.png') }}" alt="Logo" class="h-8"> --}}
             <span
                 class="self-center text-2xl font-semibold whitespace-nowrap text-black">{{ config('app.name') }}</span>
+
+            @if(config('app.env') === 'development')
+                <span class="bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full">LOCAL</span>
+            @elseif(config('app.env') === 'staging')
+                <span class="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full">PREPROD</span>
+            @endif
         </a>
         <div class="flex items-center lg:order-2 space-x-3 lg:space-x-0 rtl:space-x-reverse">
             <!-- User menu -->

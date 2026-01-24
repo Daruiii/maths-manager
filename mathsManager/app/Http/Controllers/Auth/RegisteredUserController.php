@@ -15,6 +15,12 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
+    protected \App\Services\FileUploadService $fileUploadService;
+
+    public function __construct(\App\Services\FileUploadService $fileUploadService)
+    {
+        $this->fileUploadService = $fileUploadService;
+    }
     /**
      * Display the registration view.
      */
@@ -37,14 +43,16 @@ class RegisteredUserController extends Controller
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
         if ($request->hasFile('avatar')) {
-            $userEmail = $request->email;
-            $image = $request->file('avatar');
-            $name = $userEmail.'-'.$image->getClientOriginalName();
-            $destinationPath = public_path('/storage/images');
-            $userAvatar = $name;
-            $image->move($destinationPath, $name);
+            $avatarPath = $this->fileUploadService->upload(
+                file: $request->file('avatar'),
+                context: 'images',
+                identifier: '',
+                type: 'image',
+                isPublic: true,
+                customName: str_replace(['@', '.'], '-', $request->email)
+            );
+            $userAvatar = basename($avatarPath);
         } else {
-            $destinationPath = public_path('/storage/images');
             $userAvatar = 'default.jpg';
         }
 

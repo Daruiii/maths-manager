@@ -16,7 +16,9 @@ npm-debug.log
 yarn-error.log
 /.fleet
 /.idea
-/.vscode
+
+# Vite temporary files
+*.timestamp-*.mjs
 
 # Database exports (keep compressed sample only)
 *.sql

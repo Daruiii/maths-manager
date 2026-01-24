@@ -89,7 +89,15 @@
                 </div>
 
                 <div class="form-group">
-                    <x-multiple-file-input type="file" name="images" id="images" />
+                    <x-image-manager
+                        name="images"
+                        label="Images de l'énoncé"
+                        context="ds-exercises"
+                        identifier=""
+                        prefix="img-"
+                        :existingImages="[]"
+                        :isPublic="true"
+                    />
                 </div>
 
                 <div class="form-group">

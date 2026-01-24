@@ -83,8 +83,15 @@
                 </div>
 
                 <div class="form-group">
-                    <x-multiple-file-input type="file" name="images" id="images"
-                        imgFolder="storage/ds_exercises/ds_exercise_{{ $dsExercise->id }}" />
+                    <x-image-manager
+                        name="images"
+                        label="Images de l'énoncé"
+                        context="ds-exercises"
+                        identifier="ds-exercise-{{ $dsExercise->id }}"
+                        prefix="img-"
+                        :existingImages="$existingImagesFormatted ?? []"
+                        :isPublic="true"
+                    />
                 </div>
 
                 <div class="form-group">

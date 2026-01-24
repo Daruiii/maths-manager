@@ -50,6 +50,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
         integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous">
     </script>
+
     @yield('styles')
 </head>
 
@@ -57,8 +58,13 @@
     @include('layouts.header')
 
     <main class="fade-in">
+        <x-flash-messages />
         @yield('content')
     </main>
+    
+    
+    <!-- Flowbite for dropdowns (must load before page scripts) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     
     @yield('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>

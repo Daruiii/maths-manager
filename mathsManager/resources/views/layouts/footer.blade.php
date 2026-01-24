@@ -1,3 +1,3 @@
 <footer class="footer">
-    <p class="">Maths Manager - Copyright © 2025</p>
+    <p>Maths Manager - Copyright © {{ date('Y') }}</p>
 </footer>
