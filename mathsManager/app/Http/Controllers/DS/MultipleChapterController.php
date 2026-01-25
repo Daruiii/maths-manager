@@ -60,7 +60,8 @@ class MultipleChapterController extends Controller
     public function create()
     {
         $themeColors = config('themes.chapter_colors');
-        return view('multipleChapter.create', compact('themeColors'));
+        $classes = \App\Models\Classe::all();
+        return view('multipleChapter.create', compact('themeColors', 'classes'));
     }
 
     public function store(StoreMultipleChapterRequest $request)
@@ -73,7 +74,8 @@ class MultipleChapterController extends Controller
     {
         $multipleChapter = MultipleChapter::findOrFail($id);
         $themeColors = config('themes.chapter_colors');
-        return view('multipleChapter.edit', compact('multipleChapter', 'themeColors'));
+        $classes = \App\Models\Classe::all();
+        return view('multipleChapter.edit', compact('multipleChapter', 'themeColors', 'classes'));
     }
 
     public function update(UpdateMultipleChapterRequest $request, $id)

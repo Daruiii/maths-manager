@@ -14,16 +14,29 @@ class QueryFiltersService
      * @param Request $request
      * @param array $filterFields Map des paramètres request vers colonnes DB
      *                            Ex: ['multiple_chapter_id' => 'multiple_chapter_id', 'type' => 'type']
+     * @param array $relationFilters Map des paramètres request vers relations
+     *                               Ex: ['classe_id' => ['relation' => 'multipleChapter', 'column' => 'classe_id']]
      * @return Builder
      */
     public function applyFilters(
         Builder $query,
         Request $request,
-        array $filterFields
+        array $filterFields,
+        array $relationFilters = []
     ): Builder {
+        // Filtres simples sur colonnes directes
         foreach ($filterFields as $requestParam => $dbColumn) {
             if ($request->filled($requestParam)) {
                 $query->where($dbColumn, $request->input($requestParam));
+            }
+        }
+
+        // Filtres sur relations
+        foreach ($relationFilters as $requestParam => $config) {
+            if ($request->filled($requestParam)) {
+                $query->whereHas($config['relation'], function ($q) use ($config, $request, $requestParam) {
+                    $q->where($config['column'], $request->input($requestParam));
+                });
             }
         }
 

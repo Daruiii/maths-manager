@@ -16,7 +16,8 @@ class StoreMultipleChapterRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'theme' => 'nullable|string|max:7'
+            'theme' => 'nullable|string|max:7',
+            'classe_id' => 'nullable|exists:classes,id'
         ];
     }
 
