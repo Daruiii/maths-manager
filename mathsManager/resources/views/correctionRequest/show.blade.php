@@ -134,8 +134,19 @@
                         <p class="text-xs md text-sm break-words">{{ $correctionRequest->message }}</p>
                     </div>
                 @endif
-                <div class="h-full w-full flex flex-row justify-end align-end items-end">
-                    <h1 class="p-2 text-xs md:text-sm font-semibold">
+                <div class="h-full w-full flex flex-row justify-between align-end items-end p-2">
+                    {{-- Bouton Modifier (si pending et propriétaire) --}}
+                    @auth
+                        @if ($correctionRequest->status === 'pending' && Auth::id() === $correctionRequest->user_id)
+                            <a href="{{ route('correctionRequest.edit', $correctionRequest->ds_id) }}"
+                                class="text-xs md:text-sm px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                                Modifier
+                            </a>
+                        @else
+                            <div></div>
+                        @endif
+                    @endauth
+                    <h1 class="text-xs md:text-sm font-semibold">
                         {{ $correctionRequest->created_at->format('d/m/Y') }}</h1>
                 </div>
             </div>

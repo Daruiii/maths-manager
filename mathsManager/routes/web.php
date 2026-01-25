@@ -128,6 +128,8 @@ Route::middleware('auth')->group(function () {
             ->middleware('throttle:10,1') // 10 correction requests per minute max
             ->name('correctionRequest.sendCorrectionRequest');
         Route::get('/correctionRequest/show/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequest'])->name('correctionRequest.show');
+        Route::get('/correctionRequest/edit/{ds_id}', [CorrectionRequestController::class, 'edit'])->name('correctionRequest.edit');
+        Route::put('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'update'])->name('correctionRequest.update');
     });
 });
 

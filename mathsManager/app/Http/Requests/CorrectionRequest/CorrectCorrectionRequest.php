@@ -22,7 +22,10 @@ class CorrectCorrectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'correction_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+            'correction_pictures' => 'nullable|array',
+            'correction_pictures.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'delete_correction_pictures' => 'nullable|array',
+            'delete_correction_pictures.*' => 'string',
             'correction_pdf' => 'nullable|mimes:pdf',
             'grade' => 'required|numeric|min:0|max:20',
             'correction_message' => 'nullable|string|max:255',

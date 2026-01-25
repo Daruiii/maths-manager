@@ -6,6 +6,7 @@
     'prefix' => 'img-',
     'existingImages' => [],
     'isPublic' => true,
+    'hideLatex' => false,
 ])
 
 @php
@@ -59,6 +60,7 @@
                     <!-- Nom -->
                     <code class="flex-1 text-sm font-mono bg-white px-3 py-2 rounded border border-slate-200" x-text="image.name"></code>
 
+                    @if (!$hideLatex)
                     <!-- Bouton copier LaTeX -->
                     <button type="button" @click="copyLatex(image.name)"
                         class="p-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors duration-200 shadow-sm"
@@ -67,6 +69,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                     </button>
+                    @endif
 
                     <!-- Bouton supprimer/annuler -->
                     <button type="button" @click="toggleDeletion(image.name)"
@@ -95,6 +98,7 @@
                     <!-- Badge nouveau -->
                     <span class="px-3 py-1 bg-emerald-500 text-white text-xs font-semibold rounded-full">Nouveau</span>
 
+                    @if (!$hideLatex)
                     <!-- Bouton copier LaTeX -->
                     <button type="button" @click="copyLatex(newImage.generatedName)"
                         class="p-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors duration-200 shadow-sm"
@@ -103,6 +107,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                     </button>
+                    @endif
 
                     <!-- Bouton retirer -->
                     <button type="button" @click="removeNewImage(index)"
@@ -125,6 +130,7 @@
             <span class="text-sm font-semibold text-indigo-600 group-hover:text-indigo-700 transition-colors">Ajouter des images</span>
         </label>
 
+        @if (!$hideLatex)
         <!-- Feedback copie -->
         <div x-show="copiedImage" x-transition
             class="mt-3 p-3 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-lg text-sm text-center font-medium">
@@ -138,6 +144,7 @@
             </svg>
             <span>Cliquez sur le bouton copier pour obtenir le code LaTeX</span>
         </div>
+        @endif
     </div>
 
     <!-- Hidden inputs pour les suppressions -->

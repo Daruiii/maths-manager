@@ -20,7 +20,7 @@
 
     <section class="form-wrapper">
         <div class="form">
-            <h1 class="form-title">Demande de correction</h1>
+            <h1 class="form-title">Modifier la demande de correction</h1>
 
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -32,9 +32,11 @@
                 </div>
             @endif
 
-            <form action="{{ route('correctionRequest.sendCorrectionRequest', ['ds_id' => $ds->id]) }}" method="POST"
+            <form action="{{ route('correctionRequest.update', ['ds_id' => $ds->id]) }}" method="POST"
                 id="correctionRequestForm" enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
+
                 <div class="form-group">
                     <x-image-manager
                         name="pictures"
@@ -42,7 +44,7 @@
                         context="corrections"
                         identifier="ds-{{ $ds->id }}"
                         prefix="student-"
-                        :existingImages="[]"
+                        :existingImages="$existingPictures"
                         :isPublic="false"
                         :hideLatex="true"
                     />
@@ -50,10 +52,16 @@
 
                 <div class="form-group flex flex-col">
                     <label for="comment" class="form-label">Commentaire</label>
-                    <textarea name="message" id="comment" class="form-input" rows="5"></textarea>
+                    <textarea name="message" id="comment" class="form-input" rows="5">{{ old('message', $correctionRequest->message) }}</textarea>
                 </div>
-                <div class="w-full flex justify-center">
-                    <x-btn-send />
+
+                <div class="w-full flex justify-center gap-4">
+                    <a href="{{ route('correctionRequest.show', $ds->id) }}" class="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition">
+                        Annuler
+                    </a>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">
+                        Mettre à jour
+                    </button>
                 </div>
             </form>
         </div>
