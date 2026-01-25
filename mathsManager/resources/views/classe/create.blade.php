@@ -29,6 +29,11 @@
             </div>
 
             <div class="form-group">
+                <label for="color">Couleur (optionnel)</label>
+                <input type="color" class="form-control" id="color" name="color" style="height: 40px;">
+            </div>
+
+            <div class="form-group">
                 <label for="hidden">Caché</label>
                 <input type="checkbox" id="hidden" name="hidden" value="1">
             </div>

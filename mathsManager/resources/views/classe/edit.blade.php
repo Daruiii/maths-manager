@@ -30,10 +30,15 @@
             </div>
 
             <div class="form-group">
+                <label for="color">Couleur (optionnel)</label>
+                <input type="color" class="form-control" id="color" name="color" value="{{ old('color', $classe->color ?? '#3B82F6') }}" style="height: 40px;">
+            </div>
+
+            <div class="form-group">
                 <label for="hidden">Caché</label>
                 <input type="checkbox" id="hidden" name="hidden" {{ $classe->hidden ? 'checked' : '' }}>
             </div>
-            
+
             <button type="submit" class="submit-btn-form">Mettre à jour la classe</button>
         </form>
     </div>
