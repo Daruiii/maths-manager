@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MultipleChapter extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'description', 'theme'];
+    protected $fillable = ['title', 'description', 'theme', 'classe_id'];
 
     public function dsExercises()
     {
@@ -18,5 +18,10 @@ class MultipleChapter extends Model
     public function ds()
     {
         return $this->belongsToMany(DS::class, 'ds_multiple_chapters', 'multiple_chapter_id', 'ds_id');
+    }
+
+    public function classe()
+    {
+        return $this->belongsTo(Classe::class);
     }
 }

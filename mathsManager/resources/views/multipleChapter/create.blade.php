@@ -37,7 +37,17 @@
                 @endforeach
             </select>
         </div>
-        
+
+        <div class="form-group">
+            <label for="classe_id">Classe (optionnelle)</label>
+            <select class="form-control" id="classe_id" name="classe_id">
+                <option value="">-- Aucune classe --</option>
+                @foreach ($classes as $classe)
+                    <option value="{{ $classe->id }}">{{ $classe->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <button type="submit" class="submit-btn-form">Ajouter le chapitre</button>
     </form>
 </div>

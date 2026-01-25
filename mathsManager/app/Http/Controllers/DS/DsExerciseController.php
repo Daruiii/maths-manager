@@ -30,10 +30,19 @@ class DsExerciseController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $dsExercises = DsExercise::with('chapters')->orderBy('created_at', 'desc');
+        $dsExercises = DsExercise::with('multipleChapter.classe')->orderBy('created_at', 'desc');
 
         // Appliquer la recherche via le service
         $dsExercises = $this->queryFiltersService->applySearch($dsExercises, $search, ['name', 'id']);
+
+        // Gérer le filtre de difficulté spécial (0 = NULL pour "non évalué")
+        if ($request->filled('difficulty')) {
+            if ($request->difficulty == '0') {
+                $dsExercises->whereNull('difficulty');
+            } else {
+                $dsExercises->where('difficulty', $request->difficulty);
+            }
+        }
 
         // Appliquer les filtres dynamiques via le service (remplace les 51 lignes de duplication)
         $filterFields = [
@@ -41,7 +50,12 @@ class DsExerciseController extends Controller
             'type' => 'type',
             'academy' => 'academy',
         ];
-        $dsExercises = $this->queryFiltersService->applyFilters($dsExercises, $request, $filterFields);
+
+        $relationFilters = [
+            'classe_id' => ['relation' => 'multipleChapter', 'column' => 'classe_id'],
+        ];
+
+        $dsExercises = $this->queryFiltersService->applyFilters($dsExercises, $request, $filterFields, $relationFilters);
 
         // Récupérer les filtres actifs pour la vue
         $activeFilters = $this->queryFiltersService->getActiveFilters($request, $filterFields);
@@ -58,12 +72,20 @@ class DsExerciseController extends Controller
         $academyActivated = $activeFilters['academy'] ?? null;
         $academyFilterActivated = !empty($activeFilters['academy']);
 
+        $classeActivated = $request->classe_id ?? null;
+        $classeFilterActivated = !empty($request->classe_id);
+
+        $difficultyActivated = $request->difficulty ?? null;
+        $difficultyFilterActivated = $request->filled('difficulty');
+
         $academies = DsExercise::distinct('academy')->pluck('academy');
+        $classes = \App\Models\Classe::all();
         $dsExercises = $dsExercises->paginate(10)->withQueryString();
         $multipleChapters = MultipleChapter::all();
 
         return view('dsExercise.index', compact('dsExercises', 'multipleChapters', 'filterActivated', 'chapterActivated',
-        'typeActivated', 'typeFilterActivated', 'academyActivated', 'academyFilterActivated', 'academies'));
+        'typeActivated', 'typeFilterActivated', 'academyActivated', 'academyFilterActivated', 'academies', 'classes',
+        'classeActivated', 'classeFilterActivated', 'difficultyActivated', 'difficultyFilterActivated'));
     }
 
     public function create()
@@ -77,7 +99,6 @@ class DsExerciseController extends Controller
         // Create and save the exercise first to get auto-generated ID
         $dsExercise = new DsExercise();
         $dsExercise->fill($request->except('images'));
-        $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->latex_statement = $request->statement;
         $dsExercise->statement = $request->statement; // Temporary, will be updated after image upload
         $dsExercise->save(); // ✅ Get auto-generated ID from database
@@ -161,7 +182,6 @@ class DsExerciseController extends Controller
     {
         $dsExercise = DsExercise::findOrFail($id);
         $dsExercise->fill($request->except('images', 'statement'));
-        $dsExercise->harder_exercise = $request->has('harder_exercise') ? true : false;
         $dsExercise->latex_statement = $request->statement;
 
         $imagePaths = $this->imageManagementService->handleImageUpload(

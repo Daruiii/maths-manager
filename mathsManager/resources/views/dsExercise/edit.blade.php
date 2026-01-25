@@ -119,13 +119,101 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="harder_exercise">Exercice plus difficile:</label>
-                    <div class="flex items-center w-4 h-4 border-gray-300 rounded focus:ring-blue-500 text-black">
-                        <input type="checkbox" id="harder_exercise" name="harder_exercise" value="1"
-                            class="text-black border-gray-300 rounded focus:ring-blue-500 checked:bg-black"
-                            {{ $dsExercise->harder_exercise ? 'checked' : '' }}>
+                    <label for="difficulty">Difficulté de l'exercice:</label>
+                    <div class="flex items-center gap-4">
+                        <div class="star-rating">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <label class="star-label">
+                                    <input type="radio" name="difficulty" value="{{ $i }}"
+                                        {{ $dsExercise->difficulty === $i ? 'checked' : '' }}
+                                        class="star-input">
+                                    <span class="star-icon" data-value="{{ $i }}">★</span>
+                                </label>
+                            @endfor
+                        </div>
+                        <span class="difficulty-text" id="difficulty-text">
+                            Difficulté
+                            @php
+                                $texts = ['très facile', 'facile', 'moyenne', 'difficile', 'très difficile'];
+                                echo $texts[$dsExercise->difficulty - 1] ?? 'moyenne';
+                            @endphp
+                        </span>
                     </div>
                 </div>
+
+                <style>
+                    .star-rating {
+                        display: inline-flex;
+                        gap: 0.25rem;
+                    }
+                    .star-label {
+                        cursor: pointer;
+                        position: relative;
+                    }
+                    .star-input {
+                        position: absolute;
+                        opacity: 0;
+                        width: 0;
+                        height: 0;
+                    }
+                    .star-icon {
+                        font-size: 2rem;
+                        color: #d1d5db;
+                        transition: color 0.2s;
+                    }
+                    .star-input:checked ~ .star-icon,
+                    .star-label:hover .star-icon,
+                    .star-label:hover ~ .star-label .star-icon {
+                        color: #fbbf24;
+                    }
+                    .difficulty-text {
+                        font-weight: 600;
+                        color: #374151;
+                    }
+                </style>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const difficultyTexts = ['Très facile', 'Facile', 'Moyenne', 'Difficile', 'Très difficile'];
+                        const stars = document.querySelectorAll('.star-input');
+                        const difficultyText = document.getElementById('difficulty-text');
+
+                        // Initialize star colors based on checked value
+                        const checkedStar = document.querySelector('.star-input:checked');
+                        if (checkedStar) {
+                            const checkedValue = parseInt(checkedStar.value);
+                            const labels = document.querySelectorAll('.star-label');
+                            labels.forEach((l, i) => {
+                                l.querySelector('.star-icon').style.color = i < checkedValue ? '#fbbf24' : '#d1d5db';
+                            });
+                        }
+
+                        stars.forEach(star => {
+                            star.addEventListener('change', function() {
+                                const value = parseInt(this.value);
+                                difficultyText.textContent = 'Difficulté ' + difficultyTexts[value - 1].toLowerCase();
+                            });
+                        });
+
+                        // Highlight stars up to hovered value
+                        const labels = document.querySelectorAll('.star-label');
+                        labels.forEach((label, index) => {
+                            label.addEventListener('mouseenter', function() {
+                                labels.forEach((l, i) => {
+                                    l.querySelector('.star-icon').style.color = i <= index ? '#fbbf24' : '#d1d5db';
+                                });
+                            });
+                        });
+
+                        document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+                            const checked = document.querySelector('.star-input:checked');
+                            const checkedValue = checked ? parseInt(checked.value) : 0;
+                            labels.forEach((l, i) => {
+                                l.querySelector('.star-icon').style.color = i < checkedValue ? '#fbbf24' : '#d1d5db';
+                            });
+                        });
+                    });
+                </script>
 
                 <div class="form-group">
                     <label for="time">Temps (en minutes):</label>

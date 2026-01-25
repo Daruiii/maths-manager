@@ -23,7 +23,7 @@ class StoreDsExerciseRequest extends FormRequest
     {
         return [
             'multiple_chapter_id' => 'required|exists:multiple_chapters,id',
-            'harder_exercise' => 'boolean',
+            'difficulty' => 'required|integer|min:1|max:5',
             'time' => 'required|integer',
             'name' => 'nullable|max:255',
             'statement' => 'required',
@@ -43,6 +43,10 @@ class StoreDsExerciseRequest extends FormRequest
         return [
             'multiple_chapter_id.required' => 'Le multi-chapitre est obligatoire.',
             'multiple_chapter_id.exists' => 'Le multi-chapitre sélectionné n\'existe pas.',
+            'difficulty.required' => 'La difficulté est obligatoire.',
+            'difficulty.integer' => 'La difficulté doit être un nombre entier.',
+            'difficulty.min' => 'La difficulté doit être entre 1 et 5 étoiles.',
+            'difficulty.max' => 'La difficulté doit être entre 1 et 5 étoiles.',
             'time.required' => 'Le temps est obligatoire.',
             'time.integer' => 'Le temps doit être un nombre entier.',
             'statement.required' => 'L\'énoncé est obligatoire.',

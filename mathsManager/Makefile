@@ -104,9 +104,6 @@ install-prod: vendor/autoload.php .env public/storage
 	php-8.3 artisan config:clear || true
 	php-8.3 artisan cache:clear || true
 	php-8.3 artisan migrate --force
-	php-8.3 artisan config:cache
-	php-8.3 artisan route:cache
-	php-8.3 artisan view:cache
 	@echo "✅ Installation production terminée"
 
 # Installation pour la preprod (sur le serveur)

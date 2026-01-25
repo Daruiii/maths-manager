@@ -20,12 +20,12 @@
             </div>
 
             {{-- Combined filter form --}}
-            <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex gap-2">
+            <form method="GET" action="{{ route('ds_exercises.index') }}" class="flex flex-wrap gap-2">
                 @csrf
                 {{-- Filter for type --}}
                 <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
                     <select name="type"
-                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-40"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-32 sm:w-40"
                         onchange="this.form.submit()">
                         <option value="" {{ !$typeFilterActivated ? 'selected' : '' }}>Tous les types</option>
                         @if ($typeFilterActivated)
@@ -51,7 +51,7 @@
                 {{-- Filter for academy --}}
                 <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
                     <select name="academy"
-                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-48"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-32 sm:w-48"
                         onchange="this.form.submit()">
                         <option value="" {{ !$academyFilterActivated ? 'selected' : '' }}>Toutes les académies
                         </option>
@@ -75,10 +75,51 @@
                     </div>
                 </div>
 
+                {{-- Filter for classe --}}
+                <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
+                    <select name="classe_id"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-32 sm:w-40"
+                        onchange="this.form.submit()">
+                        <option value="" {{ !$classeFilterActivated ? 'selected' : '' }}>Toutes les classes</option>
+                        @foreach ($classes as $classe)
+                            <option value="{{ $classe->id }}" {{ $classeActivated == $classe->id ? 'selected' : '' }}>
+                                {{ $classe->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                        <svg class="w-4 h-4 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Filter for difficulty --}}
+                <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
+                    <select name="difficulty"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-32 sm:w-40"
+                        onchange="this.form.submit()">
+                        <option value="" {{ !$difficultyFilterActivated ? 'selected' : '' }}>Toutes difficultés</option>
+                        <option value="0" {{ $difficultyActivated === '0' ? 'selected' : '' }}>Non évalué</option>
+                        @for ($i = 1; $i <= 5; $i++)
+                            <option value="{{ $i }}" {{ $difficultyActivated == $i ? 'selected' : '' }}>
+                                {{ $i }} étoile{{ $i > 1 ? 's' : '' }}
+                            </option>
+                        @endfor
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                        <svg class="w-4 h-4 text-gray-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
                 {{-- Filter for multiple chapters --}}
                 <div class="relative group rounded-lg overflow-hidden flex items-center justify-end">
                     <select name="multiple_chapter_id"
-                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none"
+                        class="bg-none hover:placeholder-shown:bg-green-500 text-blue-400 bg-transparent ring-0 outline-none border border-gray-500 text-gray-900 placeholder-blue-700 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 appearance-none w-40 sm:w-56"
                         onchange="this.form.submit()">
                         <option value="" {{ !$filterActivated ? 'selected' : '' }}>Tous les chapitres</option>
                         @if ($filterActivated)
@@ -105,7 +146,7 @@
                 </div>
 
                 {{-- Reset button --}}
-                @if ($typeFilterActivated || $academyFilterActivated || $filterActivated)
+                @if ($typeFilterActivated || $academyFilterActivated || $filterActivated || $classeFilterActivated || $difficultyFilterActivated)
                     <a href="{{ route('ds_exercises.index') }}"
                         class="hover:rotate-180 duration-300 z-10 flex items-center justify-center text-gray-700 font-bold rounded-lg">
                         <svg width="24px" height="18px" viewBox="0 0 24 24" fill="none"
@@ -154,7 +195,7 @@
                                     </th> --}}
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Inj
+                                    Difficulté
                                 </th>
                                 <th
                                     class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -220,17 +261,13 @@
                                             @endforeach
                                         </td> --}}
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                        @if ($ex->harder_exercise)
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Oui
+                                        <div class="flex items-center gap-2">
+                                            <span class="stars-display">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <span class="star {{ $i <= $ex->difficulty ? 'filled' : 'empty' }}">★</span>
+                                                @endfor
                                             </span>
-                                        @else
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Non
-                                            </span>
-                                        @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                         {{ $ex->time }} min</td>
@@ -273,4 +310,21 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .stars-display {
+            display: inline-flex;
+            gap: 0.125rem;
+        }
+        .star {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+        .star.filled {
+            color: #fbbf24;
+        }
+        .star.empty {
+            color: #d1d5db;
+        }
+    </style>
 @endsection
