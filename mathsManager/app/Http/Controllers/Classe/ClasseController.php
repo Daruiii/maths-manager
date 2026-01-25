@@ -69,16 +69,17 @@ class ClasseController extends Controller
         $request->validate([
             'name' => 'required',
             'level' => 'required',
-            'hidden' => 'boolean'
+            'hidden' => 'boolean',
+            'color' => 'nullable|string|max:7'
         ]);
 
         // Assigner le prochain display_order disponible
         $maxDisplayOrder = Classe::max('display_order') ?: 0;
-        $data = $request->only(['name', 'level', 'hidden']);
+        $data = $request->only(['name', 'level', 'hidden', 'color']);
         $data['display_order'] = $maxDisplayOrder + 1;
-        
+
         Classe::create($data);
-        
+
         // Recalculer les ordres globaux d'exercices
         $this->orderingService->recalculateAllGlobalExerciseOrders();
 
@@ -95,23 +96,25 @@ class ClasseController extends Controller
     {
         $classe = Classe::where('id', $id)->firstOrFail();
         $oldHidden = $classe->hidden; // Sauvegarder l'ancien état
-        
+
         $request->validate([
             'name' => 'required',
             'level' => 'required',
+            'color' => 'nullable|string|max:7'
         ]);
-    
+
         $classe->name = $request->name;
         $classe->level = $request->level;
         $classe->hidden = $request->has('hidden');
+        $classe->color = $request->color;
 
         $classe->save();
-        
+
         // Si le statut hidden a changé, recalculer les ordres
         if ($oldHidden !== $classe->hidden) {
             $this->orderingService->recalculateAllGlobalExerciseOrders();
         }
-        
+
         return redirect()->route('classe.index');
     }
 

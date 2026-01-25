@@ -169,51 +169,47 @@
                         <thead>
                             <tr>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Numéro</th>
-                                {{-- <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Nom</th> --}}
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
+                                    #</th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                                     Type</th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
+                                    Classe
+                                </th>
+                                <th
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                                     Année</th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                                     Académie</th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                                     Date/Text</th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                    Chapitre duo
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
+                                    Chapitre
                                 </th>
-                                {{-- <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                        Chapitres associés
-                                    </th> --}}
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                                     Difficulté
                                 </th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">
                                     Durée
                                 </th>
                                 <th
-                                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-3 py-2 border-b border-gray-200 bg-gray-50 text-xs font-medium text-gray-500 uppercase text-center">
                                     Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white">
                             @foreach ($dsExercises as $ex)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
+                                    <td class="px-3 py-2 whitespace-nowrap text-xs font-medium text-gray-900">
                                         {{ $ex->id }}</td>
-                                    {{-- <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                                        {{ $ex->name }}</td> --}}
-                                    <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
                                         @if ($ex->type === 'bac')
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -234,6 +230,16 @@
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                                 Concours
                                             </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                                        @if ($ex->multipleChapter && $ex->multipleChapter->classe)
+                                            <span class="px-2 py-1 inline-flex text-xs font-semibold rounded truncate max-w-[120px]"
+                                                style="background-color: {{ $ex->multipleChapter->classe->color ?? '#3B82F6' }}; color: white;">
+                                                {{ $ex->multipleChapter->classe->name }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-400 text-xs">-</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">

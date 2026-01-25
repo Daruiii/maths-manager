@@ -9,7 +9,7 @@ class Classe extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'level', 'hidden', 'display_order'];
+    protected $fillable = ['name', 'level', 'hidden', 'display_order', 'color'];
 
     public function chapters()
     {
