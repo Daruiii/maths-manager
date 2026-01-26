@@ -79,7 +79,17 @@
 
                 <div class="form-group">
                     <label for="example">Exemple (LaTeX/optionnel) :</label>
-                    <textarea class="form-control" id="clue" name="example" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
+                    <textarea class="form-control" id="example" name="example" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="demonstration">Démonstration (LaTeX/optionnel) :</label>
+                    <textarea class="form-control" id="demonstration" name="demonstration" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarque">Remarque (LaTeX/optionnel) :</label>
+                    <textarea class="form-control" id="remarque" name="remarque" rows="4" placeholder="Insérer le LaTeX ici..."></textarea>
                 </div>
 
                 <button type="submit" class="submit-btn-form">Ajouter le bloc</button>

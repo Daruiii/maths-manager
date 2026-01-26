@@ -121,8 +121,12 @@ class RecapController extends Controller
         $recapPartBlock->theme = $request->theme ?? 'grey';
         $recapPartBlock->latex_content = $request->content;
         $recapPartBlock->latex_example = $request->example;
+        $recapPartBlock->latex_demonstration = $request->demonstration;
+        $recapPartBlock->latex_remarque = $request->remarque;
         $recapPartBlock->content = $request->content ? LatexToHtmlConverter::convertForRecap($request->content) : null;
         $recapPartBlock->example = $request->example ? LatexToHtmlConverter::convertForRecap($request->example) : null;
+        $recapPartBlock->demonstration = $request->demonstration ? LatexToHtmlConverter::convertForRecap($request->demonstration) : null;
+        $recapPartBlock->remarque = $request->remarque ? LatexToHtmlConverter::convertForRecap($request->remarque) : null;
         $recapPartBlock->recap_part_id = $request->recap_part_id;
         $recapPartBlock->subchapter_id = $request->subchapter_id;
         $recapPartBlock->save();
@@ -147,7 +151,11 @@ class RecapController extends Controller
         $recapPartBlock->title = $request->title;
         $recapPartBlock->theme = $request->theme ?? 'grey';
         $recapPartBlock->latex_example = $request->example;
+        $recapPartBlock->latex_demonstration = $request->demonstration;
+        $recapPartBlock->latex_remarque = $request->remarque;
         $recapPartBlock->example = $request->example ? LatexToHtmlConverter::convertForRecap($request->example) : null;
+        $recapPartBlock->demonstration = $request->demonstration ? LatexToHtmlConverter::convertForRecap($request->demonstration) : null;
+        $recapPartBlock->remarque = $request->remarque ? LatexToHtmlConverter::convertForRecap($request->remarque) : null;
         $recapPartBlock->latex_content = $request->content;
         $recapPartBlock->content = $request->content ? LatexToHtmlConverter::convertForRecap($request->content) : null;
         $recapPartBlock->subchapter_id = $request->subchapter_id;

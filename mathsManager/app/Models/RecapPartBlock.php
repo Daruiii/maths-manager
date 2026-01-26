@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class RecapPartBlock extends Model
 {
-    protected $fillable = ['recap_part_id', 'title', 'theme', 'content', 'latex-content', 'example', 'latex_example', 'subchapter_id'];
+    use HasFactory;
+
+    protected $fillable = ['recap_part_id', 'title', 'theme', 'content', 'latex-content', 'example', 'latex_example', 'demonstration', 'latex_demonstration', 'remarque', 'latex_remarque', 'subchapter_id'];
 
     public function recapPart()
     {
@@ -18,5 +20,4 @@ class RecapPartBlock extends Model
     {
         return $this->belongsTo(Subchapter::class);
     }
-    use HasFactory;
 }

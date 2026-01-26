@@ -55,7 +55,7 @@
                                     $recapPartBlock->theme = '#bababa';
                                 }
                             @endphp
-                            <div x-data="{ showExample: false }" class="flex flex-col justify-center items-center w-full md:w-10/12">
+                            <div x-data="{ showExample: false, showDemonstration: false, showRemarque: false }" class="flex flex-col justify-center items-center w-full md:w-10/12">
                                 <div class="flex flex-row items-center w-full justify-start gap-1">
                                     <h5 class="recap-title text-xs md:text-sm font-bold text-white text-center p-1 w-auto rounded-lg my-2"
 
@@ -73,43 +73,104 @@
                                        {!! $recapPartBlock->content !!}
                                     </div>
 
-                                    {{-- Exemple --}}
+                                    {{-- Exemple, Démonstration, Remarque --}}
                                     <div class="border-t w-full p-2 rounded-b-lg border-gray-300">
-                                        <div class="flex justify-between items-center">
-                                            @if ($recapPartBlock->example)
-                                                <button @click="showExample = !showExample"
-                                                    class=" flex row text-xs font-bold">
-                                                    Exemple
-                                                    <svg :class="{ 'rotate-180': !showExample }"
-                                                        class="transition-transform" width="15px" height="15px"
-                                                        viewBox="0 0 24 24" fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                                            stroke-linejoin="round">
-                                                        </g>
-                                                        <g id="SVGRepo_iconCarrier">
-                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                d="M7.00003 15.5C6.59557 15.5 6.23093 15.2564 6.07615 14.8827C5.92137 14.509 6.00692 14.0789 6.29292 13.7929L11.2929 8.79289C11.6834 8.40237 12.3166 8.40237 12.7071 8.79289L17.7071 13.7929C17.9931 14.0789 18.0787 14.509 17.9239 14.8827C17.7691 15.2564 17.4045 15.5 17 15.5H7.00003Z"
-                                                                fill="#000000"></path>
-                                                        </g>
-                                                    </svg>
-                                                </button>
-                                            @else
-                                                <p class="text-xs font-bold"></p>
-                                            @endif
+                                        <div class="flex justify-between items-center flex-wrap gap-2">
+                                            <div class="flex gap-3">
+                                                @if ($recapPartBlock->example)
+                                                    <button @click="showExample = !showExample"
+                                                        class="flex row text-xs font-bold">
+                                                        Exemple
+                                                        <svg :class="{ 'rotate-180': !showExample }"
+                                                            class="transition-transform" width="15px" height="15px"
+                                                            viewBox="0 0 24 24" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                stroke-linejoin="round">
+                                                            </g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                    d="M7.00003 15.5C6.59557 15.5 6.23093 15.2564 6.07615 14.8827C5.92137 14.509 6.00692 14.0789 6.29292 13.7929L11.2929 8.79289C11.6834 8.40237 12.3166 8.40237 12.7071 8.79289L17.7071 13.7929C17.9931 14.0789 18.0787 14.509 17.9239 14.8827C17.7691 15.2564 17.4045 15.5 17 15.5H7.00003Z"
+                                                                    fill="#000000"></path>
+                                                            </g>
+                                                        </svg>
+                                                    </button>
+                                                @endif
+                                                @if ($recapPartBlock->demonstration)
+                                                    <button @click="showDemonstration = !showDemonstration"
+                                                        class="flex row text-xs font-bold">
+                                                        Démonstration
+                                                        <svg :class="{ 'rotate-180': !showDemonstration }"
+                                                            class="transition-transform" width="15px" height="15px"
+                                                            viewBox="0 0 24 24" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                stroke-linejoin="round">
+                                                            </g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                    d="M7.00003 15.5C6.59557 15.5 6.23093 15.2564 6.07615 14.8827C5.92137 14.509 6.00692 14.0789 6.29292 13.7929L11.2929 8.79289C11.6834 8.40237 12.3166 8.40237 12.7071 8.79289L17.7071 13.7929C17.9931 14.0789 18.0787 14.509 17.9239 14.8827C17.7691 15.2564 17.4045 15.5 17 15.5H7.00003Z"
+                                                                    fill="#000000"></path>
+                                                            </g>
+                                                        </svg>
+                                                    </button>
+                                                @endif
+                                                @if ($recapPartBlock->remarque)
+                                                    <button @click="showRemarque = !showRemarque"
+                                                        class="flex row text-xs font-bold">
+                                                        Remarque
+                                                        <svg :class="{ 'rotate-180': !showRemarque }"
+                                                            class="transition-transform" width="15px" height="15px"
+                                                            viewBox="0 0 24 24" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                stroke-linejoin="round">
+                                                            </g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                    d="M7.00003 15.5C6.59557 15.5 6.23093 15.2564 6.07615 14.8827C5.92137 14.509 6.00692 14.0789 6.29292 13.7929L11.2929 8.79289C11.6834 8.40237 12.3166 8.40237 12.7071 8.79289L17.7071 13.7929C17.9931 14.0789 18.0787 14.509 17.9239 14.8827C17.7691 15.2564 17.4045 15.5 17 15.5H7.00003Z"
+                                                                    fill="#000000"></path>
+                                                            </g>
+                                                        </svg>
+                                                    </button>
+                                                @endif
+                                            </div>
                                             @if ($recapPartBlock->subchapter_id)
                                                 <x-button-training href="{{ route('subchapter.show', $recapPartBlock->subchapter_id) }}">
                                                     S'entraîner
                                                 </x-button-training>
                                             @endif
                                         </div>
-                                        <div x-show="showExample" class="bg-gray-200 w-full p-2 rounded-lg">
-                                            {{-- <h3 class="exercise-cc font-bold">Exemple :</h3> --}}
-                                            <div class="example-content  text-sm p-4 cmu-serif">
-                                                {!! $recapPartBlock->example !!}
+
+                                        {{-- Exemple content --}}
+                                        @if ($recapPartBlock->example)
+                                            <div x-show="showExample" class="bg-gray-200 w-full p-2 rounded-lg mt-2">
+                                                <div class="example-content text-sm p-4 cmu-serif">
+                                                    {!! $recapPartBlock->example !!}
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
+
+                                        {{-- Démonstration content --}}
+                                        @if ($recapPartBlock->demonstration)
+                                            <div x-show="showDemonstration" class="bg-blue-50 w-full p-2 rounded-lg mt-2">
+                                                <div class="demonstration-content text-sm p-4 cmu-serif">
+                                                    {!! $recapPartBlock->demonstration !!}
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Remarque content --}}
+                                        @if ($recapPartBlock->remarque)
+                                            <div x-show="showRemarque" class="bg-yellow-50 w-full p-2 rounded-lg mt-2">
+                                                <div class="remarque-content text-sm p-4 cmu-serif">
+                                                    {!! $recapPartBlock->remarque !!}
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

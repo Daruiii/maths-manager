@@ -78,7 +78,17 @@
 
                 <div class="form-group">
                     <label for="example">Exemple (LaTeX/optionnel) :</label>
-                    <textarea class="form-control" id="clue" name="example" rows="4" placeholder="Insérer le LaTeX ici...">{{ $recapPartBlock->latex_example }}</textarea>
+                    <textarea class="form-control" id="example" name="example" rows="4" placeholder="Insérer le LaTeX ici...">{{ $recapPartBlock->latex_example }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="demonstration">Démonstration (LaTeX/optionnel) :</label>
+                    <textarea class="form-control" id="demonstration" name="demonstration" rows="4" placeholder="Insérer le LaTeX ici...">{{ $recapPartBlock->latex_demonstration }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarque">Remarque (LaTeX/optionnel) :</label>
+                    <textarea class="form-control" id="remarque" name="remarque" rows="4" placeholder="Insérer le LaTeX ici...">{{ $recapPartBlock->latex_remarque }}</textarea>
                 </div>
 
                 <button type="submit" class="submit-btn-form">Modifier le bloc</button>
