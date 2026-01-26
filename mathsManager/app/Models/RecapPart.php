@@ -7,7 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class RecapPart extends Model
 {
-    protected $fillable = ['title', 'description', 'recap_id'];
+    use HasFactory;
+
+    protected $fillable = ['title', 'description', 'recap_id', 'order'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('order', function ($builder) {
+            $builder->orderBy('order', 'asc');
+        });
+    }
 
     public function recap()
     {
@@ -16,7 +27,6 @@ class RecapPart extends Model
 
     public function recapPartBlocks()
     {
-        return $this->hasMany(RecapPartBlock::class);
+        return $this->hasMany(RecapPartBlock::class)->orderBy('order', 'asc');
     }
-    use HasFactory;
 }

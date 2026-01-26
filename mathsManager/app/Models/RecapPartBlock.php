@@ -9,7 +9,7 @@ class RecapPartBlock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['recap_part_id', 'title', 'theme', 'content', 'latex-content', 'example', 'latex_example', 'demonstration', 'latex_demonstration', 'remarque', 'latex_remarque', 'subchapter_id'];
+    protected $fillable = ['recap_part_id', 'title', 'theme', 'content', 'latex-content', 'example', 'latex_example', 'demonstration', 'latex_demonstration', 'remarque', 'latex_remarque', 'subchapter_id', 'order'];
 
     public function recapPart()
     {
