@@ -18,6 +18,10 @@ class UpdateRecapPartBlockRequest extends FormRequest
             'theme' => 'nullable|string|max:50',
             'example' => 'nullable|string',
             'latex_example' => 'nullable|string',
+            'demonstration' => 'nullable|string',
+            'latex_demonstration' => 'nullable|string',
+            'remarque' => 'nullable|string',
+            'latex_remarque' => 'nullable|string',
             'content' => 'required|string',
             'latex_content' => 'nullable|string',
             'subchapter_id' => 'nullable|exists:subchapters,id'

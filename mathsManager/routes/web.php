@@ -94,6 +94,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/recapPartBlock/{id}/edit', [RecapController::class, 'editPartBlock'])->name('recapPartBlock.edit');
         Route::patch('/recapPartBlock/{id}', [RecapController::class, 'updatePartBlock'])->name('recapPartBlock.update');
         Route::delete('/recapPartBlock/{id}', [RecapController::class, 'destroyPartBlock'])->name('recapPartBlock.destroy');
+        // ordering routes
+        Route::post('/recapPart/{id}/moveUp', [RecapController::class, 'movePartUp'])->name('recapPart.moveUp');
+        Route::post('/recapPart/{id}/moveDown', [RecapController::class, 'movePartDown'])->name('recapPart.moveDown');
+        Route::post('/recapPartBlock/reorder', [RecapController::class, 'reorderBlocks'])->name('recapPartBlock.reorder');
+        Route::post('/recapPartBlock/{id}/moveToPart', [RecapController::class, 'moveBlockToPart'])->name('recapPartBlock.moveToPart');
     });
     Route::middleware([IsVerified::class])->group(function () {
         Route::get('/recap/{id}', [RecapController::class, 'show'])->name('recap.show');

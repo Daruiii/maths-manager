@@ -66,12 +66,16 @@ class RecapController extends Controller
     // Méthode pour stocker une partie de récap
     public function storePart(StoreRecapPartRequest $request)
     {
-        // Création de la partie de récap
-        $recapPart = new RecapPart();
-        $recapPart->title = $request->title;
-        $recapPart->description = $request->description;
-        $recapPart->recap_id = $request->recap_id;
-        $recapPart->save();
+        $maxOrder = RecapPart::withoutGlobalScope('order')
+            ->where('recap_id', $request->recap_id)
+            ->max('order') ?? -1;
+
+        $recapPart = RecapPart::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'recap_id' => $request->recap_id,
+            'order' => $maxOrder + 1
+        ]);
 
         return redirect()->route('recap.show', $recapPart->recap_id);
     }
@@ -121,10 +125,19 @@ class RecapController extends Controller
         $recapPartBlock->theme = $request->theme ?? 'grey';
         $recapPartBlock->latex_content = $request->content;
         $recapPartBlock->latex_example = $request->example;
+        $recapPartBlock->latex_demonstration = $request->demonstration;
+        $recapPartBlock->latex_remarque = $request->remarque;
         $recapPartBlock->content = $request->content ? LatexToHtmlConverter::convertForRecap($request->content) : null;
         $recapPartBlock->example = $request->example ? LatexToHtmlConverter::convertForRecap($request->example) : null;
+        $recapPartBlock->demonstration = $request->demonstration ? LatexToHtmlConverter::convertForRecap($request->demonstration) : null;
+        $recapPartBlock->remarque = $request->remarque ? LatexToHtmlConverter::convertForRecap($request->remarque) : null;
         $recapPartBlock->recap_part_id = $request->recap_part_id;
         $recapPartBlock->subchapter_id = $request->subchapter_id;
+
+        // Set order as the last position
+        $maxOrder = RecapPartBlock::where('recap_part_id', $request->recap_part_id)->max('order') ?? -1;
+        $recapPartBlock->order = $maxOrder + 1;
+
         $recapPartBlock->save();
 
         return redirect()->route('recap.show', $recapPartBlock->recapPart->recap_id);
@@ -147,7 +160,11 @@ class RecapController extends Controller
         $recapPartBlock->title = $request->title;
         $recapPartBlock->theme = $request->theme ?? 'grey';
         $recapPartBlock->latex_example = $request->example;
+        $recapPartBlock->latex_demonstration = $request->demonstration;
+        $recapPartBlock->latex_remarque = $request->remarque;
         $recapPartBlock->example = $request->example ? LatexToHtmlConverter::convertForRecap($request->example) : null;
+        $recapPartBlock->demonstration = $request->demonstration ? LatexToHtmlConverter::convertForRecap($request->demonstration) : null;
+        $recapPartBlock->remarque = $request->remarque ? LatexToHtmlConverter::convertForRecap($request->remarque) : null;
         $recapPartBlock->latex_content = $request->content;
         $recapPartBlock->content = $request->content ? LatexToHtmlConverter::convertForRecap($request->content) : null;
         $recapPartBlock->subchapter_id = $request->subchapter_id;
@@ -162,5 +179,101 @@ class RecapController extends Controller
         $recapPartBlock = RecapPartBlock::find($id);
         $recapPartBlock->delete();
         return redirect()->route('recap.show', $recapPartBlock->recapPart->recap_id);
+    }
+
+    // Méthode pour déplacer une partie de récap vers le haut
+    public function movePartUp($id)
+    {
+        $recapPart = RecapPart::withoutGlobalScope('order')->find($id);
+
+        if (!$recapPart) {
+            return response()->json(['success' => false, 'message' => 'Partie non trouvée'], 404);
+        }
+
+        $recap_id = $recapPart->recap_id;
+
+        // Trouver la partie précédente
+        $previousPart = RecapPart::withoutGlobalScope('order')
+            ->where('recap_id', $recap_id)
+            ->where('order', '<', $recapPart->order)
+            ->orderBy('order', 'desc')
+            ->first();
+
+        if ($previousPart) {
+            // Échanger les ordres
+            $tempOrder = $recapPart->order;
+            $recapPart->order = $previousPart->order;
+            $previousPart->order = $tempOrder;
+
+            $recapPart->save();
+            $previousPart->save();
+
+            return response()->json(['success' => true, 'message' => 'Partie déplacée vers le haut']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Déjà en première position']);
+    }
+
+    // Méthode pour déplacer une partie de récap vers le bas
+    public function movePartDown($id)
+    {
+        $recapPart = RecapPart::withoutGlobalScope('order')->find($id);
+
+        if (!$recapPart) {
+            return response()->json(['success' => false, 'message' => 'Partie non trouvée'], 404);
+        }
+
+        $recap_id = $recapPart->recap_id;
+
+        // Trouver la partie suivante
+        $nextPart = RecapPart::withoutGlobalScope('order')
+            ->where('recap_id', $recap_id)
+            ->where('order', '>', $recapPart->order)
+            ->orderBy('order', 'asc')
+            ->first();
+
+        if ($nextPart) {
+            // Échanger les ordres
+            $tempOrder = $recapPart->order;
+            $recapPart->order = $nextPart->order;
+            $nextPart->order = $tempOrder;
+
+            $recapPart->save();
+            $nextPart->save();
+
+            return response()->json(['success' => true, 'message' => 'Partie déplacée vers le bas']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Déjà en dernière position']);
+    }
+
+    // Méthode pour réorganiser les blocs d'une partie (AJAX)
+    public function reorderBlocks(Request $request)
+    {
+        $blocks = $request->input('blocks', []);
+
+        foreach ($blocks as $index => $blockId) {
+            RecapPartBlock::where('id', $blockId)->update(['order' => $index]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    // Méthode pour déplacer un bloc vers une autre partie
+    public function moveBlockToPart(Request $request, $id)
+    {
+        $block = RecapPartBlock::findOrFail($id);
+        $newPartId = $request->input('recap_part_id');
+
+        if ($newPartId) {
+            $maxOrder = RecapPartBlock::where('recap_part_id', $newPartId)->max('order') ?? -1;
+
+            $block->update([
+                'recap_part_id' => $newPartId,
+                'order' => $maxOrder + 1
+            ]);
+        }
+
+        return redirect()->route('recap.show', $block->recapPart->recap_id);
     }
 }

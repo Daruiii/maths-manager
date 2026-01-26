@@ -18,6 +18,8 @@ class StoreRecapPartBlockRequest extends FormRequest
             'theme' => 'nullable|string|max:50',
             'content' => 'required|string',
             'example' => 'nullable|string',
+            'demonstration' => 'nullable|string',
+            'remarque' => 'nullable|string',
             'recap_part_id' => 'required|exists:recap_parts,id',
             'subchapter_id' => 'nullable|exists:subchapters,id'
         ];
