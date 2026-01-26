@@ -137,11 +137,11 @@
                                     <div class="border-t w-full p-2 rounded-b-lg border-gray-300">
                                         <div class="flex justify-between items-center flex-wrap gap-2">
                                             <div class="flex gap-3">
-                                                @if ($recapPartBlock->example)
-                                                    <button @click="showExample = !showExample"
+                                                @if ($recapPartBlock->demonstration)
+                                                    <button @click="showDemonstration = !showDemonstration"
                                                         class="flex row text-xs font-bold">
-                                                        Exemple
-                                                        <svg :class="{ 'rotate-180': !showExample }"
+                                                        Démonstration
+                                                        <svg :class="{ 'rotate-180': !showDemonstration }"
                                                             class="transition-transform" width="15px" height="15px"
                                                             viewBox="0 0 24 24" fill="none"
                                                             xmlns="http://www.w3.org/2000/svg">
@@ -157,11 +157,11 @@
                                                         </svg>
                                                     </button>
                                                 @endif
-                                                @if ($recapPartBlock->demonstration)
-                                                    <button @click="showDemonstration = !showDemonstration"
+                                                @if ($recapPartBlock->example)
+                                                    <button @click="showExample = !showExample"
                                                         class="flex row text-xs font-bold">
-                                                        Démonstration
-                                                        <svg :class="{ 'rotate-180': !showDemonstration }"
+                                                        Exemple
+                                                        <svg :class="{ 'rotate-180': !showExample }"
                                                             class="transition-transform" width="15px" height="15px"
                                                             viewBox="0 0 24 24" fill="none"
                                                             xmlns="http://www.w3.org/2000/svg">
