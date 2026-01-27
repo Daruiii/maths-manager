@@ -170,7 +170,10 @@ class RecapController extends Controller
         $recapPartBlock->subchapter_id = $request->subchapter_id;
         $recapPartBlock->save();
 
-        return redirect()->route('recap.show', $recapPartBlock->recapPart->recap_id);
+        return redirect()->route('recap.show', [
+        'id' => $recapPartBlock->recapPart->recap_id,
+        'block' => $recapPartBlock->id
+    ]);
     }
 
     // Méthode pour destroy un bloc de partie de récap
