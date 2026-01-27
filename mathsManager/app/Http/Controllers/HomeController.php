@@ -54,8 +54,12 @@ class HomeController extends Controller
                 return view('home', compact('correctionRequests', 'ds'));
             }
 
-            // Get the last 10 quizzes
-            $quizzes = Quizze::where('student_id', $user->id)->latest()->take(10)->get();
+            // Get the last 10 quizzes with eager loading
+            $quizzes = Quizze::where('student_id', $user->id)
+                ->with('details')
+                ->latest()
+                ->take(10)
+                ->get();
 
             // Calculate the number of correct and incorrect answers
             // goodAnswers = la somme de tous les scores 
@@ -79,11 +83,17 @@ class HomeController extends Controller
                 $scores = "N/A";
             }
 
-            $totalDS = DS::where('user_id', $user->id)->count();
-            $notStartedDS = DS::where('user_id', $user->id)->where('status', 'not_started')->count();
-            $inProgressDS = DS::where('user_id', $user->id)->where('status', 'ongoing')->count();
-            $sentDS = DS::where('user_id', $user->id)->where('status', 'sent')->count();
-            $correctedDS = DS::where('user_id', $user->id)->where('status', 'corrected')->count();
+            // Single query with groupBy instead of 5 separate count() queries
+            $dsCounts = DS::where('user_id', $user->id)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status');
+
+            $totalDS = $dsCounts->sum();
+            $notStartedDS = $dsCounts->get('not_started', 0);
+            $inProgressDS = $dsCounts->get('ongoing', 0);
+            $sentDS = $dsCounts->get('sent', 0);
+            $correctedDS = $dsCounts->get('corrected', 0);
 
             $averageGrade = CorrectionRequest::where('user_id', $user->id)
                 ->where('status', 'corrected')

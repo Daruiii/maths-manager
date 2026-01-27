@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Recap extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['chapter_id', 'title'];
 
     public function chapter()
@@ -18,5 +20,4 @@ class Recap extends Model
     {
         return $this->hasMany(RecapPart::class);
     }
-    use HasFactory;
 }

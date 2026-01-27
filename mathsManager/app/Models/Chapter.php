@@ -13,7 +13,7 @@ class Chapter extends Model
 
     public function classe()
     {
-        return $this->hasOne(Classe::class, 'id', 'class_id');
+        return $this->belongsTo(Classe::class, 'class_id');
     }
 
     public function subchapters()

@@ -250,9 +250,12 @@ class RecapController extends Controller
     // Méthode pour réorganiser les blocs d'une partie (AJAX)
     public function reorderBlocks(Request $request)
     {
-        $blocks = $request->input('blocks', []);
+        $validated = $request->validate([
+            'blocks' => 'required|array',
+            'blocks.*' => 'required|integer|exists:recap_part_blocks,id',
+        ]);
 
-        foreach ($blocks as $index => $blockId) {
+        foreach ($validated['blocks'] as $index => $blockId) {
             RecapPartBlock::where('id', $blockId)->update(['order' => $index]);
         }
 

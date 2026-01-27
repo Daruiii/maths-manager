@@ -35,7 +35,11 @@ class LatexToHtmlConverter
             $cleanedContent = $this->processImages($cleanedContent, $images);
         } elseif (in_array($variant, [self::VARIANT_EXERCISE, self::VARIANT_DS_EXERCISE])) {
             // Placeholder pour les images manquantes
-            $cleanedContent = preg_replace("/\\\\graph\\{([0-9]+)\\}\\{(.*?)\\}/", "<img src='https://via.placeholder.com/150' alt='$2' class='png' style='width: $1%;'>", $cleanedContent);
+            $cleanedContent = preg_replace_callback(
+                "/\\\\graph\\{([0-9]+)\\}\\{(.*?)\\}/",
+                fn($m) => "<img src='https://via.placeholder.com/150' alt='" . e($m[2]) . "' class='png' style='width: {$m[1]}%;'>",
+                $cleanedContent
+            );
         }
 
         // Convertir les commandes personnalisées en HTML
@@ -148,7 +152,8 @@ class LatexToHtmlConverter
                 }
 
                 $percent = $width * 100;
-                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='{$description}' class='png' style='width: {$percent}%;'></div>";
+                $safeDescription = e($description);
+                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='{$safeDescription}' class='png' style='width: {$percent}%;'></div>";
             },
             $content
         );
@@ -168,7 +173,8 @@ class LatexToHtmlConverter
                 $imageIndex++;
 
                 $percent = $width * 100;
-                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='{$description}' class='png' style='width: {$percent}%;'></div>";
+                $safeDescription = e($description);
+                return "<div class='latex-center'><img src='" . asset('storage/' . $imagePath) . "' alt='{$safeDescription}' class='png' style='width: {$percent}%;'></div>";
             },
             $content
         );
