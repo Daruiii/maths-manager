@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Exercise;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
@@ -82,7 +84,7 @@ class ExerciseController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-    public function index()
+    public function index(): View|RedirectResponse
     {
         try {
             $search = request()->get('search');
@@ -101,7 +103,7 @@ class ExerciseController extends Controller
         }
     }
 
-    public function create($id)
+    public function create($id): View|RedirectResponse
     {
         try {
             $subchapter_id = $id;
@@ -164,7 +166,7 @@ class ExerciseController extends Controller
         return $maxOrder;
     }
 
-    public function store(StoreExerciseRequest $request)
+    public function store(StoreExerciseRequest $request): RedirectResponse
     {
         try {
     
@@ -243,14 +245,14 @@ class ExerciseController extends Controller
         }
     }    
 
-    public function show($id)
+    public function show($id): View
     {
         $exercise = Exercise::findOrFail($id);
         return view('exercise.show', compact('exercise'));
     }
     
 
-    public function edit($id)
+    public function edit($id): View|RedirectResponse
     {
         try {
             $exercise = Exercise::findOrFail($id);
@@ -276,7 +278,7 @@ class ExerciseController extends Controller
         }
     }
 
-    public function update(UpdateExerciseRequest $request, $id)
+    public function update(UpdateExerciseRequest $request, $id): RedirectResponse
     {
         try {
     
@@ -345,7 +347,7 @@ class ExerciseController extends Controller
         }
     }
     
-    public function destroy($id)
+    public function destroy($id): RedirectResponse
     {
         try {
             $exercise = Exercise::findOrFail($id);

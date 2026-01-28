@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Quizz;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\QuizzQuestion;
 use App\Models\QuizzAnswer;
@@ -21,8 +23,7 @@ class QuizzPlayController extends Controller
         $this->quizzSelectionService = $quizzSelectionService;
     }
 
-    // Méthode pour commencer un quizz sur un chapitre en particulier (question par question avec bouton suivant une fois qu'on a rep)
-    public function start($chapter_id)
+    public function start(int $chapter_id): RedirectResponse
     {
         // Sélectionner les questions via le service (algorithme de sélection intelligent)
         $selectedQuestions = $this->quizzSelectionService->selectQuestionsForChapter($chapter_id);
@@ -34,8 +35,7 @@ class QuizzPlayController extends Controller
         return redirect()->route('show_question');
     }
 
-    // Méthode pour afficher une question du quizz
-    public function showQuestion()
+    public function showQuestion(): View|RedirectResponse
     {
         $questions = session('questions');
         $currentQuestion = session('currentQuestion');
@@ -96,8 +96,7 @@ class QuizzPlayController extends Controller
         }
     }
 
-    // Méthode pour vérifier la réponse donnée par l'utilisateur
-    public function checkAnswer(Request $request)
+    public function checkAnswer(Request $request): RedirectResponse
     {
         $questions = session('questions');
         $currentQuestion = session('currentQuestion');

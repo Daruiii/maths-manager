@@ -5,20 +5,22 @@ namespace App\Http\Controllers\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ProviderController extends Controller
 {
-    public function redirect($provider)
+    public function redirect(string $provider): SymfonyRedirectResponse
     {
         return Socialite::driver($provider)
                     ->with(['prompt' => 'select_account'])
                     ->redirect();
     }
 
-    public function callback($provider)
-{
+    public function callback(string $provider): RedirectResponse
+    {
     try {
         $SocialUser = Socialite::driver($provider)->user();
 
