@@ -77,7 +77,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
 
 // Récap routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'throttle:60,1'])->group(function () {
     Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/recap/create/{id}', [RecapController::class, 'create'])->name('recap.create');
         Route::post('/recap', [RecapController::class, 'store'])->name('recap.store');

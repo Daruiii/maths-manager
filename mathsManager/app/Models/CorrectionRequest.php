@@ -21,6 +21,11 @@ class CorrectionRequest extends Model
         'correction_pdf',
     ];
 
+    protected $casts = [
+        'pictures' => 'array',
+        'correction_pictures' => 'array',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
