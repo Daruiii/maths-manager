@@ -170,7 +170,10 @@ class RecapController extends Controller
         $recapPartBlock->subchapter_id = $request->subchapter_id;
         $recapPartBlock->save();
 
-        return redirect()->route('recap.show', $recapPartBlock->recapPart->recap_id);
+        return redirect()->route('recap.show', [
+        'id' => $recapPartBlock->recapPart->recap_id,
+        'block' => $recapPartBlock->id
+    ]);
     }
 
     // Méthode pour destroy un bloc de partie de récap
@@ -250,9 +253,12 @@ class RecapController extends Controller
     // Méthode pour réorganiser les blocs d'une partie (AJAX)
     public function reorderBlocks(Request $request)
     {
-        $blocks = $request->input('blocks', []);
+        $validated = $request->validate([
+            'blocks' => 'required|array',
+            'blocks.*' => 'required|integer|exists:recap_part_blocks,id',
+        ]);
 
-        foreach ($blocks as $index => $blockId) {
+        foreach ($validated['blocks'] as $index => $blockId) {
             RecapPartBlock::where('id', $blockId)->update(['order' => $index]);
         }
 

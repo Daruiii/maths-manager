@@ -8,7 +8,7 @@ class StoreSubchapterRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return in_array($this->user()?->role, ['admin', 'teacher']);
     }
 
     public function rules(): array

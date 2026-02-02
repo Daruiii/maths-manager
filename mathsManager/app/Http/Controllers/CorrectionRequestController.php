@@ -79,7 +79,7 @@ class CorrectionRequestController extends Controller
             prefix: 'student_'
         );
 
-        $correctionRequest->pictures = json_encode($uploadedPaths);
+        $correctionRequest->pictures = $uploadedPaths;
         $correctionRequest->message = $request->message;
         $correctionRequest->save();
 
@@ -110,8 +110,8 @@ class CorrectionRequestController extends Controller
         $ds = DS::where('id', $ds_id)->firstOrFail();
         $correctionRequest = CorrectionRequest::where('ds_id', $ds_id)->firstOrFail();
         $corrector = User::where('id', $correctionRequest->corrector_id)->first() ?? User::where('role', 'admin')->first();
-        $pictures = json_decode($correctionRequest->pictures) ?? null;
-        $correctedPictures = json_decode($correctionRequest->correction_pictures) ?? null;
+        $pictures = $correctionRequest->pictures;
+        $correctedPictures = $correctionRequest->correction_pictures;
 
         // Générer l'URL pour le PDF s'il existe
         $pdfUrl = null;
@@ -167,7 +167,7 @@ class CorrectionRequestController extends Controller
             isPublic: false
         );
 
-        $correctionRequest->correction_pictures = json_encode(array_values($correctionImagePaths));
+        $correctionRequest->correction_pictures = array_values($correctionImagePaths);
 
         // Upload du PDF de correction en PRIVÉ
         if ($request->file('correction_pdf')) {
@@ -258,7 +258,7 @@ class CorrectionRequestController extends Controller
             isPublic: false
         );
 
-        $correctionRequest->pictures = json_encode(array_values($imagePaths));
+        $correctionRequest->pictures = array_values($imagePaths);
         $correctionRequest->message = $request->message;
         $correctionRequest->save();
 

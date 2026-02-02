@@ -13,12 +13,12 @@ class QuizzQuestion extends Model
 
     public function chapter()
     {
-        return $this->hasOne(Chapter::class, 'id', 'chapter_id');
+        return $this->belongsTo(Chapter::class, 'chapter_id');
     }
 
     public function subchapter()
     {
-        return $this->hasOne(Subchapter::class, 'id', 'subchapter_id');
+        return $this->belongsTo(Subchapter::class, 'subchapter_id');
     }
 
     public function answers()

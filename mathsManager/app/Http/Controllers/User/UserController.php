@@ -5,6 +5,8 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use App\Models\User;
 use App\Models\Quizze;
 
@@ -18,7 +20,7 @@ class UserController extends Controller
     }
     // Affiche la liste paginée des utilisateurs
     
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $search = $request->get('search');
         if ($search) {
@@ -34,7 +36,7 @@ class UserController extends Controller
     }
 
     // Affiche les détails d'un utilisateur
-    public function show($id)
+    public function show($id): View
     {
         $user = User::with(['quizzes', 'ds'])->findOrFail($id);
         $quizzes = $user->quizzes();
@@ -44,7 +46,7 @@ class UserController extends Controller
     }
 
     // Affiche la liste paginée des students
-    public function showStudents(Request $request)
+    public function showStudents(Request $request): View
     {
         $search = $request->get('search');
     
@@ -62,7 +64,7 @@ class UserController extends Controller
     }
 
     // Affiche la liste des quizzes d'un étudiant
-    public function showQuizzes($student_id)
+    public function showQuizzes($student_id): View
     {
         // Get all quizzes of the student
         $quizzes = Quizze::where('student_id', $student_id)->latest()->paginate(10)->withQueryString();
@@ -73,7 +75,7 @@ class UserController extends Controller
     }
 
     // Affiche les détails d'un quiz spécifique
-    public function showQuizDetails($quiz_id)
+    public function showQuizDetails($quiz_id): View
     {
         // Get the quiz with eager loading
         $quiz = Quizze::with('details.chosenAnswer')->find($quiz_id);
@@ -86,13 +88,13 @@ class UserController extends Controller
     }
 
     // Affiche le formulaire de création d'un nouvel utilisateur
-    public function create()
+    public function create(): View
     {
         return view('user.create');
     }
 
     // Enregistre un nouvel utilisateur dans la base de données
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validatedData = $request->validate([
             'name' => 'required|max:255',
@@ -106,7 +108,7 @@ class UserController extends Controller
     }
 
     // Affiche le formulaire pour modifier un utilisateur existant
-    public function edit($id)
+    public function edit($id): View
     {
         $user = User::findOrFail($id);
         $roles = ['admin', 'student', 'teacher'];
@@ -114,7 +116,7 @@ class UserController extends Controller
     }
 
     // Met à jour un utilisateur dans la base de données
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $validatedData = $request->validate([
             'name' => 'required|max:255',
@@ -150,7 +152,7 @@ class UserController extends Controller
 
 
     // Supprime un utilisateur de la base de données par un admin
-    public function destroy($id)
+    public function destroy($id): RedirectResponse
     {
         $user = User::findOrFail($id);
 
@@ -169,7 +171,7 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function verify($id)
+    public function verify($id): RedirectResponse
     {
         $user = User::findOrFail($id);
         $user->verified = true;
@@ -178,7 +180,7 @@ class UserController extends Controller
         return redirect()->route('students.show');
     }
 
-    public function unverify($id)
+    public function unverify($id): RedirectResponse
     {
         $user = User::findOrFail($id);
         $user->verified = false;
@@ -187,7 +189,7 @@ class UserController extends Controller
         return redirect()->route('students.show');
     }
 
-    public function resetLastDSGeneratedAt($id)
+    public function resetLastDSGeneratedAt($id): RedirectResponse
     {
         $user = User::findOrFail($id);
         $user->last_ds_generated_at = null;

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use App\Models\Chapter;
 use App\Models\Classe;
 use App\Models\CorrectionRequest;
@@ -13,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View|RedirectResponse
     {
         // si on est pas co
         if (!auth()->check()) {
@@ -54,8 +56,12 @@ class HomeController extends Controller
                 return view('home', compact('correctionRequests', 'ds'));
             }
 
-            // Get the last 10 quizzes
-            $quizzes = Quizze::where('student_id', $user->id)->latest()->take(10)->get();
+            // Get the last 10 quizzes with eager loading
+            $quizzes = Quizze::where('student_id', $user->id)
+                ->with('details')
+                ->latest()
+                ->take(10)
+                ->get();
 
             // Calculate the number of correct and incorrect answers
             // goodAnswers = la somme de tous les scores 
@@ -79,11 +85,17 @@ class HomeController extends Controller
                 $scores = "N/A";
             }
 
-            $totalDS = DS::where('user_id', $user->id)->count();
-            $notStartedDS = DS::where('user_id', $user->id)->where('status', 'not_started')->count();
-            $inProgressDS = DS::where('user_id', $user->id)->where('status', 'ongoing')->count();
-            $sentDS = DS::where('user_id', $user->id)->where('status', 'sent')->count();
-            $correctedDS = DS::where('user_id', $user->id)->where('status', 'corrected')->count();
+            // Single query with groupBy instead of 5 separate count() queries
+            $dsCounts = DS::where('user_id', $user->id)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status');
+
+            $totalDS = $dsCounts->sum();
+            $notStartedDS = $dsCounts->get('not_started', 0);
+            $inProgressDS = $dsCounts->get('ongoing', 0);
+            $sentDS = $dsCounts->get('sent', 0);
+            $correctedDS = $dsCounts->get('corrected', 0);
 
             $averageGrade = CorrectionRequest::where('user_id', $user->id)
                 ->where('status', 'corrected')
@@ -111,13 +123,12 @@ class HomeController extends Controller
         }
     }
 
-    // method for redirect to error isntValid
-    public function isntValid()
+    public function isntValid(): View
     {
         return view('errors/isntValid');
     }
 
-    public function admin()
+    public function admin(): View
     {
         return view('admin');
     }

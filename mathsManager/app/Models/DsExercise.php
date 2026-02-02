@@ -15,6 +15,7 @@ class DsExercise extends Model
 
     protected $casts = [
         'difficulty' => 'integer',
+        'image_paths' => 'array',
     ];
 
     public function chapters()

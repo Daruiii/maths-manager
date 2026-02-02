@@ -13,7 +13,7 @@ class QuizzAnswer extends Model
 
     public function question()
     {
-        return $this->hasOne(QuizzQuestion::class, 'id', 'quizz_question_id');
+        return $this->belongsTo(QuizzQuestion::class, 'quizz_question_id');
     }
 
 }

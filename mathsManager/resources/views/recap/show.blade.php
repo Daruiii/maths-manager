@@ -13,6 +13,22 @@
                         padding: 0;
                     }
                 }
+                
+                /* Highlight animation for edited blocks */
+                .highlight {
+                    animation: highlight-fade 10s ease-in-out;
+                }
+                
+                @keyframes highlight-fade {
+                    0% {
+                        background-color: rgba(59, 130, 246, 0.3);
+                        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+                    }
+                    100% {
+                        background-color: transparent;
+                        box-shadow: none;
+                    }
+                }
             </style>
             {{-- adm btn --}}
             @auth @if (Auth::user()->role === 'admin')
@@ -255,5 +271,48 @@
             });
         </script>
     @endif @endauth
+
+    {{-- Auto-scroll to edited block --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const blockId = urlParams.get('block');
+
+            if (blockId) {
+                const target = document.querySelector(`[data-block-id="${blockId}"]`);
+                if (target) {
+                    setTimeout(() => {
+                        // Calculer la position pour scroller
+                        const bodyHeight = document.body.scrollHeight;
+                        const windowHeight = window.innerHeight;
+
+                        // Si l'élément est trop bas, scroller jusqu'en bas
+                        if (bodyHeight - target.offsetTop < windowHeight) {
+                            window.scrollTo({
+                                top: bodyHeight,
+                                behavior: 'smooth'
+                            });
+                        } else {
+                            // Sinon, scroller à la position de l'élément
+                            const offset = -150; // Ajustez cette valeur si nécessaire
+                            const bodyRect = document.body.getBoundingClientRect().top;
+                            const elementRect = target.getBoundingClientRect().top;
+                            const elementPosition = elementRect - bodyRect;
+                            const offsetPosition = elementPosition + offset;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+
+                        // Ajouter une classe pour mettre en évidence l'élément
+                        target.classList.add('highlight');
+                        setTimeout(() => target.classList.remove('highlight'), 10000);
+                    }, 500); // Attendre 500ms pour s'assurer que tout est chargé
+                }
+            }
+        });
+    </script>
 @endsection
 

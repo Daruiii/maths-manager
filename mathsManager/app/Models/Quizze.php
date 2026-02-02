@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Quizze extends Model
 {
     use HasFactory;
-    protected $fillable = ['student_id', 'score', 'started_at', 'finished_at', 'chapter_id']; 
+    protected $fillable = ['student_id', 'score', 'started_at', 'finished_at', 'chapter_id'];
+
+    protected $casts = [
+        'started_at' => 'datetime',
+        'finished_at' => 'datetime',
+    ]; 
 
     public function student()
     {

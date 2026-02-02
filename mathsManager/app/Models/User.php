@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,11 +12,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -27,9 +23,35 @@ class User extends Authenticatable
         'provider_token'
     ];
 
+    // Legacy constants - use UserRole enum or helper methods instead
     const ROLE_ADMIN = 'admin';
     const ROLE_TEACHER = 'teacher';
     const ROLE_STUDENT = 'student';
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin->value;
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->role === UserRole::Teacher->value;
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === UserRole::Student->value;
+    }
+
+    public function isPrivileged(): bool
+    {
+        return in_array($this->role, [UserRole::Admin->value, UserRole::Teacher->value]);
+    }
+
+    public function getRoleEnum(): UserRole
+    {
+        return UserRole::from($this->role);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

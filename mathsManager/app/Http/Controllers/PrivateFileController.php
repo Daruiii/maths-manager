@@ -27,6 +27,13 @@ class PrivateFileController extends Controller
         }
 
         $user = Auth::user();
+
+        // Protection contre path traversal
+        $filename = basename($filename);
+        if (str_contains($identifier, '..') || str_contains($context, '..')) {
+            abort(400, 'Invalid path');
+        }
+
         $filePath = "{$context}/{$identifier}/{$filename}";
 
         // Vérification des droits selon le contexte
