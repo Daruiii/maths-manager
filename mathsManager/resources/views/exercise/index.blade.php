@@ -37,6 +37,44 @@
                 </form> --}}
                 <x-search-bar-admin action="{{ route('exercises.index') }}" placeholder="Rechercher un exercice..." name="search" />
             </div>
+            
+            @if(Auth::user()->role === 'admin')
+                <div class="py-2">
+                    <form method="GET" action="{{ route('exercises.index') }}" class="flex items-center space-x-4">
+                        @if(request('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
+                        <span class="text-sm font-semibold text-gray-700">Filtrer :</span>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" 
+                                   name="filter" 
+                                   value="all" 
+                                   {{ !request('filter') || request('filter') === 'all' ? 'checked' : '' }}
+                                   onchange="this.form.submit()"
+                                   class="form-radio h-4 w-4 text-blue-600">
+                            <span class="ml-2 text-sm text-gray-700">Tous</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" 
+                                   name="filter" 
+                                   value="visible" 
+                                   {{ request('filter') === 'visible' ? 'checked' : '' }}
+                                   onchange="this.form.submit()"
+                                   class="form-radio h-4 w-4 text-blue-600">
+                            <span class="ml-2 text-sm text-gray-700">Visibles uniquement</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" 
+                                   name="filter" 
+                                   value="hidden" 
+                                   {{ request('filter') === 'hidden' ? 'checked' : '' }}
+                                   onchange="this.form.submit()"
+                                   class="form-radio h-4 w-4 text-blue-600">
+                            <span class="ml-2 text-sm text-gray-700">Masqués uniquement</span>
+                        </label>
+                    </form>
+                </div>
+            @endif
                          <!-- Pagination links -->
                          {{ $exercises->links('vendor.pagination.simple-tailwind') }}
         <div class="flex flex-col mb-8 mt-5">
@@ -62,11 +100,17 @@
                         </thead>
                         <tbody class="bg-white">
                             @foreach ($exercises as $ex)
-                                <tr>
+                                <tr class="{{ $ex->is_hidden ? 'bg-gray-100 opacity-75' : '' }}">
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
                                         {{ $ex->id }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500 exercise-content">
-                                        {{ $ex->name }}</td>
+                                        {{ $ex->name }}
+                                        @if($ex->is_hidden)
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                Masqué
+                                            </span>
+                                        @endif
+                                    </td>
                                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
                                             {{ $subchapters->where('id', $ex->subchapter_id)->first()->title }}
                                         </td>

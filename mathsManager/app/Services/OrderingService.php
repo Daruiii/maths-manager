@@ -34,8 +34,11 @@ class OrderingService
                     $subchapters = $chapter->subchapters()->orderBy('order')->get();
                     
                     foreach ($subchapters as $subchapter) {
-                        // Assigner l'ordre global aux exercices
-                        $exercises = $subchapter->exercises()->orderBy('order')->get();
+                        // Assigner l'ordre global aux exercices VISIBLES uniquement
+                        $exercises = $subchapter->exercises()
+                            ->where('is_hidden', false)
+                            ->orderBy('order')
+                            ->get();
                         
                         foreach ($exercises as $exercise) {
                             $exercise->order = $globalOrder++;

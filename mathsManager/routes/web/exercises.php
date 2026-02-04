@@ -22,5 +22,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         Route::get('/exercise/{id}/edit', [ExerciseController::class, 'edit'])->name('exercise.edit');
         Route::patch('/exercise/{id}', [ExerciseController::class, 'update'])->name('exercise.update');
         Route::delete('/exercise/{id}', [ExerciseController::class, 'destroy'])->name('exercise.destroy');
+        
+        // Toggle visibility (hide/show exercise)
+        Route::post('/exercise/{id}/toggle-hidden', [ExerciseController::class, 'toggleHidden'])->name('exercise.toggleHidden');
     });
 });

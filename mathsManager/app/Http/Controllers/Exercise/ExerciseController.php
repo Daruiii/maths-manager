@@ -9,6 +9,7 @@ use App\Models\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
@@ -84,20 +85,38 @@ class ExerciseController extends Controller
         return response()->json(['status' => 'success']);
     }
 
+
     public function index(): View|RedirectResponse
     {
         try {
             $search = request()->get('search');
+            $filter = request()->get('filter', 'all');
 
-            $exercises = Exercise::orderBy('created_at', 'desc');
+            $query = Exercise::query();
+            
+            // Filtrer selon rôle et option de filtre
+            if (Auth::user()->role !== 'admin') {
+                $query->visible(); // Non-admin voient que les visibles
+            } else {
+                // Admin peut filtrer
+                if ($filter === 'visible') {
+                    $query->where('is_hidden', false);
+                } elseif ($filter === 'hidden') {
+                    $query->where('is_hidden', true);
+                }
+                // Si 'all', on ne filtre pas
+            }
+            
+            // Search
             if ($search) {
-                $exercises = $exercises->where('name', 'like', '%' . $search . '%')
+                $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('id', 'like', '%' . $search . '%');
             }
-            $exercises = $exercises->paginate(10)->withQueryString();
+            
+            $exercises = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
             $subchapters = Subchapter::all();
-            return view('exercise.index', compact('exercises', 'subchapters'));
+            return view('exercise.index', compact('exercises', 'subchapters', 'filter'));
         } catch (\Exception $e) {
             return ErrorResponseHelper::systemError($e, 'Load exercises index');
         }
@@ -369,6 +388,31 @@ class ExerciseController extends Controller
             return redirect()->route('subchapter.show', $subchapterId);
         } catch (\Exception $e) {
             return ErrorResponseHelper::systemError($e, 'Destroy exercise');
+        }
+    }
+
+    /**
+     * Toggle visibility of an exercise (admin only)
+     * Recalculates global order after toggle
+     */
+    public function toggleHidden($id): RedirectResponse
+    {
+        try {
+            if (Auth::user()->role !== 'admin') {
+                abort(403, 'Unauthorized');
+            }
+
+            $exercise = Exercise::findOrFail($id);
+            $exercise->is_hidden = !$exercise->is_hidden;
+            $exercise->save();
+
+            $this->orderingService->recalculateAllGlobalExerciseOrders();
+
+            $status = $exercise->is_hidden ? 'masqué' : 'visible';
+
+            return back()->with('success', "Exercice {$status} avec succès");
+        } catch (\Exception $e) {
+            return ErrorResponseHelper::systemError($e, 'Toggle exercise visibility');
         }
     }
     

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Chapter;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
@@ -25,8 +26,15 @@ class SubchapterController extends Controller
     public function show($id) // students
     {
         $subchapter = Subchapter::findOrFail($id);
-        $exercises = Exercise::where('subchapter_id', $id)->orderBy('order', 'asc')->get();
-        // get classe lvl
+        
+        $query = Exercise::where('subchapter_id', $id);
+        
+        if (Auth::user() && Auth::user()->role !== 'admin') {
+            $query->visible();
+        }
+        
+        $exercises = $query->orderBy('order', 'asc')->get();
+        
         $chapter_id = $subchapter->chapter_id;
         $classe_id = Chapter::findOrFail($chapter_id)->class_id;
         $classe = Classe::findOrFail($classe_id);
