@@ -9,7 +9,20 @@ class Exercise extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['subchapter_id', 'name', 'statement', 'solution', 'clue', 'latex_statement', 'latex_solution', 'latex_clue', 'difficulty', 'order'];
+    protected $fillable = ['subchapter_id', 'name', 'statement', 'solution', 'clue', 'latex_statement', 'latex_solution', 'latex_clue', 'difficulty', 'order', 'is_hidden'];
+
+    protected $casts = [
+        'is_hidden' => 'boolean',
+    ];
+
+    /**
+     * Scope pour exclure les exercices masqués
+     * Utilisé pour students et teachers
+     */
+    public function scopeVisible($query)
+    {
+        return $query->where('is_hidden', false);
+    }
 
     public function subchapter()
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Chapter;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
@@ -25,8 +26,16 @@ class SubchapterController extends Controller
     public function show($id) // students
     {
         $subchapter = Subchapter::findOrFail($id);
-        $exercises = Exercise::where('subchapter_id', $id)->orderBy('order', 'asc')->get();
-        // get classe lvl
+
+        $query = Exercise::where('subchapter_id', $id);
+
+        // Filtrer les masqués pour tous sauf admin
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            $query->visible();
+        }
+
+        $exercises = $query->orderBy('order', 'asc')->get();
+
         $chapter_id = $subchapter->chapter_id;
         $classe_id = Chapter::findOrFail($chapter_id)->class_id;
         $classe = Classe::findOrFail($classe_id);
@@ -74,19 +83,19 @@ class SubchapterController extends Controller
     public function destroy($id) // admin
     {
         $subchapter = Subchapter::findOrFail($id);
-        
+
         // Delete associated quiz details with questions
-        $quizzDetails = QuizzDetail::whereHas('question', function($query) use ($id) {
+        $quizzDetails = QuizzDetail::whereHas('question', function ($query) use ($id) {
             $query->where('subchapter_id', $id);
         })->get();
 
         foreach ($quizzDetails as $quizzDetail) {
             $quizzDetail->delete();
         }
-        
+
         // Delete associated quiz questions
         QuizzQuestion::where('subchapter_id', $id)->delete();
-        
+
         $subchapter->delete();
         $chapter_id = $subchapter->chapter_id;
         $class_id = Chapter::findOrFail($chapter_id)->class_id;
