@@ -7,10 +7,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                'resources/scss/app.scss',
-                'resources/js/app.tsx', // React entry point
-                'resources/js/form.js',
-                'resources/js/katex.js',
+                'resources/js/app.tsx',
             ],
             refresh: true,
             //for set manifest true 

@@ -1,3 +1,57 @@
-/* @tailwind base;
+/* Main Application Stylesheet */
+
+/* Import design system variables */
+@import './design-system.css';
+@import './fonts.css';
+
+/* Tailwind CSS directives */
+@tailwind base;
 @tailwind components;
-@tailwind utilities; */
+@tailwind utilities;
+
+/* Custom Base Styles */
+@layer base {
+  body {
+    @apply font-comfortaa text-text-color bg-primary-color overflow-x-hidden;
+  }
+  
+  /* Reset link structure to avoid 'circular' bug */
+  a, button {
+    @apply inline-flex items-center justify-center transition-all duration-200;
+  }
+}
+
+/* Component Utilities */
+@layer components {
+  /* Button System */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-2.5 rounded-full font-comfortaa-bold transition-all duration-200 active:scale-95 whitespace-nowrap;
+  }
+
+  .btn-primary {
+    @apply bg-admin-color text-white shadow-lg hover:-translate-y-0.5;
+    box-shadow: 0 10px 15px -3px rgba(40, 104, 178, 0.2);
+  }
+
+  .btn-primary:hover {
+    background-color: rgba(40, 104, 178, 0.9);
+  }
+
+  .btn-secondary {
+    @apply border-2 text-admin-color;
+    border-color: rgba(40, 104, 178, 0.3);
+  }
+
+  .btn-secondary:hover {
+    background-color: rgba(40, 104, 178, 0.05);
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply relative text-sm font-semibold text-text-color hover:text-text-gray transition-colors py-2;
+  }
+
+  .nav-link.active::after {
+    @apply content-[''] absolute bottom-0 left-0 w-full h-0.5 bg-admin-color rounded-full;
+  }
+}

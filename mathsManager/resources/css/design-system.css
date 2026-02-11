@@ -1,0 +1,59 @@
+/**
+ * CSS Custom Properties - Design System
+ * Centralized theming with dark mode support
+ */
+
+:root {
+  /* ========================================
+     COLORS
+     ======================================== */
+  
+  /* Primary Colors */
+  --primary-color: #F6EFE6;
+  --secondary-color: #FEFBF5;
+  
+  /* Text Colors */
+  --text-color: #000000;
+  --text-gray: #747474;
+  
+  /* Status Colors (Stored as RGB for Tailwind opacity support) */
+  --success-color: 46 139 87;
+  --error-color: 193 39 45;
+  --admin-color: 40 104 178;
+  --teacher-color: 139 92 246;
+  --student-color: 13 148 136;
+  
+  /* ========================================
+     FONT SIZES
+     ======================================== */
+  
+  --font-xxsmall: 0.5rem;    /* 8px */
+  --font-xsmall: 0.75rem;    /* 12px */
+  --font-small: 1rem;        /* 16px */
+  --font-sm: 1.25rem;        /* 20px */
+  --font-medium: 1.5rem;     /* 24px */
+  --font-large: 2rem;        /* 32px */
+  --font-xlarge: 3rem;       /* 48px */
+  --font-xxlarge: 4rem;      /* 64px */
+  
+  /* ========================================
+     FONT FAMILIES
+     ======================================== */
+  
+  --font-comfortaa: 'Comfortaa', sans-serif;
+  --font-comfortaa-bold: 'Comfortaa Bold', sans-serif;
+  --font-comfortaa-light: 'Comfortaa Light', sans-serif;
+  --font-cmu-serif: 'CMU Serif', serif;
+  --font-cmu-bold: 'CMU Exercise Bold', serif;
+}
+
+/* ========================================
+   DARK MODE (Foundation for future)
+   ======================================== */
+
+[data-theme="dark"] {
+  --primary-color: #1a1a1a;
+  --secondary-color: #2a2a2a;
+  --text-color: #ffffff;
+  --text-gray: #a0a0a0;
+}

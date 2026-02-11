@@ -1,0 +1,34 @@
+/* Standard Fonts for React Migration */
+
+@font-face {
+    font-family: 'Comfortaa';
+    src: url('../fonts/comfortaa/Comfortaa-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Comfortaa Bold';
+    src: url('../fonts/comfortaa/Comfortaa-Bold.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Comfortaa Light';
+    src: url('../fonts/comfortaa/Comfortaa-Light.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'CMU Serif';
+    src: url('../fonts/cmunrm.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'CMU Exercise Bold';
+    src: url('../fonts/cmunbx.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'CMU TI';
+    src: url('../fonts/cmunti.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'sign painter';
+    src: url('../fonts/sign-painter/signpainter_housescript.ttf') format('truetype');
+}
