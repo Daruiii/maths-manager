@@ -13,7 +13,7 @@ export default function Header() {
   const scrollDirection = useScrollDirection();
 
   return (
-    <header 
+    <header
       className={`
         bg-secondary-color shadow-sm fixed top-0 left-0 right-0 z-50 min-h-[72px] flex items-center transition-transform duration-300 ease-in-out
         ${scrollDirection === 'down' ? '-translate-y-full shadow-none' : 'translate-y-0'}
@@ -25,21 +25,21 @@ export default function Header() {
         </div>
 
         <div className="flex-none flex justify-center items-center">
-          <HeaderNav 
-            user={user} 
-            classes={classes} 
-            dsNotStarted={dsNotStarted} 
-            exercisesSheetNotStarted={exercisesSheetNotStarted} 
+          <HeaderNav
+            user={user}
+            classes={classes}
+            dsNotStarted={dsNotStarted}
+            exercisesSheetNotStarted={exercisesSheetNotStarted}
           />
         </div>
 
         <div className="flex-1 flex justify-end items-center gap-2">
           <HeaderActions user={user} />
-          <HeaderMobileMenu 
-            user={user} 
-            classes={classes} 
-            dsNotStarted={dsNotStarted} 
-            exercisesSheetNotStarted={exercisesSheetNotStarted} 
+          <HeaderMobileMenu
+            user={user}
+            classes={classes}
+            dsNotStarted={dsNotStarted}
+            exercisesSheetNotStarted={exercisesSheetNotStarted}
           />
         </div>
       </nav>

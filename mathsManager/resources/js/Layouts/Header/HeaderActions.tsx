@@ -11,7 +11,10 @@ export default function HeaderActions({ user }: HeaderActionsProps) {
       {user ? (
         <UserMenu user={user} />
       ) : (
-        <a href="/login" className="hidden lg:flex btn btn-secondary !px-8 !py-2 text-sm shadow-sm bg-white/50">
+        <a
+          href="/login"
+          className="hidden lg:flex btn btn-secondary !px-8 !py-2 text-sm shadow-sm bg-white/50"
+        >
           Se connecter
         </a>
       )}

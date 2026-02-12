@@ -11,7 +11,7 @@ interface UserMenuProps {
 
 export default function UserMenu({ user: propUser }: UserMenuProps) {
   const { user, isAdmin, isTeacher, isStudent } = useAuth();
-  
+
   // Use the hook's user if available, fallback to prop
   const currentUser = user || propUser;
 
@@ -46,9 +46,9 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
     }
     return null;
   };
-  
-  const avatarUrl = currentUser.avatar?.startsWith('http') 
-    ? currentUser.avatar 
+
+  const avatarUrl = currentUser.avatar?.startsWith('http')
+    ? currentUser.avatar
     : `/storage/images/${currentUser.avatar || 'default_avatar.png'}`;
 
   const logout = () => {
@@ -79,10 +79,14 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
       >
         <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
           <div className="px-4 py-3 flex flex-col items-start w-full">
-            <p className="text-sm text-gray-900 font-comfortaa-bold truncate w-full text-left">{currentUser.name}</p>
-            <p className="text-sm text-gray-500 font-comfortaa truncate w-full text-left">{currentUser.email}</p>
+            <p className="text-sm text-gray-900 font-comfortaa-bold truncate w-full text-left">
+              {currentUser.name}
+            </p>
+            <p className="text-sm text-gray-500 font-comfortaa truncate w-full text-left">
+              {currentUser.email}
+            </p>
           </div>
-          
+
           <div className="py-1">
             <MenuItem>
               {({ active }) => (

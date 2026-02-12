@@ -23,7 +23,7 @@ export default function Dropdown({ trigger, items, header }: DropdownProps) {
       <MenuButton className="flex text-sm bg-gray-800 rounded-full lg:me-0 focus:ring-4 focus:ring-gray-300">
         {trigger}
       </MenuButton>
-      
+
       <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg bg-white divide-y divide-gray-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
         {header && (
           <div className="px-4 py-3">
@@ -33,11 +33,11 @@ export default function Dropdown({ trigger, items, header }: DropdownProps) {
             )}
           </div>
         )}
-        
+
         <div className="py-2">
           {items.map((item, index) => (
             <MenuItem key={index}>
-              {({ focus }) => (
+              {({ focus }) =>
                 item.href ? (
                   <a
                     href={item.href}
@@ -57,7 +57,7 @@ export default function Dropdown({ trigger, items, header }: DropdownProps) {
                     {item.label}
                   </button>
                 )
-              )}
+              }
             </MenuItem>
           ))}
         </div>

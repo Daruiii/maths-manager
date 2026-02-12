@@ -11,14 +11,21 @@ interface HeaderNavProps {
   exercisesSheetNotStarted?: number;
 }
 
-export default function HeaderNav({ user, classes, dsNotStarted, exercisesSheetNotStarted }: HeaderNavProps) {
+export default function HeaderNav({
+  user,
+  classes,
+  dsNotStarted,
+  exercisesSheetNotStarted,
+}: HeaderNavProps) {
   const { isStaff, isStudent, isGuest } = useAuth();
 
   return (
     <div className="hidden lg:flex items-center space-x-8">
       {/* 1. STAFF & GUEST: Classes in row (horizontal list) */}
       {(isStaff || isGuest) && (
-        <div className={`flex items-center space-x-6 ${isStaff ? 'border-r border-gray-200 pr-8 mr-2' : ''}`}>
+        <div
+          className={`flex items-center space-x-6 ${isStaff ? 'border-r border-gray-200 pr-8 mr-2' : ''}`}
+        >
           {classes?.map((classe) => (
             <a
               key={classe.id}
@@ -64,7 +71,9 @@ export default function HeaderNav({ user, classes, dsNotStarted, exercisesSheetN
                   </MenuItem>
                 ))
               ) : (
-                <div className="px-4 py-2 text-xs text-text-gray italic font-comfortaa">Aucune classe</div>
+                <div className="px-4 py-2 text-xs text-text-gray italic font-comfortaa">
+                  Aucune classe
+                </div>
               )}
             </MenuItems>
           </Transition>
@@ -82,7 +91,10 @@ export default function HeaderNav({ user, classes, dsNotStarted, exercisesSheetN
               </span>
             )}
           </a>
-          <a href={`/exercises-sheet/my/${user?.id}`} className="nav-link relative focus:outline-none">
+          <a
+            href={`/exercises-sheet/my/${user?.id}`}
+            className="nav-link relative focus:outline-none"
+          >
             Mes fiches
             {(exercisesSheetNotStarted ?? 0) > 0 && (
               <span className="absolute -top-1 -right-3 bg-error-color text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">

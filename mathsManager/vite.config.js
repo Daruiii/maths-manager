@@ -3,21 +3,18 @@ import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-    plugins: [
-        laravel({
-            input: [
-                'resources/css/app.css',
-                'resources/js/app.tsx',
-            ],
-            refresh: true,
-            //for set manifest true 
-            manifest: true,
-        }),
-        react(), // React plugin
-    ],
-    resolve: {
-        alias: {
-            '@': '/resources/js', // Alias for imports
-        },
+  plugins: [
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.tsx'],
+      refresh: true,
+      //for set manifest true
+      manifest: true,
+    }),
+    react(), // React plugin
+  ],
+  resolve: {
+    alias: {
+      '@': '/resources/js', // Alias for imports
     },
+  },
 });

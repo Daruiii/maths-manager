@@ -7,110 +7,124 @@ import Checkbox from '@/Components/Auth/Checkbox';
 import PrimaryButton from '@/Components/Auth/PrimaryButton';
 import GoogleButton from '@/Components/Auth/GoogleButton';
 
-export default function Login({ status, canResetPassword }: { status?: string; canResetPassword?: boolean }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
-        password: '',
-        remember: false,
-    });
+export default function Login({
+  status,
+  canResetPassword,
+}: {
+  status?: string;
+  canResetPassword?: boolean;
+}) {
+  const { data, setData, post, processing, errors, reset } = useForm({
+    email: '',
+    password: '',
+    remember: false,
+  });
 
-    useEffect(() => {
-        return () => {
-            reset('password');
-        };
-    }, []);
-
-    const submit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(route('login'));
+  useEffect(() => {
+    return () => {
+      reset('password');
     };
+  }, []);
 
-    return (
-        <GuestLayout>
-            <Head title="Connexion" />
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route('login'));
+  };
 
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 px-6 py-8 sm:px-10 sm:py-10">
-                <div className="mb-6 text-center">
-                    <h1 className="text-2xl font-comfortaa-bold text-admin-color">Bon retour !</h1>
-                    <p className="text-text-gray text-sm font-comfortaa mt-1">Connectez-vous à votre espace.</p>
-                </div>
+  return (
+    <GuestLayout>
+      <Head title="Connexion" />
 
-                {status && <div className="mb-4 font-medium text-sm text-success-color">{status}</div>}
+      <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 px-6 py-8 sm:px-10 sm:py-10">
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-comfortaa-bold text-admin-color">Bon retour !</h1>
+          <p className="text-text-gray text-sm font-comfortaa mt-1">
+            Connectez-vous à votre espace.
+          </p>
+        </div>
 
-                <form onSubmit={submit} className="space-y-4">
-                    <div>
-                        <InputLabel htmlFor="email" value="Adresse E-mail" />
-                        <TextInput
-                            id="email"
-                            type="email"
-                            name="email"
-                            value={data.email}
-                            className="mt-1 block w-full"
-                            autoComplete="username"
-                            isFocused={true}
-                            onChange={(e) => setData('email', e.target.value)}
-                        />
-                        {errors.email && <p className="mt-2 text-sm text-error-color font-comfortaa">{errors.email}</p>}
-                    </div>
+        {status && <div className="mb-4 font-medium text-sm text-success-color">{status}</div>}
 
-                    <div>
-                        <InputLabel htmlFor="password" value="Mot de passe" />
-                        <TextInput
-                            id="password"
-                            type="password"
-                            name="password"
-                            value={data.password}
-                            className="mt-1 block w-full"
-                            autoComplete="current-password"
-                            onChange={(e) => setData('password', e.target.value)}
-                        />
-                        {errors.password && <p className="mt-2 text-sm text-error-color font-comfortaa">{errors.password}</p>}
-                    </div>
+        <form onSubmit={submit} className="space-y-4">
+          <div>
+            <InputLabel htmlFor="email" value="Adresse E-mail" />
+            <TextInput
+              id="email"
+              type="email"
+              name="email"
+              value={data.email}
+              className="mt-1 block w-full"
+              autoComplete="username"
+              isFocused={true}
+              onChange={(e) => setData('email', e.target.value)}
+            />
+            {errors.email && (
+              <p className="mt-2 text-sm text-error-color font-comfortaa">{errors.email}</p>
+            )}
+          </div>
 
-                    <div className="flex items-center justify-between mt-4">
-                        <label className="flex items-center">
-                            <Checkbox
-                                name="remember"
-                                checked={data.remember}
-                                onChange={(e) => setData('remember', e.target.checked)}
-                            />
-                            <span className="ms-2 text-sm text-text-gray font-comfortaa">Se souvenir de moi</span>
-                        </label>
+          <div>
+            <InputLabel htmlFor="password" value="Mot de passe" />
+            <TextInput
+              id="password"
+              type="password"
+              name="password"
+              value={data.password}
+              className="mt-1 block w-full"
+              autoComplete="current-password"
+              onChange={(e) => setData('password', e.target.value)}
+            />
+            {errors.password && (
+              <p className="mt-2 text-sm text-error-color font-comfortaa">{errors.password}</p>
+            )}
+          </div>
 
-                        {canResetPassword && (
-                            <Link
-                                href={route('password.request')}
-                                className="underline text-sm text-text-gray hover:text-admin-color rounded-md transition-colors font-comfortaa"
-                            >
-                                Mot de passe oublié ?
-                            </Link>
-                        )}
-                    </div>
+          <div className="flex items-center justify-between mt-4">
+            <label className="flex items-center">
+              <Checkbox
+                name="remember"
+                checked={data.remember}
+                onChange={(e) => setData('remember', e.target.checked)}
+              />
+              <span className="ms-2 text-sm text-text-gray font-comfortaa">Se souvenir de moi</span>
+            </label>
 
-                    <div className="pt-2 gap-3 flex flex-col">
-                        <PrimaryButton className="w-full justify-center" disabled={processing}>
-                            Se connecter
-                        </PrimaryButton>
-                        
-                        <div className="relative flex py-1 items-center">
-                            <div className="flex-grow border-t border-gray-200"></div>
-                            <span className="flex-shrink mx-4 text-gray-400 text-xs font-comfortaa uppercase">OU</span>
-                            <div className="flex-grow border-t border-gray-200"></div>
-                        </div>
+            {canResetPassword && (
+              <Link
+                href={route('password.request')}
+                className="underline text-sm text-text-gray hover:text-admin-color rounded-md transition-colors font-comfortaa"
+              >
+                Mot de passe oublié ?
+              </Link>
+            )}
+          </div>
 
-                        <GoogleButton />
-                    </div>
+          <div className="pt-2 gap-3 flex flex-col">
+            <PrimaryButton className="w-full justify-center" disabled={processing}>
+              Se connecter
+            </PrimaryButton>
 
-                    <div className="mt-6 text-center">
-                        <Link
-                            href={route('register')}
-                            className="text-sm text-text-gray hover:text-admin-color transition-colors font-comfortaa"
-                        >
-                            Pas encore de compte ? <span className="font-comfortaa-bold">S'inscrire</span>
-                        </Link>
-                    </div>
-                </form>
+            <div className="relative flex py-1 items-center">
+              <div className="flex-grow border-t border-gray-200"></div>
+              <span className="flex-shrink mx-4 text-gray-400 text-xs font-comfortaa uppercase">
+                OU
+              </span>
+              <div className="flex-grow border-t border-gray-200"></div>
             </div>
-        </GuestLayout>
-    );
+
+            <GoogleButton />
+          </div>
+
+          <div className="mt-6 text-center">
+            <Link
+              href={route('register')}
+              className="text-sm text-text-gray hover:text-admin-color transition-colors font-comfortaa"
+            >
+              Pas encore de compte ? <span className="font-comfortaa-bold">S'inscrire</span>
+            </Link>
+          </div>
+        </form>
+      </div>
+    </GuestLayout>
+  );
 }

@@ -14,14 +14,14 @@ export default function Logo({ className = '', size = 'md', showBadge = true }: 
     sm: 'text-lg',
     md: 'text-2xl',
     lg: 'text-3xl',
-    xl: 'text-4xl'
+    xl: 'text-4xl',
   };
 
   const badgeSizeClasses = {
     sm: 'text-[8px] px-1 py-0.5',
     md: 'text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5',
     lg: 'text-xs px-2 py-1',
-    xl: 'text-sm px-2.5 py-1'
+    xl: 'text-sm px-2.5 py-1',
   };
 
   const isLocal = ['local', 'dev', 'develop', 'development'].includes(appEnv?.toLowerCase() || '');
@@ -33,11 +33,13 @@ export default function Logo({ className = '', size = 'md', showBadge = true }: 
       <span className={`${sizeClasses[size]} font-comfortaa-bold text-text-color tracking-tight`}>
         {appName || 'Maths Manager'}
       </span>
-      
+
       {showEnvBadge && (
-        <span className={`inline-flex items-center justify-center font-bold rounded-full uppercase text-white shadow-sm ${badgeSizeClasses[size]} ${
-          isLocal ? 'bg-success-color' : 'bg-orange-500'
-        }`}>
+        <span
+          className={`inline-flex items-center justify-center font-bold rounded-full uppercase text-white shadow-sm ${badgeSizeClasses[size]} ${
+            isLocal ? 'bg-success-color' : 'bg-orange-500'
+          }`}
+        >
           {isLocal ? 'LOCAL' : 'PREPROD'}
         </span>
       )}

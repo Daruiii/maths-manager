@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
-import { Config, route as routeFn } from 'ziggy-js';
+import { route as routeFn } from 'ziggy-js';
 
 declare global {
-    var route: typeof routeFn;
+  var route: typeof routeFn;
 }
 
 export interface User {
@@ -33,8 +33,16 @@ export interface PageProps {
   dsNotStarted?: number;
   exercisesSheetNotStarted?: number;
   // Home Page Specific Props
-  introContent?: any;
-  whoamiContent?: any;
+  introContent?: {
+    title?: string;
+    content?: string;
+    image?: string;
+  };
+  whoamiContent?: {
+    title?: string;
+    content?: string;
+    image?: string;
+  };
   averageGrade?: string | number;
   totalDS?: number;
   notStartedDS?: number;
@@ -44,9 +52,20 @@ export interface PageProps {
   goodAnswers?: number;
   badAnswers?: number;
   scores?: string | number;
-  correctionRequests?: any;
-  ds?: any;
-  [key: string]: any;
+  correctionRequests?: {
+    total: number;
+    data: Array<{
+      id: number;
+      user?: { name: string };
+      created_at: string;
+    }>;
+  };
+  ds?: Array<{
+    id: number;
+    name: string;
+    status: string;
+  }>;
+  [key: string]: unknown;
 }
 
 export interface Classe {

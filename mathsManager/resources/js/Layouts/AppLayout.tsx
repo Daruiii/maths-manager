@@ -12,13 +12,11 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-primary-color">
       <Head title={title} />
-      
+
       <Header />
-      
-      <main className="flex-grow pt-[72px]">
-        {children}
-      </main>
-      
+
+      <main className="flex-grow pt-[72px]">{children}</main>
+
       <Footer />
     </div>
   );

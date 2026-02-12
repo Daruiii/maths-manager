@@ -10,7 +10,12 @@ interface HeaderMobileMenuProps {
   exercisesSheetNotStarted?: number;
 }
 
-export default function HeaderMobileMenu({ user, classes, dsNotStarted, exercisesSheetNotStarted }: HeaderMobileMenuProps) {
+export default function HeaderMobileMenu({
+  user,
+  classes,
+  dsNotStarted,
+  exercisesSheetNotStarted,
+}: HeaderMobileMenuProps) {
   const { isStaff, isStudent, isGuest } = useAuth();
 
   return (
@@ -40,7 +45,9 @@ export default function HeaderMobileMenu({ user, classes, dsNotStarted, exercise
               <div className="px-4 pt-4 pb-6 space-y-2 max-h-[80vh] overflow-y-auto">
                 {/* Classes Section */}
                 <div className="space-y-1">
-                  <p className="px-3 text-[10px] font-comfortaa-bold text-gray-400 uppercase tracking-widest">Classes</p>
+                  <p className="px-3 text-[10px] font-comfortaa-bold text-gray-400 uppercase tracking-widest">
+                    Classes
+                  </p>
                   {(classes ?? []).length > 0 ? (
                     classes?.map((classe) => (
                       <a
@@ -62,7 +69,10 @@ export default function HeaderMobileMenu({ user, classes, dsNotStarted, exercise
                 <div className="space-y-1">
                   {isStudent && (
                     <>
-                      <a href={`/ds/myDS/${user?.id}`} className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-primary-color rounded-xl">
+                      <a
+                        href={`/ds/myDS/${user?.id}`}
+                        className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-primary-color rounded-xl"
+                      >
                         <span>Mes devoirs</span>
                         {(dsNotStarted ?? 0) > 0 && (
                           <span className="bg-error-color text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -70,7 +80,10 @@ export default function HeaderMobileMenu({ user, classes, dsNotStarted, exercise
                           </span>
                         )}
                       </a>
-                      <a href={`/exercises-sheet/my/${user?.id}`} className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-primary-color rounded-xl">
+                      <a
+                        href={`/exercises-sheet/my/${user?.id}`}
+                        className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-primary-color rounded-xl"
+                      >
                         <span>Mes fiches</span>
                         {(exercisesSheetNotStarted ?? 0) > 0 && (
                           <span className="bg-error-color text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -82,13 +95,19 @@ export default function HeaderMobileMenu({ user, classes, dsNotStarted, exercise
                   )}
 
                   {isStaff && (
-                    <a href="/students" className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-primary-color rounded-xl">
+                    <a
+                      href="/students"
+                      className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-primary-color rounded-xl"
+                    >
                       Mes élèves
                     </a>
                   )}
 
                   {isGuest && (
-                    <a href="/login" className="block px-3 py-3 text-base font-comfortaa-bold text-admin-color text-center bg-primary-color rounded-xl mt-4">
+                    <a
+                      href="/login"
+                      className="block px-3 py-3 text-base font-comfortaa-bold text-admin-color text-center bg-primary-color rounded-xl mt-4"
+                    >
                       Se connecter
                     </a>
                   )}

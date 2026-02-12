@@ -6,9 +6,9 @@ interface EinsteinQuoteProps {
 /**
  * A stylized Polaroid-like card for displaying famous quotes.
  */
-export default function EinsteinQuote({ 
-  quote = "L'imagination est plus importante que le savoir", 
-  author = "Albert Einstein" 
+export default function EinsteinQuote({
+  quote = "L'imagination est plus importante que le savoir",
+  author = 'Albert Einstein',
 }: EinsteinQuoteProps) {
   return (
     <div className="mb-12 text-center">

@@ -28,13 +28,15 @@ export default function Home(props: PageProps) {
     const dashboards: Record<string, ReactElement> = {
       admin: <Admin correctionRequests={props.correctionRequests} ds={props.ds} />,
       student: <Student {...props} />,
-      teacher: <Student {...props} />, 
+      teacher: <Student {...props} />,
     };
 
-    return dashboards[user.role] || (
-      <div className="p-8 text-center font-comfortaa text-error-color">
-        Rôle utilisateur "{user.role}" non reconnu.
-      </div>
+    return (
+      dashboards[user.role] || (
+        <div className="p-8 text-center font-comfortaa text-error-color">
+          Rôle utilisateur "{user.role}" non reconnu.
+        </div>
+      )
     );
   };
 
@@ -42,15 +44,16 @@ export default function Home(props: PageProps) {
     <AppLayout title="Accueil">
       <Head>
         <title>Accueil - Maths Manager</title>
-        <meta name="description" content="Plateforme de gestion de maths : exercices, quizz, fiches, DS." />
+        <meta
+          name="description"
+          content="Plateforme de gestion de maths : exercices, quizz, fiches, DS."
+        />
       </Head>
 
       <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
         <EinsteinQuote />
-        
-        <section aria-label="Dashboard">
-          {renderDashboard()}
-        </section>
+
+        <section aria-label="Dashboard">{renderDashboard()}</section>
       </div>
     </AppLayout>
   );
