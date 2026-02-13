@@ -7,6 +7,15 @@ interface LogoProps {
   showBadge?: boolean;
 }
 
+/**
+ * Application logo with environment badge (LOCAL/PREPROD)
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <Logo size="lg" showBadge={true} />
+ * ```
+ */
 export default function Logo({ className = '', size = 'md', showBadge = true }: LogoProps) {
   const { appName, appEnv } = usePage<PageProps>().props;
 

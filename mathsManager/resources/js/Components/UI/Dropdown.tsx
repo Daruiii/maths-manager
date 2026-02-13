@@ -17,6 +17,22 @@ interface DropdownProps {
   };
 }
 
+/**
+ * Dropdown menu component with optional header and customizable items
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <Dropdown
+ *   trigger={<button>Menu</button>}
+ *   header={{ title: "John Doe", subtitle: "john@example.com" }}
+ *   items={[
+ *     { label: "Profile", href: "/profile" },
+ *     { label: "Logout", onClick: handleLogout }
+ *   ]}
+ * />
+ * ```
+ */
 export default function Dropdown({ trigger, items, header }: DropdownProps) {
   return (
     <Menu as="div" className="relative">

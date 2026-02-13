@@ -1,5 +1,14 @@
 import { LabelHTMLAttributes } from 'react';
 
+/**
+ * Form label with consistent styling and uppercase text
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <InputLabel htmlFor="email" value="Email Address" />
+ * ```
+ */
 export default function InputLabel({
   value,
   className = '',

@@ -61,7 +61,23 @@ else
     echo ""
 fi
 
-# 4. Tests (PHPUnit) - Désactivé pendant la migration Inertia
+# 4. React tests (Vitest)
+if grep -q '"test:react"' package.json 2>/dev/null; then
+    echo "⚛️  Running React tests..."
+    if npm run test:react; then
+        echo -e "${GREEN}✓ React tests OK${NC}"
+        echo ""
+    else
+        echo -e "${RED}✗ React tests failed${NC}"
+        echo ""
+        ERRORS=$((ERRORS + 1))
+    fi
+else
+    echo -e "${YELLOW}⚠️  No test:react script found (skip)${NC}"
+    echo ""
+fi
+
+# 5. Tests (PHPUnit) - Désactivé pendant la migration Inertia
 # echo "🐘 Running PHPUnit tests..."
 # if ./vendor/bin/phpunit --stop-on-failure; then
 #     echo -e "${GREEN}✓ PHP tests OK${NC}"

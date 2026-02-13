@@ -1,5 +1,20 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, InputHTMLAttributes } from 'react';
 
+/**
+ * Text input field with auto-focus support and consistent styling
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <TextInput
+ *   type="email"
+ *   name="email"
+ *   value={email}
+ *   isFocused={true}
+ *   onChange={(e) => setEmail(e.target.value)}
+ * />
+ * ```
+ */
 export default forwardRef(function TextInput(
   {
     type = 'text',

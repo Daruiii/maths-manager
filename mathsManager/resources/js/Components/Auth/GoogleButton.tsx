@@ -1,3 +1,12 @@
+/**
+ * Google OAuth sign-in button with official branding
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <GoogleButton />
+ * ```
+ */
 export default function GoogleButton() {
   return (
     <a

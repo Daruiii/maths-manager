@@ -1,5 +1,16 @@
 import { ButtonHTMLAttributes } from 'react';
 
+/**
+ * Primary action button with consistent styling and disabled state support
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <PrimaryButton disabled={isLoading}>
+ *   Submit Form
+ * </PrimaryButton>
+ * ```
+ */
 export default function PrimaryButton({
   className = '',
   disabled,

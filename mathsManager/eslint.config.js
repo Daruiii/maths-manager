@@ -14,7 +14,7 @@ export default [
       'bootstrap/cache/**',
       'resources/js/ziggy.js',
       'resources/js/ziggy.d.ts',
-      'resources/js/_old_js/**',
+      'resources/js/_old_js/**', // Legacy code kept during React migration
       '**/*.blade.php',
     ],
   },

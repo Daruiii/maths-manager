@@ -9,7 +9,9 @@
     "prettier:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "tsc": "tsc --noEmit",
-    "precommit": "npm run tsc && npm run lint && npm run prettier:check"
+    "test:react": "vitest run",
+    "test:react:watch": "vitest",
+    "precommit": "npm run tsc && npm run lint && npm run prettier:check && npm run test:react"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.2",
