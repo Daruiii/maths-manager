@@ -11,7 +11,7 @@ export default function FooterLinks() {
         <a
           key={link.href}
           href={link.href}
-          className="text-xs md:text-sm text-text-gray hover:text-admin-color transition-colors"
+          className="text-xs md:text-sm text-text-gray dark:text-gray-400 hover:text-admin-color dark:hover:text-admin-color transition-colors"
         >
           {link.label}
         </a>

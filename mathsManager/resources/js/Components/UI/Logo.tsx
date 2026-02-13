@@ -39,18 +39,30 @@ export default function Logo({ className = '', size = 'md', showBadge = true }: 
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <span className={`${sizeClasses[size]} font-comfortaa-bold text-text-color tracking-tight`}>
+      <span
+        className={`${sizeClasses[size]} font-comfortaa-bold text-text-color dark:text-gray-100 tracking-tight`}
+      >
         {appName || 'Maths Manager'}
       </span>
 
       {showEnvBadge && (
         <span
-          className={`inline-flex items-center justify-center font-bold rounded-full uppercase text-white shadow-sm ${badgeSizeClasses[size]} ${
+          className={`hidden sm:inline-flex items-center justify-center font-bold rounded-full uppercase text-white shadow-sm ${badgeSizeClasses[size]} ${
             isLocal ? 'bg-success-color' : 'bg-orange-500'
           }`}
         >
           {isLocal ? 'LOCAL' : 'PREPROD'}
         </span>
+      )}
+
+      {/* Mobile: Simple colored dot */}
+      {showEnvBadge && (
+        <span
+          className={`sm:hidden w-2 h-2 rounded-full ${
+            isLocal ? 'bg-success-color' : 'bg-orange-500'
+          }`}
+          aria-label={isLocal ? 'Environnement local' : 'Environnement preprod'}
+        />
       )}
     </div>
   );

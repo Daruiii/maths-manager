@@ -15,7 +15,7 @@ export default function Header() {
   return (
     <header
       className={`
-        bg-secondary-color shadow-sm fixed top-0 left-0 right-0 z-50 min-h-[72px] flex items-center transition-transform duration-300 ease-in-out
+        bg-secondary-color dark:bg-gray-900 shadow-sm dark:shadow-gray-800 fixed top-0 left-0 right-0 z-50 min-h-[72px] flex items-center transition-transform duration-300 ease-in-out
         ${scrollDirection === 'down' ? '-translate-y-full shadow-none' : 'translate-y-0'}
       `}
     >

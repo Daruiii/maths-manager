@@ -16,30 +16,33 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
   const currentUser = user || propUser;
 
   const getRoleBorderClass = () => {
-    if (isAdmin) return 'border-admin-color ring-2 ring-admin-color/40 ring-offset-2';
-    if (isTeacher) return 'border-teacher-color ring-2 ring-teacher-color/30 ring-offset-2';
-    if (isStudent) return 'border-student-color ring-2 ring-student-color/30 ring-offset-2';
-    return 'border-gray-100';
+    if (isAdmin)
+      return 'border-admin-color ring-2 ring-admin-color/40 ring-offset-2 dark:ring-offset-gray-900';
+    if (isTeacher)
+      return 'border-teacher-color ring-2 ring-teacher-color/30 ring-offset-2 dark:ring-offset-gray-900';
+    if (isStudent)
+      return 'border-student-color ring-2 ring-student-color/30 ring-offset-2 dark:ring-offset-gray-900';
+    return 'border-gray-100 dark:border-gray-700';
   };
 
   const renderRoleBadge = () => {
     if (isAdmin) {
       return (
-        <div className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow-sm border border-admin-color/20">
+        <div className="absolute -top-1.5 -right-1.5 bg-white dark:bg-gray-800 rounded-full p-0.5 shadow-sm border border-admin-color/20">
           <Crown className="h-3 w-3 text-[#FFD700] fill-[#FFD700] drop-shadow-[0_0_2px_rgba(255,215,0,0.5)]" />
         </div>
       );
     }
     if (isTeacher) {
       return (
-        <div className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow-sm border border-teacher-color/20">
+        <div className="absolute -top-1.5 -right-1.5 bg-white dark:bg-gray-800 rounded-full p-0.5 shadow-sm border border-teacher-color/20">
           <GraduationCap className="h-3 w-3 text-teacher-color fill-teacher-color/10" />
         </div>
       );
     }
     if (isStudent) {
       return (
-        <div className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow-sm border border-student-color/20">
+        <div className="absolute -top-1.5 -right-1.5 bg-white dark:bg-gray-800 rounded-full p-0.5 shadow-sm border border-student-color/20">
           <BookOpen className="h-3 w-3 text-student-color fill-student-color/10" />
         </div>
       );
@@ -77,12 +80,12 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-gray-100">
+        <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700">
           <div className="px-4 py-3 flex flex-col items-start w-full">
-            <p className="text-sm text-gray-900 font-comfortaa-bold truncate w-full text-left">
+            <p className="text-sm text-gray-900 dark:text-gray-100 font-comfortaa-bold truncate w-full text-left">
               {currentUser.name}
             </p>
-            <p className="text-sm text-gray-500 font-comfortaa truncate w-full text-left">
+            <p className="text-sm text-gray-500 dark:text-gray-400 font-comfortaa truncate w-full text-left">
               {currentUser.email}
             </p>
           </div>
@@ -93,8 +96,8 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
                 <a
                   href="/profile"
                   className={`${
-                    active ? 'bg-gray-100' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-gray-700 font-comfortaa transition text-left`}
+                    active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-comfortaa transition text-left`}
                 >
                   <UserIcon className="mr-3 h-4 w-4 shrink-0" />
                   <span className="flex-1 text-left">Mon profil</span>
@@ -106,8 +109,8 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
                 <a
                   href="/settings"
                   className={`${
-                    active ? 'bg-gray-100' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-gray-700 font-comfortaa transition text-left`}
+                    active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-comfortaa transition text-left`}
                 >
                   <Settings className="mr-3 h-4 w-4 shrink-0" />
                   <span className="flex-1 text-left">Paramètres</span>
@@ -122,7 +125,7 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
                 <button
                   onClick={logout}
                   className={`${
-                    active ? 'bg-gray-100' : ''
+                    active ? 'bg-gray-100 dark:bg-gray-700' : ''
                   } flex w-full items-center px-4 py-2 text-sm text-error-color font-comfortaa-bold transition text-left`}
                 >
                   <LogOut className="mr-3 h-4 w-4 shrink-0" />

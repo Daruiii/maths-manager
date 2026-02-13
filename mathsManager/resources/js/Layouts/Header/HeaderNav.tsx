@@ -24,7 +24,9 @@ export default function HeaderNav({
       {/* 1. STAFF & GUEST: Classes in row (horizontal list) */}
       {(isStaff || isGuest) && (
         <div
-          className={`flex items-center space-x-6 ${isStaff ? 'border-r border-gray-200 pr-8 mr-2' : ''}`}
+          className={`flex items-center space-x-6 ${
+            isStaff ? 'border-r border-gray-200 dark:border-gray-700 pr-8 mr-2' : ''
+          }`}
         >
           {classes?.map((classe) => (
             <a
@@ -54,7 +56,7 @@ export default function HeaderNav({
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <MenuItems className="absolute left-1/2 -translate-x-1/2 top-full z-[100] mt-2 w-56 origin-top rounded-xl bg-white p-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100">
+            <MenuItems className="absolute left-1/2 -translate-x-1/2 top-full z-[100] mt-2 w-56 origin-top rounded-xl bg-white dark:bg-gray-800 p-2 shadow-2xl ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none border border-gray-100 dark:border-gray-700">
               {(classes ?? []).length > 0 ? (
                 classes?.map((classe) => (
                   <MenuItem key={classe.id}>
@@ -62,7 +64,9 @@ export default function HeaderNav({
                       <a
                         href={`/classe/${classe.level}`}
                         className={`${
-                          active ? 'bg-primary-color text-admin-color' : 'text-text-gray'
+                          active
+                            ? 'bg-primary-color dark:bg-gray-700 text-admin-color dark:text-admin-color'
+                            : 'text-text-gray dark:text-gray-300'
                         } block px-4 py-2.5 text-sm rounded-lg font-comfortaa transition-all duration-200`}
                       >
                         {classe.name}
@@ -71,7 +75,7 @@ export default function HeaderNav({
                   </MenuItem>
                 ))
               ) : (
-                <div className="px-4 py-2 text-xs text-text-gray italic font-comfortaa">
+                <div className="px-4 py-2 text-xs text-text-gray dark:text-gray-400 italic font-comfortaa">
                   Aucune classe
                 </div>
               )}

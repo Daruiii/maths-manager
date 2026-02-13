@@ -1,4 +1,5 @@
 import UserMenu from '@/Layouts/Header/UserMenu';
+import DarkModeToggle from '@/Components/UI/DarkModeToggle';
 import { User } from '@/types';
 
 interface HeaderActionsProps {
@@ -8,14 +9,19 @@ interface HeaderActionsProps {
 export default function HeaderActions({ user }: HeaderActionsProps) {
   return (
     <div className="flex items-center gap-4">
+      {/* Dark mode toggle - caché sur mobile (disponible dans le menu mobile) */}
+      <div className="hidden lg:block">
+        <DarkModeToggle />
+      </div>
+
       {user ? (
         <UserMenu user={user} />
       ) : (
         <a
           href="/login"
-          className="hidden lg:flex btn btn-secondary !px-8 !py-2 text-sm shadow-sm bg-white/50"
+          className="flex btn btn-secondary !px-4 lg:!px-8 !py-2 text-xs lg:text-sm shadow-sm bg-white/50 dark:bg-gray-800/50 dark:text-gray-100"
         >
-          Se connecter
+          Connexion
         </a>
       )}
     </div>

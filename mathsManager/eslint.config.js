@@ -40,6 +40,8 @@ export default [
         setInterval: 'readonly',
         clearTimeout: 'readonly',
         clearInterval: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
         Image: 'readonly',
         URL: 'readonly',
         File: 'readonly',

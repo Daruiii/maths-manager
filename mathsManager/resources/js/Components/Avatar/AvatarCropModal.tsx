@@ -37,13 +37,13 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col h-[520px]">
-        <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-          <h3 className="font-comfortaa-bold text-lg">Recadrer la photo</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-md overflow-hidden flex flex-col h-[520px]">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <h3 className="font-comfortaa-bold text-lg text-gray-900 dark:text-white">Recadrer la photo</h3>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
             disabled={isProcessingCrop}
           >
             <X className="h-6 w-6" />
@@ -71,9 +71,9 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
           />
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 bg-white dark:bg-gray-800">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500 font-comfortaa">Zoom</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-comfortaa">Zoom</span>
             <input
               type="range"
               value={zoom}
@@ -89,7 +89,7 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 text-sm font-comfortaa-bold text-gray-500 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+              className="flex-1 py-2 text-sm font-comfortaa-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               disabled={isProcessingCrop}
             >
               Annuler

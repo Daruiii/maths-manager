@@ -59,10 +59,10 @@ export default function Register() {
     <GuestLayout>
       <Head title="Inscription" />
 
-      <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 px-6 py-8 sm:px-10 sm:py-10 w-full max-w-lg">
+      <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 px-6 py-8 sm:px-10 sm:py-10 w-full max-w-lg">
         <div className="mb-8 text-center sm:text-left">
-          <h1 className="text-2xl font-comfortaa-bold text-admin-color">Créer un compte</h1>
-          <p className="text-text-gray text-xs font-comfortaa mt-1">
+          <h1 className="text-2xl font-comfortaa-bold text-admin-color dark:text-admin-color">Créer un compte</h1>
+          <p className="text-text-gray dark:text-gray-400 text-xs font-comfortaa mt-1">
             Rejoignez-nous pour progresser.
           </p>
         </div>
@@ -172,7 +172,7 @@ export default function Register() {
           <div className="mt-4 text-center">
             <Link
               href={route('login')}
-              className="text-sm text-text-gray hover:text-admin-color transition-colors font-comfortaa"
+              className="text-sm text-text-gray dark:text-gray-300 hover:text-admin-color dark:hover:text-admin-color transition-colors font-comfortaa"
             >
               Déjà un compte ?{' '}
               <span className="font-comfortaa-bold underline decoration-admin-color/30 underline-offset-4">

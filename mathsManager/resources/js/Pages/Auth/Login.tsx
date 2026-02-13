@@ -35,10 +35,12 @@ export default function Login({
     <GuestLayout>
       <Head title="Connexion" />
 
-      <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 px-6 py-8 sm:px-10 sm:py-10">
+      <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 px-6 py-8 sm:px-10 sm:py-10">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-comfortaa-bold text-admin-color">Bon retour !</h1>
-          <p className="text-text-gray text-sm font-comfortaa mt-1">
+          <h1 className="text-2xl font-comfortaa-bold text-admin-color dark:text-admin-color">
+            Bon retour !
+          </h1>
+          <p className="text-text-gray dark:text-gray-400 text-sm font-comfortaa mt-1">
             Connectez-vous à votre espace.
           </p>
         </div>
@@ -86,13 +88,13 @@ export default function Login({
                 checked={data.remember}
                 onChange={(e) => setData('remember', e.target.checked)}
               />
-              <span className="ms-2 text-sm text-text-gray font-comfortaa">Se souvenir de moi</span>
+              <span className="ms-2 text-sm text-text-gray dark:text-gray-300 font-comfortaa">Se souvenir de moi</span>
             </label>
 
             {canResetPassword && (
               <Link
                 href={route('password.request')}
-                className="underline text-sm text-text-gray hover:text-admin-color rounded-md transition-colors font-comfortaa"
+                className="underline text-sm text-text-gray dark:text-gray-300 hover:text-admin-color dark:hover:text-admin-color rounded-md transition-colors font-comfortaa"
               >
                 Mot de passe oublié ?
               </Link>
@@ -105,11 +107,11 @@ export default function Login({
             </PrimaryButton>
 
             <div className="relative flex py-1 items-center">
-              <div className="flex-grow border-t border-gray-200"></div>
-              <span className="flex-shrink mx-4 text-gray-400 text-xs font-comfortaa uppercase">
+              <div className="flex-grow border-t border-gray-200 dark:border-gray-600"></div>
+              <span className="flex-shrink mx-4 text-gray-400 dark:text-gray-500 text-xs font-comfortaa uppercase">
                 OU
               </span>
-              <div className="flex-grow border-t border-gray-200"></div>
+              <div className="flex-grow border-t border-gray-200 dark:border-gray-600"></div>
             </div>
 
             <GoogleButton />
@@ -118,7 +120,7 @@ export default function Login({
           <div className="mt-6 text-center">
             <Link
               href={route('register')}
-              className="text-sm text-text-gray hover:text-admin-color transition-colors font-comfortaa"
+              className="text-sm text-text-gray dark:text-gray-300 hover:text-admin-color dark:hover:text-admin-color transition-colors font-comfortaa"
             >
               Pas encore de compte ? <span className="font-comfortaa-bold">S'inscrire</span>
             </Link>
