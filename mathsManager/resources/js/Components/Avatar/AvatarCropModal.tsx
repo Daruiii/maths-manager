@@ -39,7 +39,9 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
     <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-md overflow-hidden flex flex-col h-[520px]">
         <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-          <h3 className="font-comfortaa-bold text-lg text-gray-900 dark:text-white">Recadrer la photo</h3>
+          <h3 className="font-comfortaa-bold text-lg text-gray-900 dark:text-white">
+            Recadrer la photo
+          </h3>
           <button
             type="button"
             onClick={onClose}

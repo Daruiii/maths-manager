@@ -59,7 +59,9 @@ export default function HeaderMobileMenu({
                       </a>
                     ))
                   ) : (
-                    <p className="px-3 py-2 text-sm italic text-gray-400 dark:text-gray-500">Aucune classe</p>
+                    <p className="px-3 py-2 text-sm italic text-gray-400 dark:text-gray-500">
+                      Aucune classe
+                    </p>
                   )}
                 </div>
 

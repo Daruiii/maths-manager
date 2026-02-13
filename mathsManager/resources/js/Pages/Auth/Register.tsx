@@ -61,7 +61,9 @@ export default function Register() {
 
       <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 px-6 py-8 sm:px-10 sm:py-10 w-full max-w-lg">
         <div className="mb-8 text-center sm:text-left">
-          <h1 className="text-2xl font-comfortaa-bold text-admin-color dark:text-admin-color">Créer un compte</h1>
+          <h1 className="text-2xl font-comfortaa-bold text-admin-color dark:text-admin-color">
+            Créer un compte
+          </h1>
           <p className="text-text-gray dark:text-gray-400 text-xs font-comfortaa mt-1">
             Rejoignez-nous pour progresser.
           </p>
