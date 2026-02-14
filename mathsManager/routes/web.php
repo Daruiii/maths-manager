@@ -83,10 +83,6 @@ require __DIR__.'/web/users.php';
 Route::get('auth/{provider}/redirect', [ProviderController::class, 'redirect']);
 Route::get('auth/{provider}/callback', [ProviderController::class, 'callback']);
 
-// React Inertia test page
-Route::get('/test/inertia', [\App\Http\Controllers\Test\InertiaTestController::class, 'index'])
-    ->name('test.inertia');
-
 // Private files routes (avec authentification)
 Route::middleware('auth')->group(function () {
     Route::get('/private/{context}/{identifier}/{filename}', [\App\Http\Controllers\PrivateFileController::class, 'serve'])

@@ -1,7 +1,7 @@
 import FooterLogo from './FooterLogo';
 import FooterLinks from './FooterLinks';
 import FooterCopyright from './FooterCopyright';
-import DarkModeToggle from '@/Components/UI/DarkModeToggle';
+import DarkModeToggle from '@/Components/Common/UI/DarkModeToggle';
 
 export default function Footer() {
   return (

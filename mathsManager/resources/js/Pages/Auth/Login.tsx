@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
-import InputLabel from '@/Components/Auth/InputLabel';
-import TextInput from '@/Components/Auth/TextInput';
-import Checkbox from '@/Components/Auth/Checkbox';
-import PrimaryButton from '@/Components/Auth/PrimaryButton';
-import GoogleButton from '@/Components/Auth/GoogleButton';
+import InputLabel from '@/Components/Common/Form/InputLabel';
+import TextInput from '@/Components/Common/Form/TextInput';
+import Checkbox from '@/Components/Common/Form/Checkbox';
+import PrimaryButton from '@/Components/Common/Form/PrimaryButton';
+import GoogleButton from '@/Components/Features/Auth/GoogleButton';
 
 export default function Login({
   status,

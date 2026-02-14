@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import Cropper, { Area } from 'react-easy-crop';
 import { X } from 'lucide-react';
-import PrimaryButton from '@/Components/Auth/PrimaryButton';
+import PrimaryButton from '@/Components/Common/Form/PrimaryButton';
 import { getCroppedImg } from '@/Utils/imageUtils';
 
 interface AvatarCropModalProps {

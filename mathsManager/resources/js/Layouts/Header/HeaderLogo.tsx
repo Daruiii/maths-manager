@@ -1,4 +1,4 @@
-import Logo from '@/Components/UI/Logo';
+import Logo from '@/Components/Common/UI/Logo';
 
 export default function HeaderLogo() {
   return (

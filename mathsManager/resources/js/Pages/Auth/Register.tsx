@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
-import InputLabel from '@/Components/Auth/InputLabel';
-import TextInput from '@/Components/Auth/TextInput';
-import PrimaryButton from '@/Components/Auth/PrimaryButton';
-import RegisterAvatarSection from '@/Components/Avatar/RegisterAvatarSection';
-import AvatarCropModal from '@/Components/Avatar/AvatarCropModal';
+import InputLabel from '@/Components/Common/Form/InputLabel';
+import TextInput from '@/Components/Common/Form/TextInput';
+import PrimaryButton from '@/Components/Common/Form/PrimaryButton';
+import AvatarInput from '@/Components/Common/Avatar/AvatarInput';
 
 export default function Register() {
   const { data, setData, post, processing, errors, reset } = useForm({
@@ -16,39 +15,11 @@ export default function Register() {
     avatar: null as File | null,
   });
 
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [showCropper, setShowCropper] = useState(false);
-
   useEffect(() => {
     return () => {
       reset('password', 'password_confirmation');
-      if (imageSrc && imageSrc.startsWith('blob:')) {
-        URL.revokeObjectURL(imageSrc);
-      }
     };
   }, []);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      if (imageSrc && imageSrc.startsWith('blob:')) {
-        URL.revokeObjectURL(imageSrc);
-      }
-      const url = URL.createObjectURL(file);
-      setImageSrc(url);
-      setShowCropper(true);
-
-      // Allow re-selection of the same file
-      e.target.value = '';
-    }
-  };
-
-  const handleCropSave = (croppedFile: File | null) => {
-    if (croppedFile) {
-      setData('avatar', croppedFile);
-    }
-    setShowCropper(false);
-  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,15 +42,18 @@ export default function Register() {
 
         <form onSubmit={submit} className="space-y-6" encType="multipart/form-data">
           <div className="flex items-start gap-6">
-            <RegisterAvatarSection
-              avatarFile={data.avatar}
-              onFileChange={handleFileChange}
-              onCropClick={() => setShowCropper(true)}
-              onRemoveClick={() => {
-                setData('avatar', null);
-                setImageSrc(null);
-              }}
-            />
+            <div>
+              <AvatarInput
+                value={data.avatar}
+                onChange={(file) => setData('avatar', file)}
+                onRemove={() => setData('avatar', null)}
+              />
+              {errors.avatar && (
+                <p className="mt-1 text-[10px] text-center text-error-color font-comfortaa">
+                  {errors.avatar}
+                </p>
+              )}
+            </div>
 
             <div className="flex-1 pt-1">
               <InputLabel htmlFor="name" value="Nom complet" />
@@ -96,19 +70,8 @@ export default function Register() {
               {errors.name && (
                 <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.name}</p>
               )}
-              {errors.avatar && (
-                <p className="mt-1 text-[10px] text-error-color font-comfortaa">{errors.avatar}</p>
-              )}
             </div>
           </div>
-
-          {showCropper && imageSrc && (
-            <AvatarCropModal
-              imageSrc={imageSrc}
-              onClose={() => setShowCropper(false)}
-              onSave={handleCropSave}
-            />
-          )}
 
           <div className="space-y-4">
             <div>

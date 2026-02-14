@@ -4,11 +4,11 @@ import { Head } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 // @ts-expect-error - Temporarily unused until dashboard is re-enabled
-import Guest from '@/Pages/Home/Guest';
+import Guest from '@/Pages/Home/Partials/Guest';
 // @ts-expect-error - Temporarily unused until dashboard is re-enabled
-import Student from '@/Pages/Home/Student';
+import Student from '@/Pages/Home/Partials/Student';
 // @ts-expect-error - Temporarily unused until dashboard is re-enabled
-import Admin from '@/Pages/Home/Admin';
+import Admin from '@/Pages/Home/Partials/Admin';
 import EinsteinQuote from '@/Components/UI/EinsteinQuote';
 
 type HomeProps = PageProps;

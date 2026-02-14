@@ -94,7 +94,7 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
             <MenuItem>
               {({ active }) => (
                 <a
-                  href="/profile"
+                  href="/profile/edit"
                   className={`${
                     active ? 'bg-gray-100 dark:bg-gray-700' : ''
                   } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-comfortaa transition text-left`}

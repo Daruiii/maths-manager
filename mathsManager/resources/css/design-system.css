@@ -22,7 +22,15 @@
   --admin-color: 40 104 178;
   --teacher-color: 139 92 246;
   --student-color: 13 148 136;
-  
+
+  /* Role Gradients (for ProfileCard, badges, etc.) */
+  --gradient-admin-from: #fbbf24;      /* yellow-400 */
+  --gradient-admin-to: #f97316;        /* orange-500 */
+  --gradient-teacher-from: #60a5fa;    /* blue-400 */
+  --gradient-teacher-to: #6366f1;      /* indigo-500 */
+  --gradient-student-from: #34d399;    /* emerald-400 */
+  --gradient-student-to: #14b8a6;      /* teal-500 */
+
   /* ========================================
      FONT SIZES
      ======================================== */

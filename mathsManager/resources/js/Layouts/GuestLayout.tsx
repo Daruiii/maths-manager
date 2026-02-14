@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import Logo from '@/Components/UI/Logo';
-import DarkModeToggle from '@/Components/UI/DarkModeToggle';
+import Logo from '@/Components/Common/UI/Logo';
+import DarkModeToggle from '@/Components/Common/UI/DarkModeToggle';
 
 interface GuestLayoutProps {
   children: ReactNode;

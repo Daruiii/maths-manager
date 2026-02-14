@@ -5,17 +5,12 @@ declare global {
   var route: typeof routeFn;
 }
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: 'admin' | 'teacher' | 'student';
-  avatar?: string;
-  verified?: boolean;
-  verified_teacher?: boolean;
-  teacher_id?: number;
-  teacher_group_id?: number;
-}
+// Re-export all types from organized files
+export * from './models';
+export * from './ui';
+
+// Import for PageProps usage
+import type { User, Classe } from './models';
 
 export interface PageProps {
   auth: {
@@ -66,12 +61,4 @@ export interface PageProps {
     status: string;
   }>;
   [key: string]: unknown;
-}
-
-export interface Classe {
-  id: number;
-  name: string;
-  level: string;
-  display_order: number;
-  hidden: boolean;
 }

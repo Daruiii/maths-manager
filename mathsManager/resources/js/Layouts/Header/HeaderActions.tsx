@@ -1,5 +1,5 @@
 import UserMenu from '@/Layouts/Header/UserMenu';
-import DarkModeToggle from '@/Components/UI/DarkModeToggle';
+import DarkModeToggle from '@/Components/Common/UI/DarkModeToggle';
 import { User } from '@/types';
 
 interface HeaderActionsProps {

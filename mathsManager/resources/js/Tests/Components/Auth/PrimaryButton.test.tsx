@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import PrimaryButton from '@/Components/Auth/PrimaryButton';
+import PrimaryButton from '@/Components/Common/Form/PrimaryButton';
 
 describe('PrimaryButton', () => {
   it('renders children correctly', () => {
