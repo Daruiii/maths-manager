@@ -78,7 +78,7 @@ export default function ProfileCard({
           </div>
 
           <h2 className="mt-4 text-xl font-comfortaa-bold text-gray-900 dark:text-white">
-            {user?.name}
+            {user?.first_name} {user?.last_name}
           </h2>
 
           <div className="mt-2 flex items-center text-gray-500 dark:text-gray-400 text-sm">

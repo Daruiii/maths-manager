@@ -11,11 +11,10 @@ import PageHeader from '@/Components/Common/UI/PageHeader';
 
 interface ProfileProps extends PageProps {
   mustVerifyEmail?: boolean;
-  status?: string;
   statistics?: ProfileStatistics;
 }
 
-export default function Edit({ mustVerifyEmail, status, statistics }: ProfileProps) {
+export default function Edit({ mustVerifyEmail, statistics }: ProfileProps) {
   return (
     <AppLayout title="Profil">
       <div className="py-12 px-4 sm:px-6 lg:px-8">
@@ -50,7 +49,6 @@ export default function Edit({ mustVerifyEmail, status, statistics }: ProfilePro
               >
                 <UpdateProfileInformationForm
                   mustVerifyEmail={mustVerifyEmail}
-                  status={status}
                   className=""
                 />
               </Card>

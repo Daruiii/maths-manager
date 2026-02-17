@@ -1,6 +1,7 @@
 import UserMenu from '@/Layouts/Header/UserMenu';
 import DarkModeToggle from '@/Components/Common/UI/DarkModeToggle';
 import { User } from '@/types';
+import { Link } from '@inertiajs/react';
 
 interface HeaderActionsProps {
   user: User | null;
@@ -17,12 +18,12 @@ export default function HeaderActions({ user }: HeaderActionsProps) {
       {user ? (
         <UserMenu user={user} />
       ) : (
-        <a
+        <Link
           href="/login"
-          className="flex btn btn-secondary !px-4 lg:!px-8 !py-2 text-xs lg:text-sm shadow-sm bg-white/50 dark:bg-gray-800/50 dark:text-gray-100"
+          className="flex !px-3 lg:!px-4 !py-1.5 text-xs lg:text-xs shadow-sm bg-white/50 dark:bg-gray-800/50 dark:text-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-xl font-comfortaa-bold tracking-widest items-center justify-center border-2 border-gray-200"
         >
           Connexion
-        </a>
+        </Link>
       )}
     </div>
   );

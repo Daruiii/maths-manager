@@ -1,6 +1,6 @@
 import { GraduationCap } from 'lucide-react';
 import UserAvatar from '@/Components/Common/UI/UserAvatar';
-import { User } from '@/types';
+
 
 interface TeacherCardProps {
   teacherName?: string;
@@ -20,7 +20,7 @@ export default function TeacherCard({ teacherName, teacherAvatar }: TeacherCardP
         <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <UserAvatar
-              user={{ name: teacherName, avatar: teacherAvatar } as User}
+              src={teacherAvatar || undefined}
               alt={teacherName}
               size="lg"
               className="border-2 border-teacher-color shadow-sm"

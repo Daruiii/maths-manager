@@ -25,7 +25,7 @@ export default function UserAvatar({
       : '/storage/images/default.jpg');
 
   // Determine alt text
-  const altText = alt || user?.name || 'Avatar';
+  const altText = alt || (user ? `${user.first_name} ${user.last_name}` : 'Avatar');
 
   // Base size classes (can be overridden by className)
   const sizeClasses = {

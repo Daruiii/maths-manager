@@ -9,18 +9,17 @@ import VerifyEmailAlert from '@/Components/Features/Auth/VerifyEmailAlert';
 
 export default function UpdateProfileInformationForm({
   mustVerifyEmail,
-  status,
   className = '',
 }: {
   mustVerifyEmail?: boolean;
-  status?: string;
   className?: string;
 }) {
   const user = usePage<PageProps>().props.auth.user as User;
 
-  const { data, setData, post, errors, processing, recentlySuccessful, reset } = useForm({
+  const { data, setData, post, errors, processing, reset } = useForm({
     _method: 'PATCH',
-    name: user?.name || '',
+    first_name: user?.first_name || '',
+    last_name: user?.last_name || '',
     email: user?.email || '',
     avatar: null as File | null,
     remove_avatar: 'false',
@@ -72,22 +71,37 @@ export default function UpdateProfileInformationForm({
           />
         </div>
 
-        {/* NAME */}
-        <div>
-          <InputLabel htmlFor="name" value="Nom" />
-
-          <TextInput
-            id="name"
-            className="mt-1 block w-full"
-            value={data.name}
-            onChange={(e) => setData('name', e.target.value)}
-            required
-            isFocused
-            autoComplete="name"
-          />
-          {errors.name && (
-            <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.name}</p>
-          )}
+        {/* NAME SPLIT */}
+        <div className="flex gap-4">
+          <div className="w-1/2">
+            <InputLabel htmlFor="first_name" value="Prénom" />
+            <TextInput
+              id="first_name"
+              className="mt-1 block w-full"
+              value={data.first_name}
+              onChange={(e) => setData('first_name', e.target.value)}
+              required
+              isFocused
+              autoComplete="given-name"
+            />
+            {errors.first_name && (
+              <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.first_name}</p>
+            )}
+          </div>
+          <div className="w-1/2">
+            <InputLabel htmlFor="last_name" value="Nom" />
+            <TextInput
+              id="last_name"
+              className="mt-1 block w-full"
+              value={data.last_name}
+              onChange={(e) => setData('last_name', e.target.value)}
+              required
+              autoComplete="family-name"
+            />
+            {errors.last_name && (
+              <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.last_name}</p>
+            )}
+          </div>
         </div>
 
         {/* EMAIL */}
@@ -131,23 +145,7 @@ export default function UpdateProfileInformationForm({
         <div className="flex items-center gap-4">
           <Button disabled={processing}>Enregistrer</Button>
 
-          {(recentlySuccessful || status === 'profile-updated') && (
-            <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-md">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Modifications enregistrées !
-            </div>
-          )}
+
         </div>
       </form>
     </section>

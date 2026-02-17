@@ -41,9 +41,9 @@ class HomeController extends Controller
 
                 $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
                     ->whereIn('status', ['not_started', 'ongoing', 'finished'])
-                    ->select('DS.*', 'users.name')
-                    ->orderBy('users.name', 'asc')
-                    ->orderBy('status', 'asc')
+                    ->select('DS.*', 'users.first_name', 'users.last_name')
+                    ->orderBy('users.last_name', 'asc')
+                    ->orderBy('users.first_name', 'asc')
                     ->get();
 
                 return inertia('Home/Home', [

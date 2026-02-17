@@ -44,8 +44,16 @@ class ProviderController extends Controller
                 } else {
                     $avatar = $SocialUser->avatar;
                 }
+
+                // Split name safely
+                $fullName = $SocialUser->getName() ?? $SocialUser->getNickname() ?? 'Unknown User';
+                $nameParts = explode(' ', $fullName, 2);
+                $firstName = $nameParts[0];
+                $lastName = $nameParts[1] ?? '';
+
                 $user = User::create([
-                    'name' => $SocialUser->getName(),
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
                     'email' => $SocialUser->getEmail(),
                     'avatar' => $avatar,
                     'provider' => $provider,
@@ -60,7 +68,8 @@ class ProviderController extends Controller
         Auth::login($user);
         return redirect('/home');
     } catch (\Exception $e) {
-        return redirect('/login');
+        \Illuminate\Support\Facades\Log::error('Socialite Login Error: ' . $e->getMessage());
+        return redirect('/login')->withErrors(['email' => 'Authentication failed. Please try again.']); // Give feedback
     }
 }
 }

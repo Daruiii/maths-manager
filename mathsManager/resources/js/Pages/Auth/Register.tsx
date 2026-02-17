@@ -8,7 +8,8 @@ import AvatarInput from '@/Components/Common/Avatar/AvatarInput';
 
 export default function Register() {
   const { data, setData, post, processing, errors, reset } = useForm({
-    name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -55,21 +56,38 @@ export default function Register() {
               )}
             </div>
 
-            <div className="flex-1 pt-1">
-              <InputLabel htmlFor="name" value="Nom complet" />
-              <TextInput
-                id="name"
-                name="name"
-                value={data.name}
-                className="mt-1 block w-full"
-                autoComplete="name"
-                isFocused={true}
-                onChange={(e) => setData('name', e.target.value)}
-                required
-              />
-              {errors.name && (
-                <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.name}</p>
-              )}
+            <div className="flex-1 pt-1 flex gap-4">
+              <div className="w-1/2">
+                <InputLabel htmlFor="first_name" value="Prénom" />
+                <TextInput
+                  id="first_name"
+                  name="first_name"
+                  value={data.first_name}
+                  className="mt-1 block w-full"
+                  autoComplete="given-name"
+                  isFocused={true}
+                  onChange={(e) => setData('first_name', e.target.value)}
+                  required
+                />
+                {errors.first_name && (
+                  <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.first_name}</p>
+                )}
+              </div>
+              <div className="w-1/2">
+                <InputLabel htmlFor="last_name" value="Nom" />
+                <TextInput
+                  id="last_name"
+                  name="last_name"
+                  value={data.last_name}
+                  className="mt-1 block w-full"
+                  autoComplete="family-name"
+                  onChange={(e) => setData('last_name', e.target.value)}
+                  required
+                />
+                {errors.last_name && (
+                  <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.last_name}</p>
+                )}
+              </div>
             </div>
           </div>
 

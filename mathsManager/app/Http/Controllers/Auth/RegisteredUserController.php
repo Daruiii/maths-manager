@@ -38,11 +38,14 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, new ValidEmailDomain()],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
+        
+        $userAvatar = 'default.jpg';
         if ($request->hasFile('avatar')) {
             $avatarPath = $this->fileUploadService->upload(
                 file: $request->file('avatar'),
@@ -53,12 +56,11 @@ class RegisteredUserController extends Controller
                 customName: str_replace(['@', '.'], '-', $request->email)
             );
             $userAvatar = basename($avatarPath);
-        } else {
-            $userAvatar = 'default.jpg';
         }
 
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'avatar' => $userAvatar,

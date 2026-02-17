@@ -66,7 +66,7 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
           <img
             className={`h-9 w-9 aspect-square rounded-full object-cover shrink-0 border-2 transition-all duration-300 ${getRoleBorderClass()}`}
             src={avatarUrl}
-            alt={`${currentUser.name}'s avatar`}
+            alt={`${currentUser.first_name} ${currentUser.last_name}'s avatar`}
           />
           {renderRoleBadge()}
         </MenuButton>
@@ -83,7 +83,7 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
         <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none divide-y divide-gray-100 dark:divide-gray-700">
           <div className="px-4 py-3 flex flex-col items-start w-full">
             <p className="text-sm text-gray-900 dark:text-gray-100 font-comfortaa-bold truncate w-full text-left">
-              {currentUser.name}
+              {currentUser.first_name} {currentUser.last_name}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400 font-comfortaa truncate w-full text-left">
               {currentUser.email}
