@@ -23,29 +23,6 @@
 
 /* Component Utilities */
 @layer components {
-  /* Button System */
-  .btn {
-    @apply inline-flex items-center justify-center px-6 py-2.5 rounded-full font-comfortaa-bold transition-all duration-200 active:scale-95 whitespace-nowrap;
-  }
-
-  .btn-primary {
-    @apply bg-tertiary-color text-white shadow-lg hover:-translate-y-0.5;
-    box-shadow: 0 10px 15px -3px rgba(40, 104, 178, 0.2);
-  }
-
-  .btn-primary:hover {
-    background-color: rgba(40, 104, 178, 0.9);
-  }
-
-  .btn-secondary {
-    @apply border-2 text-tertiary-color;
-    border-color: rgba(40, 104, 178, 0.3);
-  }
-
-  .btn-secondary:hover {
-    background-color: rgba(40, 104, 178, 0.05);
-  }
-
   /* Navigation */
   .nav-link {
     @apply relative text-sm font-semibold text-text-color dark:text-gray-200 hover:text-text-gray dark:hover:text-white transition-colors py-2;

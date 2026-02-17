@@ -29,9 +29,12 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
         onSave(croppedImage);
       } catch (error) {
         console.error('Erreur lors du recadrage :', error);
-      } finally {
+        // Important: Stop loading even on error
         setIsProcessingCrop(false);
       }
+      // Note: We don't set isProcessingCrop(false) here because onSave usually closes the modal,
+      // but if the parent keeps it open, we should behave correctly.
+      // Actually, onSave calls handleCropSave which calls setShowCropper(false).
     }
   };
 

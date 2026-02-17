@@ -14,6 +14,7 @@ export interface User {
   verified_teacher?: boolean;
   teacher_id?: number;
   teacher_group_id?: number;
+  provider?: string | null;
 }
 
 export interface Classe {

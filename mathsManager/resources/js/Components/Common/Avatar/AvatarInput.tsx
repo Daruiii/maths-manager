@@ -89,14 +89,21 @@ export default function AvatarInput({
     onRemove();
   };
 
-  // Cleanup object URLs on unmount
+  // Cleanup originalImageSrc only when it changes or unmounts
   useEffect(() => {
     return () => {
-      if (imageSrc && imageSrc.startsWith('blob:')) {
-        URL.revokeObjectURL(imageSrc);
-      }
       if (originalImageSrc && originalImageSrc.startsWith('blob:')) {
         URL.revokeObjectURL(originalImageSrc);
+      }
+    };
+  }, [originalImageSrc]);
+
+  // Cleanup imageSrc only when it changes/unmounts AND it is not the same as originalImageSrc
+  // (because if it IS the original, the other effect handles it, or we still need it)
+  useEffect(() => {
+    return () => {
+      if (imageSrc && imageSrc.startsWith('blob:') && imageSrc !== originalImageSrc) {
+        URL.revokeObjectURL(imageSrc);
       }
     };
   }, [imageSrc, originalImageSrc]);
@@ -114,7 +121,7 @@ export default function AvatarInput({
 
       {showCropper && (originalImageSrc || imageSrc) && (
         <AvatarCropModal
-          imageSrc={originalImageSrc || imageSrc!}
+          imageSrc={originalImageSrc ?? imageSrc!}
           onClose={() => setShowCropper(false)}
           onSave={handleCropSave}
         />

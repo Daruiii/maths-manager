@@ -20,7 +20,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'avatar',
         'provider',
         'provider_id',
-        'provider_token'
+        'provider_token',
+        'teacher_id'
     ];
 
     // Legacy constants - use UserRole enum or helper methods instead

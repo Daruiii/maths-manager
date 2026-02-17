@@ -4,7 +4,17 @@ import { PageProps } from '@/types';
 import { Transition } from '@headlessui/react';
 import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
 
-export default function FlashToast() {
+interface FlashToastProps {
+  message?: string;
+  type?: 'success' | 'error' | 'warning' | 'info';
+  onClose?: () => void;
+}
+
+export default function FlashToast({
+  message: propMessage,
+  type: propType,
+  onClose,
+}: FlashToastProps = {}) {
   const { flash } = usePage<PageProps>().props;
   const [show, setShow] = useState(false);
   const [message, setMessage] = useState<{
@@ -12,28 +22,38 @@ export default function FlashToast() {
     text: string;
   } | null>(null);
 
+  // Consolidate logic: Props take precedence, then Flash messages
   useEffect(() => {
-    if (flash?.success) {
-      setMessage({ type: 'success', text: flash.success });
+    // 1. Direct Props usage (Manual trigger)
+    if (propMessage && propType) {
+      setMessage({ type: propType, text: propMessage });
       setShow(true);
-    } else if (flash?.error) {
-      setMessage({ type: 'error', text: flash.error });
-      setShow(true);
-    } else if (flash?.warning) {
-      setMessage({ type: 'warning', text: flash.warning });
-      setShow(true);
-    } else if (flash?.info) {
-      setMessage({ type: 'info', text: flash.info });
+      return;
+    }
+
+    // 2. Inertia Flash Messages (Auto trigger on navigation)
+    // We check if any flash message exists and is different from current to avoid loops
+    // (Though here we just set on mount/update of flash)
+    const flashType = (Object.keys(flash || {}) as Array<keyof typeof flash>).find(
+      (key) => ['success', 'error', 'warning', 'info'].includes(key) && flash?.[key]
+    );
+
+    if (flashType) {
+      setMessage({ type: flashType as any, text: flash![flashType]! });
       setShow(true);
     }
-  }, [flash]);
+  }, [flash, propMessage, propType]);
 
+  // Auto-hide timer
   useEffect(() => {
     if (show) {
-      const timer = setTimeout(() => setShow(false), 5000);
+      const timer = setTimeout(() => {
+        setShow(false);
+        if (onClose) onClose();
+      }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [show]);
+  }, [show, onClose]);
 
   if (!message) return null;
 
@@ -78,7 +98,10 @@ export default function FlashToast() {
             <div className="flex-shrink-0 ml-4 flex">
               <button
                 className="bg-transparent rounded-md inline-flex hover:opacity-75 focus:outline-none transition-opacity"
-                onClick={() => setShow(false)}
+                onClick={() => {
+                  setShow(false);
+                  if (onClose) onClose();
+                }}
               >
                 <span className="sr-only">Fermer</span>
                 <X className="w-5 h-5" />

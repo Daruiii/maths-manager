@@ -9,7 +9,7 @@
      ======================================== */
   
   /* Primary Colors */
-  --primary-color: #F6EFE6;
+  --primary-color: #EAE2D6;
   --secondary-color: #FEFBF5;
   --tertiary-color: 40 104 178; /* Brand Blue for UI (Buttons, Links, Focus) */
   
@@ -57,8 +57,6 @@
   --font-cmu-serif: 'CMU Serif', serif;
   --font-cmu-bold: 'CMU Exercise Bold', serif;
 }
-
-
 
 /* ========================================
    DARK MODE (Foundation for future)

@@ -1,4 +1,5 @@
 import AppLayout from '@/Layouts/AppLayout';
+import { usePage } from '@inertiajs/react';
 import { User, Lock, Trash2 } from 'lucide-react';
 import type { PageProps, ProfileStatistics } from '@/types';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm';
@@ -57,13 +58,38 @@ export default function Edit({ mustVerifyEmail, status, statistics }: ProfilePro
 
             {/* Column 3: Security */}
             <div className="space-y-6">
-              <Card
-                title="Sécurité"
-                variant="default"
-                icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
-              >
-                <UpdatePasswordForm className="" />
-              </Card>
+              {!usePage<PageProps>().props.auth.user?.provider ? (
+                <Card
+                  title="Sécurité"
+                  variant="default"
+                  icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
+                >
+                  <UpdatePasswordForm className="" />
+                </Card>
+              ) : (
+                <Card
+                  title="Sécurité"
+                  variant="default"
+                  icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
+                  className="opacity-75"
+                >
+                  <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+                    <p className="mb-4">
+                      Votre mot de passe est géré par{' '}
+                      <strong>
+                        {usePage<PageProps>().props.auth.user?.provider === 'google'
+                          ? 'Google'
+                          : 'votre fournisseur'}
+                      </strong>
+                      .
+                    </p>
+                    <div className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-sm">
+                      <Lock className="w-4 h-4 mr-2" />
+                      Modification désactivée
+                    </div>
+                  </div>
+                </Card>
+              )}
             </div>
 
             {/* Mobile only: Danger Zone at bottom */}
