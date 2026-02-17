@@ -2,18 +2,27 @@ import { User } from '@/types';
 
 interface UserAvatarProps {
   user?: User | null;
+  src?: string; // Direct source override
   className?: string;
   alt?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'; // Extended sizes
 }
 
-export default function UserAvatar({ user, className = '', alt, size = 'md' }: UserAvatarProps) {
+export default function UserAvatar({
+  user,
+  src,
+  className = '',
+  alt,
+  size = 'md',
+}: UserAvatarProps) {
   // Determine avatar URL source
-  const avatarUrl = user?.avatar
-    ? user.avatar.startsWith('http')
-      ? user.avatar
-      : `/storage/images/${user.avatar}`
-    : '/storage/images/default.jpg';
+  const avatarUrl =
+    src ||
+    (user?.avatar
+      ? user.avatar.startsWith('http')
+        ? user.avatar
+        : `/storage/images/${user.avatar}`
+      : '/storage/images/default.jpg');
 
   // Determine alt text
   const altText = alt || user?.name || 'Avatar';

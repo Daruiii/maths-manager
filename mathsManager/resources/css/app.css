@@ -29,7 +29,7 @@
   }
 
   .btn-primary {
-    @apply bg-admin-color text-white shadow-lg hover:-translate-y-0.5;
+    @apply bg-tertiary-color text-white shadow-lg hover:-translate-y-0.5;
     box-shadow: 0 10px 15px -3px rgba(40, 104, 178, 0.2);
   }
 
@@ -38,7 +38,7 @@
   }
 
   .btn-secondary {
-    @apply border-2 text-admin-color;
+    @apply border-2 text-tertiary-color;
     border-color: rgba(40, 104, 178, 0.3);
   }
 
@@ -52,6 +52,6 @@
   }
 
   .nav-link.active::after {
-    @apply content-[''] absolute bottom-0 left-0 w-full h-0.5 bg-admin-color rounded-full;
+    @apply content-[''] absolute bottom-0 left-0 w-full h-0.5 bg-tertiary-color rounded-full;
   }
 }

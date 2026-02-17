@@ -1,8 +1,7 @@
 import { useRef, useState, SyntheticEvent } from 'react';
-import DangerButton from '@/Components/Common/Form/DangerButton';
+import Button from '@/Components/Common/UI/Button';
 import InputLabel from '@/Components/Common/Form/InputLabel';
 import Modal from '@/Components/Common/UI/Modal';
-import SecondaryButton from '@/Components/Common/Form/SecondaryButton';
 import TextInput from '@/Components/Common/Form/TextInput';
 import { useForm } from '@inertiajs/react';
 
@@ -46,18 +45,14 @@ export default function DeleteUserForm({ className = '' }: { className?: string 
 
   return (
     <section className={`space-y-6 ${className}`}>
-      <header>
-        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-          Supprimer le compte
-        </h2>
+      <div className="text-sm text-text-gray dark:text-gray-400">
+        Une fois votre compte supprimé, toutes ses ressources et données seront définitivement
+        effacées.
+      </div>
 
-        <p className="mt-1 text-sm text-text-gray dark:text-gray-400">
-          Une fois votre compte supprimé, toutes ses ressources et données seront définitivement
-          effacées.
-        </p>
-      </header>
-
-      <DangerButton onClick={confirmUserDeletion}>Supprimer le compte</DangerButton>
+      <Button variant="danger" onClick={confirmUserDeletion}>
+        Supprimer le compte
+      </Button>
 
       <Modal show={confirmingUserDeletion} onClose={closeModal}>
         <form onSubmit={deleteUser} className="p-6">
@@ -93,11 +88,13 @@ export default function DeleteUserForm({ className = '' }: { className?: string 
           </div>
 
           <div className="mt-6 flex justify-end">
-            <SecondaryButton onClick={closeModal}>Annuler</SecondaryButton>
+            <Button variant="secondary" onClick={closeModal}>
+              Annuler
+            </Button>
 
-            <DangerButton className="ml-3" disabled={processing}>
+            <Button variant="danger" className="ml-3" disabled={processing}>
               Supprimer le compte
-            </DangerButton>
+            </Button>
           </div>
         </form>
       </Modal>

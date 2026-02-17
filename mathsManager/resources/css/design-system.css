@@ -11,6 +11,7 @@
   /* Primary Colors */
   --primary-color: #F6EFE6;
   --secondary-color: #FEFBF5;
+  --tertiary-color: 40 104 178; /* Brand Blue for UI (Buttons, Links, Focus) */
   
   /* Text Colors */
   --text-color: #000000;
@@ -19,7 +20,9 @@
   /* Status Colors (Stored as RGB for Tailwind opacity support) */
   --success-color: 46 139 87;
   --error-color: 193 39 45;
-  --admin-color: 40 104 178;
+  --warning-color: 234 88 12; /* orange-600 */
+  --info-color: 40 104 178;  /* Blue for Info alerts */
+  --admin-color: 245 158 11;  /* Amber-500 (Yellow-Orange) for Admin Role */
   --teacher-color: 139 92 246;
   --student-color: 13 148 136;
 
@@ -54,6 +57,8 @@
   --font-cmu-serif: 'CMU Serif', serif;
   --font-cmu-bold: 'CMU Exercise Bold', serif;
 }
+
+
 
 /* ========================================
    DARK MODE (Foundation for future)

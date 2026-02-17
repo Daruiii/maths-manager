@@ -21,6 +21,7 @@ export default function AvatarInput({
   className = '',
 }: AvatarInputProps) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [originalImageSrc, setOriginalImageSrc] = useState<string | null>(null); // Store original for re-cropping
   const [showCropper, setShowCropper] = useState(false);
 
   // If user exists: show their avatar or default.jpg (unless removed)
@@ -42,8 +43,13 @@ export default function AvatarInput({
       if (imageSrc && imageSrc.startsWith('blob:')) {
         URL.revokeObjectURL(imageSrc);
       }
+      if (originalImageSrc && originalImageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(originalImageSrc);
+      }
+
       const url = URL.createObjectURL(file);
       setImageSrc(url);
+      setOriginalImageSrc(url); // Keep original
       setShowCropper(true);
       // We don't call onChange yet, we wait for crop
       e.target.value = ''; // Reset input so same file selection triggers change
@@ -53,13 +59,24 @@ export default function AvatarInput({
   const handleCropSave = (croppedFile: File | null) => {
     if (croppedFile) {
       onChange(croppedFile);
+      // Valid cropped file: update preview but KEEP originalImageSrc for re-cropping
+      const croppedUrl = URL.createObjectURL(croppedFile);
+
+      // Revoke previous preview if it was a blob (but NOT the original source)
+      if (imageSrc && imageSrc.startsWith('blob:') && imageSrc !== originalImageSrc) {
+        URL.revokeObjectURL(imageSrc);
+      }
+      setImageSrc(croppedUrl);
     }
     setShowCropper(false);
   };
 
   const handleCropCurrentAvatar = () => {
     if (currentAvatarUrl) {
+      // For current avatar, we can't really "uncrop" unless we stored the original somewhere else.
+      // But we can at least crop what we have.
       setImageSrc(currentAvatarUrl);
+      setOriginalImageSrc(currentAvatarUrl);
       setShowCropper(true);
     }
   };
@@ -78,8 +95,11 @@ export default function AvatarInput({
       if (imageSrc && imageSrc.startsWith('blob:')) {
         URL.revokeObjectURL(imageSrc);
       }
+      if (originalImageSrc && originalImageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(originalImageSrc);
+      }
     };
-  }, []);
+  }, [imageSrc, originalImageSrc]);
 
   return (
     <div className={className}>
@@ -87,14 +107,14 @@ export default function AvatarInput({
         avatarFile={value}
         currentAvatarUrl={currentAvatarUrl}
         onFileChange={handleFileChange}
-        onCropClick={() => imageSrc && setShowCropper(true)}
+        onCropClick={() => originalImageSrc && setShowCropper(true)}
         onCropCurrentAvatar={handleCropCurrentAvatar}
         onRemoveClick={handleRemove}
       />
 
-      {showCropper && imageSrc && (
+      {showCropper && (originalImageSrc || imageSrc) && (
         <AvatarCropModal
-          imageSrc={imageSrc}
+          imageSrc={originalImageSrc || imageSrc!}
           onClose={() => setShowCropper(false)}
           onSave={handleCropSave}
         />

@@ -22,7 +22,7 @@ export default function Checkbox({
       {...props}
       type="checkbox"
       className={
-        'rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-admin-color shadow-sm focus:ring-admin-color dark:focus:ring-admin-color transition-all duration-200 ' +
+        'rounded-md h-5 w-5 border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-tertiary-color shadow-sm focus:ring-tertiary-color dark:focus:ring-tertiary-color transition-all duration-200 cursor-pointer ' +
         className
       }
     />

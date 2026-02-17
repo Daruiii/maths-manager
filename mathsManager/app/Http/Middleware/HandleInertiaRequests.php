@@ -48,6 +48,12 @@ class HandleInertiaRequests extends Middleware
             'classes' => Classe::where('hidden', false)->orderBy('display_order')->get(),
             'dsNotStarted' => auth()->check() ? DS::where('user_id', auth()->id())->where('status', 'not_started')->count() : 0,
             'exercisesSheetNotStarted' => auth()->check() ? ExercisesSheet::where('user_id', auth()->id())->where('status', 'not_started')->count() : 0,
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
+            ],
         ]);
     }
 }

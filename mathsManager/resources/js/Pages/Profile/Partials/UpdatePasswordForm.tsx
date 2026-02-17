@@ -1,9 +1,8 @@
 import { useRef, SyntheticEvent } from 'react';
 import InputLabel from '@/Components/Common/Form/InputLabel';
-import PrimaryButton from '@/Components/Common/Form/PrimaryButton';
+import Button from '@/Components/Common/UI/Button';
 import TextInput from '@/Components/Common/Form/TextInput';
 import { useForm } from '@inertiajs/react';
-import { Lock } from 'lucide-react';
 
 export default function UpdatePasswordForm({ className = '' }: { className?: string }) {
   const passwordInput = useRef<HTMLInputElement>(null);
@@ -38,13 +37,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
   return (
     <section className={className}>
       <div className="mb-6">
-        <h2 className="text-xl font-comfortaa-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <span className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
-            <Lock className="h-5 w-5" />
-          </span>
-          Sécurité & Mot de passe
-        </h2>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 ml-11">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester
           sécurisé.
         </p>
@@ -107,7 +100,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
         </div>
 
         <div className="flex items-center gap-4">
-          <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
+          <Button disabled={processing}>Enregistrer</Button>
 
           {recentlySuccessful && (
             <p className="text-sm text-gray-600 dark:text-gray-400 transition ease-in-out">

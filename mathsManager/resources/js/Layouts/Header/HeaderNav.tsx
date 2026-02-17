@@ -65,7 +65,7 @@ export default function HeaderNav({
                         href={`/classe/${classe.level}`}
                         className={`${
                           active
-                            ? 'bg-primary-color dark:bg-gray-700 text-admin-color dark:text-admin-color'
+                            ? 'bg-primary-color dark:bg-gray-700 text-tertiary-color dark:text-tertiary-color'
                             : 'text-text-gray dark:text-gray-300'
                         } block px-4 py-2.5 text-sm rounded-lg font-comfortaa transition-all duration-200`}
                       >

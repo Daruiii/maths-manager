@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import Cropper, { Area } from 'react-easy-crop';
 import { X } from 'lucide-react';
-import PrimaryButton from '@/Components/Common/Form/PrimaryButton';
+import Button from '@/Components/Common/UI/Button';
 import { getCroppedImg } from '@/Utils/imageUtils';
 
 interface AvatarCropModalProps {
@@ -84,7 +84,7 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
               step={0.1}
               aria-labelledby="Zoom"
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 accent-admin-color"
+              className="flex-1 accent-tertiary-color"
             />
           </div>
           <div className="flex gap-3 pt-2">
@@ -96,7 +96,7 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
             >
               Annuler
             </button>
-            <PrimaryButton
+            <Button
               type="button"
               onClick={handleSave}
               className="flex-1 justify-center py-2.5"
@@ -110,7 +110,7 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
               ) : (
                 'Valider'
               )}
-            </PrimaryButton>
+            </Button>
           </div>
         </div>
       </div>

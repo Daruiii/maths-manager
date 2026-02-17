@@ -3,10 +3,9 @@ import { FormEventHandler } from 'react';
 import { PageProps, User } from '@/types';
 import InputLabel from '@/Components/Common/Form/InputLabel';
 import TextInput from '@/Components/Common/Form/TextInput';
-import PrimaryButton from '@/Components/Common/Form/PrimaryButton';
+import Button from '@/Components/Common/UI/Button';
 import AvatarInput from '@/Components/Common/Avatar/AvatarInput';
-import VerifyEmailAlert from '@/Components/Common/Auth/VerifyEmailAlert';
-import { User as UserIcon } from 'lucide-react';
+import VerifyEmailAlert from '@/Components/Features/Auth/VerifyEmailAlert';
 
 export default function UpdateProfileInformationForm({
   mustVerifyEmail,
@@ -49,14 +48,8 @@ export default function UpdateProfileInformationForm({
 
   return (
     <section className={className}>
-      <div className="mb-6">
-        <h2 className="text-xl font-comfortaa-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <span className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-            <UserIcon className="h-5 w-5" />
-          </span>
-          Informations personnelles
-        </h2>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 ml-11">
+      <div className="mb-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Mettez à jour les informations de votre profil et votre adresse e-mail.
         </p>
       </div>
@@ -68,7 +61,13 @@ export default function UpdateProfileInformationForm({
             user={user}
             value={data.avatar}
             isRemoved={data.remove_avatar === 'true'}
-            onChange={(file) => setData('avatar', file)}
+            onChange={(file) => {
+              setData((prevData) => ({
+                ...prevData,
+                avatar: file,
+                remove_avatar: 'false',
+              }));
+            }}
             onRemove={handleRemoveAvatar}
           />
         </div>
@@ -130,7 +129,7 @@ export default function UpdateProfileInformationForm({
         </div>
 
         <div className="flex items-center gap-4">
-          <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
+          <Button disabled={processing}>Enregistrer</Button>
 
           {(recentlySuccessful || status === 'profile-updated') && (
             <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-md">

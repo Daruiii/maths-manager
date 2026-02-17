@@ -1,9 +1,12 @@
 import AppLayout from '@/Layouts/AppLayout';
+import { User, Lock, Trash2 } from 'lucide-react';
 import type { PageProps, ProfileStatistics } from '@/types';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm';
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm';
 import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm';
 import ProfileCard from '@/Components/Features/Profile/ProfileCard';
+import Card from '@/Components/Common/UI/Card';
+import PageHeader from '@/Components/Common/UI/PageHeader';
 
 interface ProfileProps extends PageProps {
   mustVerifyEmail?: boolean;
@@ -16,44 +19,62 @@ export default function Edit({ mustVerifyEmail, status, statistics }: ProfilePro
     <AppLayout title="Profil">
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h2 className="font-comfortaa-bold text-3xl text-gray-800 dark:text-gray-200">
-              Mon Profil
-            </h2>
-            <p className="mt-2 text-text-gray dark:text-gray-400">
-              Gérez vos informations personnelles et sécurisez votre compte.
-            </p>
-          </div>
+          <PageHeader
+            title="Mon Profil"
+            subtitle="Gérez vos informations et sécurisez votre compte."
+            breadcrumbs={[{ label: 'Mon Profil' }]}
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column (Desktop) / Top (Mobile) */}
-            <div className="lg:col-span-1 space-y-8">
+            {/* Column 1: Profile Card + Danger Zone */}
+            <div className="space-y-8">
               <ProfileCard statistics={statistics} />
 
-              {/* Desktop only: Delete form is here */}
-              <div className="hidden lg:block p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-sm rounded-2xl">
-                <DeleteUserForm className="max-w-xl" />
+              <div className="hidden lg:block">
+                <Card
+                  variant="danger"
+                  title="Zone de Danger"
+                  icon={<Trash2 className="w-5 h-5" strokeWidth={2.5} />}
+                >
+                  <DeleteUserForm className="" />
+                </Card>
               </div>
             </div>
 
-            {/* Right Column (Desktop) / Middle (Mobile) */}
-            <div className="lg:col-span-2 space-y-8">
-              <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-sm rounded-2xl">
+            {/* Column 2: Personal Info */}
+            <div className="space-y-6">
+              <Card
+                title="Informations personnelles"
+                icon={<User className="w-5 h-5" strokeWidth={2.5} />}
+              >
                 <UpdateProfileInformationForm
                   mustVerifyEmail={mustVerifyEmail}
                   status={status}
-                  className="max-w-xl"
+                  className=""
                 />
-              </div>
-
-              <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-sm rounded-2xl">
-                <UpdatePasswordForm className="max-w-xl" />
-              </div>
+              </Card>
             </div>
 
-            {/* Mobile only: Delete form at the very bottom */}
-            <div className="lg:hidden col-span-1 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-sm rounded-2xl">
-              <DeleteUserForm className="max-w-xl" />
+            {/* Column 3: Security */}
+            <div className="space-y-6">
+              <Card
+                title="Sécurité"
+                variant="default"
+                icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
+              >
+                <UpdatePasswordForm className="" />
+              </Card>
+            </div>
+
+            {/* Mobile only: Danger Zone at bottom */}
+            <div className="lg:hidden col-span-1">
+              <Card
+                variant="danger"
+                title="Zone de Danger"
+                icon={<Trash2 className="w-5 h-5" strokeWidth={2.5} />}
+              >
+                <DeleteUserForm className="" />
+              </Card>
             </div>
           </div>
         </div>

@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { Crop, Trash2, Plus, User as UserIcon } from 'lucide-react';
 import UserAvatar from '@/Components/Common/UI/UserAvatar';
-import { User } from '@/types';
 
 interface AvatarSelectorProps {
   avatarFile: File | null;
@@ -37,7 +36,7 @@ export default function AvatarSelector({
         />
 
         <div
-          className={`h-20 w-20 rounded-full border-2 border-dashed border-gray-200 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-700 transition-all ${avatarFile || currentAvatarUrl ? 'border-none shadow-md' : 'group-hover:border-admin-color/50'}`}
+          className={`h-20 w-20 rounded-full border-2 border-dashed border-gray-200 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-700 transition-all ${avatarFile || currentAvatarUrl ? 'border-none shadow-md' : 'group-hover:border-tertiary-color/50'}`}
         >
           {avatarFile ? (
             <img
@@ -47,7 +46,7 @@ export default function AvatarSelector({
             />
           ) : currentAvatarUrl ? (
             <UserAvatar
-              user={{ avatar: currentAvatarUrl.split('/').pop(), name: 'Avatar actuel' } as User}
+              src={currentAvatarUrl}
               alt="Avatar actuel"
               className="h-full w-full object-cover !rounded-none !border-0"
               size="2xl"
@@ -61,7 +60,7 @@ export default function AvatarSelector({
         </div>
 
         {!avatarFile && !currentAvatarUrl && (
-          <div className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-1.5 shadow-md border border-gray-100 text-admin-color group-hover:scale-110 transition-transform">
+          <div className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-1.5 shadow-md border border-gray-100 text-tertiary-color group-hover:scale-110 transition-transform">
             <Plus className="h-3.5 w-3.5" strokeWidth={3} />
           </div>
         )}
@@ -74,7 +73,7 @@ export default function AvatarSelector({
                 e.stopPropagation();
                 onCropClick();
               }}
-              className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-admin-color hover:bg-admin-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
+              className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-tertiary-color hover:bg-tertiary-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
               title="Recadrer la photo"
             >
               <Crop className="h-3.5 w-3.5" />
@@ -103,7 +102,7 @@ export default function AvatarSelector({
                   e.stopPropagation();
                   onCropCurrentAvatar();
                 }}
-                className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-admin-color hover:bg-admin-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
+                className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-tertiary-color hover:bg-tertiary-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
                 title="Recadrer la photo"
               >
                 <Crop className="h-3.5 w-3.5" />
