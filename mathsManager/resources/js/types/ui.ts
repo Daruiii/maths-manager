@@ -9,6 +9,7 @@
 export interface ProfileStatistics {
   teacher_name?: string;
   teacher_avatar?: string;
+  teacher_role?: string;
   students_count?: number;
   corrections_count?: number;
 }

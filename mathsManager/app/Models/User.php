@@ -18,11 +18,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'status',
         'avatar',
+        'avatar_original',
         'provider',
         'provider_id',
         'provider_token',
-        'teacher_id'
+        'teacher_id',
+        'group_id',
     ];
 
     // Legacy constants - use UserRole enum or helper methods instead
@@ -54,6 +57,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return UserRole::from($this->role);
     }
+
+    /**
+     * Get the user's full name (backward compatibility accessor).
+     */
+    public function getNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -125,5 +137,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function students()
     {
         return $this->hasMany(User::class, 'teacher_id');
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(StudentGroup::class, 'group_id');
     }
 }

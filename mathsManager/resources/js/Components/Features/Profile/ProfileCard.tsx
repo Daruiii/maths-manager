@@ -91,6 +91,7 @@ export default function ProfileCard({
               <TeacherCard
                 teacherName={statistics?.teacher_name}
                 teacherAvatar={statistics?.teacher_avatar}
+                teacherRole={statistics?.teacher_role}
               />
             )}
 

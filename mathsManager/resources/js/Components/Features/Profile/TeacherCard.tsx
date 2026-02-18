@@ -1,15 +1,18 @@
-import { GraduationCap } from 'lucide-react';
+import { GraduationCap, Crown } from 'lucide-react';
 import UserAvatar from '@/Components/Common/UI/UserAvatar';
 
 
 interface TeacherCardProps {
   teacherName?: string;
   teacherAvatar?: string | null;
+  teacherRole?: string | null;
 }
 
-export default function TeacherCard({ teacherName, teacherAvatar }: TeacherCardProps) {
+export default function TeacherCard({ teacherName, teacherAvatar, teacherRole }: TeacherCardProps) {
   const hasTeacher =
     teacherName && teacherName !== 'Aucun' && teacherName !== 'Aucun professeur assigné';
+  
+  const isAdmin = teacherRole === 'admin';
 
   return (
     <div>
@@ -20,14 +23,21 @@ export default function TeacherCard({ teacherName, teacherAvatar }: TeacherCardP
         <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <UserAvatar
-              src={teacherAvatar || undefined}
+              src={
+                teacherAvatar
+                  ? teacherAvatar.startsWith('http')
+                    ? teacherAvatar
+                    : `/storage/images/${teacherAvatar}`
+                  : undefined
+              }
               alt={teacherName}
               size="lg"
               className="border-2 border-teacher-color shadow-sm"
             />
             <div className="flex flex-col">
-              <span className="text-sm font-comfortaa-bold text-gray-900 dark:text-white">
+              <span className="text-sm font-comfortaa-bold text-gray-900 dark:text-white flex items-center gap-1">
                 {teacherName}
+                {isAdmin && <Crown className="w-3.5 h-3.5 text-admin-color" />}
               </span>
               <span className="text-xs text-teacher-color flex items-center gap-1">
                 <GraduationCap className="w-3 h-3" />

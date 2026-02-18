@@ -32,6 +32,7 @@ class ProfileController extends Controller
             $teacher = $user->teacher;
             $statistics['teacher_name'] = $teacher ? $teacher->name : 'Aucun';
             $statistics['teacher_avatar'] = $teacher ? $teacher->avatar : null;
+            $statistics['teacher_role'] = $teacher ? $teacher->role : null;
         } elseif ($user->isTeacher()) {
             $statistics['students_count'] = $user->students()->count();
             // Assuming CorrectionRequest is linked to teacher via student or assigned_to?

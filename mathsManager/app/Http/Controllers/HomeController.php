@@ -40,7 +40,7 @@ class HomeController extends Controller
                     ->paginate(3)->withQueryString();
 
                 $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
-                    ->whereIn('status', ['not_started', 'ongoing', 'finished'])
+                    ->whereIn('DS.status', ['not_started', 'ongoing', 'finished'])
                     ->select('DS.*', 'users.first_name', 'users.last_name')
                     ->orderBy('users.last_name', 'asc')
                     ->orderBy('users.first_name', 'asc')
@@ -94,6 +94,10 @@ class HomeController extends Controller
                 'scores' => $scores,
             ]);
         } catch (\Exception $e) {
+            if (auth()->check()) {
+                abort(500, 'An error occurred while loading your dashboard. Please contact support.');
+            }
+            
             return redirect()->route('login');
         }
     }
