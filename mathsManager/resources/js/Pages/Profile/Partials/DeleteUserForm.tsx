@@ -45,7 +45,7 @@ export default function DeleteUserForm({ className = '' }: { className?: string 
 
   return (
     <section className={`space-y-6 ${className}`}>
-      <div className="text-sm text-text-gray dark:text-gray-400">
+      <div className="text-sm text-text-gray">
         Une fois votre compte supprimé, toutes ses ressources et données seront définitivement
         effacées.
       </div>
@@ -56,11 +56,11 @@ export default function DeleteUserForm({ className = '' }: { className?: string 
 
       <Modal show={confirmingUserDeletion} onClose={closeModal}>
         <form onSubmit={deleteUser} className="p-6">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-medium text-text-color">
             Êtes-vous sûr de vouloir supprimer votre compte ?
           </h2>
 
-          <p className="mt-1 text-sm text-text-gray dark:text-gray-400">
+          <p className="mt-1 text-sm text-text-gray">
             Une fois votre compte supprimé, toutes ses ressources et données seront définitivement
             effacées. Veuillez entrer <strong>supprimer mon compte</strong> pour confirmer.
           </p>

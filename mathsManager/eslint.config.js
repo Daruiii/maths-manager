@@ -52,6 +52,10 @@ export default [
         HTMLButtonElement: 'readonly',
         HTMLLabelElement: 'readonly',
         HTMLImageElement: 'readonly',
+        HTMLParagraphElement: 'readonly',
+        HTMLSelectElement: 'readonly',
+        HTMLTextAreaElement: 'readonly',
+        fetch: 'readonly',
         Event: 'readonly',
         // Node globals
         process: 'readonly',

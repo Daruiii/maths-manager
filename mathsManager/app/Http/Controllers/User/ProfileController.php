@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -21,11 +22,10 @@ class ProfileController extends Controller
     }
 
     /**
-     * Display the user's profile form.
+     * Get profile statistics based on user role.
      */
-    public function edit(Request $request): \Inertia\Response
+    private function getProfileStatistics(User $user): array
     {
-        $user = $request->user();
         $statistics = [];
 
         if ($user->isStudent()) {
@@ -35,20 +35,36 @@ class ProfileController extends Controller
             $statistics['teacher_role'] = $teacher ? $teacher->role : null;
         } elseif ($user->isTeacher()) {
             $statistics['students_count'] = $user->students()->count();
-            // Assuming CorrectionRequest is linked to teacher via student or assigned_to?
-            // User.php has correctionRequests() hasMany. Assuming this is requests MADE by user (student).
-            // If teacher corrects, we need to count requests where status is 'corrected' and handled by this teacher?
-            // For now, let's use a simple placeholder or count correctionRequests linked to their students.
-            // Let's COUNT the students for now as requested "X Éléves". 
-            // For "X trucs corrigés", we'll check if there is a relation.
-            // User.php: public function correctionRequests() { return $this->hasMany(CorrectionRequest::class); }
-            // This suggests relations owned by the user. If user is teacher, maybe they don't have correctionRequests?
-            // Let's stick to students count for now to avoid breaking if relationship is ambiguous.
-             $statistics['corrections_count'] = 0; // Placeholder until relationships are clearer
+            // Placeholder until relationships are clearer
+            $statistics['corrections_count'] = 0; 
         }
 
+        return $statistics;
+    }
+
+    /**
+     * Display the user's profile view.
+     */
+    public function show(Request $request): \Inertia\Response
+    {
+        $user = $request->user();
+        $statistics = $this->getProfileStatistics($user);
+
+        return \Inertia\Inertia::render('Profile/Show', [
+            'statistics' => $statistics,
+        ]);
+    }
+
+    /**
+     * Display the user's profile form.
+     */
+    public function edit(Request $request): \Inertia\Response
+    {
+        $user = $request->user();
+        $statistics = $this->getProfileStatistics($user);
+
         return \Inertia\Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
             'status' => session('status'),
             'statistics' => $statistics,
         ]);

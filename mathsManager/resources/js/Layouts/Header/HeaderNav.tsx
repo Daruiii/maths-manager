@@ -3,6 +3,7 @@ import { Fragment } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Classe, User } from '@/types';
 import { useAuth } from '@/Hooks/useAuth';
+import { Link } from '@inertiajs/react';
 
 interface HeaderNavProps {
   user: User | null;
@@ -17,7 +18,10 @@ export default function HeaderNav({
   dsNotStarted,
   exercisesSheetNotStarted,
 }: HeaderNavProps) {
-  const { isStaff, isStudent, isGuest } = useAuth();
+  const { isStaff, isStudent, isGuest, hasNoRole } = useAuth();
+
+  // User is authenticated but hasn't chosen a role yet — no nav to show
+  if (hasNoRole) return null;
 
   return (
     <div className="hidden lg:flex items-center space-x-8">
@@ -25,17 +29,17 @@ export default function HeaderNav({
       {(isStaff || isGuest) && (
         <div
           className={`flex items-center space-x-6 ${
-            isStaff ? 'border-r border-gray-200 dark:border-gray-700 pr-8 mr-2' : ''
+            isStaff ? 'border-r border-border-color pr-8 mr-2' : ''
           }`}
         >
           {classes?.map((classe) => (
-            <a
+            <Link
               key={classe.id}
               href={`/classe/${classe.level}`}
               className="nav-link !text-xs uppercase tracking-widest font-comfortaa-bold opacity-70 hover:opacity-100 transition-opacity whitespace-nowrap"
             >
               {classe.name}
-            </a>
+            </Link>
           ))}
         </div>
       )}
@@ -56,26 +60,24 @@ export default function HeaderNav({
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <MenuItems className="absolute left-1/2 -translate-x-1/2 top-full z-[100] mt-2 w-56 origin-top rounded-xl bg-white dark:bg-gray-800 p-2 shadow-2xl ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none border border-gray-100 dark:border-gray-700">
+            <MenuItems className="absolute left-1/2 -translate-x-1/2 top-full z-[100] mt-2 w-56 origin-top rounded-xl bg-secondary-color p-2 shadow-2xl ring-1 ring-text-color/10 ring-opacity-5 focus:outline-none border border-border-color">
               {(classes ?? []).length > 0 ? (
                 classes?.map((classe) => (
                   <MenuItem key={classe.id}>
                     {({ active }) => (
-                      <a
+                      <Link
                         href={`/classe/${classe.level}`}
                         className={`${
-                          active
-                            ? 'bg-primary-color dark:bg-gray-700 text-tertiary-color dark:text-tertiary-color'
-                            : 'text-text-gray dark:text-gray-300'
+                          active ? 'bg-primary-color text-tertiary-color' : 'text-text-gray'
                         } block px-4 py-2.5 text-sm rounded-lg font-comfortaa transition-all duration-200`}
                       >
                         {classe.name}
-                      </a>
+                      </Link>
                     )}
                   </MenuItem>
                 ))
               ) : (
-                <div className="px-4 py-2 text-xs text-text-gray dark:text-gray-400 italic font-comfortaa">
+                <div className="px-4 py-2 text-xs text-text-gray italic font-comfortaa">
                   Aucune classe
                 </div>
               )}
@@ -87,15 +89,15 @@ export default function HeaderNav({
       {/* 3. STUDENT ONLY: Specific links */}
       {isStudent && (
         <>
-          <a href={`/ds/myDS/${user?.id}`} className="nav-link relative focus:outline-none">
+          <Link href={`/ds/myDS/${user?.id}`} className="nav-link relative focus:outline-none">
             Mes devoirs
             {(dsNotStarted ?? 0) > 0 && (
               <span className="absolute -top-1 -right-3 bg-error-color text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">
                 {dsNotStarted}
               </span>
             )}
-          </a>
-          <a
+          </Link>
+          <Link
             href={`/exercises-sheet/my/${user?.id}`}
             className="nav-link relative focus:outline-none"
           >
@@ -105,15 +107,15 @@ export default function HeaderNav({
                 {exercisesSheetNotStarted}
               </span>
             )}
-          </a>
+          </Link>
         </>
       )}
 
       {/* 4. STAFF ONLY: Mes élèves */}
       {isStaff && (
-        <a href="/students" className="nav-link focus:outline-none">
+        <Link href="/students" className="nav-link focus:outline-none">
           Mes élèves
-        </a>
+        </Link>
       )}
     </div>
   );

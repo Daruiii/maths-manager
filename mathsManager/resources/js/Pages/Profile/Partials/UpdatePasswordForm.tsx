@@ -37,7 +37,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
   return (
     <section className={className}>
       <div className="mb-6">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-text-gray">
           Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester
           sécurisé.
         </p>
@@ -103,9 +103,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
           <Button disabled={processing}>Enregistrer</Button>
 
           {recentlySuccessful && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 transition ease-in-out">
-              Enregistré.
-            </p>
+            <p className="text-sm text-success-color transition ease-in-out">Enregistré.</p>
           )}
         </div>
       </form>

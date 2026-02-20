@@ -1,56 +1,79 @@
 /**
  * CSS Custom Properties - Design System
- * Centralized theming with dark mode support
+ *
+ * DARK MODE : Le hook `useDarkMode` ajoute la classe `dark` sur <html>.
+ * → Aligné avec tailwind.config.js → darkMode: 'class'
+ * → Les tokens s'adaptent automatiquement au dark mode.
+ *
+ * FORMAT : Toutes les couleurs sont en "raw RGB" (sans rgb()).
+ * → Permet les modificateurs d'opacité Tailwind : bg-primary-color/50
+ * → tailwind.config.js doit wrapper avec rgb(var(--x) / <alpha-value>)
  */
 
 :root {
   /* ========================================
-     COLORS
+     BACKGROUNDS
      ======================================== */
-  
-  /* Primary Colors */
-  --primary-color: #EAE2D6;
-  --secondary-color: #FEFBF5;
-  --tertiary-color: 40 104 178; /* Brand Blue for UI (Buttons, Links, Focus) */
-  
-  /* Text Colors */
-  --text-color: #000000;
-  --text-gray: #747474;
-  
-  /* Status Colors (Stored as RGB for Tailwind opacity support) */
+  --primary-color: 234 226 214;    /* Beige — fond principal de l'app */
+  --secondary-color: 254 251 245;  /* Off-white — cartes, panels */
+  --surface-color: 249 250 251;    /* gray-50 — survols, zones légères */
+
+  /* ========================================
+     TEXT
+     ======================================== */
+  --text-color: 0 0 0;             /* Texte principal */
+  --text-gray: 116 116 116;        /* Texte secondaire / muted */
+
+  /* ========================================
+     BORDERS
+     ======================================== */
+  --border-color: 229 231 235;     /* gray-200 — bordures par défaut */
+
+  /* ========================================
+     BRAND & INTERACTIVE
+     ======================================== */
+  --tertiary-color: 40 104 178;    /* Brand Blue — boutons, liens, focus */
+
+  /* ========================================
+     STATUS
+     ======================================== */
   --success-color: 46 139 87;
   --error-color: 193 39 45;
-  --warning-color: 234 88 12; /* orange-600 */
-  --info-color: 40 104 178;  /* Blue for Info alerts */
-  --admin-color: 245 158 11;  /* Amber-500 (Yellow-Orange) for Admin Role */
-  --teacher-color: 139 92 246;
-  --student-color: 13 148 136;
+  --warning-color: 234 88 12;      /* orange-600 */
+  --info-color: 40 104 178;        /* same as tertiary */
 
-  /* Role Gradients (for ProfileCard, badges, etc.) */
-  --gradient-admin-from: #fbbf24;      /* yellow-400 */
-  --gradient-admin-to: #f97316;        /* orange-500 */
-  --gradient-teacher-from: #60a5fa;    /* blue-400 */
-  --gradient-teacher-to: #6366f1;      /* indigo-500 */
-  --gradient-student-from: #34d399;    /* emerald-400 */
-  --gradient-student-to: #14b8a6;      /* teal-500 */
+  /* ========================================
+     ROLE COLORS
+     ======================================== */
+  --admin-color: 245 158 11;       /* amber-500 */
+  --teacher-color: 139 92 246;     /* violet-500 */
+  --student-color: 13 148 136;     /* teal-600 */
+
+  /* ========================================
+     ROLE GRADIENTS (hex ok — pas d'opacité)
+     ======================================== */
+  --gradient-admin-from: #fbbf24;
+  --gradient-admin-to: #f97316;
+  --gradient-teacher-from: #60a5fa;
+  --gradient-teacher-to: #6366f1;
+  --gradient-student-from: #34d399;
+  --gradient-student-to: #14b8a6;
 
   /* ========================================
      FONT SIZES
      ======================================== */
-  
-  --font-xxsmall: 0.5rem;    /* 8px */
-  --font-xsmall: 0.75rem;    /* 12px */
-  --font-small: 1rem;        /* 16px */
-  --font-sm: 1.25rem;        /* 20px */
-  --font-medium: 1.5rem;     /* 24px */
-  --font-large: 2rem;        /* 32px */
-  --font-xlarge: 3rem;       /* 48px */
-  --font-xxlarge: 4rem;      /* 64px */
-  
+  --font-xxsmall: 0.5rem;
+  --font-xsmall: 0.75rem;
+  --font-small: 1rem;
+  --font-sm: 1.25rem;
+  --font-medium: 1.5rem;
+  --font-large: 2rem;
+  --font-xlarge: 3rem;
+  --font-xxlarge: 4rem;
+
   /* ========================================
      FONT FAMILIES
      ======================================== */
-  
   --font-comfortaa: 'Comfortaa', sans-serif;
   --font-comfortaa-bold: 'Comfortaa Bold', sans-serif;
   --font-comfortaa-light: 'Comfortaa Light', sans-serif;
@@ -59,12 +82,23 @@
 }
 
 /* ========================================
-   DARK MODE (Foundation for future)
+   DARK MODE
+   Activé par useDarkMode → document.documentElement.classList.add('dark')
    ======================================== */
 
-[data-theme="dark"] {
-  --primary-color: #1a1a1a;
-  --secondary-color: #2a2a2a;
-  --text-color: #ffffff;
-  --text-gray: #a0a0a0;
+.dark {
+  /* Backgrounds */
+  --primary-color: 17 24 39;       /* gray-900 */
+  --secondary-color: 31 41 55;     /* gray-800 */
+  --surface-color: 55 65 81;       /* gray-700 — survols sur fond sombre */
+
+  /* Text */
+  --text-color: 249 250 251;       /* gray-50 */
+  --text-gray: 156 163 175;        /* gray-400 */
+
+  /* Borders */
+  --border-color: 55 65 81;        /* gray-700 */
+
+  /* Brand — plus clair sur fond sombre */
+  --tertiary-color: 96 165 250;    /* blue-400 */
 }

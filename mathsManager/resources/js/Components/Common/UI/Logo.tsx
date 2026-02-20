@@ -39,9 +39,7 @@ export default function Logo({ className = '', size = 'md', showBadge = true }: 
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <span
-        className={`${sizeClasses[size]} font-comfortaa-bold text-text-color dark:text-gray-100 tracking-tight`}
-      >
+      <span className={`${sizeClasses[size]} font-comfortaa-bold text-text-color tracking-tight`}>
         {appName || 'Maths Manager'}
       </span>
 

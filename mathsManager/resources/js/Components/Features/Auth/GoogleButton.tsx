@@ -9,9 +9,10 @@
  */
 export default function GoogleButton() {
   return (
+    // bg-white + text-gray-700 intentional: Google brand guidelines require a white button
     <a
       href="/auth/google/redirect"
-      className="w-full flex justify-center items-center gap-3 px-6 py-3 bg-white border border-gray-300 rounded-xl font-comfortaa text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition duration-150 shadow-sm"
+      className="w-full flex justify-center items-center gap-3 px-6 py-3 bg-white border border-border-color rounded-xl font-comfortaa text-gray-700 hover:bg-surface-color focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tertiary-color transition duration-150 shadow-sm"
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24">
         <path

@@ -102,11 +102,6 @@ class HomeController extends Controller
         }
     }
 
-    public function isntValid(): View
-    {
-        return view('errors/isntValid');
-    }
-
     public function admin(): View
     {
         return view('admin');

@@ -11,7 +11,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, title }: AppLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-primary-color dark:bg-gray-950">
+    <div className="min-h-screen flex flex-col bg-primary-color">
       <Head title={title} />
 
       <Header />

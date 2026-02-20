@@ -15,16 +15,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        'primary-color': 'var(--primary-color)',
-        'secondary-color': 'var(--secondary-color)',
+        // ── Backgrounds ──────────────────────────────────────────────────
+        'primary-color': 'rgb(var(--primary-color) / <alpha-value>)',
+        'secondary-color': 'rgb(var(--secondary-color) / <alpha-value>)',
+        'surface-color': 'rgb(var(--surface-color) / <alpha-value>)',
+
+        // ── Text ──────────────────────────────────────────────────────────
+        'text-color': 'rgb(var(--text-color) / <alpha-value>)',
+        'text-gray': 'rgb(var(--text-gray) / <alpha-value>)',
+
+        // ── Borders ───────────────────────────────────────────────────────
+        'border-color': 'rgb(var(--border-color) / <alpha-value>)',
+
+        // ── Brand & Interactive ───────────────────────────────────────────
         'tertiary-color': 'rgb(var(--tertiary-color) / <alpha-value>)',
 
-        'text-color': 'var(--text-color)',
-        'text-gray': 'var(--text-gray)',
+        // ── Status ────────────────────────────────────────────────────────
         'success-color': 'rgb(var(--success-color) / <alpha-value>)',
         'error-color': 'rgb(var(--error-color) / <alpha-value>)',
         'warning-color': 'rgb(var(--warning-color) / <alpha-value>)',
         'info-color': 'rgb(var(--info-color) / <alpha-value>)',
+
+        // ── Roles ─────────────────────────────────────────────────────────
         'admin-color': 'rgb(var(--admin-color) / <alpha-value>)',
         'teacher-color': 'rgb(var(--teacher-color) / <alpha-value>)',
         'student-color': 'rgb(var(--student-color) / <alpha-value>)',

@@ -28,10 +28,34 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $user = $this->user();
+        
+        // Règles de base (étudiants, admins, profs non validés)
+        $rules = [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
         ];
+
+        // Un professeur validé ne peut PLUS changer son identité de base
+        if ($user->role === 'teacher' && $user->status === 'active') {
+            $rules['first_name'] = ['prohibited'];
+            $rules['last_name'] = ['prohibited'];
+            $rules['email'] = ['prohibited'];
+        }
+
+        // Si l'utilisateur est prof (quelle que soit la validation),
+        // on autorise la modification de ses infos complémentaires
+        if ($user->role === 'teacher') {
+            $rules = array_merge($rules, [
+                'bio'            => ['nullable', 'string', 'max:1000'],
+                'location'       => ['nullable', 'string', 'max:255'],
+                'teaching_level' => ['nullable', 'in:college,lycee,prepa,superieur,autre'],
+                'diploma'        => ['nullable', 'in:licence,master,agregation,capes,doctorat,autre'],
+                'phone'          => ['nullable', 'string', 'max:20'],
+            ]);
+        }
+
+        return $rules;
     }
 }

@@ -35,8 +35,9 @@ export default function AvatarSelector({
           title="Cliquez pour changer la photo"
         />
 
+        {/* Avatar circle */}
         <div
-          className={`h-20 w-20 rounded-full border-2 border-dashed border-gray-200 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-700 transition-all ${avatarFile || currentAvatarUrl ? 'border-none shadow-md' : 'group-hover:border-tertiary-color/50'}`}
+          className={`h-20 w-20 rounded-full border-2 border-dashed border-border-color flex items-center justify-center overflow-hidden bg-surface-color transition-all ${avatarFile || currentAvatarUrl ? 'border-none shadow-md' : 'group-hover:border-tertiary-color/50'}`}
         >
           {avatarFile ? (
             <img
@@ -52,19 +53,21 @@ export default function AvatarSelector({
               size="2xl"
             />
           ) : (
-            <div className="text-gray-300 dark:text-gray-500 text-[10px] text-center px-1 font-comfortaa flex flex-col items-center">
+            <div className="text-text-gray text-[10px] text-center px-1 font-comfortaa flex flex-col items-center">
               <UserIcon className="h-5 w-5 mb-0.5" strokeWidth={2} />
               Photo
             </div>
           )}
         </div>
 
+        {/* Plus button — no avatar yet */}
         {!avatarFile && !currentAvatarUrl && (
-          <div className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-1.5 shadow-md border border-gray-100 text-tertiary-color group-hover:scale-110 transition-transform">
+          <div className="absolute -bottom-0.5 -right-0.5 bg-secondary-color rounded-full p-1.5 shadow-md border border-border-color text-tertiary-color group-hover:scale-110 transition-transform">
             <Plus className="h-3.5 w-3.5" strokeWidth={3} />
           </div>
         )}
 
+        {/* New file selected — crop + remove */}
         {avatarFile && (
           <>
             <button
@@ -73,7 +76,7 @@ export default function AvatarSelector({
                 e.stopPropagation();
                 onCropClick();
               }}
-              className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-tertiary-color hover:bg-tertiary-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
+              className="absolute top-0 right-0 bg-secondary-color/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-border-color text-tertiary-color hover:bg-tertiary-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
               title="Recadrer la photo"
             >
               <Crop className="h-3.5 w-3.5" />
@@ -85,7 +88,7 @@ export default function AvatarSelector({
                 e.stopPropagation();
                 onRemoveClick();
               }}
-              className="absolute bottom-0 left-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-error-color hover:bg-error-color hover:text-white transition-all transform hover:scale-110 -translate-x-1 translate-y-1 z-20"
+              className="absolute bottom-0 left-0 bg-secondary-color/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-border-color text-error-color hover:bg-error-color hover:text-white transition-all transform hover:scale-110 -translate-x-1 translate-y-1 z-20"
               title="Retirer la photo"
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -93,6 +96,7 @@ export default function AvatarSelector({
           </>
         )}
 
+        {/* Existing avatar — crop + remove */}
         {!avatarFile && currentAvatarUrl && (
           <>
             {onCropCurrentAvatar && (
@@ -102,7 +106,7 @@ export default function AvatarSelector({
                   e.stopPropagation();
                   onCropCurrentAvatar();
                 }}
-                className="absolute top-0 right-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-tertiary-color hover:bg-tertiary-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
+                className="absolute top-0 right-0 bg-secondary-color/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-border-color text-tertiary-color hover:bg-tertiary-color hover:text-white transition-all transform hover:scale-110 translate-x-1 -translate-y-1 z-20"
                 title="Recadrer la photo"
               >
                 <Crop className="h-3.5 w-3.5" />
@@ -115,7 +119,7 @@ export default function AvatarSelector({
                 e.stopPropagation();
                 onRemoveClick();
               }}
-              className="absolute bottom-0 left-0 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-white/20 text-error-color hover:bg-error-color hover:text-white transition-all transform hover:scale-110 -translate-x-1 translate-y-1 z-20"
+              className="absolute bottom-0 left-0 bg-secondary-color/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-border-color text-error-color hover:bg-error-color hover:text-white transition-all transform hover:scale-110 -translate-x-1 translate-y-1 z-20"
               title="Supprimer la photo actuelle"
             >
               <Trash2 className="h-3.5 w-3.5" />

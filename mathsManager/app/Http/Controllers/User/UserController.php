@@ -224,28 +224,28 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function verify($id): RedirectResponse
+    public function activate($id): RedirectResponse
     {
         $user = User::findOrFail($id);
-        $user->verified = true;
+        $user->status = 'active';
         $user->save();
 
         return redirect()->route('students.show');
     }
 
-    public function unverify($id): RedirectResponse
+    public function deactivate($id): RedirectResponse
     {
         $user = User::findOrFail($id);
-        $user->verified = false;
+        $user->status = 'pending_approval';
         $user->save();
 
         return redirect()->route('students.show');
     }
 
-    public function resetLastDSGeneratedAt($id): RedirectResponse
+    public function ban($id): RedirectResponse
     {
         $user = User::findOrFail($id);
-        $user->last_ds_generated_at = null;
+        $user->status = 'banned';
         $user->save();
 
         return redirect()->route('students.show');

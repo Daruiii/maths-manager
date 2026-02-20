@@ -40,7 +40,7 @@ export default function UserAvatar({
     <img
       src={avatarUrl}
       alt={altText}
-      className={`rounded-full object-cover border border-gray-200 dark:border-gray-700 ${sizeClasses[size] || ''} ${className}`}
+      className={`rounded-full object-cover border border-border-color ${sizeClasses[size] || ''} ${className}`}
     />
   );
 }

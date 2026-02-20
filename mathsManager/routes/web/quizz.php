@@ -5,7 +5,6 @@ use App\Http\Controllers\Quizz\QuizzPlayController;
 use App\Http\Controllers\Quizz\QuizzQuestionController;
 use App\Http\Controllers\Quizz\QuizzAnswerController;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,14 +46,12 @@ Route::middleware('auth')->group(function () {
     // ============================================
     // STUDENT - Quiz Play
     // ============================================
-    Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/quizz/start/{chapter_id}', [QuizzPlayController::class, 'start'])
-            ->middleware('throttle:20,1') // 20 quiz starts per minute max
-            ->name('start_quizz');
-        Route::get('/myQuizz', [QuizzPlayController::class, 'showQuestion'])->name('show_question');
-        Route::post('/quizz/check', [QuizzPlayController::class, 'checkAnswer'])->name('check_answer');
-        Route::get('/quizz/answer/{answer_id}/{correct_answer}', [QuizzPlayController::class, 'showAnswer'])->name('show_answer');
-        Route::get('/quizzResult', [QuizzPlayController::class, 'showResult'])->name('show_result');
-        Route::get('/quizzEnd', [QuizzPlayController::class, 'end'])->name('end_quizz');
-    });
+    Route::get('/quizz/start/{chapter_id}', [QuizzPlayController::class, 'start'])
+        ->middleware('throttle:20,1') // 20 quiz starts per minute max
+        ->name('start_quizz');
+    Route::get('/myQuizz', [QuizzPlayController::class, 'showQuestion'])->name('show_question');
+    Route::post('/quizz/check', [QuizzPlayController::class, 'checkAnswer'])->name('check_answer');
+    Route::get('/quizz/answer/{answer_id}/{correct_answer}', [QuizzPlayController::class, 'showAnswer'])->name('show_answer');
+    Route::get('/quizzResult', [QuizzPlayController::class, 'showResult'])->name('show_result');
+    Route::get('/quizzEnd', [QuizzPlayController::class, 'end'])->name('end_quizz');
 });

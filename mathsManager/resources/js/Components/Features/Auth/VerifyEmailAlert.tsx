@@ -19,19 +19,19 @@ export default function VerifyEmailAlert({ className = '' }: VerifyEmailAlertPro
 
   return (
     <div className={`mt-2 ${className}`}>
-      <p className="text-sm text-gray-800 dark:text-gray-200">
+      <p className="text-sm text-text-color">
         Votre adresse e-mail n'a pas encore été vérifiée.
         <button
           type="button"
           onClick={sendVerification}
-          className="ml-2 underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="ml-2 underline text-sm text-text-gray hover:text-text-color rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tertiary-color transition-colors"
         >
           Cliquez ici pour renvoyer l'e-mail de vérification.
         </button>
       </p>
 
       {status === 'verification-link-sent' && (
-        <p className="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
+        <p className="mt-2 font-medium text-sm text-success-color">
           Un nouveau lien de vérification a été envoyé à votre adresse e-mail.
         </p>
       )}

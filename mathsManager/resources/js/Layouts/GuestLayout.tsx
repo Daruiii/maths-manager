@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import Logo from '@/Components/Common/UI/Logo';
 import DarkModeToggle from '@/Components/Common/UI/DarkModeToggle';
+import { Link } from '@inertiajs/react';
 
 interface GuestLayoutProps {
   children: ReactNode;
@@ -8,12 +9,12 @@ interface GuestLayoutProps {
 
 export default function GuestLayout({ children }: GuestLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-background-light dark:bg-gray-950 font-sans antialiased">
+    <div className="min-h-screen flex flex-col bg-primary-color font-sans antialiased">
       <div className="flex-grow flex flex-col justify-center items-center px-4 py-4 sm:py-8">
         <div className="mb-4 transition-all hover:scale-105 duration-300">
-          <a href="/">
+          <Link href="/">
             <Logo size="xl" showBadge={true} />
-          </a>
+          </Link>
         </div>
 
         <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700">

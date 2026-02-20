@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Sheet\ExercisesSheetController;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
 use Illuminate\Support\Facades\Route;
 
 // ============================================
@@ -22,8 +21,6 @@ Route::middleware('auth')->group(function () {
     });
     
     // Student routes
-    Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/exercises_sheet/{id}', [ExercisesSheetController::class, 'show'])->name('exercises_sheet.show');
-        Route::get('/exercises_sheet/myExercisesSheets/{id}', [ExercisesSheetController::class, 'indexUser'])->name('exercises_sheet.myExercisesSheets');
-    });
+    Route::get('/exercises_sheet/{id}', [ExercisesSheetController::class, 'show'])->name('exercises_sheet.show');
+    Route::get('/exercises_sheet/myExercisesSheets/{id}', [ExercisesSheetController::class, 'indexUser'])->name('exercises_sheet.myExercisesSheets');
 });

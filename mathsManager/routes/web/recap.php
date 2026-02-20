@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RecapController;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +49,5 @@ Route::middleware(['auth', 'throttle:60,1'])->group(function () {
     // ============================================
     // STUDENT - Recap View
     // ============================================
-    Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/recap/{id}', [RecapController::class, 'show'])->name('recap.show');
-    });
+    Route::get('/recap/{id}', [RecapController::class, 'show'])->name('recap.show');
 });

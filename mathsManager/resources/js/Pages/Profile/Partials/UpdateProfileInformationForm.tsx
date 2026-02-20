@@ -6,6 +6,7 @@ import TextInput from '@/Components/Common/Form/TextInput';
 import Button from '@/Components/Common/UI/Button';
 import AvatarInput from '@/Components/Common/Avatar/AvatarInput';
 import VerifyEmailAlert from '@/Components/Features/Auth/VerifyEmailAlert';
+import { CheckCircle } from 'lucide-react';
 
 export default function UpdateProfileInformationForm({
   mustVerifyEmail,
@@ -24,6 +25,9 @@ export default function UpdateProfileInformationForm({
     avatar: null as File | null,
     remove_avatar: 'false',
   });
+
+  // Un professeur validé ne peut plus changer ces informations
+  const isTeacherBlocked = user.role === 'teacher' && user.status === 'active';
 
   const handleRemoveAvatar = () => {
     setData((prevData) => ({
@@ -48,9 +52,15 @@ export default function UpdateProfileInformationForm({
   return (
     <section className={className}>
       <div className="mb-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-text-gray">
           Mettez à jour les informations de votre profil et votre adresse e-mail.
         </p>
+        {isTeacherBlocked && (
+          <p className="mt-2 text-sm text-tertiary-color bg-tertiary-color/10 p-3 rounded-lg flex items-center gap-2 font-comfortaa">
+            En tant que professeur validé, votre identité (nom, prénom, email) ne peut plus être
+            modifiée pour des raisons de sécurité.
+          </p>
+        )}
       </div>
 
       <form onSubmit={submit} className="space-y-6">
@@ -77,11 +87,12 @@ export default function UpdateProfileInformationForm({
             <InputLabel htmlFor="first_name" value="Prénom" />
             <TextInput
               id="first_name"
-              className="mt-1 block w-full"
+              className={`mt-1 block w-full ${isTeacherBlocked ? 'opacity-50 cursor-not-allowed bg-surface-color' : ''}`}
               value={data.first_name}
               onChange={(e) => setData('first_name', e.target.value)}
               required
-              isFocused
+              disabled={isTeacherBlocked}
+              isFocused={!isTeacherBlocked}
               autoComplete="given-name"
             />
             {errors.first_name && (
@@ -92,10 +103,11 @@ export default function UpdateProfileInformationForm({
             <InputLabel htmlFor="last_name" value="Nom" />
             <TextInput
               id="last_name"
-              className="mt-1 block w-full"
+              className={`mt-1 block w-full ${isTeacherBlocked ? 'opacity-50 cursor-not-allowed bg-surface-color' : ''}`}
               value={data.last_name}
               onChange={(e) => setData('last_name', e.target.value)}
               required
+              disabled={isTeacherBlocked}
               autoComplete="family-name"
             />
             {errors.last_name && (
@@ -111,10 +123,11 @@ export default function UpdateProfileInformationForm({
           <TextInput
             id="email"
             type="email"
-            className="mt-1 block w-full"
+            className={`mt-1 block w-full ${isTeacherBlocked ? 'opacity-50 cursor-not-allowed bg-surface-color' : ''}`}
             value={data.email}
             onChange={(e) => setData('email', e.target.value)}
             required
+            disabled={isTeacherBlocked}
             autoComplete="username"
           />
           {errors.email && (
@@ -124,19 +137,8 @@ export default function UpdateProfileInformationForm({
           {mustVerifyEmail && user.email_verified_at === null && <VerifyEmailAlert />}
 
           {user.email_verified_at !== null && (
-            <p className="mt-2 text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
+            <p className="mt-2 text-sm text-success-color flex items-center gap-1">
+              <CheckCircle aria-hidden="true" className="h-4 w-4" />
               Email vérifié
             </p>
           )}
@@ -144,8 +146,6 @@ export default function UpdateProfileInformationForm({
 
         <div className="flex items-center gap-4">
           <Button disabled={processing}>Enregistrer</Button>
-
-
         </div>
       </form>
     </section>

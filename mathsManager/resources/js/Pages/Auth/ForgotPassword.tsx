@@ -21,12 +21,12 @@ export default function ForgotPassword({ status }: { status?: string }) {
     <GuestLayout>
       <Head title="Mot de passe oublié" />
 
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border-b-4 border-gray-200 dark:border-gray-700">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center font-comfortaa-bold">
+      <div className="bg-secondary-color p-8 rounded-2xl shadow-xl border-b-4 border-border-color">
+        <h2 className="text-2xl font-bold text-text-color mb-4 text-center font-comfortaa-bold">
           Mot de passe oublié ?
         </h2>
 
-        <div className="mb-6 text-sm text-gray-600 dark:text-gray-400 text-center">
+        <div className="mb-6 text-sm text-text-gray text-center">
           Pas de souci. Indiquez simplement votre adresse e-mail et nous vous enverrons un lien de
           réinitialisation de mot de passe.
         </div>
@@ -66,7 +66,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-text-gray dark:text-gray-300 font-comfortaa">
+            <p className="text-sm text-text-gray font-comfortaa">
               <Link
                 href={route('login')}
                 className="font-comfortaa-bold text-tertiary-color hover:text-tertiary-color/80 underline decoration-2 decoration-tertiary-color/30 underline-offset-4 hover:bg-tertiary-color/5 rounded transition-all"

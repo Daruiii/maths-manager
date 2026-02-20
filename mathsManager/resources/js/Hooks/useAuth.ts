@@ -30,6 +30,7 @@ export const useAuth = () => {
   const isStudent = user?.role === 'student';
   const isStaff = isAdmin || isTeacher;
   const isGuest = !user;
+  const hasNoRole = !!user && !user.role;
 
   return {
     user,
@@ -38,5 +39,6 @@ export const useAuth = () => {
     isStudent,
     isStaff,
     isGuest,
+    hasNoRole,
   };
 };

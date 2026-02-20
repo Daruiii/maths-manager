@@ -25,7 +25,7 @@
 @layer components {
   /* Navigation */
   .nav-link {
-    @apply relative text-sm font-semibold text-text-color dark:text-gray-200 hover:text-text-gray dark:hover:text-white transition-colors py-2;
+    @apply relative text-sm font-semibold text-text-color hover:text-text-gray transition-colors py-2;
   }
 
   .nav-link.active::after {

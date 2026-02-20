@@ -34,42 +34,31 @@ export default function Card({
 
   const { bg } = getVariantClasses();
 
-  // Textbook "Tab" Style with Icon Circle
-  // The tab contains the title. The icon sits in a circle next to it.
-
   return (
-    <div
-      className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm ${className} mt-4 pt-6`}
-    >
+    <div className={`relative bg-secondary-color rounded-2xl shadow-sm ${className} mt-4 pt-6`}>
       {(title || headerAction) && (
         <div className="absolute -top-5 left-4 flex items-center z-10">
-          {/* Icon Circle (Now First) */}
+          {/* Icon Circle */}
           {icon && (
             <div
-              className={`
-                mr-[-12px] flex items-center justify-center w-10 h-10 rounded-full shadow-md border-4 border-white dark:border-gray-800 text-white z-20
-                ${bg}
-             `}
+              className={`mr-[-12px] flex items-center justify-center w-10 h-10 rounded-full shadow-md border-4 border-secondary-color text-white z-20 ${bg}`}
             >
               {icon}
             </div>
           )}
 
-          {/* The Tab/Encoche for Title (Now Second) */}
+          {/* Title Tab */}
           {title && (
             <div
-              className={`
-              px-6 py-2 rounded-2xl shadow-md font-comfortaa-bold text-white text-sm tracking-wide z-10 pl-5
-              ${bg}
-            `}
+              className={`px-6 py-2 rounded-2xl shadow-md font-comfortaa-bold text-white text-sm tracking-wide z-10 pl-5 ${bg}`}
             >
               {title}
             </div>
           )}
 
-          {/* Header Action sits to the right if needed, pushed by margin or flex */}
+          {/* Header Action */}
           {headerAction && (
-            <div className="ml-auto bg-white dark:bg-gray-700 rounded-full shadow-sm px-3 py-1">
+            <div className="ml-auto bg-secondary-color rounded-full shadow-sm px-3 py-1">
               {headerAction}
             </div>
           )}

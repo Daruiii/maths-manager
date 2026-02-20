@@ -7,7 +7,6 @@ use App\Http\Controllers\DS\DSManagementController;
 use App\Http\Controllers\DS\DsExerciseController;
 use App\Http\Controllers\DS\MultipleChapterController;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,20 +70,18 @@ Route::middleware('auth')->group(function () {
     // ============================================
     // STUDENT - DS Creation, Play & View
     // ============================================
-    Route::middleware([IsVerified::class])->group(function () {
-        // Create (students can create 1 DS per day)
-        Route::get('/ds/create', [DSManagementController::class, 'create'])->name('ds.create');
-        Route::post('/ds', [DSManagementController::class, 'store'])
-            ->middleware('throttle:10,1') // 10 DS creation attempts per minute max
-            ->name('ds.store');
-        
-        // View
-        Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');
-        Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
-        
-        // Play
-        Route::get('/ds/{id}/start', [DSPlayController::class, 'start'])->name('ds.start');
-        Route::get('/ds/{id}/pause/{timer}', [DSPlayController::class, 'pause'])->name('ds.pause');
-        Route::get('/ds/{id}/finish', [DSPlayController::class, 'finish'])->name('ds.finish');
-    });
+    // Create
+    Route::get('/ds/create', [DSManagementController::class, 'create'])->name('ds.create');
+    Route::post('/ds', [DSManagementController::class, 'store'])
+        ->middleware('throttle:10,1') // 10 DS creation attempts per minute max
+        ->name('ds.store');
+
+    // View
+    Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');
+    Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
+
+    // Play
+    Route::get('/ds/{id}/start', [DSPlayController::class, 'start'])->name('ds.start');
+    Route::get('/ds/{id}/pause/{timer}', [DSPlayController::class, 'pause'])->name('ds.pause');
+    Route::get('/ds/{id}/finish', [DSPlayController::class, 'finish'])->name('ds.finish');
 });

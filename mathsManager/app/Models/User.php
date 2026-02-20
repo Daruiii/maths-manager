@@ -26,6 +26,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'provider_token',
         'teacher_id',
         'group_id',
+        // Teacher profile fields
+        'phone',
+        'location',
+        'bio',
+        'teaching_level',
+        'diploma',
     ];
 
     // Legacy constants - use UserRole enum or helper methods instead
@@ -51,6 +57,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isPrivileged(): bool
     {
         return in_array($this->role, [UserRole::Admin->value, UserRole::Teacher->value]);
+    }
+
+    public function isPendingApproval(): bool
+    {
+        return $this->status === 'pending_approval';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->status === 'banned';
     }
 
     public function getRoleEnum(): UserRole
@@ -142,5 +163,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function group()
     {
         return $this->belongsTo(StudentGroup::class, 'group_id');
+    }
+
+    public function teacherApplication()
+    {
+        return $this->hasOne(TeacherApplication::class);
     }
 }

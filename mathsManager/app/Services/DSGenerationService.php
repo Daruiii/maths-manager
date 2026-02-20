@@ -64,7 +64,6 @@ class DSGenerationService
 
         // Créer ou mettre à jour le DS
         if ($ds === null) {
-            $this->checkDailyLimit($user);
             $ds = new DS();
             $ds->user_id = $user->id;
         }
@@ -81,10 +80,6 @@ class DSGenerationService
         // Attacher les chapitres et exercices
         $ds->multipleChapters()->attach($multipleChapterIds);
         $ds->exercisesDS()->attach($exerciseIds);
-
-        // Mettre à jour last_ds_generated_at (sauf pour admin/teacher)
-        $user->last_ds_generated_at = ($user->role == 'admin' || $user->role == 'teacher') ? null : now();
-        $user->save();
 
         return $ds;
     }
@@ -198,22 +193,5 @@ class DSGenerationService
         return $selectedExercises;
     }
 
-    /**
-     * Vérifie que l'utilisateur n'a pas déjà généré un DS aujourd'hui
-     *
-     * @param User $user
-     * @return void
-     * @throws \Illuminate\Http\RedirectResponse
-     */
-    private function checkDailyLimit(User $user): void
-    {
-        if ($user->last_ds_generated_at !== null) {
-            $lastGenerated = new \DateTime($user->last_ds_generated_at);
-            $today = new \DateTime();
-
-            if ($lastGenerated->format('Y-m-d') === $today->format('Y-m-d')) {
-                throw new \DomainException('Vous avez déjà généré un DS aujourd\'hui');
-            }
-        }
-    }
 }
+

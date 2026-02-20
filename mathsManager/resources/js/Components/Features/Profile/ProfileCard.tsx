@@ -14,7 +14,6 @@ export default function ProfileCard({
 }) {
   const { user, isStudent, isTeacher, isAdmin } = useAuth();
 
-  // Role configuration
   const getRoleConfig = () => {
     if (isAdmin) {
       return {
@@ -44,17 +43,16 @@ export default function ProfileCard({
       };
     }
     return {
-      borderColor: 'border-gray-200',
-      gradient: 'from-gray-400 to-gray-500',
+      borderColor: 'border-border-color',
+      gradient: 'from-text-gray to-text-color',
       icon: null,
       label: 'Utilisateur',
-      textClass: 'text-gray-600',
+      textClass: 'text-text-gray',
     };
   };
 
   const roleConfig = getRoleConfig();
 
-  /* Role variant mapping */
   const getVariant = (): 'default' | 'teacher' | 'student' | 'danger' | 'admin' => {
     if (isAdmin) return 'admin';
     if (isTeacher) return 'teacher';
@@ -73,20 +71,20 @@ export default function ProfileCard({
             <UserAvatar
               user={user}
               size="2xl"
-              className={`relative !border-4 !border-white dark:!border-gray-800 shadow-lg ${roleConfig.borderColor}`}
+              className={`relative !border-4 !border-secondary-color shadow-lg ${roleConfig.borderColor}`}
             />
           </div>
 
-          <h2 className="mt-4 text-xl font-comfortaa-bold text-gray-900 dark:text-white">
+          <h2 className="mt-4 text-xl font-comfortaa-bold text-text-color">
             {user?.first_name} {user?.last_name}
           </h2>
 
-          <div className="mt-2 flex items-center text-gray-500 dark:text-gray-400 text-sm">
+          <div className="mt-2 flex items-center text-text-gray text-sm">
             <Mail className="w-4 h-4 mr-2" />
             {user?.email}
           </div>
 
-          <div className="mt-6 w-full border-t border-gray-100 dark:border-gray-700 pt-6">
+          <div className="mt-6 w-full border-t border-border-color pt-6">
             {isStudent && (
               <TeacherCard
                 teacherName={statistics?.teacher_name}
@@ -98,16 +96,16 @@ export default function ProfileCard({
             {isTeacher && (
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <span className="block text-2xl font-bold text-gray-900 dark:text-white">
+                  <span className="block text-2xl font-bold text-text-color">
                     {statistics?.students_count || 0}
                   </span>
-                  <span className="text-xs text-gray-500 uppercase tracking-wider">Élèves</span>
+                  <span className="text-xs text-text-gray uppercase tracking-wider">Élèves</span>
                 </div>
                 <div>
-                  <span className="block text-2xl font-bold text-gray-900 dark:text-white">
+                  <span className="block text-2xl font-bold text-text-color">
                     {statistics?.corrections_count || 0}
                   </span>
-                  <span className="text-xs text-gray-500 uppercase tracking-wider">Corrigés</span>
+                  <span className="text-xs text-text-gray uppercase tracking-wider">Corrigés</span>
                 </div>
               </div>
             )}

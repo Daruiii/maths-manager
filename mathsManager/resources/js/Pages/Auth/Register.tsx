@@ -31,12 +31,12 @@ export default function Register() {
     <GuestLayout>
       <Head title="Inscription" />
 
-      <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 px-6 py-8 sm:px-10 sm:py-10 w-full max-w-lg">
+      <div className="bg-secondary-color rounded-[2rem] shadow-sm border border-border-color px-6 py-8 sm:px-10 sm:py-10 w-full max-w-lg">
         <div className="mb-8 text-center sm:text-left">
           <h1 className="text-2xl font-comfortaa-bold text-tertiary-color dark:text-tertiary-color">
             Créer un compte
           </h1>
-          <p className="text-text-gray dark:text-gray-400 text-xs font-comfortaa mt-1">
+          <p className="text-text-gray text-xs font-comfortaa mt-1">
             Rejoignez-nous pour progresser.
           </p>
         </div>
@@ -70,7 +70,9 @@ export default function Register() {
                   required
                 />
                 {errors.first_name && (
-                  <p className="mt-1 text-xs text-error-color font-comfortaa">{errors.first_name}</p>
+                  <p className="mt-1 text-xs text-error-color font-comfortaa">
+                    {errors.first_name}
+                  </p>
                 )}
               </div>
               <div className="w-1/2">
@@ -153,7 +155,7 @@ export default function Register() {
           </div>
 
           <div className="mt-4 text-center">
-            <p className="text-sm text-text-gray dark:text-gray-300 font-comfortaa">
+            <p className="text-sm text-text-gray font-comfortaa">
               Déjà un compte ?{' '}
               <Link
                 href={route('login')}

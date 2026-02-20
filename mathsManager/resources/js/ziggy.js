@@ -10,7 +10,6 @@ const Ziggy = {
     home: { uri: 'home', methods: ['GET', 'HEAD'] },
     robots: { uri: 'robots.txt', methods: ['GET', 'HEAD'] },
     admin: { uri: 'admin', methods: ['GET', 'HEAD'] },
-    isntValid: { uri: 'isntValid', methods: ['GET', 'HEAD'] },
     'contents.index': { uri: 'admin\/contents', methods: ['GET', 'HEAD'] },
     'content.edit': {
       uri: 'admin\/content\/{section}\/edit',
@@ -416,17 +415,17 @@ const Ziggy = {
     'user.edit': { uri: 'admin\/user\/{id}\/edit', methods: ['GET', 'HEAD'], parameters: ['id'] },
     'user.update': { uri: 'admin\/user\/{id}', methods: ['PATCH'], parameters: ['id'] },
     'user.destroy': { uri: 'admin\/user\/{id}', methods: ['DELETE'], parameters: ['id'] },
-    'user.verify': { uri: 'admin\/user\/{id}\/verify', methods: ['PATCH'], parameters: ['id'] },
-    'user.unverify': { uri: 'admin\/user\/{id}\/unverify', methods: ['PATCH'], parameters: ['id'] },
-    'user.resetLastDSGeneratedAt': {
-      uri: 'admin\/user\/{id}\/resetLastDSGeneratedAt',
+    'user.activate': { uri: 'admin\/user\/{id}\/activate', methods: ['PATCH'], parameters: ['id'] },
+    'user.deactivate': {
+      uri: 'admin\/user\/{id}\/deactivate',
       methods: ['PATCH'],
       parameters: ['id'],
     },
+    'user.ban': { uri: 'admin\/user\/{id}\/ban', methods: ['PATCH'], parameters: ['id'] },
+    'profile.show': { uri: 'profile', methods: ['GET', 'HEAD'] },
     'profile.edit': { uri: 'profile\/edit', methods: ['GET', 'HEAD'] },
     'profile.update': { uri: 'profile', methods: ['PATCH'] },
     'profile.destroy': { uri: 'profile', methods: ['DELETE'] },
-    'test.inertia': { uri: 'test\/inertia', methods: ['GET', 'HEAD'] },
     'private.file.serve': {
       uri: 'private\/{context}\/{identifier}\/{filename}',
       methods: ['GET', 'HEAD'],
@@ -453,6 +452,13 @@ const Ziggy = {
     'password.confirm': { uri: 'confirm-password', methods: ['GET', 'HEAD'] },
     'password.update': { uri: 'password', methods: ['PUT'] },
     logout: { uri: 'logout', methods: ['POST'] },
+    'onboarding.role': { uri: 'onboarding\/role', methods: ['GET', 'HEAD'] },
+    'onboarding.student': { uri: 'onboarding\/student', methods: ['POST'] },
+    'onboarding.teacher': { uri: 'onboarding\/teacher', methods: ['GET', 'HEAD'] },
+    'onboarding.teacher.submit': { uri: 'onboarding\/teacher', methods: ['POST'] },
+    'onboarding.pending': { uri: 'onboarding\/pending', methods: ['GET', 'HEAD'] },
+    'onboarding.rejected': { uri: 'onboarding\/rejected', methods: ['GET', 'HEAD'] },
+    'onboarding.switch-to-student': { uri: 'onboarding\/switch-to-student', methods: ['POST'] },
   },
 };
 if (typeof window !== 'undefined' && typeof window.Ziggy !== 'undefined') {

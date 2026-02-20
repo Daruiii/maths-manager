@@ -22,16 +22,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
         Route::patch('/user/{id}', [UserController::class, 'update'])->name('user.update');
         Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
-        // verify et unverify
-        Route::patch('/user/{id}/verify', [UserController::class, 'verify'])->name('user.verify');
-        Route::patch('/user/{id}/unverify', [UserController::class, 'unverify'])->name('user.unverify');
-        // reset last_ds_generated_at
-        Route::patch('/user/{id}/resetLastDSGeneratedAt', [UserController::class, 'resetLastDSGeneratedAt'])->name('user.resetLastDSGeneratedAt');
+        // activate, deactivate, ban
+        Route::patch('/user/{id}/activate', [UserController::class, 'activate'])->name('user.activate');
+        Route::patch('/user/{id}/deactivate', [UserController::class, 'deactivate'])->name('user.deactivate');
+        Route::patch('/user/{id}/ban', [UserController::class, 'ban'])->name('user.ban');
+
     });
 });
 
 // Profile routes (authenticated users)
 Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

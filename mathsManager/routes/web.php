@@ -34,8 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin', [HomeController::class, 'admin'])->name('admin')->middleware(IsAdmin::class);
 });
 
-// errors
-Route::get('/isntValid', [HomeController::class, 'isntValid'])->name('isntValid');
+
 
 // Content routes
 Route::middleware('auth')->prefix('admin')->group(function () {
@@ -91,3 +90,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/web/onboarding.php';

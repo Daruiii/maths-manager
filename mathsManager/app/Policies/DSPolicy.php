@@ -18,8 +18,8 @@ class DSPolicy
             return true;
         }
 
-        // Les étudiants peuvent voir la liste (filtrée dans le controller)
-        return $user->role === User::ROLE_STUDENT && $user->verified;
+        // Les étudiants peuvent voir la liste uniquement s'ils ont un prof assigné
+        return $user->role === User::ROLE_STUDENT && $user->teacher_id !== null;
     }
 
     /**
@@ -41,8 +41,8 @@ class DSPolicy
      */
     public function create(User $user): bool
     {
-        // Les étudiants vérifiés et les admins/teachers peuvent créer des DS
-        return $user->verified || in_array($user->role, [User::ROLE_ADMIN, User::ROLE_TEACHER]);
+        // Seuls les admins et teachers peuvent créer/assigner des DS
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_TEACHER]);
     }
 
     /**

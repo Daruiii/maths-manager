@@ -1,3 +1,5 @@
+import { Link } from '@inertiajs/react';
+
 export default function FooterLinks() {
   const links = [
     { label: 'CGU', href: '/terms' },
@@ -8,13 +10,13 @@ export default function FooterLinks() {
   return (
     <div className="flex items-center justify-center gap-6">
       {links.map((link) => (
-        <a
+        <Link
           key={link.href}
           href={link.href}
-          className="text-xs md:text-sm text-text-gray dark:text-gray-400 hover:text-admin-color dark:hover:text-admin-color transition-colors"
+          className="text-xs md:text-sm text-text-gray hover:text-text-color transition-colors"
         >
           {link.label}
-        </a>
+        </Link>
       ))}
     </div>
   );
