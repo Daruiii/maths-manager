@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use App\Models\User;
 use App\Models\Chapter;
 use App\Models\Classe;
 use App\Models\CorrectionRequest;
@@ -46,9 +47,14 @@ class HomeController extends Controller
                     ->orderBy('users.first_name', 'asc')
                     ->get();
 
+                $pendingTeachersCount = User::where('role', 'teacher')
+                    ->where('status', 'pending_approval')
+                    ->count();
+
                 return inertia('Home/Home', [
                     'correctionRequests' => $correctionRequests,
                     'ds' => $ds,
+                    'pendingTeachersCount' => $pendingTeachersCount,
                 ]);
             }
 

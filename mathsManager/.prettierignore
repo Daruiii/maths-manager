@@ -6,3 +6,6 @@ vendor
 *.sql.gz
 bootstrap/cache
 storage/framework
+
+resources/js/ziggy.js
+resources/js/ziggy.d.ts

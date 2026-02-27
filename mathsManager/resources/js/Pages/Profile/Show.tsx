@@ -19,21 +19,20 @@ export default function Show({ statistics }: ProfileProps) {
     <AppLayout title="Mon Profil">
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-8">
-          <div className="flex flex-row justify-between items-center gap-4">
-            <PageHeader
-              title="Mon Profil"
-              subtitle="Consultez vos informations publiques et vos statistiques."
-              breadcrumbs={[{ label: 'Mon Profil' }]}
-            />
-            <Link href={route('profile.edit')}>
-              <Button variant="secondary" className="flex items-center">
-                <Settings size={18} className="sm:mr-2" />
-                <span className="hidden sm:inline">Modifier mes informations</span>
-              </Button>
-            </Link>
-          </div>
+          <PageHeader
+            title="Mon Profil"
+            subtitle="Consultez vos informations publiques et vos statistiques."
+            breadcrumbs={[{ label: 'Mon Profil' }]}
+            action={
+              <Link href={route('profile.edit')}>
+                <Button variant="secondary" icon={Settings} iconSize={18}>
+                  <span className="hidden sm:inline">Modifier mes informations</span>
+                </Button>
+              </Link>
+            }
+          />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
             {/* Column 1: Profile Card */}
             <div className="space-y-8 lg:col-span-1">
               <ProfileCard statistics={statistics} />
@@ -48,25 +47,7 @@ export default function Show({ statistics }: ProfileProps) {
                   variant="teacher"
                 >
                   <div className="space-y-6">
-                    {/* Bio Section */}
-                    {user.bio ? (
-                      <div className="bg-surface-color/50 rounded-xl p-6 border border-border-color">
-                        <div className="flex items-center gap-2 mb-3 text-text-color font-comfortaa-bold">
-                          <FileText className="w-4 h-4 text-teacher-color" />À propos de moi
-                        </div>
-                        <p className="text-text-gray font-comfortaa text-sm whitespace-pre-wrap leading-relaxed">
-                          {user.bio}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="bg-surface-color/50 rounded-xl p-6 border border-border-color border-dashed text-center">
-                        <p className="text-text-gray/70 text-sm font-comfortaa italic">
-                          Vous n'avez pas encore rédigé de présentation.
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Details Grid */}
+                    {/* Details Grid (Moved to top) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {user.location && (
                         <div className="flex items-start gap-3 bg-surface-color/30 p-4 rounded-xl border border-border-color/50">
@@ -111,15 +92,16 @@ export default function Show({ statistics }: ProfileProps) {
                       )}
 
                       {user.status === 'active' ? (
-                        user.created_at && (
+                        user.approved_at && (
                           <div className="flex items-start gap-3 bg-surface-color/30 p-4 rounded-xl border border-border-color/50">
                             <Calendar className="w-5 h-5 text-teacher-color mt-0.5" />
                             <div>
                               <span className="block text-xs text-text-gray uppercase tracking-wider mb-1">
-                                Professeur Maths Manager depuis
+                                Professeur Maths Manager depuis le
                               </span>
                               <span className="text-sm font-medium text-text-color capitalize">
-                                {new Date(user.created_at).toLocaleDateString('fr-FR', {
+                                {new Date(user.approved_at).toLocaleDateString('fr-FR', {
+                                  day: 'numeric',
                                   month: 'long',
                                   year: 'numeric',
                                 })}
@@ -147,6 +129,24 @@ export default function Show({ statistics }: ProfileProps) {
                         </div>
                       )}
                     </div>
+
+                    {/* Bio Section (Moved to bottom) */}
+                    {user.bio ? (
+                      <div className="bg-surface-color/50 rounded-xl p-6 border border-border-color">
+                        <div className="flex items-center gap-2 mb-3 text-text-color font-comfortaa-bold">
+                          <FileText className="w-4 h-4 text-teacher-color" />À propos de moi
+                        </div>
+                        <p className="text-text-gray font-comfortaa text-sm whitespace-pre-wrap leading-relaxed">
+                          {user.bio}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-surface-color/50 rounded-xl p-6 border border-border-color border-dashed text-center">
+                        <p className="text-text-gray/70 text-sm font-comfortaa italic">
+                          Vous n'avez pas encore rédigé de présentation.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </Card>
               ) : (

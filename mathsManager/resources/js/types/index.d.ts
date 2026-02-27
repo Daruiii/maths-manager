@@ -12,6 +12,24 @@ export * from './ui';
 // Import for PageProps usage
 import type { User, Classe } from './models';
 
+// Props passed to the Home Page directly from HomeController
+export interface HomeProps {
+  introContent?: Record<string, unknown>;
+  whoamiContent?: Record<string, unknown>;
+  correctionRequests?: Record<string, unknown>[];
+  ds?: Record<string, unknown>[];
+  pendingTeachersCount?: number;
+  averageGrade?: number | string;
+  totalDS?: number;
+  notStartedDS?: number;
+  inProgressDS?: number;
+  sentDS?: number;
+  correctedDS?: number;
+  goodAnswers?: number;
+  badAnswers?: number;
+  scores?: number | string;
+}
+
 export interface PageProps {
   auth: {
     user: User | null;

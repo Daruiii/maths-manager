@@ -32,6 +32,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'bio',
         'teaching_level',
         'diploma',
+        // Calendly invite tracking
+        'calendly_invite_sent',
+        'calendly_invite_sent_at',
     ];
 
     // Legacy constants - use UserRole enum or helper methods instead
@@ -88,6 +91,17 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the approval date for teachers.
+     */
+    public function getApprovedAtAttribute()
+    {
+        if ($this->role === 'teacher' && $this->status === 'active') {
+            return $this->teacherApplication?->reviewed_at;
+        }
+        return null;
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
@@ -95,6 +109,15 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'approved_at',
     ];
 
     /**

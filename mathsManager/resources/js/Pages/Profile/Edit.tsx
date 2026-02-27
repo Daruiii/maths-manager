@@ -16,149 +16,143 @@ interface ProfileProps extends PageProps {
 }
 
 export default function Edit({ mustVerifyEmail }: ProfileProps) {
+  const user = usePage<PageProps>().props.auth.user;
+
+  const getTabClass = (selected: boolean, activeClasses: string) => {
+    return `flex items-center gap-3 whitespace-nowrap px-4 py-3.5 rounded-xl text-left text-sm font-comfortaa-bold transition-all outline-none border ${
+      selected
+        ? activeClasses
+        : 'bg-transparent text-text-gray border-transparent hover:bg-surface-color/50'
+    }`;
+  };
+
+  const tabs = [
+    {
+      id: 'info',
+      label: 'Informations',
+      icon: User,
+      show: true,
+      activeClasses: 'bg-tertiary-color/10 text-tertiary-color border-tertiary-color/30 shadow-sm',
+      panel: (
+        <Card
+          title="Informations personnelles"
+          icon={<User className="w-5 h-5" strokeWidth={2.5} />}
+        >
+          <UpdateProfileInformationForm mustVerifyEmail={mustVerifyEmail} />
+        </Card>
+      ),
+    },
+    {
+      id: 'teacher',
+      label: 'Profil Professeur',
+      icon: GraduationCap,
+      show: user?.role === 'teacher',
+      activeClasses: 'bg-teacher-color/10 text-teacher-color border-teacher-color/30 shadow-sm',
+      panel: (
+        <Card
+          title="Informations Professeur"
+          variant="teacher"
+          icon={<GraduationCap className="w-5 h-5" strokeWidth={2.5} />}
+        >
+          <UpdateTeacherInformationForm />
+        </Card>
+      ),
+    },
+    {
+      id: 'security',
+      label: 'Sécurité',
+      icon: Shield,
+      show: true,
+      activeClasses: 'bg-text-color/5 text-text-color border-border-color shadow-sm',
+      panel: !user?.provider ? (
+        <Card
+          title="Sécurité"
+          variant="default"
+          icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
+        >
+          <UpdatePasswordForm />
+        </Card>
+      ) : (
+        <Card
+          title="Sécurité"
+          variant="default"
+          icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
+          className="opacity-75"
+        >
+          <div className="p-6 text-center text-text-gray">
+            <p className="mb-4">
+              Votre mot de passe est géré par{' '}
+              <strong>{user?.provider === 'google' ? 'Google' : 'votre fournisseur'}</strong>.
+            </p>
+            <div className="inline-flex items-center px-4 py-2 bg-surface-color rounded-full text-sm">
+              <Lock className="w-4 h-4 mr-2" /> Modification désactivée
+            </div>
+          </div>
+        </Card>
+      ),
+    },
+    {
+      id: 'danger',
+      label: 'Zone de Danger',
+      icon: Trash2,
+      show: true,
+      activeClasses: 'bg-error-color/10 text-error-color border-error-color/30 shadow-sm',
+      panel: (
+        <Card
+          variant="danger"
+          title="Zone de Danger"
+          icon={<Trash2 className="w-5 h-5" strokeWidth={2.5} />}
+        >
+          <DeleteUserForm />
+        </Card>
+      ),
+    },
+  ].filter((tab) => tab.show);
+
   return (
     <AppLayout title="Paramètres">
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-row justify-between items-center gap-4">
-            <PageHeader
-              title="Paramètres"
-              subtitle="Modifiez vos informations personnelles et sécurisez votre compte."
-              breadcrumbs={[
-                { label: 'Mon Profil', href: route('profile.show') },
-                { label: 'Paramètres' },
-              ]}
-            />
-            <Link href={route('profile.show')}>
-              <Button variant="secondary" className="flex items-center">
-                <ArrowLeft size={18} className="sm:mr-2" />
-                <span className="hidden sm:inline">Retour au profil</span>
-              </Button>
-            </Link>
-          </div>
+          <PageHeader
+            title="Paramètres"
+            subtitle="Modifiez vos informations personnelles et sécurisez votre compte."
+            breadcrumbs={[
+              { label: 'Mon Profil', href: route('profile.show') },
+              { label: 'Paramètres' },
+            ]}
+            action={
+              <Link href={route('profile.show')}>
+                <Button variant="secondary" icon={ArrowLeft} iconSize={18}>
+                  <span className="hidden sm:inline">Retour au profil</span>
+                </Button>
+              </Link>
+            }
+          />
 
           <div className="mt-8 flex flex-col lg:flex-row gap-8">
             <TabGroup vertical className="w-full flex flex-col lg:flex-row gap-8 items-start">
-              {/* Tab List (Sidebar on Desktop, Horizontal Scroll on Mobile) */}
+              {/* Tab List */}
               <TabList className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible w-full lg:w-64 shrink-0 pb-2 lg:pb-0 scrollbar-hide">
-                <Tab
-                  className={({ selected }) =>
-                    `flex items-center gap-3 whitespace-nowrap px-4 py-3.5 rounded-xl text-left text-sm font-comfortaa-bold transition-all outline-none border ${
-                      selected
-                        ? 'bg-tertiary-color/10 text-tertiary-color border-tertiary-color/30 shadow-sm'
-                        : 'bg-transparent text-text-gray border-transparent hover:bg-surface-color/50'
-                    }`
-                  }
-                >
-                  <User size={18} /> Informations
-                </Tab>
-
-                {usePage<PageProps>().props.auth.user?.role === 'teacher' && (
-                  <Tab
-                    className={({ selected }) =>
-                      `flex items-center gap-3 whitespace-nowrap px-4 py-3.5 rounded-xl text-left text-sm font-comfortaa-bold transition-all outline-none border ${
-                        selected
-                          ? 'bg-teacher-color/10 text-teacher-color border-teacher-color/30 shadow-sm'
-                          : 'bg-transparent text-text-gray border-transparent hover:bg-surface-color/50'
-                      }`
-                    }
-                  >
-                    <GraduationCap size={18} /> Profil Professeur
-                  </Tab>
-                )}
-
-                <Tab
-                  className={({ selected }) =>
-                    `flex items-center gap-3 whitespace-nowrap px-4 py-3.5 rounded-xl text-left text-sm font-comfortaa-bold transition-all outline-none border ${
-                      selected
-                        ? 'bg-text-color/5 text-text-color border-border-color shadow-sm'
-                        : 'bg-transparent text-text-gray border-transparent hover:bg-surface-color/50'
-                    }`
-                  }
-                >
-                  <Shield size={18} /> Sécurité
-                </Tab>
-
-                <Tab
-                  className={({ selected }) =>
-                    `flex items-center gap-3 whitespace-nowrap px-4 py-3.5 rounded-xl text-left text-sm font-comfortaa-bold transition-all outline-none border ${
-                      selected
-                        ? 'bg-error-color/10 text-error-color border-error-color/30 shadow-sm'
-                        : 'bg-transparent text-text-gray border-transparent hover:bg-surface-color/50'
-                    }`
-                  }
-                >
-                  <Trash2 size={18} /> Zone de Danger
-                </Tab>
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <Tab
+                      key={tab.id}
+                      className={({ selected }) => getTabClass(selected, tab.activeClasses)}
+                    >
+                      <Icon size={18} /> {tab.label}
+                    </Tab>
+                  );
+                })}
               </TabList>
 
               {/* Tab Panels */}
               <TabPanels className="flex-1 w-full relative">
-                <TabPanel className="focus:outline-none animate-fade-in">
-                  <Card
-                    title="Informations personnelles"
-                    icon={<User className="w-5 h-5" strokeWidth={2.5} />}
-                  >
-                    <UpdateProfileInformationForm mustVerifyEmail={mustVerifyEmail} className="" />
-                  </Card>
-                </TabPanel>
-
-                {usePage<PageProps>().props.auth.user?.role === 'teacher' && (
-                  <TabPanel className="focus:outline-none animate-fade-in">
-                    <Card
-                      title="Informations Professeur"
-                      variant="teacher"
-                      icon={<GraduationCap className="w-5 h-5" strokeWidth={2.5} />}
-                    >
-                      <UpdateTeacherInformationForm />
-                    </Card>
+                {tabs.map((tab) => (
+                  <TabPanel key={tab.id} className="focus:outline-none animate-fade-in">
+                    {tab.panel}
                   </TabPanel>
-                )}
-
-                <TabPanel className="focus:outline-none animate-fade-in">
-                  {!usePage<PageProps>().props.auth.user?.provider ? (
-                    <Card
-                      title="Sécurité"
-                      variant="default"
-                      icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
-                    >
-                      <UpdatePasswordForm className="" />
-                    </Card>
-                  ) : (
-                    <Card
-                      title="Sécurité"
-                      variant="default"
-                      icon={<Lock className="w-5 h-5" strokeWidth={2.5} />}
-                      className="opacity-75"
-                    >
-                      <div className="p-6 text-center text-text-gray">
-                        <p className="mb-4">
-                          Votre mot de passe est géré par{' '}
-                          <strong>
-                            {usePage<PageProps>().props.auth.user?.provider === 'google'
-                              ? 'Google'
-                              : 'votre fournisseur'}
-                          </strong>
-                          .
-                        </p>
-                        <div className="inline-flex items-center px-4 py-2 bg-surface-color rounded-full text-sm">
-                          <Lock className="w-4 h-4 mr-2" />
-                          Modification désactivée
-                        </div>
-                      </div>
-                    </Card>
-                  )}
-                </TabPanel>
-
-                <TabPanel className="focus:outline-none animate-fade-in">
-                  <Card
-                    variant="danger"
-                    title="Zone de Danger"
-                    icon={<Trash2 className="w-5 h-5" strokeWidth={2.5} />}
-                  >
-                    <DeleteUserForm className="" />
-                  </Card>
-                </TabPanel>
+                ))}
               </TabPanels>
             </TabGroup>
           </div>

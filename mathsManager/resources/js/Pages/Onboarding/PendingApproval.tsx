@@ -55,8 +55,8 @@ export default function PendingApproval({ applicationDate }: Props) {
 
           <div className="flex justify-center">
             <Link href={route('profile.show')}>
-              <Button variant="secondary" className="px-8">
-                <Settings size={18} className="mr-2" /> Mon profil
+              <Button variant="secondary" icon={Settings} iconSize={18} className="px-8">
+                Mon profil
               </Button>
             </Link>
           </div>

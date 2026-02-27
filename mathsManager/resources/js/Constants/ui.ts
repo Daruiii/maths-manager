@@ -1,5 +1,5 @@
 export const BUTTON_BASE_STYLES =
-  'inline-flex items-center justify-center rounded-xl font-comfortaa-bold uppercase tracking-widest transition-all duration-75 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed transform active:translate-y-1 active:shadow-none focus:outline-none';
+  'inline-flex items-center justify-center rounded-xl font-comfortaa-bold uppercase tracking-widest transition-all duration-75 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none';
 
 export const BUTTON_VARIANTS = {
   primary:

@@ -7,9 +7,10 @@ import { Head } from '@inertiajs/react';
 interface AppLayoutProps {
   children: ReactNode;
   title?: string;
+  hideFooter?: boolean;
 }
 
-export default function AppLayout({ children, title }: AppLayoutProps) {
+export default function AppLayout({ children, title, hideFooter = false }: AppLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-primary-color">
       <Head title={title} />
@@ -17,7 +18,7 @@ export default function AppLayout({ children, title }: AppLayoutProps) {
       <Header />
       <FlashToast />
       <main className="flex-grow pt-[72px]">{children}</main>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 }

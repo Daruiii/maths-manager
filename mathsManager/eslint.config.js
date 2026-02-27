@@ -55,6 +55,10 @@ export default [
         HTMLParagraphElement: 'readonly',
         HTMLSelectElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
+        HTMLDivElement: 'readonly',
+        Element: 'readonly',
+        Node: 'readonly',
+        MouseEvent: 'readonly',
         fetch: 'readonly',
         Event: 'readonly',
         // Node globals

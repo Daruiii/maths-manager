@@ -11,6 +11,8 @@ export interface User {
   email_verified_at?: string | null;
   role: 'admin' | 'teacher' | 'student';
   status: 'active' | 'pending_approval' | 'rejected' | 'banned' | 'inactive';
+  calendly_invite_sent?: boolean;
+  calendly_invite_sent_at?: string | null;
   avatar?: string;
   verified?: boolean;
   verified_teacher?: boolean;
@@ -25,6 +27,7 @@ export interface User {
   diploma?: string;
   phone?: string;
   created_at?: string;
+  approved_at?: string | null;
 }
 
 export interface Classe {
