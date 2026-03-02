@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Models\StudentGroup;
+use App\Policies\StudentGroupPolicy;
+use App\Policies\TeacherStudentPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use View;
 use App\Models\Classe;
@@ -24,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ─── Policies ──────────────────────────────────────────────────────────
+        Gate::policy(StudentGroup::class, StudentGroupPolicy::class);
+        Gate::policy(User::class, TeacherStudentPolicy::class);
+
         // Vérifier si les tables existent avant d'exécuter les requêtes
         try {
             // Vérifier si la table contents existe

@@ -53,7 +53,7 @@ export default function AvatarSelector({
               size="2xl"
             />
           ) : (
-            <div className="text-text-gray text-[10px] text-center px-1 font-comfortaa flex flex-col items-center">
+            <div className="text-text-gray text-xxs text-center px-1 font-comfortaa flex flex-col items-center">
               <UserIcon className="h-5 w-5 mb-0.5" strokeWidth={2} />
               Photo
             </div>

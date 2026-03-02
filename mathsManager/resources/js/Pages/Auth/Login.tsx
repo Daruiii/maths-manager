@@ -7,7 +7,16 @@ import Checkbox from '@/Components/Common/Form/Checkbox';
 import Button from '@/Components/Common/UI/Button';
 import GoogleButton from '@/Components/Features/Auth/GoogleButton';
 
-export default function Login({ canResetPassword }: { canResetPassword?: boolean }) {
+interface Props {
+  canResetPassword?: boolean;
+  redirect?: string;
+}
+
+export default function Login({ canResetPassword, redirect }: Props) {
+  const registerUrl = redirect
+    ? `${route('register')}?redirect=${encodeURIComponent(redirect)}`
+    : route('register');
+
   const { data, setData, post, processing, errors, reset } = useForm({
     email: '',
     password: '',
@@ -106,14 +115,14 @@ export default function Login({ canResetPassword }: { canResetPassword?: boolean
               <div className="flex-grow border-t border-border-color"></div>
             </div>
 
-            <GoogleButton />
+            <GoogleButton redirect={redirect} />
           </div>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-text-gray font-comfortaa">
               Pas encore de compte ?{' '}
               <Link
-                href={route('register')}
+                href={registerUrl}
                 className="font-comfortaa-bold text-tertiary-color hover:text-tertiary-color/80 underline decoration-2 decoration-tertiary-color/30 underline-offset-4 hover:bg-tertiary-color/5 rounded transition-all"
               >
                 S'inscrire

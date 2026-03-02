@@ -25,9 +25,17 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Register');
+        // Préserver le redirect pour le flow d'invitation
+        $redirectUrl = $request->query('redirect');
+        if ($redirectUrl) {
+            redirect()->setIntendedUrl($redirectUrl);
+        }
+
+        return Inertia::render('Auth/Register', [
+            'redirectUrl' => $redirectUrl,
+        ]);
     }
 
     /**
@@ -72,6 +80,6 @@ class RegisteredUserController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        return redirect(route('home', absolute: false));
+        return redirect()->intended(route('home', absolute: false));
     }
 }

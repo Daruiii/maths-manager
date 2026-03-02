@@ -30,6 +30,24 @@ export interface User {
   approved_at?: string | null;
 }
 
+export interface StudentGroup {
+  id: number;
+  teacher_id: number;
+  name: string;
+  students_count?: number;
+}
+
+export interface TeacherInvitation {
+  id: number;
+  teacher_id: number;
+  group_id?: number | null;
+  code: string;
+  max_uses: number;
+  current_uses: number;
+  is_active: boolean;
+  expires_at: string | null;
+}
+
 export interface Classe {
   id: number;
   name: string;

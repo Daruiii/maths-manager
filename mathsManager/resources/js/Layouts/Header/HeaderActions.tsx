@@ -20,7 +20,7 @@ export default function HeaderActions({ user }: HeaderActionsProps) {
       ) : (
         <Link
           href="/login"
-          className="flex !px-3 lg:!px-4 !py-1.5 text-xs lg:text-xs shadow-sm bg-secondary-color/50 text-text-color hover:bg-surface-color transition-colors rounded-xl font-comfortaa-bold tracking-widest items-center justify-center border-2 border-border-color"
+          className="flex px-3 lg:px-4 py-1.5 text-xs shadow-sm bg-secondary-color/50 text-text-color hover:bg-surface-color transition-colors rounded-xl font-comfortaa-bold tracking-widest items-center justify-center border-2 border-border-color"
         >
           Connexion
         </Link>

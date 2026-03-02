@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Quizze;
+use App\Models\QuizzDetail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -106,26 +107,31 @@ class ProfileController extends Controller
     }
 
 
-public function destroy(Request $request): RedirectResponse
-{
-    $request->validateWithBag('userDeletion', [
-        'confirmation' => ['required', 'string', 'regex:/supprimer mon compte/'],
-    ]);
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('userDeletion', [
+            'confirmation' => ['required', 'string', 'regex:/supprimer mon compte/'],
+        ]);
 
-    $user = $request->user();
+        $user = $request->user();
 
-    if ($user->avatar !== 'default.jpg') {
-        $this->fileUploadService->delete('images/' . $user->avatar, true);
+        if ($user->avatar !== 'default.jpg') {
+            $this->fileUploadService->delete('images/' . $user->avatar, true);
+        }
+
+        Auth::logout();
+
+        // Supprimer les quizzes et leurs détails avant suppression (contraintes FK)
+        $quizIds = Quizze::where('student_id', $user->id)->pluck('id');
+        QuizzDetail::whereIn('quizz_id', $quizIds)->delete();
+        Quizze::where('student_id', $user->id)->delete();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
     }
-
-    Auth::logout();
-
-    $user->delete();
-
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect()->route('home');
-}
 
 }

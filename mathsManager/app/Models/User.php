@@ -192,4 +192,20 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(TeacherApplication::class);
     }
+
+    public function invitations()
+    {
+        return $this->hasMany(TeacherInvitation::class, 'teacher_id');
+    }
+
+    /**
+     * Get the currently active invitation link for this teacher.
+     */
+    public function activeInvitation(): ?TeacherInvitation
+    {
+        return $this->invitations()
+            ->where('is_active', true)
+            ->latest()
+            ->first();
+    }
 }

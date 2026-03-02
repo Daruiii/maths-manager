@@ -23,6 +23,15 @@
 
 /* Component Utilities */
 @layer components {
+  /* ========================================
+     MathsManager DA — Card Theorem
+     Style "encadré de théorème" académique
+     Usage: <div className="card-theorem border-l-student-color">
+     ======================================== */
+  .card-theorem {
+    @apply bg-secondary-color border border-border-color border-l-4 rounded-r-xl transition-colors;
+  }
+
   /* Navigation */
   .nav-link {
     @apply relative text-sm font-semibold text-text-color hover:text-text-gray transition-colors py-2;

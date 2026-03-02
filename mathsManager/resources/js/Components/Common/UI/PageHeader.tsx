@@ -22,7 +22,9 @@ export default function PageHeader({
   className = '',
 }: PageHeaderProps) {
   return (
-    <div className={`mb-2 flex flex-row items-center justify-between gap-4 w-full ${className}`}>
+    <div
+      className={`mb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full ${className}`}
+    >
       <div className="flex flex-col">
         {/* Breadcrumbs */}
         <nav className="flex items-center text-sm text-text-gray mb-2 font-comfortaa">
@@ -62,7 +64,9 @@ export default function PageHeader({
       </div>
 
       {/* Action Element (Optional right-side button) */}
-      {action && <div className="flex-shrink-0">{action}</div>}
+      {action && (
+        <div className="flex-shrink-0 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">{action}</div>
+      )}
     </div>
   );
 }

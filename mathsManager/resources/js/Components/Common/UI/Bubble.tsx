@@ -19,7 +19,7 @@ export default function Bubble({ icon: Icon, label, value, className = '' }: Pro
         <Icon size={16} strokeWidth={2.5} />
       </div>
       <div className="min-w-0">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-text-gray block leading-tight">
+        <span className="text-xxs font-bold uppercase tracking-wider text-text-gray block leading-tight">
           {label}
         </span>
         <span className="font-bold text-text-color text-xs truncate block capitalize">{value}</span>

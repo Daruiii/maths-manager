@@ -76,7 +76,7 @@ export default function FlashToast({
   };
 
   return (
-    <div className="fixed top-24 right-4 z-[60] flex flex-col gap-2 w-full max-w-sm">
+    <div className="fixed top-24 right-4 z-[9999] flex flex-col gap-2 w-full max-w-sm">
       <Transition
         show={show}
         enter="transform ease-out duration-300 transition"

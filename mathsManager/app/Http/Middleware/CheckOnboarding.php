@@ -18,6 +18,7 @@ class CheckOnboarding
         'logout',
         'password.*',
         'verification.*',
+        'invitation.*',  // Permettre aux users sans rôle de rejoindre via invitation
     ];
 
     public function handle(Request $request, Closure $next): mixed

@@ -27,8 +27,8 @@ export default function Logo({ className = '', size = 'md', showBadge = true }: 
   };
 
   const badgeSizeClasses = {
-    sm: 'text-[8px] px-1 py-0.5',
-    md: 'text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5',
+    sm: 'text-xxs px-1 py-0.5',
+    md: 'text-xxs sm:text-xs px-1.5 sm:px-2 py-0.5',
     lg: 'text-xs px-2 py-1',
     xl: 'text-sm px-2.5 py-1',
   };

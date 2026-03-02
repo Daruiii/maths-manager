@@ -48,7 +48,7 @@ export default function RejectionModal({
           className="flex items-center gap-2 text-sm font-bold text-text-gray tracking-wider uppercase"
         >
           Motif / Note interne
-          <span className="text-[10px] bg-secondary-color text-text-gray px-2 py-0.5 rounded-full border border-border-color normal-case tracking-normal">
+          <span className="text-xxs bg-secondary-color text-text-gray px-2 py-0.5 rounded-full border border-border-color normal-case tracking-normal">
             Optionnel
           </span>
         </label>

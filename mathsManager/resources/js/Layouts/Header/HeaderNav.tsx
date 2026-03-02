@@ -36,7 +36,7 @@ export default function HeaderNav({
             <Link
               key={classe.id}
               href={`/classe/${classe.level}`}
-              className="nav-link !text-xs uppercase tracking-widest font-comfortaa-bold opacity-70 hover:opacity-100 transition-opacity whitespace-nowrap"
+              className="nav-link text-xs uppercase tracking-widest font-comfortaa-bold opacity-70 hover:opacity-100 transition-opacity whitespace-nowrap"
             >
               {classe.name}
             </Link>
@@ -48,7 +48,7 @@ export default function HeaderNav({
       {isStudent && (
         <Menu as="div" className="relative flex items-center h-full">
           <MenuButton className="nav-link flex items-center gap-1 focus:outline-none focus-visible:ring-0 outline-none">
-            Classes
+            Exercices
             <ChevronDown className="h-4 w-4" />
           </MenuButton>
           <Transition
@@ -92,7 +92,7 @@ export default function HeaderNav({
           <Link href={`/ds/myDS/${user?.id}`} className="nav-link relative focus:outline-none">
             Mes devoirs
             {(dsNotStarted ?? 0) > 0 && (
-              <span className="absolute -top-1 -right-3 bg-error-color text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">
+              <span className="absolute -top-1 -right-3 bg-error-color text-white text-xxs font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">
                 {dsNotStarted}
               </span>
             )}
@@ -103,7 +103,7 @@ export default function HeaderNav({
           >
             Mes fiches
             {(exercisesSheetNotStarted ?? 0) > 0 && (
-              <span className="absolute -top-1 -right-3 bg-error-color text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">
+              <span className="absolute -top-1 -right-3 bg-error-color text-white text-xxs font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">
                 {exercisesSheetNotStarted}
               </span>
             )}
@@ -113,7 +113,7 @@ export default function HeaderNav({
 
       {/* 4. STAFF ONLY: Mes élèves */}
       {isStaff && (
-        <Link href="/students" className="nav-link focus:outline-none">
+        <Link href={route('teacher.students.index')} className="nav-link focus:outline-none">
           Mes élèves
         </Link>
       )}

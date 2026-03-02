@@ -25,6 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append(PreprodAuth::class);
+
+        $middleware->alias([
+            'isTeacher' => \App\Http\Middleware\IsTeacher::class,
+            'isAdmin'   => \App\Http\Middleware\IsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

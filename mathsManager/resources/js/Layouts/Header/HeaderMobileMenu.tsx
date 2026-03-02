@@ -48,7 +48,7 @@ export default function HeaderMobileMenu({
               <div className="px-4 pt-4 pb-6 space-y-2 max-h-[80vh] overflow-y-auto">
                 {/* Classes Section */}
                 <div className="space-y-1">
-                  <p className="px-3 text-[10px] font-comfortaa-bold text-text-gray uppercase tracking-widest">
+                  <p className="px-3 text-xxs font-comfortaa-bold text-text-gray uppercase tracking-widest">
                     Classes
                   </p>
                   {(classes ?? []).length > 0 ? (
@@ -78,7 +78,7 @@ export default function HeaderMobileMenu({
                       >
                         <span>Mes devoirs</span>
                         {(dsNotStarted ?? 0) > 0 && (
-                          <span className="bg-error-color text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          <span className="bg-error-color text-white text-xxs font-bold px-2 py-0.5 rounded-full">
                             {dsNotStarted}
                           </span>
                         )}
@@ -89,7 +89,7 @@ export default function HeaderMobileMenu({
                       >
                         <span>Mes fiches</span>
                         {(exercisesSheetNotStarted ?? 0) > 0 && (
-                          <span className="bg-error-color text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          <span className="bg-error-color text-white text-xxs font-bold px-2 py-0.5 rounded-full">
                             {exercisesSheetNotStarted}
                           </span>
                         )}

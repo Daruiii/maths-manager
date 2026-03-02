@@ -71,8 +71,8 @@ export default function Rejected({ adminNotes, applicationDate }: Props) {
               as="button"
               className="w-full"
             >
-              <Button className="w-full !bg-student-color text-white hover:brightness-110 !shadow-[0_4px_0_0_rgb(var(--student-color)_/_0.3)] hover:!shadow-[0_2px_0_0_rgb(var(--student-color)_/_0.3)] border-0 h-12">
-                <BookOpen size={18} className="mr-2" /> Passer sur l'espace Élève
+              <Button variant="student" icon={BookOpen} className="w-full h-12">
+                Passer sur l'espace Élève
               </Button>
             </Link>
           </div>

@@ -9,6 +9,7 @@ class TeacherInvitation extends Model
 {
     protected $fillable = [
         'teacher_id',
+        'group_id',
         'code',
         'expires_at',
         'max_uses',

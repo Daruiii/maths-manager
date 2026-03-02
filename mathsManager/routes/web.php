@@ -77,6 +77,7 @@ require __DIR__.'/web/corrections.php';
 require __DIR__.'/web/quizz.php';
 require __DIR__.'/web/users.php';
 require __DIR__.'/web/admin.php';
+require __DIR__.'/web/teacher.php';
 
 
 // Socialite routes (connection with google)

@@ -26,10 +26,6 @@ export default function ApplicantDetails({ user, onApprove, onReject, onInvite }
   const isPendingApproval = user.status === 'pending_approval';
   const hasInviteBeenSent = user.calendly_invite_sent;
 
-  const inviteButtonClass = hasInviteBeenSent
-    ? 'border-teacher-color/20 text-teacher-color'
-    : 'bg-teacher-color border-teacher-color text-white';
-
   return (
     <div className="flex flex-col h-full bg-secondary-color overflow-hidden border-0 shadow-none sm:shadow-sm sm:border sm:border-border-color font-sans rounded-2xl">
       {/* Header : Avatar + Infos + Actions (desktop) */}
@@ -47,7 +43,7 @@ export default function ApplicantDetails({ user, onApprove, onReject, onInvite }
             <div className="flex flex-wrap items-center gap-1.5">
               <p className="text-xs font-bold text-text-gray truncate">{user.email}</p>
               {Boolean(hasInviteBeenSent) && (
-                <span className="bg-tertiary-color/10 text-tertiary-color font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-md border border-tertiary-color/20 flex-shrink-0">
+                <span className="bg-tertiary-color/10 text-tertiary-color font-bold text-xxs uppercase tracking-wider px-1.5 py-0.5 rounded-md border border-tertiary-color/20 flex-shrink-0">
                   Invité
                 </span>
               )}
@@ -62,25 +58,20 @@ export default function ApplicantDetails({ user, onApprove, onReject, onInvite }
               </Button>
               <Button
                 icon={CheckCircle}
-                variant="primary"
+                variant="success"
                 size="sm"
                 onClick={() => onApprove(user)}
-                className="!bg-success-color"
               >
                 Valider
               </Button>
               {onInvite && (
                 <Button
                   icon={Calendar}
-                  variant={hasInviteBeenSent ? 'secondary' : 'primary'}
+                  variant={hasInviteBeenSent ? 'secondary' : 'teacher'}
                   size="sm"
                   title="Inviter via Calendly"
                   onClick={() => onInvite(user)}
-                  className={
-                    hasInviteBeenSent
-                      ? inviteButtonClass
-                      : `!bg-teacher-color !border-teacher-color ${inviteButtonClass}`
-                  }
+                  className={hasInviteBeenSent ? 'border-teacher-color/30 text-teacher-color' : ''}
                 >
                   Inviter
                 </Button>
@@ -138,27 +129,17 @@ export default function ApplicantDetails({ user, onApprove, onReject, onInvite }
           <Button icon={XCircle} variant="danger" size="sm" onClick={() => onReject(user)}>
             Refuser
           </Button>
-          <Button
-            icon={CheckCircle}
-            variant="primary"
-            size="sm"
-            onClick={() => onApprove(user)}
-            className="!bg-success-color"
-          >
+          <Button icon={CheckCircle} variant="success" size="sm" onClick={() => onApprove(user)}>
             Valider
           </Button>
           {onInvite && (
             <Button
               icon={Calendar}
-              variant={hasInviteBeenSent ? 'secondary' : 'primary'}
+              variant={hasInviteBeenSent ? 'secondary' : 'teacher'}
               size="sm"
               title="Inviter via Calendly"
               onClick={() => onInvite(user)}
-              className={
-                hasInviteBeenSent
-                  ? inviteButtonClass
-                  : `!bg-teacher-color !border-teacher-color ${inviteButtonClass}`
-              }
+              className={hasInviteBeenSent ? 'border-teacher-color/30 text-teacher-color' : ''}
             >
               Inviter
             </Button>

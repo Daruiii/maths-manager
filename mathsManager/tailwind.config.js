@@ -52,6 +52,10 @@ export default {
       screens: {
         xs: '480px',
       },
+      fontSize: {
+        xxxs: ['0.5rem', { lineHeight: '0.75rem' }], // 8px — très petits badges
+        xxs: ['0.625rem', { lineHeight: '0.875rem' }], // 10px — badges, labels
+      },
     },
   },
 

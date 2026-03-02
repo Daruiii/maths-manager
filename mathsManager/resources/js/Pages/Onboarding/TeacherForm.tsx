@@ -121,8 +121,9 @@ export default function TeacherForm() {
 
               <Button
                 type="submit"
+                variant="teacher"
                 isLoading={processing}
-                className="w-full !bg-teacher-color text-white hover:brightness-110 !shadow-[0_4px_0_0_rgb(var(--teacher-color)_/_0.3)] hover:!shadow-[0_2px_0_0_rgb(var(--teacher-color)_/_0.3)] border-0 mt-2 h-12"
+                className="w-full mt-2 h-12"
               >
                 Soumettre ma candidature
               </Button>

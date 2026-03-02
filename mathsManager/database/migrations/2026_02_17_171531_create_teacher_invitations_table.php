@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('teacher_id')->constrained('users')->cascadeOnDelete();
             $table->string('code', 12)->unique();
-            $table->timestamp('expires_at');
+            $table->dateTime('expires_at');
             $table->unsignedInteger('max_uses')->default(5);
             $table->unsignedInteger('current_uses')->default(0);
             $table->boolean('is_active')->default(true);

@@ -28,7 +28,7 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
     if (isAdmin) {
       return (
         <div className="absolute -top-1.5 -right-1.5 bg-secondary-color rounded-full p-0.5 shadow-sm border border-admin-color/20">
-          <Crown className="h-3 w-3 text-[#FFD700] fill-[#FFD700] drop-shadow-[0_0_2px_rgba(255,215,0,0.5)]" />
+          <Crown className="h-3 w-3 text-admin-color fill-admin-color drop-shadow-sm" />
         </div>
       );
     }

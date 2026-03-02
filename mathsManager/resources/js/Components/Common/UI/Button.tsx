@@ -2,7 +2,14 @@ import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Loader2, LucideIcon } from 'lucide-react';
 import { BUTTON_BASE_STYLES, BUTTON_VARIANTS, BUTTON_SIZES } from '@/Constants/ui';
 
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
+type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'success'
+  | 'ghost'
+  | 'teacher'
+  | 'student';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

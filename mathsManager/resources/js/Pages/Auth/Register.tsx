@@ -6,7 +6,7 @@ import TextInput from '@/Components/Common/Form/TextInput';
 import Button from '@/Components/Common/UI/Button';
 import AvatarInput from '@/Components/Common/Avatar/AvatarInput';
 
-export default function Register() {
+export default function Register({ redirectUrl }: { redirectUrl?: string }) {
   const { data, setData, post, processing, errors, reset } = useForm({
     first_name: '',
     last_name: '',
@@ -50,7 +50,7 @@ export default function Register() {
                 onRemove={() => setData('avatar', null)}
               />
               {errors.avatar && (
-                <p className="mt-1 text-[10px] text-center text-error-color font-comfortaa">
+                <p className="mt-1 text-xxs text-center text-error-color font-comfortaa">
                   {errors.avatar}
                 </p>
               )}
@@ -158,7 +158,11 @@ export default function Register() {
             <p className="text-sm text-text-gray font-comfortaa">
               Déjà un compte ?{' '}
               <Link
-                href={route('login')}
+                href={
+                  redirectUrl
+                    ? `${route('login')}?redirect=${encodeURIComponent(redirectUrl)}`
+                    : route('login')
+                }
                 className="font-comfortaa-bold text-tertiary-color hover:text-tertiary-color/80 underline decoration-2 decoration-tertiary-color/30 underline-offset-4 hover:bg-tertiary-color/5 rounded px-1 transition-all"
               >
                 Se connecter
