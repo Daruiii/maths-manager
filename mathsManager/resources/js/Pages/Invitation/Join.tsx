@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { TeacherInvitation, User } from '@/types/models';
 import { PageProps } from '@/types';
-import { AlertCircle, CheckCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle, RefreshCw, ShieldOff } from 'lucide-react';
 import Button from '@/Components/Common/UI/Button';
 import UserAvatar from '@/Components/Common/UI/UserAvatar';
 import StatusCard from '@/Components/Common/UI/StatusCard';
@@ -16,10 +16,11 @@ interface Props {
   isValid: boolean;
   alreadyJoined: boolean;
   hasOtherTeacher: boolean;
+  isStaff: boolean;
   code: string;
 }
 
-type State = 'invalid' | 'already_joined' | 'switch_teacher' | 'valid';
+type State = 'invalid' | 'already_joined' | 'switch_teacher' | 'staff_blocked' | 'valid';
 
 export default function Join({
   invitation,
@@ -27,6 +28,7 @@ export default function Join({
   isValid,
   alreadyJoined,
   hasOtherTeacher,
+  isStaff,
   code,
 }: Props) {
   const { auth } = usePage<PageProps>().props;
@@ -34,10 +36,11 @@ export default function Join({
 
   const state = useMemo((): State => {
     if (!isValid) return 'invalid';
+    if (isStaff) return 'staff_blocked';
     if (alreadyJoined) return 'already_joined';
     if (hasOtherTeacher && isAuthenticated) return 'switch_teacher';
     return 'valid';
-  }, [isValid, alreadyJoined, hasOtherTeacher, isAuthenticated]);
+  }, [isValid, isStaff, alreadyJoined, hasOtherTeacher, isAuthenticated]);
 
   const handleJoin = () => router.post(route('invitation.accept', code));
   const teacherName = `${teacher?.first_name} ${teacher?.last_name}`;
@@ -105,6 +108,21 @@ export default function Join({
             </Button>
           </Link>
         </div>
+      </StatusCard>
+    ),
+
+    staff_blocked: (
+      <StatusCard
+        type="error"
+        icon={ShieldOff}
+        title="Action non autorisée"
+        description="Les professeurs et administrateurs ne peuvent pas rejoindre une classe en tant qu'élève."
+      >
+        <Link href={route('home')}>
+          <Button variant="secondary" className="mt-2 w-full">
+            Retour à l'accueil
+          </Button>
+        </Link>
       </StatusCard>
     ),
 

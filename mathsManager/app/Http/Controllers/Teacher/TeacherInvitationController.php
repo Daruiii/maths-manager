@@ -62,9 +62,12 @@ class TeacherInvitationController extends Controller
 
         $alreadyJoined = false;
         $hasOtherTeacher = false;
+        $isStaff = false;
         if (auth()->check()) {
             $currentUser = auth()->user();
-            if ($isValid && $currentUser->teacher_id === $teacher?->id) {
+            if ($currentUser->canActAsTeacher()) {
+                $isStaff = true;
+            } elseif ($isValid && $currentUser->teacher_id === $teacher?->id) {
                 $alreadyJoined = true;
             } elseif ($currentUser->teacher_id !== null) {
                 $hasOtherTeacher = true;
@@ -77,6 +80,7 @@ class TeacherInvitationController extends Controller
             'isValid'         => $isValid,
             'alreadyJoined'   => $alreadyJoined,
             'hasOtherTeacher' => $hasOtherTeacher,
+            'isStaff'         => $isStaff,
             'code'            => $code,
         ]);
     }
@@ -96,8 +100,13 @@ class TeacherInvitationController extends Controller
         /** @var User $student */
         $student = Auth::user();
 
+        if ($student->canActAsTeacher()) {
+            return redirect()
+                ->route('invitation.join', ['code' => $code])
+                ->with('error', 'Les professeurs et administrateurs ne peuvent pas rejoindre une classe en tant qu\'élève.');
+        }
+
         $student->update([
-            'role'       => 'student',
             'teacher_id' => $invitation->teacher_id,
             'group_id'   => $invitation->group_id,
         ]);
