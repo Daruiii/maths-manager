@@ -44,7 +44,7 @@ prod-optimize:
 	@echo "🚀 Optimisation pour la production..."
 	$(PHP_BINARY) artisan config:cache
 	$(PHP_BINARY) artisan route:cache
-	$(PHP_BINARY) artisan view:cache
+	$(PHP_BINARY) artisan view:clear
 	$(NPM_BINARY) run build
 	@echo "✅ Optimisations terminées"
 
@@ -59,7 +59,7 @@ deploy: prod-optimize
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot  # Supprime le fichier Vite hot pour forcer l'usage des assets compilés
 	# Rsync 1/2 : Sync tout le code SAUF public/storage (symlink) et .env (spécifique serveur)
-	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(SERVER_HOST)/
+	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' --exclude='resources/js/ziggy.js' . $(SERVER_USER):$(SERVER_HOST)/
 	@if [ -d "storage/app/public/images" ]; then \
 		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \
 	else \
@@ -75,7 +75,7 @@ deploy-preprod: prod-optimize
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot
 	# Rsync 1/2 : Sync tout le code SAUF public/storage (symlink) et .env (spécifique serveur)
-	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(PREPROD_HOST)/
+	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' --exclude='resources/js/ziggy.js' . $(SERVER_USER):$(PREPROD_HOST)/
 	@if [ -d "storage/app/public/images" ]; then \
 		rsync -avz storage/app/public/images/ $(SERVER_USER):$(PREPROD_HOST)/public/storage/images/; \
 	else \

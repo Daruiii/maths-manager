@@ -17,8 +17,11 @@ export default function UpdateProfileInformationForm({
 }) {
   const user = usePage<PageProps>().props.auth.user as User;
 
-  const { data, setData, post, errors, processing, reset } = useForm({
-    _method: 'PATCH',
+  // Un professeur validé ne peut plus changer ces informations
+  const isTeacherBlocked = user.role === 'teacher' && user.status === 'active';
+
+  const { data, setData, post, errors, processing, reset, transform } = useForm({
+    _method: 'PATCH' as const,
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
     email: user?.email || '',
@@ -26,8 +29,12 @@ export default function UpdateProfileInformationForm({
     remove_avatar: 'false',
   });
 
-  // Un professeur validé ne peut plus changer ces informations
-  const isTeacherBlocked = user.role === 'teacher' && user.status === 'active';
+  // Si prof bloqué : retirer les champs identité du payload avant envoi
+  transform((formData) => {
+    if (!isTeacherBlocked) return formData;
+    const { first_name: _fn, last_name: _ln, email: _em, ...rest } = formData;
+    return rest;
+  });
 
   const handleRemoveAvatar = () => {
     setData((prevData) => ({

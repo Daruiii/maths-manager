@@ -38,10 +38,9 @@ class ProfileUpdateRequest extends FormRequest
         ];
 
         // Un professeur validé ne peut PLUS changer son identité de base
+        // On exclut simplement ces champs de la validation (ils seront ignorés dans le controller)
         if ($user->role === 'teacher' && $user->status === 'active') {
-            $rules['first_name'] = ['prohibited'];
-            $rules['last_name'] = ['prohibited'];
-            $rules['email'] = ['prohibited'];
+            unset($rules['first_name'], $rules['last_name'], $rules['email']);
         }
 
         // Si l'utilisateur est prof (quelle que soit la validation),

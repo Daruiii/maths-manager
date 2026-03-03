@@ -4,10 +4,11 @@ import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { route } from 'ziggy-js';
-import { Ziggy } from './ziggy';
 
+// window.Ziggy is injected server-side by the @routes Blade directive with the correct APP_URL.
+// This ensures routes always point to the right domain (local, preprod, prod) without hardcoding.
 // @ts-expect-error
-window.route = (name, params, absolute, config = Ziggy) => route(name, params, absolute, config);
+window.route = (name, params, absolute) => route(name, params, absolute, window.Ziggy);
 
 const appName = import.meta.env.VITE_APP_NAME || 'Maths Manager';
 
