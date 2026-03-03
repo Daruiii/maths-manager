@@ -32,6 +32,7 @@ Route::get('/robots.txt', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [HomeController::class, 'admin'])->name('admin')->middleware(IsAdmin::class);
+    Route::get('/admin/styleguide', fn() => inertia('Styleguide/Index'))->name('styleguide')->middleware(IsAdmin::class);
 });
 
 

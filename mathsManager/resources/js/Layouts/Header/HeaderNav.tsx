@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Classe, User } from '@/types';
 import { useAuth } from '@/Hooks/useAuth';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 interface HeaderNavProps {
   user: User | null;
@@ -19,6 +19,10 @@ export default function HeaderNav({
   exercisesSheetNotStarted,
 }: HeaderNavProps) {
   const { isStaff, isStudent, isGuest, hasNoRole } = useAuth();
+  const { url } = usePage();
+
+  // Retourne 'active' si l'URL courante commence par le préfixe donné
+  const isActive = (prefix: string) => (url.startsWith(prefix) ? 'active' : '');
 
   // User is authenticated but hasn't chosen a role yet — no nav to show
   if (hasNoRole) return null;
@@ -89,7 +93,10 @@ export default function HeaderNav({
       {/* 3. STUDENT ONLY: Specific links */}
       {isStudent && (
         <>
-          <Link href={`/ds/myDS/${user?.id}`} className="nav-link relative focus:outline-none">
+          <Link
+            href={`/ds/myDS/${user?.id}`}
+            className={`nav-link relative focus:outline-none ${isActive('/ds/myDS')}`}
+          >
             Mes devoirs
             {(dsNotStarted ?? 0) > 0 && (
               <span className="absolute -top-1 -right-3 bg-error-color text-white text-xxs font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">
@@ -99,7 +106,7 @@ export default function HeaderNav({
           </Link>
           <Link
             href={`/exercises-sheet/my/${user?.id}`}
-            className="nav-link relative focus:outline-none"
+            className={`nav-link relative focus:outline-none ${isActive('/exercises-sheet/my')}`}
           >
             Mes fiches
             {(exercisesSheetNotStarted ?? 0) > 0 && (
@@ -113,7 +120,10 @@ export default function HeaderNav({
 
       {/* 4. STAFF ONLY: Mes élèves */}
       {isStaff && (
-        <Link href={route('teacher.students.index')} className="nav-link focus:outline-none">
+        <Link
+          href={route('teacher.students.index')}
+          className={`nav-link focus:outline-none ${isActive('/teacher/students')}`}
+        >
           Mes élèves
         </Link>
       )}

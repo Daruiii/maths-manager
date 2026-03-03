@@ -3,6 +3,7 @@
 /* Import design system variables */
 @import './design-system.css';
 @import './fonts.css';
+@import './mathsmanager.css';
 
 /* Tailwind CSS directives */
 @tailwind base;
@@ -14,45 +15,9 @@
   body {
     @apply font-comfortaa text-text-color bg-primary-color overflow-x-hidden;
   }
-  
+
   /* Reset link structure to avoid 'circular' bug */
   a, button {
     @apply inline-flex items-center justify-center transition-all duration-200;
-  }
-}
-
-/* Component Utilities */
-@layer components {
-  /* ========================================
-     MathsManager DA — Card Theorem
-     Style "encadré de théorème" académique
-     Usage: <div className="card-theorem border-l-student-color">
-     ======================================== */
-  .card-theorem {
-    @apply bg-secondary-color border border-border-color border-l-4 rounded-r-xl transition-colors;
-  }
-
-  /* Navigation */
-  .nav-link {
-    @apply relative text-sm font-semibold text-text-color hover:text-text-gray transition-colors py-2;
-  }
-
-  .nav-link.active::after {
-    @apply content-[''] absolute bottom-0 left-0 w-full h-0.5 bg-tertiary-color rounded-full;
-  }
-
-  /* Custom Scrollbar for specific overflow areas */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-tertiary-color/20 rounded-full;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-tertiary-color/40;
   }
 }

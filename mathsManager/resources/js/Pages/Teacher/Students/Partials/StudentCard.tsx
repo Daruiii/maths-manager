@@ -26,6 +26,7 @@ export default function StudentCard({ student }: Props) {
         user={student}
         // TODO: href={route('teacher.students.show', student.id)}
         accentColor="student"
+        variant="dot-grid"
         hoverAction={
           <button
             onClick={(e) => {

@@ -4,11 +4,13 @@ import UserAvatar from '@/Components/Common/UI/UserAvatar';
 import { ReactNode } from 'react';
 
 type AccentColor = 'student' | 'teacher' | 'admin';
+type CardVariant = 'default' | 'dot-grid' | 'lines';
 
 interface Props {
   user: User;
   href?: string;
   accentColor?: AccentColor;
+  variant?: CardVariant;
   hoverAction?: ReactNode;
   children?: ReactNode;
 }
@@ -28,10 +30,17 @@ const accentStyles: Record<AccentColor, { borderLeft: string; hoverBg: string }>
   },
 };
 
+const variantStyles: Record<CardVariant, string> = {
+  default: '',
+  'dot-grid': 'card-dot-grid',
+  lines: 'card-lines',
+};
+
 export default function UserCard({
   user,
   href,
   accentColor = 'student',
+  variant = 'default',
   hoverAction,
   children,
 }: Props) {
@@ -53,7 +62,7 @@ export default function UserCard({
 
   return (
     <div
-      className={`card-theorem relative ${accent.borderLeft} p-4 flex flex-col items-center gap-3 group ${accent.hoverBg}`}
+      className={`card-theorem relative ${accent.borderLeft} ${variantStyles[variant]} p-4 flex flex-col items-center gap-3 group ${accent.hoverBg}`}
     >
       {hoverAction && <div className="absolute top-2 right-2 flex">{hoverAction}</div>}
 

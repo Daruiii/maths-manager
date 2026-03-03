@@ -23,7 +23,7 @@ export default function GroupFolderCard({ group }: Props) {
 
   return (
     <>
-      <div className="relative bg-secondary-color border border-border-color rounded-2xl p-4 flex flex-col items-center gap-3 hover:border-teacher-color/50 hover:bg-teacher-color/5 transition-colors group">
+      <div className="relative card-dot-grid bg-secondary-color border border-border-color rounded-2xl p-4 flex flex-col items-center gap-3 hover:border-teacher-color/50 hover:bg-teacher-color/5 transition-colors group">
         {/* Actions rapides */}
         <div className="absolute top-2 right-2 flex gap-1">
           <button

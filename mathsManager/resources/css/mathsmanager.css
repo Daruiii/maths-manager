@@ -1,0 +1,64 @@
+/* ============================================================
+   MathsManager — Component Classes
+   Classes custom du design system. Doc visuelle → /styleguide
+   ============================================================ */
+
+@layer components {
+  /* ----------------------------------------
+     .card-theorem
+     Card style "encadré de théorème".
+     Combiner avec border-l-{role}-color.
+     Variantes fond: .card-dot-grid, .card-lines
+     ---------------------------------------- */
+  .card-theorem {
+    @apply bg-secondary-color border border-border-color border-l-4 rounded-r-xl transition-colors;
+  }
+
+  /* Points en fond (combine avec .card-theorem) */
+  .card-dot-grid {
+    background-image: radial-gradient(circle, rgb(var(--border-color) / 0.6) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* Lignes diagonales en fond (combine avec .card-theorem) */
+  .card-lines {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgb(var(--border-color) / 0.12) 10px,
+      rgb(var(--border-color) / 0.12) 11px
+    );
+  }
+
+  /* ----------------------------------------
+     .nav-link
+     Lien de navigation avec underline actif.
+     Ajouter .active pour afficher l'indicateur.
+     ---------------------------------------- */
+  .nav-link {
+    @apply relative text-sm font-semibold text-text-color hover:text-text-gray transition-colors py-2;
+  }
+
+  .nav-link.active::after {
+    @apply content-[''] absolute bottom-0 left-1/2 -translate-x-1/2 w-1/4 h-0.5 bg-tertiary-color rounded-full;
+  }
+
+  /* ----------------------------------------
+     .custom-scrollbar
+     Scrollbar fine et discrète.
+     ---------------------------------------- */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-tertiary-color/20 rounded-full;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-tertiary-color/40;
+  }
+}
