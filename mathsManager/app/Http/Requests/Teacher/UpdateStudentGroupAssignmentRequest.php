@@ -8,7 +8,7 @@ class UpdateStudentGroupAssignmentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isTeacher() && $this->user()?->status === 'active';
+        return $this->user()?->canActAsTeacher() && $this->user()?->status === 'active';
     }
 
     public function rules(): array

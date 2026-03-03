@@ -52,6 +52,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === UserRole::Teacher->value;
     }
 
+    /**
+     * True if the user can act as a teacher (teacher role OR admin).
+     * Use this for feature access checks (students, groups, invitations...).
+     * Use isTeacher() only when you need to distinguish teacher from admin strictly.
+     */
+    public function canActAsTeacher(): bool
+    {
+        return $this->isTeacher() || $this->isAdmin();
+    }
+
     public function isStudent(): bool
     {
         return $this->role === UserRole::Student->value;

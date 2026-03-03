@@ -28,6 +28,7 @@ export const useAuth = () => {
   const isAdmin = user?.role === 'admin';
   const isTeacher = user?.role === 'teacher';
   const isStudent = user?.role === 'student';
+  const canActAsTeacher = isTeacher || isAdmin;
   const isStaff = isAdmin || isTeacher;
   const isGuest = !user;
   const hasNoRole = !!user && !user.role;
@@ -37,6 +38,7 @@ export const useAuth = () => {
     isAdmin,
     isTeacher,
     isStudent,
+    canActAsTeacher,
     isStaff,
     isGuest,
     hasNoRole,

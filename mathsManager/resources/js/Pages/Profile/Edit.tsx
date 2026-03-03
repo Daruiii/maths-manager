@@ -1,5 +1,5 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { usePage, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { User, Lock, Trash2, GraduationCap, Shield, ArrowLeft } from 'lucide-react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import type { PageProps } from '@/types';
@@ -10,13 +10,14 @@ import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm';
 import Card from '@/Components/Common/UI/Card';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import Button from '@/Components/Common/UI/Button';
+import { useAuth } from '@/Hooks/useAuth';
 
 interface ProfileProps extends PageProps {
   mustVerifyEmail?: boolean;
 }
 
 export default function Edit({ mustVerifyEmail }: ProfileProps) {
-  const user = usePage<PageProps>().props.auth.user;
+  const { user, canActAsTeacher } = useAuth();
 
   const getTabClass = (selected: boolean, activeClasses: string) => {
     return `flex items-center gap-3 whitespace-nowrap px-4 py-3.5 rounded-xl text-left text-sm font-comfortaa-bold transition-all outline-none border ${
@@ -46,7 +47,7 @@ export default function Edit({ mustVerifyEmail }: ProfileProps) {
       id: 'teacher',
       label: 'Profil Professeur',
       icon: GraduationCap,
-      show: user?.role === 'teacher',
+      show: canActAsTeacher,
       activeClasses: 'bg-teacher-color/10 text-teacher-color border-teacher-color/30 shadow-sm',
       panel: (
         <Card

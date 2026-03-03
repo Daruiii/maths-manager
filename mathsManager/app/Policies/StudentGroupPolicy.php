@@ -12,7 +12,7 @@ class StudentGroupPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isTeacher() && $user->status === 'active';
+        return $user->canActAsTeacher() && $user->status === 'active';
     }
 
     /**
@@ -20,7 +20,7 @@ class StudentGroupPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isTeacher() && $user->status === 'active';
+        return $user->canActAsTeacher() && $user->status === 'active';
     }
 
     /**

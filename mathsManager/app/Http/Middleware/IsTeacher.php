@@ -12,7 +12,7 @@ class IsTeacher
     {
         $user = $request->user();
 
-        if (! $user || $user->role !== 'teacher' || $user->status !== 'active') {
+        if (! $user || ! $user->canActAsTeacher() || $user->status !== 'active') {
             abort(403, 'Accès réservé aux professeurs validés.');
         }
 

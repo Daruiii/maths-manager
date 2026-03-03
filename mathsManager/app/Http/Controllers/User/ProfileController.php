@@ -34,7 +34,7 @@ class ProfileController extends Controller
             $statistics['teacher_name'] = $teacher ? $teacher->name : 'Aucun';
             $statistics['teacher_avatar'] = $teacher ? $teacher->avatar : null;
             $statistics['teacher_role'] = $teacher ? $teacher->role : null;
-        } elseif ($user->isTeacher()) {
+        } elseif ($user->canActAsTeacher()) {
             $statistics['students_count'] = $user->students()->count();
             // Placeholder until relationships are clearer
             $statistics['corrections_count'] = 0; 

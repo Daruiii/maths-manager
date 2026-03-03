@@ -1,19 +1,22 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { usePage, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { Settings, MapPin, GraduationCap, FileText, Calendar } from 'lucide-react';
 import type { PageProps, ProfileStatistics } from '@/types';
 import ProfileCard from '@/Components/Features/Profile/ProfileCard';
 import Card from '@/Components/Common/UI/Card';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import Button from '@/Components/Common/UI/Button';
+import { useAuth } from '@/Hooks/useAuth';
 
 interface ProfileProps extends PageProps {
   statistics?: ProfileStatistics;
 }
 
 export default function Show({ statistics }: ProfileProps) {
-  const user = usePage<PageProps>().props.auth.user;
-  const isTeacher = user?.role === 'teacher';
+  const { user, canActAsTeacher } = useAuth();
+  const isTeacher = canActAsTeacher;
+
+  if (!user) return null;
 
   return (
     <AppLayout title="Mon Profil">
