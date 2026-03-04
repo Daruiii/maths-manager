@@ -133,19 +133,23 @@ export default function Edit({ mustVerifyEmail }: ProfileProps) {
           <div className="mt-8 flex flex-col lg:flex-row gap-8">
             <TabGroup vertical className="w-full flex flex-col lg:flex-row gap-8 items-start">
               {/* Tab List */}
-              <TabList className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible w-full lg:w-64 shrink-0 pb-2 lg:pb-0 scrollbar-hide">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <Tab
-                      key={tab.id}
-                      className={({ selected }) => getTabClass(selected, tab.activeClasses)}
-                    >
-                      <Icon size={18} /> {tab.label}
-                    </Tab>
-                  );
-                })}
-              </TabList>
+              <div className="relative w-full lg:w-64 shrink-0">
+                <TabList className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible w-full pb-2 lg:pb-0 custom-scrollbar">
+                  {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <Tab
+                        key={tab.id}
+                        className={({ selected }) => getTabClass(selected, tab.activeClasses)}
+                      >
+                        <Icon size={18} /> {tab.label}
+                      </Tab>
+                    );
+                  })}
+                </TabList>
+                {/* Indicateur de scroll horizontal sur mobile */}
+                <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-primary-color to-transparent lg:hidden" />
+              </div>
 
               {/* Tab Panels */}
               <TabPanels className="flex-1 w-full relative">

@@ -40,16 +40,18 @@ export default function MobileBottomSheet({
 
   return (
     <>
-      {/* Backdrop Mobile */}
+      {/* Backdrop Mobile — pas de backdrop-blur (bug pointer-events iOS) */}
       <div
-        className={`fixed inset-0 z-40 bg-text-color/20 backdrop-blur-sm lg:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-40 bg-text-color/30 lg:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={onClose}
+        aria-hidden="true"
+        style={!isOpen ? { display: 'none' } : undefined}
       />
 
       {/* Bottom Sheet wrapper */}
       <div
         className={`
-                    fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-primary-color rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col pt-2 px-4 pb-8 transition-transform duration-300 ease-out
+                    fixed inset-x-0 bottom-0 z-50 h-[75vh] max-h-[calc(100vh-5rem)] bg-primary-color rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col pt-2 px-4 pb-8 transition-transform duration-300 ease-out
                     ${desktopClasses}
                     ${isOpen ? 'translate-y-0' : 'translate-y-full ' + (desktopMode === 'column' ? 'lg:translate-y-0' : '')}
                 `}
