@@ -3,6 +3,7 @@ import { X, Menu } from 'lucide-react';
 import { Classe, User } from '@/types';
 import { useAuth } from '@/Hooks/useAuth';
 import { Link } from '@inertiajs/react';
+import { route } from 'ziggy-js';
 
 interface HeaderMobileMenuProps {
   user: User | null;
@@ -99,7 +100,7 @@ export default function HeaderMobileMenu({
 
                   {isStaff && (
                     <Link
-                      href="/students"
+                      href={route('teacher.students.index')}
                       className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
                     >
                       Mes élèves
