@@ -1,17 +1,31 @@
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import StatusCard from '@/Components/Common/UI/StatusCard';
+import Pagination from '@/Components/Common/UI/Pagination';
 import { StudentGroup, User } from '@/types/models';
 import StudentCard from '@/Pages/Teacher/Students/Partials/StudentCard';
+import StudentsToolbar from '@/Pages/Teacher/Students/Partials/StudentsToolbar';
 import { BookOpen, FileText, Users } from 'lucide-react';
 import { route } from 'ziggy-js';
+import { useGroupStudentsFilter } from '@/Hooks/useGroupStudentsFilter';
 
 interface Props {
   group: StudentGroup;
   students: User[];
+  groups: StudentGroup[];
 }
 
-export default function Group({ group, students }: Props) {
+export default function Group({ group, students, groups }: Props) {
+  const {
+    search,
+    page,
+    setPage,
+    filteredStudents,
+    paginatedStudents,
+    totalPages,
+    handleSearchChange,
+  } = useGroupStudentsFilter(students);
+
   return (
     <AppLayout title={group.name}>
       <div className="py-12 px-4 sm:px-6 lg:px-8">
@@ -43,7 +57,9 @@ export default function Group({ group, students }: Props) {
             }
           />
 
-          <div className="mt-8">
+          <div className="mt-8 space-y-6">
+            <StudentsToolbar search={search} onSearchChange={handleSearchChange} />
+
             {students.length === 0 ? (
               <div className="py-12 bg-secondary-color rounded-2xl border-2 border-border-color border-dashed">
                 <StatusCard
@@ -52,12 +68,30 @@ export default function Group({ group, students }: Props) {
                   description="Aucun élève dans ce groupe pour le moment."
                 />
               </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {students.map((student) => (
-                  <StudentCard key={student.id} student={student} />
-                ))}
+            ) : filteredStudents.length === 0 ? (
+              <div className="py-12 bg-secondary-color rounded-2xl border-2 border-border-color border-dashed">
+                <StatusCard
+                  icon={Users}
+                  title="Aucun résultat"
+                  description={`Aucun élève ne correspond à « ${search} ».`}
+                />
               </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {paginatedStudents.map((student) => (
+                    <StudentCard key={student.id} student={student} groups={groups} />
+                  ))}
+                </div>
+
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  info={`${filteredStudents.length} élève${filteredStudents.length > 1 ? 's' : ''}`}
+                  accentColor="teacher"
+                />
+              </>
             )}
           </div>
         </div>

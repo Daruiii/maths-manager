@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { User } from '@/types/models';
-import { Unlink, BookOpen, FileText } from 'lucide-react';
+import { StudentGroup, User } from '@/types/models';
+import { Unlink, BookOpen, FileText, FolderInput } from 'lucide-react';
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
 import UserCard from '@/Components/Features/User/UserCard';
+import AssignGroupModal from '@/Pages/Teacher/Students/Partials/AssignGroupModal';
 import { route } from 'ziggy-js';
 
 interface Props {
   student: User;
+  groups: StudentGroup[];
 }
 
-export default function StudentCard({ student }: Props) {
+export default function StudentCard({ student, groups }: Props) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isAssignOpen, setIsAssignOpen] = useState(false);
 
   const handleRemove = () => {
     router.delete(route('teacher.students.remove', student.id), {
@@ -24,20 +27,31 @@ export default function StudentCard({ student }: Props) {
     <>
       <UserCard
         user={student}
-        // TODO: href={route('teacher.students.show', student.id)}
         accentColor="student"
         variant="dot-grid"
         hoverAction={
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsConfirmOpen(true);
-            }}
-            className="p-1 rounded-lg text-text-gray hover:text-error-color hover:bg-error-color/10 transition-colors"
-            title="Désassocier"
-          >
-            <Unlink size={13} />
-          </button>
+          <div className="flex gap-1">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsAssignOpen(true);
+              }}
+              className="p-1 rounded-lg text-text-gray hover:text-teacher-color hover:bg-teacher-color/10 transition-colors"
+              title="Assigner à un groupe"
+            >
+              <FolderInput size={13} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsConfirmOpen(true);
+              }}
+              className="p-1 rounded-lg text-text-gray hover:text-error-color hover:bg-error-color/10 transition-colors"
+              title="Désassocier"
+            >
+              <Unlink size={13} />
+            </button>
+          </div>
         }
       >
         <div className="flex items-center justify-center gap-2 pt-1">
@@ -57,6 +71,13 @@ export default function StudentCard({ student }: Props) {
           </button>
         </div>
       </UserCard>
+
+      <AssignGroupModal
+        isOpen={isAssignOpen}
+        onClose={() => setIsAssignOpen(false)}
+        student={student}
+        groups={groups}
+      />
 
       <ConfirmationModal
         isOpen={isConfirmOpen}

@@ -5,7 +5,7 @@ import Button from '@/Components/Common/UI/Button';
 interface Props {
   search: string;
   onSearchChange: (value: string) => void;
-  onNewGroup: () => void;
+  onNewGroup?: () => void;
 }
 
 export default function StudentsToolbar({ search, onSearchChange, onNewGroup }: Props) {
@@ -37,9 +37,11 @@ export default function StudentsToolbar({ search, onSearchChange, onNewGroup }: 
           </button>
         }
       />
-      <Button variant="secondary" icon={FolderPlus} iconSize={18} onClick={onNewGroup}>
-        <span className="sm:inline">Nouveau groupe</span>
-      </Button>
+      {onNewGroup && (
+        <Button variant="secondary" icon={FolderPlus} iconSize={18} onClick={onNewGroup}>
+          <span className="sm:inline">Nouveau groupe</span>
+        </Button>
+      )}
     </div>
   );
 }

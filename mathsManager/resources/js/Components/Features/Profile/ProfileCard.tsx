@@ -93,7 +93,7 @@ export default function ProfileCard({
               />
             )}
 
-            {isTeacher && (
+            {(isTeacher || isAdmin) && (
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <span className="block text-2xl font-bold text-text-color">

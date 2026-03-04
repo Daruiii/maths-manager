@@ -47,13 +47,21 @@ class TeacherStudentController extends Controller
     {
         $this->authorize('update', $group);
 
+        $teacher = Auth::user();
+
         $students = User::where('group_id', $group->id)
             ->orderBy('first_name')
+            ->get();
+
+        $groups = StudentGroup::where('teacher_id', $teacher->id)
+            ->withCount('students')
+            ->orderBy('name')
             ->get();
 
         return Inertia::render('Teacher/Students/Group', [
             'group'    => $group,
             'students' => $students,
+            'groups'   => $groups,
         ]);
     }
 
