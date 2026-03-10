@@ -43,9 +43,9 @@ class ProfileUpdateRequest extends FormRequest
             unset($rules['first_name'], $rules['last_name'], $rules['email']);
         }
 
-        // Si l'utilisateur est prof (quelle que soit la validation),
+        // Si l'utilisateur peut agir comme prof (teacher ou admin avec canActAsTeacher),
         // on autorise la modification de ses infos complémentaires
-        if ($user->role === 'teacher') {
+        if ($user->canActAsTeacher()) {
             $rules = array_merge($rules, [
                 'bio'            => ['nullable', 'string', 'max:1000'],
                 'location'       => ['nullable', 'string', 'max:255'],
