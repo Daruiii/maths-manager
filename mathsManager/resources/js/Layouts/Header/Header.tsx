@@ -9,7 +9,7 @@ import HeaderMobileMenu from '@/Layouts/Header/HeaderMobileMenu';
 
 export default function Header() {
   const { user } = useAuth();
-  const { classes, dsNotStarted, exercisesSheetNotStarted } = usePage<PageProps>().props;
+  const { classes, dsNotStarted, tdNotStarted } = usePage<PageProps>().props;
   const scrollDirection = useScrollDirection();
 
   return (
@@ -29,7 +29,7 @@ export default function Header() {
             user={user}
             classes={classes}
             dsNotStarted={dsNotStarted}
-            exercisesSheetNotStarted={exercisesSheetNotStarted}
+            tdNotStarted={tdNotStarted}
           />
         </div>
 
@@ -39,7 +39,7 @@ export default function Header() {
             user={user}
             classes={classes}
             dsNotStarted={dsNotStarted}
-            exercisesSheetNotStarted={exercisesSheetNotStarted}
+            tdNotStarted={tdNotStarted}
           />
         </div>
       </nav>

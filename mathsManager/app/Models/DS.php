@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class DS extends Model
 {
     use HasFactory;
-    protected $table = 'DS';
+    protected $table = 'ds';
     protected $fillable = [
         'type_bac', 'exercises_number', 'harder_exercises', 'time', 'timer', 'chrono', 'status'
     ];
@@ -54,9 +54,9 @@ class DS extends Model
         return $this->belongsToMany(MultipleChapter::class, 'ds_multiple_chapters', 'ds_id', 'multiple_chapter_id');
     }
 
-    public function exercisesDS()
+    public function problems()
     {
-        return $this->belongsToMany(DsExercise::class, 'ds_exercises_ds', 'ds_id', 'ds_exercise_id');
+        return $this->belongsToMany(Problem::class, 'ds_problem', 'ds_id', 'problem_id');
     }
 
     public function user()

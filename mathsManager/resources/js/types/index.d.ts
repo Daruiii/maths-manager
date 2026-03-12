@@ -44,7 +44,7 @@ export interface PageProps {
   appEnv?: string;
   classes?: Classe[];
   dsNotStarted?: number;
-  exercisesSheetNotStarted?: number;
+  tdNotStarted?: number;
   // Home Page Specific Props
   introContent?: {
     title?: string;

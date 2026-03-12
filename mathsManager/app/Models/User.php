@@ -153,9 +153,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(CorrectionRequest::class);
     }
 
-    public function exercisesSheets()
+    public function tds()
     {
-        return $this->hasMany(ExercisesSheet::class);
+        return $this->hasMany(Td::class);
     }
 
     public function quizzes()

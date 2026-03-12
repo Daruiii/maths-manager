@@ -9,15 +9,10 @@ interface HeaderNavProps {
   user: User | null;
   classes?: Classe[];
   dsNotStarted?: number;
-  exercisesSheetNotStarted?: number;
+  tdNotStarted?: number;
 }
 
-export default function HeaderNav({
-  user,
-  classes,
-  dsNotStarted,
-  exercisesSheetNotStarted,
-}: HeaderNavProps) {
+export default function HeaderNav({ user, classes, dsNotStarted, tdNotStarted }: HeaderNavProps) {
   const { isStaff, isStudent, isGuest, hasNoRole } = useAuth();
   const { url } = usePage();
 
@@ -109,9 +104,9 @@ export default function HeaderNav({
             className={`nav-link relative focus:outline-none ${isActive('/exercises-sheet/my')}`}
           >
             Mes fiches
-            {(exercisesSheetNotStarted ?? 0) > 0 && (
+            {(tdNotStarted ?? 0) > 0 && (
               <span className="absolute -top-1 -right-3 bg-error-color text-white text-xxs font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pulse border border-white">
-                {exercisesSheetNotStarted}
+                {tdNotStarted}
               </span>
             )}
           </Link>

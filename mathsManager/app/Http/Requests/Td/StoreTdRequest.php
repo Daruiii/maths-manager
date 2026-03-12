@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\ExercisesSheet;
+namespace App\Http\Requests\Td;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateExercisesSheetRequest extends FormRequest
+class StoreTdRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

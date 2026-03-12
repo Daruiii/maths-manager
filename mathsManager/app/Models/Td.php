@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ExercisesSheet extends Model
+class Td extends Model
 {
     use HasFactory;
 
-    protected $table = 'exercises_sheet';
+    protected $table = 'td';
 
     protected $fillable = [
         'user_id',
@@ -22,7 +22,7 @@ class ExercisesSheet extends Model
 
     public function exercises()
     {
-        return $this->belongsToMany(Exercise::class, 'exercises_sheet_exercises');
+        return $this->belongsToMany(Exercise::class, 'td_exercise', 'td_id', 'exercise_id');
     }
 
     public function chapter()

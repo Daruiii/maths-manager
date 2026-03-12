@@ -9,14 +9,14 @@ interface HeaderMobileMenuProps {
   user: User | null;
   classes?: Classe[];
   dsNotStarted?: number;
-  exercisesSheetNotStarted?: number;
+  tdNotStarted?: number;
 }
 
 export default function HeaderMobileMenu({
   user,
   classes,
   dsNotStarted,
-  exercisesSheetNotStarted,
+  tdNotStarted,
 }: HeaderMobileMenuProps) {
   const { isStaff, isStudent, hasNoRole } = useAuth();
 
@@ -89,9 +89,9 @@ export default function HeaderMobileMenu({
                         className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
                       >
                         <span>Mes fiches</span>
-                        {(exercisesSheetNotStarted ?? 0) > 0 && (
+                        {(tdNotStarted ?? 0) > 0 && (
                           <span className="bg-error-color text-white text-xxs font-bold px-2 py-0.5 rounded-full">
-                            {exercisesSheetNotStarted}
+                            {tdNotStarted}
                           </span>
                         )}
                       </Link>

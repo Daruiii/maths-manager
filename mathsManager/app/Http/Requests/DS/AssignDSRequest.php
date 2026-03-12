@@ -23,8 +23,8 @@ class AssignDSRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'exercisesDS' => 'required|array',
-            'exercisesDS.*' => 'exists:ds_exercises,id',
+            'problems' => 'required|array',
+            'problems.*' => 'exists:problems,id',
             'user_id' => 'required|exists:users,id',
         ];
     }
@@ -37,9 +37,9 @@ class AssignDSRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'exercisesDS.required' => 'Vous devez sélectionner au moins un exercice.',
-            'exercisesDS.array' => 'Les exercices doivent être un tableau.',
-            'exercisesDS.*.exists' => 'Un des exercices sélectionnés n\'existe pas.',
+            'problems.required' => 'Vous devez sélectionner au moins un exercice.',
+            'problems.array' => 'Les exercices doivent être un tableau.',
+            'problems.*.exists' => 'Un des exercices sélectionnés n\'existe pas.',
             'user_id.required' => 'L\'élève est obligatoire.',
             'user_id.exists' => 'L\'élève sélectionné n\'existe pas.',
         ];

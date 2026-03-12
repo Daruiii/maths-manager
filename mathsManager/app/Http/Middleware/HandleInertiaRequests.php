@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Middleware;
 use App\Models\Classe;
 use App\Models\DS;
-use App\Models\ExercisesSheet;
+use App\Models\Td;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
             'appEnv' => config('app.env'),
             'classes' => Classe::where('hidden', false)->orderBy('display_order')->get(),
             'dsNotStarted' => auth()->check() ? DS::where('user_id', auth()->id())->where('status', 'not_started')->count() : 0,
-            'exercisesSheetNotStarted' => auth()->check() ? ExercisesSheet::where('user_id', auth()->id())->where('status', 'not_started')->count() : 0,
+            'tdNotStarted' => auth()->check() ? Td::where('user_id', auth()->id())->where('status', 'not_started')->count() : 0,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

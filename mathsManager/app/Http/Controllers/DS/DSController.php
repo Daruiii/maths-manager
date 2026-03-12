@@ -26,7 +26,7 @@ class DSController extends Controller
         $sort_by_student = request()->query('sort_by_student');
         $sort_by_status = request()->query('sort_by_status');
 
-        $dsList = DS::query()->with(['exercisesDS.multipleChapter', 'user', 'correctionRequest']);
+        $dsList = DS::query()->with(['problems.multipleChapter', 'user', 'correctionRequest']);
 
         // Appliquer la recherche via le service
         $dsList = $this->queryFiltersService->applySearch(
@@ -69,7 +69,7 @@ class DSController extends Controller
         // Eager loading pour éviter N+1 queries (fix #14.2)
         $dsList = DS::where('user_id', $id)
             ->with([
-                'exercisesDS.multipleChapter',  // Charge exercices + leurs chapitres
+                'problems.multipleChapter',  // Charge exercices + leurs chapitres
                 'correctionRequest'              // Charge les demandes de correction
             ])
             ->orderBy('created_at', 'desc')

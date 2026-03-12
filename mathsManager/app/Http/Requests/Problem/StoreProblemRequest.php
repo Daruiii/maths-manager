@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\DsExercise;
+namespace App\Http\Requests\Problem;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDsExerciseRequest extends FormRequest
+class StoreProblemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

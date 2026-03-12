@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DsExercise extends Model
+class Problem extends Model
 {
     use HasFactory;
+
+    protected $table = 'problems';
+
     protected $fillable = [
         'header', 'multiple_chapter_id', 'difficulty', 'time', 'name', 'statement', 'latex_statement', 'image_paths', 'correction_pdf',
          'type', 'year', 'academy', 'date_data'
@@ -20,12 +23,12 @@ class DsExercise extends Model
 
     public function chapters()
     {
-        return $this->belongsToMany(Chapter::class, 'chapters_exercises_ds', 'exercise_ds_id', 'chapter_id');
+        return $this->belongsToMany(Chapter::class, 'chapter_problem', 'problem_id', 'chapter_id');
     }
 
     public function ds()
     {
-        return $this->belongsToMany(DS::class, 'ds_exercises_ds', 'ds_exercise_id', 'ds_id');
+        return $this->belongsToMany(DS::class, 'ds_problem', 'problem_id', 'ds_id');
     }
 
     public function multipleChapter()

@@ -28,8 +28,8 @@ class ImageManagementService
      * @param Request $request
      * @param string $inputName Nom du champ form (ex: 'images', 'images_statement')
      * @param string $deleteInputName Nom du champ pour suppressions (ex: 'delete_images')
-     * @param string $context Contexte storage (ex: 'ds-exercises', 'exercises')
-     * @param string $identifier Identifiant unique (ex: 'ds-exercise-123', 'exercise-456/statement')
+     * @param string $context Contexte storage (ex: 'problems', 'exercises')
+     * @param string $identifier Identifiant unique (ex: 'problem-123', 'exercise-456/statement')
      * @param string $prefix Préfixe des noms (ex: 'img-')
      * @param bool $isPublic Public ou privé
      * @return array ['filename' => 'path'] des images finales
