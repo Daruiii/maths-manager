@@ -11,6 +11,7 @@ interface Props {
   href?: string;
   accentColor?: AccentColor;
   variant?: CardVariant;
+  topLeftContent?: ReactNode;
   hoverAction?: ReactNode;
   children?: ReactNode;
 }
@@ -41,6 +42,7 @@ export default function UserCard({
   href,
   accentColor = 'student',
   variant = 'default',
+  topLeftContent,
   hoverAction,
   children,
 }: Props) {
@@ -64,6 +66,7 @@ export default function UserCard({
     <div
       className={`card-theorem relative ${accent.borderLeft} ${variantStyles[variant]} p-4 flex flex-col items-center gap-3 group ${accent.hoverBg}`}
     >
+      {topLeftContent && <div className="absolute top-2 left-2">{topLeftContent}</div>}
       {hoverAction && <div className="absolute top-2 right-2 flex">{hoverAction}</div>}
 
       {href ? (

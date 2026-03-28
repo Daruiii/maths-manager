@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 import { LogOut, User as UserIcon, Settings, Crown, GraduationCap, BookOpen } from 'lucide-react';
 import { User } from '@/types';
 import { router, Link } from '@inertiajs/react';
-import { useAuth } from '@/Hooks/useAuth';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 
 interface UserMenuProps {
   user: User;

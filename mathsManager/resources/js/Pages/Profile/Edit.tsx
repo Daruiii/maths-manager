@@ -10,7 +10,7 @@ import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm';
 import Card from '@/Components/Common/UI/Card';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import Button from '@/Components/Common/UI/Button';
-import { useAuth } from '@/Hooks/useAuth';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 
 interface ProfileProps extends PageProps {
   mustVerifyEmail?: boolean;

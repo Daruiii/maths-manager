@@ -6,7 +6,7 @@ import { User } from '@/types/models';
  * Utilisé dans useStudentsFilter et useGroupStudentsFilter.
  */
 export function matchesStudent(student: User, query: string): boolean {
-  const q = query.toLowerCase().trim();
+  const q = query.toLowerCase().trim().replace(/\s+/g, ' ');
   if (!q) return true;
 
   const fullName = `${student.first_name} ${student.last_name}`.toLowerCase();

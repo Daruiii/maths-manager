@@ -1,7 +1,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Transition } from '@headlessui/react';
 import { X, Menu } from 'lucide-react';
 import { Classe, User } from '@/types';
-import { useAuth } from '@/Hooks/useAuth';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 import { Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 

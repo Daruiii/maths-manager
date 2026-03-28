@@ -40,6 +40,13 @@ export default function UserAvatar({
     <img
       src={avatarUrl}
       alt={altText}
+      referrerPolicy="no-referrer"
+      onError={(e) => {
+        const target = e.currentTarget;
+        if (!target.src.endsWith('/storage/images/default.jpg')) {
+          target.src = '/storage/images/default.jpg';
+        }
+      }}
       className={`rounded-full object-cover border border-border-color ${sizeClasses[size] || ''} ${className}`}
     />
   );

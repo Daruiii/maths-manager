@@ -40,9 +40,9 @@ class HomeController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->paginate(3)->withQueryString();
 
-                $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
-                    ->whereIn('DS.status', ['not_started', 'ongoing', 'finished'])
-                    ->select('DS.*', 'users.first_name', 'users.last_name')
+                $ds = DS::join('users', 'users.id', '=', 'ds.user_id')
+                    ->whereIn('ds.status', ['not_started', 'ongoing', 'finished'])
+                    ->select('ds.*', 'users.first_name', 'users.last_name')
                     ->orderBy('users.last_name', 'asc')
                     ->orderBy('users.first_name', 'asc')
                     ->get();

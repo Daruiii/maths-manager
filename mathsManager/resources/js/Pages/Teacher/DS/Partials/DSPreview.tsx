@@ -1,0 +1,132 @@
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
+import { Clock, BookOpen, Users } from 'lucide-react';
+import { DSPreviewItem as DSPreviewItemType, DEFAULT_EXERCISE_MINUTES } from '@/types/models';
+import DSPreviewItem from '@/Pages/Teacher/DS/Partials/DSPreviewItem';
+import Button from '@/Components/Common/UI/Button';
+import EmptyState from '@/Components/Common/UI/EmptyState';
+
+interface Props {
+  items: DSPreviewItemType[];
+  onReorder: (items: DSPreviewItemType[]) => void;
+  onRemove: (uid: string) => void;
+  onAssign: () => void;
+}
+
+function formatTime(totalMinutes: number): string {
+  if (totalMinutes === 0) return '0 min';
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${String(m).padStart(2, '0')}`;
+}
+
+export default function DSPreview({ items, onReorder, onRemove, onAssign }: Props) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const totalMinutes = items.reduce((sum, i) => {
+    if (i.item.kind === 'problem') return sum + (i.item.time ?? 0);
+    return sum + DEFAULT_EXERCISE_MINUTES;
+  }, 0);
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = items.findIndex((i) => i.uid === active.id);
+      const newIndex = items.findIndex((i) => i.uid === over.id);
+      onReorder(arrayMove(items, oldIndex, newIndex));
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* ── Header ── */}
+      <div className="p-4 border-b border-border-color flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-comfortaa-bold text-text-color">
+            Mon DS
+            {items.length > 0 && (
+              <span className="ml-1.5 text-xs font-normal text-text-gray">
+                {items.length} exercice{items.length > 1 ? 's' : ''}
+              </span>
+            )}
+          </h2>
+
+          {/* Timer total */}
+          {totalMinutes > 0 && (
+            <span className="flex items-center gap-1 text-sm font-comfortaa-bold text-teacher-color">
+              <Clock size={14} />
+              {formatTime(totalMinutes)}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ── Liste triable ── */}
+      <div className="flex-1 overflow-y-auto p-3">
+        {items.length === 0 ? (
+          <EmptyState
+            icon={BookOpen}
+            description="Clique sur un exercice pour l'ajouter au DS"
+            accentColor="teacher"
+          />
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={items.map((i) => i.uid)} strategy={verticalListSortingStrategy}>
+              <div className="space-y-2">
+                {items.map((item, index) => (
+                  <DSPreviewItem key={item.uid} item={item} index={index} onRemove={onRemove} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
+      </div>
+
+      {/* ── Actions ── */}
+      <div className="p-4 border-t border-border-color flex-shrink-0 space-y-2">
+        <Button
+          onClick={onAssign}
+          disabled={items.length === 0}
+          className="w-full flex items-center justify-center gap-2"
+          variant="primary"
+        >
+          <Users size={16} />
+          Assigner maintenant
+        </Button>
+
+        <button
+          type="button"
+          disabled
+          title="Bientôt disponible"
+          className="w-full py-2 px-4 rounded-xl border-2 border-dashed border-border-color text-text-gray text-sm cursor-not-allowed opacity-50"
+        >
+          Sauvegarder pour plus tard
+        </button>
+      </div>
+    </div>
+  );
+}

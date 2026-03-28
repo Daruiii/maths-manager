@@ -1,4 +1,4 @@
-import { useDarkMode } from '@/Hooks/useDarkMode';
+import { useDarkMode } from '@/Hooks/UI/useDarkMode';
 import { Sun, Moon } from 'lucide-react';
 
 /**

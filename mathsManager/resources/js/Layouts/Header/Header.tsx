@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useScrollDirection } from '@/Hooks/useScrollDirection';
-import { useAuth } from '@/Hooks/useAuth';
+import { useScrollDirection } from '@/Hooks/UI/useScrollDirection';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 import HeaderLogo from '@/Layouts/Header/HeaderLogo';
 import HeaderNav from '@/Layouts/Header/HeaderNav';
 import HeaderActions from '@/Layouts/Header/HeaderActions';

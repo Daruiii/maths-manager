@@ -2,7 +2,7 @@ import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/r
 import { Fragment } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Classe, User } from '@/types';
-import { useAuth } from '@/Hooks/useAuth';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 import { Link, usePage } from '@inertiajs/react';
 
 interface HeaderNavProps {

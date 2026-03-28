@@ -1,5 +1,5 @@
 import { Mail, GraduationCap, BookOpen, Crown } from 'lucide-react';
-import { useAuth } from '@/Hooks/useAuth';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 import type { ProfileStatistics } from '@/types';
 import TeacherCard from '@/Components/Features/Profile/TeacherCard';
 import UserAvatar from '@/Components/Common/UI/UserAvatar';

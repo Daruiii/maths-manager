@@ -11,7 +11,7 @@ import StudentsToolbar from '@/Pages/Teacher/Students/Partials/StudentsToolbar';
 import InvitationLinkCompact from '@/Pages/Teacher/Students/Partials/InvitationLinkCompact';
 import InvitationConfigModal from '@/Pages/Teacher/Students/Partials/InvitationConfigModal';
 import GroupFormModal from '@/Pages/Teacher/Students/Partials/GroupFormModal';
-import { useStudentsFilter } from '@/Hooks/useStudentsFilter';
+import { useStudentsFilter } from '@/Hooks/Students/useStudentsFilter';
 
 interface Props {
   groups: StudentGroup[];
@@ -29,6 +29,7 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
     setPage,
     filteredStudents,
     filteredGroups,
+    matchedGroupedStudents,
     paginatedStudents,
     totalPages,
     handleSearchChange,
@@ -84,13 +85,14 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
                   </div>
                 )}
 
-                {paginatedStudents.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {paginatedStudents.map((student) => (
-                        <StudentCard key={student.id} student={student} groups={groups} />
-                      ))}
-                    </div>
+                {(paginatedStudents.length > 0 || matchedGroupedStudents.length > 0) && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {matchedGroupedStudents.map((student) => (
+                      <StudentCard key={student.id} student={student} groups={groups} />
+                    ))}
+                    {paginatedStudents.map((student) => (
+                      <StudentCard key={student.id} student={student} groups={groups} />
+                    ))}
                   </div>
                 )}
 

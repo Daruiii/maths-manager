@@ -55,7 +55,12 @@ class DSPolicy
             return true;
         }
 
-        // Le propriétaire peut modifier son propre DS
+        // Un teacher peut modifier les DS qu'il a créés
+        if ($user->role === User::ROLE_TEACHER) {
+            return $dS->teacher_id === $user->id;
+        }
+
+        // Un élève peut modifier son propre DS (timer, status)
         return $dS->user_id === $user->id;
     }
 
@@ -69,8 +74,12 @@ class DSPolicy
             return true;
         }
 
-        // Le propriétaire peut supprimer son propre DS
-        return $dS->user_id === $user->id;
+        // Un teacher peut supprimer les DS qu'il a créés
+        if ($user->role === User::ROLE_TEACHER) {
+            return $dS->teacher_id === $user->id;
+        }
+
+        return false;
     }
 
     /**
@@ -105,8 +114,8 @@ class DSPolicy
      */
     public function assign(User $user): bool
     {
-        // Seuls les admins peuvent assigner des DS à d'autres utilisateurs
-        return $user->role === User::ROLE_ADMIN;
+        // Admins et teachers peuvent assigner des DS
+        return $user->canActAsTeacher();
     }
 
     /**

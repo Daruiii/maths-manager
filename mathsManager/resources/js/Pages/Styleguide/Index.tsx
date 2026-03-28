@@ -4,7 +4,7 @@ import Card from '@/Components/Common/UI/Card';
 import Button from '@/Components/Common/UI/Button';
 import UserCard from '@/Components/Features/User/UserCard';
 import PageHeader from '@/Components/Common/UI/PageHeader';
-import { useAuth } from '@/Hooks/useAuth';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 import {
   GraduationCap,
   Users,

@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
-import { useAuth } from '@/Hooks/useAuth';
+import { useAuth } from '@/Hooks/Auth/useAuth';
 import AdminHome from './Partials/AdminHome';
 import TeacherHome from './Partials/TeacherHome';
 import StudentHome from './Partials/StudentHome';

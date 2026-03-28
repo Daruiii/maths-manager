@@ -1,7 +1,7 @@
 import { User } from '@/types/models'; // Use exact path to models
 import ApplicantCard from '@/Pages/Admin/Partials/ApplicantCard';
 import SearchBar from '@/Components/Common/UI/SearchBar';
-import { FilterStatus } from '@/Hooks/useTeacherApplications';
+import { FilterStatus } from '@/Hooks/Admin/useTeacherApplications';
 import Filter, { FilterOption } from '@/Components/Common/UI/Filter';
 
 interface Props {

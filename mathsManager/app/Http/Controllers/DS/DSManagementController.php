@@ -112,6 +112,7 @@ class DSManagementController extends Controller
 
         $ds = new DS;
         $ds->user_id = $request->input('user_id');
+        $ds->teacher_id = Auth::id();
         $ds->type_bac = false;
         $ds->exercises_number = $number_exercises;
         $ds->harder_exercises = false;

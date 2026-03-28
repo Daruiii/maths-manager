@@ -66,6 +66,7 @@ class DSGenerationService
         if ($ds === null) {
             $ds = new DS();
             $ds->user_id = $user->id;
+            $ds->teacher_id = $user->canActAsTeacher() ? $user->id : null;
         }
 
         $ds->type_bac = $request->has('type_bac');

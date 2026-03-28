@@ -11,7 +11,7 @@ import ApplicantDetails from '@/Pages/Admin/Partials/ApplicantDetails';
 import RejectionModal from '@/Pages/Admin/Partials/RejectionModal';
 import ApprovalModal from '@/Pages/Admin/Partials/ApprovalModal';
 import InviteModal from '@/Pages/Admin/Partials/InviteModal';
-import { useTeacherApplications } from '@/Hooks/useTeacherApplications';
+import { useTeacherApplications } from '@/Hooks/Admin/useTeacherApplications';
 
 interface Props {
   applications: User[];

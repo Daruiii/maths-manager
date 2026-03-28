@@ -23,6 +23,7 @@ class TeacherStudentController extends Controller
 
         $groups = StudentGroup::where('teacher_id', $teacher->id)
             ->withCount('students')
+            ->with(['students' => fn($q) => $q->orderBy('first_name')])
             ->orderBy('name')
             ->get();
 

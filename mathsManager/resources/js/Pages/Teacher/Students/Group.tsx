@@ -7,7 +7,7 @@ import StudentCard from '@/Pages/Teacher/Students/Partials/StudentCard';
 import StudentsToolbar from '@/Pages/Teacher/Students/Partials/StudentsToolbar';
 import { BookOpen, FileText, Users } from 'lucide-react';
 import { route } from 'ziggy-js';
-import { useGroupStudentsFilter } from '@/Hooks/useGroupStudentsFilter';
+import { useGroupStudentsFilter } from '@/Hooks/Students/useGroupStudentsFilter';
 
 interface Props {
   group: StudentGroup;
@@ -80,7 +80,12 @@ export default function Group({ group, students, groups }: Props) {
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {paginatedStudents.map((student) => (
-                    <StudentCard key={student.id} student={student} groups={groups} />
+                    <StudentCard
+                      key={student.id}
+                      student={student}
+                      groups={groups}
+                      showGroupBadge={false}
+                    />
                   ))}
                 </div>
 

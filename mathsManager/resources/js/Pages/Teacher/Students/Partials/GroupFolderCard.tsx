@@ -70,9 +70,12 @@ export default function GroupFolderCard({ group }: Props) {
         {/* Actions groupe (placeholder) */}
         <div className="flex items-center justify-center gap-2 pt-1">
           <button
-            disabled
-            title="DS groupe - Bientôt disponible"
-            className="p-1.5 rounded-lg border border-border-color/50 text-text-gray/40 cursor-not-allowed"
+            onClick={(e) => {
+              e.preventDefault();
+              router.visit(route('teacher.ds.create', { group: group.id }));
+            }}
+            title="Créer un DS pour ce groupe"
+            className="p-1.5 rounded-lg border border-border-color/50 text-text-gray hover:text-teacher-color hover:border-teacher-color hover:bg-teacher-color/10 transition-colors"
           >
             <BookOpen size={14} />
           </button>
