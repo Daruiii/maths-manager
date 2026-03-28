@@ -93,6 +93,9 @@ export interface PickableProblem {
   academy: string | null;
   multiple_chapter_id: number;
   multiple_chapter: MultipleChapter;
+  latex_statement?: string | null;
+  statement?: string | null; // HTML déjà converti (images absolues résolues) — prioritaire
+  image_paths?: Record<string, string> | null; // pour les nouveaux problèmes
 }
 
 /** Exercise basique global (complément d'un DS, ou cœur d'un TD) */
@@ -108,6 +111,7 @@ export interface PickableExercise {
     title: string;
     chapter: { id: number; title: string };
   };
+  latex_statement?: string | null;
 }
 
 export type PickableItem = PickableProblem | PickableExercise;

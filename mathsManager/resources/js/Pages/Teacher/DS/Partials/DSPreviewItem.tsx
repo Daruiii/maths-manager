@@ -29,9 +29,9 @@ export default function DSPreviewItem({ item, index, onRemove }: Props) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-2 p-2.5 rounded-xl border-2 bg-secondary-color transition-shadow ${
+      className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg border bg-secondary-color transition-shadow ${
         isDragging
-          ? 'border-teacher-color shadow-lg shadow-teacher-color/10 opacity-90 z-50'
+          ? 'border-teacher-color shadow-md shadow-teacher-color/10 opacity-90 z-50'
           : 'border-border-color'
       }`}
     >
@@ -43,26 +43,26 @@ export default function DSPreviewItem({ item, index, onRemove }: Props) {
         className="flex-shrink-0 text-text-gray hover:text-teacher-color cursor-grab active:cursor-grabbing touch-none"
         aria-label="Réordonner"
       >
-        <GripVertical size={16} />
+        <GripVertical size={12} />
       </button>
 
       {/* Number */}
-      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-teacher-color/15 text-teacher-color text-[11px] font-comfortaa-bold flex items-center justify-center">
+      <span className="flex-shrink-0 w-4 h-4 rounded-full bg-teacher-color/15 text-teacher-color text-[10px] font-comfortaa-bold flex items-center justify-center">
         {index + 1}
       </span>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-comfortaa-bold text-text-color leading-tight truncate">
+        <p className="text-xs font-comfortaa-bold text-text-color leading-tight truncate">
           {item.item.name}
         </p>
-        {chapterName && <p className="text-[10px] text-text-gray truncate">{chapterName}</p>}
+        {chapterName && <p className="text-[9px] text-text-gray truncate">{chapterName}</p>}
       </div>
 
       {/* Time */}
       {time != null && time > 0 && (
-        <span className="flex-shrink-0 flex items-center gap-0.5 text-xs text-text-gray">
-          <Clock size={10} />
+        <span className="flex-shrink-0 flex items-center gap-0.5 text-[10px] text-text-gray">
+          <Clock size={9} />
           {time}
         </span>
       )}
@@ -70,6 +70,7 @@ export default function DSPreviewItem({ item, index, onRemove }: Props) {
       {/* Remove */}
       <IconButton
         icon={X}
+        iconSize={11}
         accentColor="error"
         onClick={() => onRemove(item.uid)}
         aria-label="Retirer"

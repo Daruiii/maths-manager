@@ -1,0 +1,123 @@
+/* ============================================================
+   LaTeX / KaTeX — Styles pour LatexRenderer
+   Portés depuis resources/scss/_old_scss/katex.scss
+   ============================================================ */
+
+/* Contenu exercice / solution */
+.latex-content {
+  font-family: 'CMU Serif', serif;
+  font-weight: 100;
+}
+
+.latex-content span {
+  font-size: 0.875rem;
+}
+
+/* Commandes de style texte */
+.textup  { font-family: 'CMU Serif', serif; }
+.textbf  { font-family: 'CMU Exercise Bold', serif; }
+.textit  { font-family: 'CMU TI', serif; }
+.texttt  { font-family: 'CMU TT', monospace; font-size: 0.875rem; }
+
+/* Listes */
+.enumb {
+  list-style-type: decimal;
+  margin-left: 2rem;
+}
+li ol.enumb { list-style-type: lower-alpha; }
+li ol.enumb-decimal { list-style-type: decimal; }
+li ol.enumb-alpha   { list-style-type: lower-alpha; }
+
+.point {
+  list-style-type: disc;
+  margin-left: 2rem;
+}
+
+.listpart {
+  margin-left: -2rem;
+  margin-top: 1rem;
+}
+
+/* Mise en page LaTeX */
+.latex-center,
+.latex-align,
+.latex-pmatrix {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.latex-minipage {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1px solid #000;
+  width: auto;
+  padding: 0.5rem;
+  padding-right: 1rem;
+  line-height: 0.3;
+}
+
+.latex-boxed {
+  border: 0.0625em solid #000;
+  padding: 0.8rem 0.5rem;
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .latex-boxed {
+    padding: 0.3rem;
+    margin: 0.25rem 0;
+  }
+}
+
+/* Encadrés théorèmes / propositions */
+.latex-prop,
+.latex-cor,
+.latex-thm,
+.latex-definition,
+.latex-rappels,
+.latex-rem {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f8f8f8;
+}
+
+/* ─── KaTeX overrides ──────────────────────────────────────────────────────── */
+
+/* Indices / exposants */
+.katex .mord.mtight,
+.katex .mord.mtight .mbin,
+.katex .mord.mtight .mrel,
+.katex .mord.mtight .mopen,
+.katex .mord.mtight .mclose {
+  font-size: 0.65rem;
+}
+.katex .mord.mtight .mopen { font-size: 0.65rem !important; }
+
+/* Puissance de puissance */
+.katex .mord .msupsub .vlist-r .vlist span .mord.mtight .msupsub .vlist-r .vlist span .mord.mtight,
+.katex .mclose .msupsub .vlist-r .vlist span .mord.mtight .msupsub .vlist-r .vlist span .mord.mtight {
+  font-size: 0.5rem;
+  position: relative;
+  top: 0.09rem;
+}
+
+.katex .msupsub .vlist-r .vlist span .mord.mtight {
+  position: relative;
+  top: -0.01rem;
+}
+
+/* Limites */
+span .op-limits .vlist-r .vlist span .mord.mtight {
+  font-size: 0.7rem;
+}
+
+/* Radical */
+span .msupsub span .hide-tail {
+  font-size: 0.5rem;
+  margin-bottom: 0.1rem;
+}

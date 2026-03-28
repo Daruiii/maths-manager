@@ -10,6 +10,7 @@ use App\Models\Problem;
 use App\Models\StudentGroup;
 use App\Models\Subchapter;
 use App\Models\User;
+use App\Services\FileUploadService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ use Inertia\Response;
 
 class DSBuilderController extends Controller
 {
+    public function __construct(private FileUploadService $fileUploadService) {}
     /**
      * Temps par défaut (minutes) pour un exercise basique sans champ time.
      * Timer V1 — sera dynamique en V2.
@@ -80,9 +82,12 @@ class DSBuilderController extends Controller
     public function searchProblems(Request $request): JsonResponse
     {
         $hasHarder = Schema::hasColumn('problems', 'harder_exercise');
-        $columns = ['id', 'name', 'difficulty', 'time', 'type', 'year', 'academy', 'multiple_chapter_id'];
+        $columns = ['id', 'name', 'difficulty', 'time', 'type', 'year', 'academy', 'multiple_chapter_id', 'latex_statement', 'statement'];
         if ($hasHarder) {
             $columns[] = 'harder_exercise';
+        }
+        if (Schema::hasColumn('problems', 'image_paths')) {
+            $columns[] = 'image_paths';
         }
 
         $query = Problem::with('multipleChapter')->select($columns);
@@ -119,6 +124,27 @@ class DSBuilderController extends Controller
 
         $problems = $query->orderBy('multiple_chapter_id')->orderBy('name')->paginate(20);
 
+        // Charger les images depuis le filesystem (image_paths n'est pas en DB)
+        $problems->getCollection()->transform(function (Problem $problem) {
+            $files = $this->fileUploadService->getFiles(
+                'problems',
+                'problem-' . $problem->id,
+                true,   // isPublic
+                'img-*'
+            );
+
+            // Format: ['img-1' => 'problems/problem-123/img-1.jpg', ...]
+            // Conserve les deux formats (associatif pour \graph{id} et indexé pour \graph{n})
+            $imagePaths = [];
+            foreach ($files as $path) {
+                $name = pathinfo($path, PATHINFO_FILENAME); // 'img-1'
+                $imagePaths[$name] = $path;
+            }
+
+            $problem->image_paths = $imagePaths;
+            return $problem;
+        });
+
         return response()->json($problems);
     }
 
@@ -130,7 +156,7 @@ class DSBuilderController extends Controller
     {
         $query = Exercise::visible()
             ->with(['subchapter.chapter.classe'])
-            ->select('id', 'name', 'difficulty', 'order', 'subchapter_id');
+            ->select('id', 'name', 'difficulty', 'order', 'subchapter_id', 'latex_statement');
 
         if ($search = $request->query('search')) {
             $query->where('name', 'like', "%{$search}%");
@@ -168,14 +194,17 @@ class DSBuilderController extends Controller
     public function assign(Request $request)
     {
         $request->validate([
-            'problem_ids'   => 'required_without_all:exercise_ids|array|min:1',
-            'problem_ids.*' => 'exists:problems,id',
-            'exercise_ids'  => 'required_without_all:problem_ids|array|min:1',
-            'exercise_ids.*' => 'exists:exercises,id',
-            'student_ids'   => 'required_without:group_ids|array',
-            'student_ids.*' => 'exists:users,id',
-            'group_ids'     => 'required_without:student_ids|array',
-            'group_ids.*'   => 'exists:student_groups,id',
+            'problem_ids'         => 'required_without_all:exercise_ids|array|min:1',
+            'problem_ids.*'       => 'exists:problems,id',
+            'exercise_ids'        => 'required_without_all:problem_ids|array|min:1',
+            'exercise_ids.*'      => 'exists:exercises,id',
+            'student_ids'         => 'required_without:group_ids|array',
+            'student_ids.*'       => 'exists:users,id',
+            'group_ids'           => 'required_without:student_ids|array',
+            'group_ids.*'         => 'exists:student_groups,id',
+            'custom_title'        => 'nullable|string|max:255',
+            'custom_level'        => 'nullable|string|max:255',
+            'custom_instructions' => 'nullable|string',
         ]);
 
         $teacher = Auth::user();
@@ -212,6 +241,9 @@ class DSBuilderController extends Controller
             $ds->timer  = $totalTime * 60;
             $ds->chrono = 0;
             $ds->status = 'not_started';
+            $ds->custom_title        = $request->input('custom_title');
+            $ds->custom_level        = $request->input('custom_level');
+            $ds->custom_instructions = $request->input('custom_instructions');
             $ds->save();
 
             $ds->multipleChapters()->attach($multipleChapterIds);

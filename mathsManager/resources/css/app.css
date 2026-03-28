@@ -4,6 +4,7 @@
 @import './design-system.css';
 @import './fonts.css';
 @import './mathsmanager.css';
+@import './katex.css';
 
 /* Tailwind CSS directives */
 @tailwind base;

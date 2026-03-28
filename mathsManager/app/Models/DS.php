@@ -11,7 +11,8 @@ class DS extends Model
     use HasFactory;
     protected $table = 'ds';
     protected $fillable = [
-        'type_bac', 'exercises_number', 'harder_exercises', 'time', 'timer', 'chrono', 'status', 'teacher_id'
+        'type_bac', 'exercises_number', 'harder_exercises', 'time', 'timer', 'chrono', 'status', 'teacher_id',
+        'custom_title', 'custom_level', 'custom_instructions',
     ];
 
     public function isNotStarted(): bool

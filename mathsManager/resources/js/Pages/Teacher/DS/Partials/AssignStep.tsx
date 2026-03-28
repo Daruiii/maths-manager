@@ -13,21 +13,29 @@ import EmptyState from '@/Components/Common/UI/EmptyState';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   previewItems: DSPreviewItem[];
   students: UserType[];
   groups: StudentGroup[];
   preselectedStudentId?: number | null;
   preselectedGroupId?: number | null;
+  dsTitle?: string;
+  dsLevel?: string;
+  dsInstructions?: string;
 }
 
 export default function AssignStep({
   isOpen,
   onClose,
+  onSuccess,
   previewItems,
   students,
   groups,
   preselectedStudentId,
   preselectedGroupId,
+  dsTitle,
+  dsLevel,
+  dsInstructions,
 }: Props) {
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<number>>(new Set());
   const [selectedGroupIds, setSelectedGroupIds] = useState<Set<number>>(new Set());
@@ -74,10 +82,14 @@ export default function AssignStep({
         exercise_ids: exerciseIds,
         student_ids: Array.from(selectedStudentIds),
         group_ids: Array.from(selectedGroupIds),
+        custom_title: dsTitle,
+        custom_level: dsLevel,
+        custom_instructions: dsInstructions,
       },
       {
         onSuccess: () => {
           setIsSubmitting(false);
+          onSuccess?.();
           onClose();
         },
         onError: () => setIsSubmitting(false),

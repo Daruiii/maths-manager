@@ -29,6 +29,16 @@
 }
 
 @font-face {
+    font-family: 'CMU TT';
+    src: url('../fonts/cmuntt.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'CMU TT';
+    src: url('../fonts/cmuntt.ttf') format('truetype');
+}
+
+@font-face {
     font-family: 'sign painter';
     src: url('../fonts/sign-painter/signpainter_housescript.ttf') format('truetype');
 }
