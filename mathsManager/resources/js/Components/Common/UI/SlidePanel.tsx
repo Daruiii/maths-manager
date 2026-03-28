@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { X } from 'lucide-react';
+import IconButton from '@/Components/Common/UI/IconButton';
 
 interface Props {
   isOpen: boolean;
@@ -26,13 +27,7 @@ export default function SlidePanel({ isOpen, onClose, title, subtitle, footer, c
             <h3 className="font-comfortaa-bold text-text-color">{title}</h3>
             {subtitle && <p className="text-xs text-text-gray mt-0.5">{subtitle}</p>}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-xl text-text-gray hover:text-text-color hover:bg-secondary-color transition-colors"
-          >
-            <X size={18} />
-          </button>
+          <IconButton icon={X} iconSize={18} onClick={onClose} />
         </div>
 
         {/* Body */}

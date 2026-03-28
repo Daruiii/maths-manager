@@ -44,15 +44,17 @@ export default function Create({
   const [mobileTab, setMobileTab] = useState<MobileTab>('picker');
   const [isAssignOpen, setIsAssignOpen] = useState(false);
 
-  const handleAdd = useCallback((item: PickableItem) => {
+  const handleToggle = useCallback((item: PickableItem) => {
     setPreviewItems((prev) => {
-      // Empêcher les doublons
-      const alreadyIn = prev.some((i) => i.item.kind === item.kind && i.item.id === item.id);
-      if (alreadyIn) return prev;
+      const existingIndex = prev.findIndex(
+        (i) => i.item.kind === item.kind && i.item.id === item.id
+      );
+      if (existingIndex !== -1) {
+        return prev.filter((_, idx) => idx !== existingIndex);
+      }
+      setMobileTab('preview');
       return [...prev, { uid: makeUid(item.kind, item.id, prev.length), item }];
     });
-    // Sur mobile, switcher automatiquement vers la preview
-    setMobileTab('preview');
   }, []);
 
   const handleRemove = useCallback((uid: string) => {
@@ -125,7 +127,7 @@ export default function Create({
             subchapters={subchapters}
             academies={academies}
             previewItems={previewItems}
-            onAdd={handleAdd}
+            onToggle={handleToggle}
           />
         </div>
 

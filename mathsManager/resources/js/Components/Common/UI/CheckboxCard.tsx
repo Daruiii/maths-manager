@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 
 interface Props {
   isSelected: boolean;
-  onToggle: () => void;
+  onToggle?: () => void;
   children: ReactNode;
   /** 'button' = entire card is clickable. 'div' = card is a container (inner buttons need to work). Default: 'button' */
   as?: 'button' | 'div';
@@ -28,7 +28,7 @@ export default function CheckboxCard({
   }
 
   return (
-    <button type="button" onClick={onToggle} className={baseClass}>
+    <button type="button" onClick={onToggle ?? undefined} className={baseClass}>
       {children}
     </button>
   );

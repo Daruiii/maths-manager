@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { router } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { Users, ChevronDown, ChevronRight } from 'lucide-react';
 import { StudentGroup, User as UserType, DSPreviewItem } from '@/types/models';
 import UserAvatar from '@/Components/Common/UI/UserAvatar';
 import Button from '@/Components/Common/UI/Button';
+import SearchBar from '@/Components/Common/UI/SearchBar';
 import SlidePanel from '@/Components/Common/UI/SlidePanel';
 import CheckboxCard, { CheckboxIndicator } from '@/Components/Common/UI/CheckboxCard';
 import EmptyState from '@/Components/Common/UI/EmptyState';
@@ -32,6 +33,7 @@ export default function AssignStep({
   const [selectedGroupIds, setSelectedGroupIds] = useState<Set<number>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
@@ -49,12 +51,21 @@ export default function AssignStep({
     return next;
   };
 
-  const totalSelected = selectedStudentIds.size + selectedGroupIds.size;
+  const totalRecipients = useMemo(() => {
+    const groupStudentIds = new Set(
+      students
+        .filter(
+          (s) => s.group_id !== null && s.group_id !== undefined && selectedGroupIds.has(s.group_id)
+        )
+        .map((s) => s.id)
+    );
+    return new Set([...groupStudentIds, ...selectedStudentIds]).size;
+  }, [students, selectedGroupIds, selectedStudentIds]);
   const problemIds = previewItems.filter((i) => i.item.kind === 'problem').map((i) => i.item.id);
   const exerciseIds = previewItems.filter((i) => i.item.kind === 'exercise').map((i) => i.item.id);
 
   const handleSubmit = () => {
-    if (problemIds.length + exerciseIds.length === 0 || totalSelected === 0) return;
+    if (problemIds.length + exerciseIds.length === 0 || totalRecipients === 0) return;
     setIsSubmitting(true);
     router.post(
       route('teacher.ds.assign'),
@@ -74,7 +85,27 @@ export default function AssignStep({
     );
   };
 
+  const q = search.toLowerCase().trim();
+  const matchesName = (s: UserType, query: string) => {
+    const full = `${s.first_name} ${s.last_name}`.toLowerCase();
+    const reversed = `${s.last_name} ${s.first_name}`.toLowerCase();
+    return full.includes(query) || reversed.includes(query);
+  };
   const ungroupedStudents = students.filter((s) => !s.group_id);
+
+  const filteredGroups = useMemo(() => {
+    if (!q) return groups;
+    return groups.filter(
+      (g) =>
+        g.name.toLowerCase().includes(q) ||
+        students.some((s) => s.group_id === g.id && matchesName(s, q))
+    );
+  }, [groups, students, q]);
+
+  const filteredUngrouped = useMemo(() => {
+    if (!q) return ungroupedStudents;
+    return ungroupedStudents.filter((s) => matchesName(s, q));
+  }, [ungroupedStudents, q]);
 
   return (
     <SlidePanel
@@ -85,22 +116,32 @@ export default function AssignStep({
       footer={
         <Button
           onClick={handleSubmit}
-          disabled={totalSelected === 0 || problemIds.length + exerciseIds.length === 0}
+          disabled={totalRecipients === 0 || problemIds.length + exerciseIds.length === 0}
           isLoading={isSubmitting}
           variant="teacher"
           className="w-full justify-center"
         >
           Assigner à{' '}
-          {totalSelected > 0 ? `${totalSelected} destinataire${totalSelected > 1 ? 's' : ''}` : '…'}
+          {totalRecipients > 0
+            ? `${totalRecipients} destinataire${totalRecipients > 1 ? 's' : ''}`
+            : '…'}
         </Button>
       }
     >
+      <SearchBar
+        placeholder="Rechercher un élève ou un groupe…"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onClear={() => setSearch('')}
+        focusRingClass="focus:border-teacher-color focus:ring-teacher-color"
+      />
+
       {/* Groups */}
-      {groups.length > 0 && (
+      {filteredGroups.length > 0 && (
         <section>
           <p className="text-xs font-medium text-text-gray uppercase tracking-wide mb-2">Groupes</p>
           <div className="space-y-1.5">
-            {groups.map((group) => {
+            {filteredGroups.map((group) => {
               const isSelected = selectedGroupIds.has(group.id);
               const isExpanded = expandedGroups.has(group.id);
               const groupStudents = students.filter((s) => s.group_id === group.id);
@@ -135,14 +176,28 @@ export default function AssignStep({
                   </div>
                   {isExpanded && groupStudents.length > 0 && (
                     <div className="border-t border-border-color bg-secondary-color/50 px-3 py-2 space-y-1.5">
-                      {groupStudents.map((s) => (
-                        <div key={s.id} className="flex items-center gap-2">
-                          <UserAvatar user={s} size="sm" />
-                          <span className="text-xs text-text-color">
-                            {s.first_name} {s.last_name}
-                          </span>
-                        </div>
-                      ))}
+                      {groupStudents.map((s) => {
+                        const coveredByGroup = isSelected;
+                        const isStudentSelected = coveredByGroup || selectedStudentIds.has(s.id);
+                        return (
+                          <CheckboxCard
+                            key={s.id}
+                            isSelected={isStudentSelected}
+                            onToggle={
+                              coveredByGroup
+                                ? undefined
+                                : () => setSelectedStudentIds(toggle(selectedStudentIds, s.id))
+                            }
+                            className="flex items-center gap-2 p-2"
+                          >
+                            <CheckboxIndicator isSelected={isStudentSelected} />
+                            <UserAvatar user={s} size="sm" />
+                            <span className="text-xs text-text-color">
+                              {s.first_name} {s.last_name}
+                            </span>
+                          </CheckboxCard>
+                        );
+                      })}
                     </div>
                   )}
                 </CheckboxCard>
@@ -153,13 +208,13 @@ export default function AssignStep({
       )}
 
       {/* Ungrouped students */}
-      {ungroupedStudents.length > 0 && (
+      {filteredUngrouped.length > 0 && (
         <section>
           <p className="text-xs font-medium text-text-gray uppercase tracking-wide mb-2">
             Élèves sans groupe
           </p>
           <div className="space-y-1.5">
-            {ungroupedStudents.map((student) => {
+            {filteredUngrouped.map((student) => {
               const isSelected = selectedStudentIds.has(student.id);
               return (
                 <CheckboxCard
@@ -180,8 +235,16 @@ export default function AssignStep({
         </section>
       )}
 
-      {students.length === 0 && groups.length === 0 && (
-        <EmptyState icon={Users} description="Aucun élève dans votre classe pour le moment." />
+      {filteredGroups.length === 0 && filteredUngrouped.length === 0 && (
+        <EmptyState
+          icon={Users}
+          description={
+            q
+              ? 'Aucun résultat pour cette recherche.'
+              : 'Aucun élève dans votre classe pour le moment.'
+          }
+          accentColor="default"
+        />
       )}
     </SlidePanel>
   );

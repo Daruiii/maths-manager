@@ -80,7 +80,7 @@ class DSBuilderController extends Controller
     public function searchProblems(Request $request): JsonResponse
     {
         $hasHarder = Schema::hasColumn('problems', 'harder_exercise');
-        $columns = ['id', 'name', 'header', 'difficulty', 'time', 'type', 'year', 'academy', 'multiple_chapter_id'];
+        $columns = ['id', 'name', 'difficulty', 'time', 'type', 'year', 'academy', 'multiple_chapter_id'];
         if ($hasHarder) {
             $columns[] = 'harder_exercise';
         }
@@ -88,10 +88,7 @@ class DSBuilderController extends Controller
         $query = Problem::with('multipleChapter')->select($columns);
 
         if ($search = $request->query('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('header', 'like', "%{$search}%");
-            });
+            $query->where('name', 'like', "%{$search}%");
         }
 
         if ($chapterId = $request->query('chapter_id')) {
@@ -133,7 +130,7 @@ class DSBuilderController extends Controller
     {
         $query = Exercise::visible()
             ->with(['subchapter.chapter.classe'])
-            ->select('id', 'name', 'difficulty', 'subchapter_id');
+            ->select('id', 'name', 'difficulty', 'order', 'subchapter_id');
 
         if ($search = $request->query('search')) {
             $query->where('name', 'like', "%{$search}%");
@@ -141,6 +138,12 @@ class DSBuilderController extends Controller
 
         if ($subchapterId = $request->query('subchapter_id')) {
             $query->where('subchapter_id', $subchapterId);
+        }
+
+        if ($chapterId = $request->query('chapter_id')) {
+            $query->whereHas('subchapter', function ($q) use ($chapterId) {
+                $q->where('chapter_id', $chapterId);
+            });
         }
 
         if ($difficulty = $request->query('difficulty')) {

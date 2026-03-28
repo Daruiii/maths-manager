@@ -7,6 +7,7 @@ interface UseExercisePickerOptionsParams {
   subchapters: Subchapter[];
   problemClassId: string;
   exerciseClassId: string;
+  exerciseChapterId: string;
 }
 
 export function useExercisePickerOptions({
@@ -14,6 +15,7 @@ export function useExercisePickerOptions({
   subchapters,
   problemClassId,
   exerciseClassId,
+  exerciseChapterId,
 }: UseExercisePickerOptionsParams) {
   const classesForExercises = useMemo(() => {
     const map = new Map<number, string>();
@@ -70,6 +72,30 @@ export function useExercisePickerOptions({
     [subchapters]
   );
 
+  // Chapitres uniques pour les exercices basiques (dérivés des sous-chapitres)
+  const chaptersForExercises = useMemo(() => {
+    const map = new Map<string, string>();
+    subchapters.forEach((sub) => {
+      const ch = sub.chapter;
+      if (!ch) return;
+      if (exerciseClassId && String(ch.class_id) !== exerciseClassId) return;
+      map.set(String(ch.id), ch.title);
+    });
+    return Array.from(map.entries()).map(([id, title]) => ({ id, title }));
+  }, [subchapters, exerciseClassId]);
+
+  const exerciseChapterMap = useMemo(
+    () => new Map(chaptersForExercises.map((ch) => [ch.id, ch.title])),
+    [chaptersForExercises]
+  );
+
+  const exerciseChapterOptions = useMemo((): FilterSelectOption[] => {
+    return [
+      { value: '', label: 'Tous chapitres' },
+      ...chaptersForExercises.map((ch) => ({ value: ch.id, label: ch.title })),
+    ];
+  }, [chaptersForExercises]);
+
   const problemClassMap = useMemo(
     () => new Map(classesForProblems.map((classe) => [String(classe.id), classe.name])),
     [classesForProblems]
@@ -107,28 +133,31 @@ export function useExercisePickerOptions({
   const subchapterOptions = useMemo(() => {
     const options: FilterSelectOption[] = [{ value: '', label: 'Tous sous-chapitres' }];
     Object.entries(subchaptersByChapter).forEach(([chapter, subs]) => {
-      const filteredSubs = exerciseClassId
-        ? subs.filter((sub) => String(sub.chapter?.class_id) === exerciseClassId)
-        : subs;
+      let filteredSubs = subs;
+      if (exerciseClassId)
+        filteredSubs = filteredSubs.filter(
+          (sub) => String(sub.chapter?.class_id) === exerciseClassId
+        );
+      if (exerciseChapterId)
+        filteredSubs = filteredSubs.filter((sub) => String(sub.chapter?.id) === exerciseChapterId);
 
       if (filteredSubs.length === 0) return;
-      options.push({
-        value: `__group__${chapter}`,
-        label: `── ${chapter} ──`,
-      });
+      options.push({ value: `__group__${chapter}`, label: `── ${chapter} ──` });
       filteredSubs.forEach((sub) => {
         options.push({ value: String(sub.id), label: `— ${sub.title}` });
       });
     });
 
     return options;
-  }, [subchaptersByChapter, exerciseClassId]);
+  }, [subchaptersByChapter, exerciseClassId, exerciseChapterId]);
 
   return {
     classesForProblems,
     classesForExercises,
     problemClassMap,
     exerciseClassMap,
+    exerciseChapterMap,
+    exerciseChapterOptions,
     chapterMap,
     subchapterMap,
     chapterOptions,

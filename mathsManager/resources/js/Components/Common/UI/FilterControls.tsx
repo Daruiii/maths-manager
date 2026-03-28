@@ -7,23 +7,22 @@ export interface FilterSelectOption {
 }
 
 interface FilterSectionProps {
-  title: string;
   icon: LucideIcon;
   action?: ReactNode;
   children: ReactNode;
 }
 
-export function FilterSection({ title, icon: Icon, action, children }: FilterSectionProps) {
+export function FilterSection({ icon: Icon, action, children }: FilterSectionProps) {
   return (
-    <div className="rounded-xl border border-border-color bg-secondary-color/40 p-3 space-y-3">
-      <div className="flex items-center justify-between gap-2 text-xs font-semibold text-text-color">
-        <span className="flex items-center gap-2">
-          <Icon size={14} className="text-teacher-color" />
-          {title}
-        </span>
-        {action}
+    <div className="relative rounded-xl border border-border-color bg-secondary-color/40 p-2.5 space-y-2 overflow-hidden">
+      <Icon
+        size={80}
+        className="absolute -bottom-1 right-1 rotate-12 text-teacher-color/5 pointer-events-none z-0"
+      />
+      <div className="relative z-10 space-y-2">
+        {action && <div className="flex justify-end">{action}</div>}
+        {children}
       </div>
-      {children}
     </div>
   );
 }

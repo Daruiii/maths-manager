@@ -1,5 +1,6 @@
 import { ArrowUpDown, Filter, X } from 'lucide-react';
 import SearchBar from '@/Components/Common/UI/SearchBar';
+import IconButton from '@/Components/Common/UI/IconButton';
 
 interface Chip {
   key: string;
@@ -10,12 +11,11 @@ interface Chip {
 interface ExercisePickerHeaderProps {
   tab: 'problems' | 'exercises' | 'private';
   currentTotal: number;
-  showResetFilters: boolean;
   searchValue: string;
+  isFiltersOpen?: boolean;
   onTabChange: (tab: 'problems' | 'exercises' | 'private') => void;
   onSearchChange: (value: string) => void;
   onSearchClear: () => void;
-  onResetFilters: () => void;
   onToggleFilters: () => void;
   chips: Chip[];
 }
@@ -23,99 +23,83 @@ interface ExercisePickerHeaderProps {
 export default function ExercisePickerHeader({
   tab,
   currentTotal,
-  showResetFilters,
   searchValue,
+  isFiltersOpen = false,
   onTabChange,
   onSearchChange,
   onSearchClear,
-  onResetFilters,
   onToggleFilters,
   chips,
 }: ExercisePickerHeaderProps) {
   return (
-    <div className="p-4 border-b border-border-color space-y-3 flex-shrink-0">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-comfortaa-bold text-text-color">
-          Exercices
-          {currentTotal > 0 && (
-            <span className="ml-1.5 text-xs font-normal text-text-gray">({currentTotal})</span>
-          )}
-        </h2>
-
-        {showResetFilters && (
-          <button
-            type="button"
-            onClick={onResetFilters}
-            className="flex items-center gap-1 text-xs text-error-color hover:text-error-color/80"
-          >
-            <X size={12} /> Réinitialiser
-          </button>
+    <div className="px-3 pt-2.5 pb-2 border-b border-border-color space-y-2 flex-shrink-0">
+      {/* Tabs + compteur */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex gap-1.5">
+          {(
+            [
+              { key: 'problems', label: 'Problems' },
+              { key: 'exercises', label: 'Exercices' },
+              { key: 'private', label: 'Privés' },
+            ] as const
+          ).map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => onTabChange(item.key)}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+                tab === item.key
+                  ? 'border-teacher-color text-teacher-color bg-teacher-color/10'
+                  : 'border-border-color text-text-gray hover:text-text-color'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        {currentTotal > 0 && (
+          <span className="text-[11px] text-text-gray shrink-0">({currentTotal})</span>
         )}
       </div>
 
-      <div className="flex gap-2">
-        {(
-          [
-            { key: 'problems', label: 'Problems' },
-            { key: 'exercises', label: 'Exercices' },
-            { key: 'private', label: 'Privés' },
-          ] as const
-        ).map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            onClick={() => onTabChange(item.key)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-colors ${
-              tab === item.key
-                ? 'border-teacher-color text-teacher-color bg-teacher-color/10'
-                : 'border-border-color text-text-gray hover:text-text-color'
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-
+      {/* Search + boutons */}
       {tab !== 'private' && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <div className="flex-1">
             <SearchBar
-              placeholder="Rechercher un exercice…"
+              placeholder={
+                tab === 'problems' ? 'Rechercher un problème…' : 'Rechercher un exercice…'
+              }
               value={searchValue}
               onChange={(e) => onSearchChange(e.target.value)}
               onClear={onSearchClear}
               focusRingClass="focus:border-teacher-color focus:ring-teacher-color"
             />
           </div>
-          <button
-            type="button"
+          <IconButton
+            icon={Filter}
+            variant="bordered"
+            accentColor="teacher"
+            isActive={isFiltersOpen}
             onClick={onToggleFilters}
             title="Filtres"
-            className="inline-flex items-center justify-center h-10 w-10 rounded-xl border-2 border-border-color text-text-color hover:border-teacher-color"
-          >
-            <Filter size={16} className="text-teacher-color" />
-          </button>
-          <button
-            type="button"
-            title="Trier"
-            className="inline-flex items-center justify-center h-10 w-10 rounded-xl border-2 border-border-color text-text-color hover:border-teacher-color"
-          >
-            <ArrowUpDown size={16} className="text-text-gray" />
-          </button>
+          />
+          <IconButton icon={ArrowUpDown} variant="bordered" accentColor="teacher" title="Trier" />
         </div>
       )}
 
+      {/* Chips filtres actifs */}
       {tab !== 'private' && chips.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1">
           {chips.map((chip) => (
             <button
               key={chip.key}
               type="button"
               onClick={chip.onClear}
-              className="flex items-center gap-1 px-2 py-1 rounded-full border border-border-color text-[11px] text-text-gray hover:text-text-color hover:border-teacher-color"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border-color text-[10px] text-text-gray hover:text-text-color hover:border-teacher-color"
             >
               {chip.label}
-              <X size={11} />
+              <X size={9} />
             </button>
           ))}
         </div>

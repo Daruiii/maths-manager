@@ -3,6 +3,7 @@ import { router, Link } from '@inertiajs/react';
 import { StudentGroup, User } from '@/types/models';
 import { Unlink, BookOpen, FileText, FolderInput } from 'lucide-react';
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
+import IconButton from '@/Components/Common/UI/IconButton';
 import UserCard from '@/Components/Features/User/UserCard';
 import AssignGroupModal from '@/Pages/Teacher/Students/Partials/AssignGroupModal';
 import { route } from 'ziggy-js';
@@ -46,47 +47,47 @@ export default function StudentCard({ student, groups, showGroupBadge = true }: 
         }
         hoverAction={
           <div className="flex gap-1">
-            <button
+            <IconButton
+              icon={FolderInput}
+              iconSize={13}
+              accentColor="teacher"
               onClick={(e) => {
                 e.preventDefault();
                 setIsAssignOpen(true);
               }}
-              className="p-1 rounded-lg text-text-gray hover:text-teacher-color hover:bg-teacher-color/10 transition-colors"
               title="Assigner à un groupe"
-            >
-              <FolderInput size={13} />
-            </button>
-            <button
+            />
+            <IconButton
+              icon={Unlink}
+              iconSize={13}
+              accentColor="error"
               onClick={(e) => {
                 e.preventDefault();
                 setIsConfirmOpen(true);
               }}
-              className="p-1 rounded-lg text-text-gray hover:text-error-color hover:bg-error-color/10 transition-colors"
               title="Désassocier"
-            >
-              <Unlink size={13} />
-            </button>
+            />
           </div>
         }
       >
         <div className="flex items-center justify-center gap-2 pt-1">
-          <button
+          <IconButton
+            icon={BookOpen}
+            variant="bordered"
+            accentColor="teacher"
             onClick={(e) => {
               e.preventDefault();
               router.visit(route('teacher.ds.create', { student: student.id }));
             }}
             title="Créer un DS"
-            className="p-1.5 rounded-lg border border-border-color/50 text-text-gray hover:text-teacher-color hover:border-teacher-color hover:bg-teacher-color/10 transition-colors"
-          >
-            <BookOpen size={14} />
-          </button>
-          <button
+          />
+          <IconButton
+            icon={FileText}
+            variant="bordered"
             disabled
             title="Fiche - Bientôt disponible"
-            className="p-1.5 rounded-lg border border-border-color/50 text-text-gray/40 cursor-not-allowed"
-          >
-            <FileText size={14} />
-          </button>
+            className="opacity-40 cursor-not-allowed"
+          />
         </div>
       </UserCard>
 

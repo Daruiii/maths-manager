@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Loader2, SearchX, Lock } from 'lucide-react';
 import EmptyState from '@/Components/Common/UI/EmptyState';
 import { PickableItem, MultipleChapter, DSPreviewItem, Subchapter } from '@/types/models';
-import ExercisePickerCard from '@/Components/Features/DS/ExercisePickerCard';
-import ExercisePickerExerciseCard from '@/Components/Features/DS/ExercisePickerExerciseCard';
+import PickerCard from '@/Components/Features/DS/PickerCard';
 import { useProblemSearch } from '@/Hooks/DS/useProblemSearch';
 import { useExerciseSearch } from '@/Hooks/DS/useExerciseSearch';
 import ExercisePickerFiltersPanel from '@/Components/Features/DS/ExercisePickerFiltersPanel';
@@ -16,7 +15,7 @@ interface Props {
   subchapters: Subchapter[];
   academies: string[];
   previewItems: DSPreviewItem[];
-  onAdd: (item: PickableItem) => void;
+  onToggle: (item: PickableItem) => void;
 }
 
 type PickerTab = 'problems' | 'exercises' | 'private';
@@ -26,7 +25,7 @@ export default function ExercisePicker({
   subchapters,
   academies,
   previewItems,
-  onAdd,
+  onToggle,
 }: Props) {
   const [tab, setTab] = useState<PickerTab>('problems');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -60,9 +59,10 @@ export default function ExercisePicker({
     error: exercisesError,
     loadMore: loadMoreExercises,
     setSearch: setExerciseSearch,
+    setClassId: setExerciseClassId,
+    setChapterId: setExerciseChapterId,
     setSubchapterId,
     setDifficulty: setExerciseDifficulty,
-    setClassId: setExerciseClassId,
     resetFilters: resetExerciseFilters,
   } = useExerciseSearch();
 
@@ -91,6 +91,8 @@ export default function ExercisePicker({
     classesForExercises,
     problemClassMap,
     exerciseClassMap,
+    exerciseChapterMap,
+    exerciseChapterOptions,
     chapterMap,
     subchapterMap,
     chapterOptions,
@@ -100,6 +102,7 @@ export default function ExercisePicker({
     subchapters,
     problemClassId: filters.classId,
     exerciseClassId: exercisesFilters.classId,
+    exerciseChapterId: exercisesFilters.chapterId,
   });
 
   const currentTotal = tab === 'problems' ? total : tab === 'exercises' ? exercisesTotal : 0;
@@ -159,10 +162,14 @@ export default function ExercisePicker({
       ? {
           key: 'class',
           label: `Classe: ${exerciseClassMap.get(exercisesFilters.classId) ?? exercisesFilters.classId}`,
-          onClear: () => {
-            setExerciseClassId('');
-            setSubchapterId('');
-          },
+          onClear: () => setExerciseClassId(''),
+        }
+      : null,
+    exercisesFilters.chapterId
+      ? {
+          key: 'chapter',
+          label: `Chapitre: ${exerciseChapterMap.get(exercisesFilters.chapterId) ?? exercisesFilters.chapterId}`,
+          onClear: () => setExerciseChapterId(''),
         }
       : null,
     exercisesFilters.subchapterId
@@ -188,7 +195,6 @@ export default function ExercisePicker({
       <ExercisePickerHeader
         tab={tab}
         currentTotal={currentTotal}
-        showResetFilters={showResetFilters}
         searchValue={tab === 'problems' ? filters.search : exercisesFilters.search}
         onTabChange={setTab}
         onSearchChange={(value) => {
@@ -199,10 +205,7 @@ export default function ExercisePicker({
           if (tab === 'problems') setSearch('');
           if (tab === 'exercises') setExerciseSearch('');
         }}
-        onResetFilters={() => {
-          if (tab === 'problems') resetFilters();
-          if (tab === 'exercises') resetExerciseFilters();
-        }}
+        isFiltersOpen={isFiltersOpen}
         onToggleFilters={() => setIsFiltersOpen((prev) => !prev)}
         chips={tab === 'private' ? [] : currentChips}
       />
@@ -217,6 +220,7 @@ export default function ExercisePicker({
           classesForProblems={classesForProblems}
           classesForExercises={classesForExercises}
           chapterOptions={chapterOptions}
+          exerciseChapterOptions={exerciseChapterOptions}
           subchapterOptions={subchapterOptions}
           onProblemClassChange={(value) => {
             setClassId(value);
@@ -226,10 +230,8 @@ export default function ExercisePicker({
           onProblemDifficultyChange={setDifficulty}
           onProblemYearChange={setYear}
           onProblemAcademyChange={setAcademy}
-          onExerciseClassChange={(value) => {
-            setExerciseClassId(value);
-            setSubchapterId('');
-          }}
+          onExerciseClassChange={setExerciseClassId}
+          onExerciseChapterChange={setExerciseChapterId}
           onExerciseSubchapterChange={setSubchapterId}
           onExerciseDifficultyChange={setExerciseDifficulty}
         />
@@ -269,22 +271,22 @@ export default function ExercisePicker({
         {tab === 'problems' &&
           !currentLoading &&
           problems.map((problem) => (
-            <ExercisePickerCard
+            <PickerCard
               key={problem.id}
-              problem={problem}
+              item={problem}
               isSelected={selectedIds.has(`problem-${problem.id}`)}
-              onAdd={onAdd}
+              onToggle={onToggle}
             />
           ))}
 
         {tab === 'exercises' &&
           !currentLoading &&
           exercises.map((exercise) => (
-            <ExercisePickerExerciseCard
+            <PickerCard
               key={exercise.id}
-              exercise={exercise}
+              item={exercise}
               isSelected={selectedIds.has(`exercise-${exercise.id}`)}
-              onAdd={onAdd}
+              onToggle={onToggle}
             />
           ))}
 

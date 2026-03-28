@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, X, Clock } from 'lucide-react';
+import IconButton from '@/Components/Common/UI/IconButton';
 import { DSPreviewItem as DSPreviewItemType } from '@/types/models';
 
 interface Props {
@@ -67,14 +68,12 @@ export default function DSPreviewItem({ item, index, onRemove }: Props) {
       )}
 
       {/* Remove */}
-      <button
-        type="button"
+      <IconButton
+        icon={X}
+        accentColor="error"
         onClick={() => onRemove(item.uid)}
-        className="flex-shrink-0 p-1 rounded-lg text-text-gray hover:text-error-color hover:bg-error-color/10 transition-colors"
         aria-label="Retirer"
-      >
-        <X size={14} />
-      </button>
+      />
     </div>
   );
 }

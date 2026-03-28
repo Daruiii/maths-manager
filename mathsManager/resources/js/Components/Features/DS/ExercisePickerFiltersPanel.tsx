@@ -17,6 +17,7 @@ interface ProblemFilters {
 
 interface ExerciseFilters {
   classId: string;
+  chapterId: string;
   subchapterId: string;
   difficulty: string;
 }
@@ -35,6 +36,7 @@ interface ExercisePickerFiltersPanelProps {
   classesForProblems: ClassOption[];
   classesForExercises: ClassOption[];
   chapterOptions: FilterSelectOption[];
+  exerciseChapterOptions: FilterSelectOption[];
   subchapterOptions: FilterSelectOption[];
   onProblemClassChange: (value: string) => void;
   onProblemChapterChange: (value: string) => void;
@@ -42,6 +44,7 @@ interface ExercisePickerFiltersPanelProps {
   onProblemYearChange: (value: string) => void;
   onProblemAcademyChange: (value: string) => void;
   onExerciseClassChange: (value: string) => void;
+  onExerciseChapterChange: (value: string) => void;
   onExerciseSubchapterChange: (value: string) => void;
   onExerciseDifficultyChange: (value: string) => void;
 }
@@ -55,6 +58,7 @@ export default function ExercisePickerFiltersPanel({
   classesForProblems,
   classesForExercises,
   chapterOptions,
+  exerciseChapterOptions,
   subchapterOptions,
   onProblemClassChange,
   onProblemChapterChange,
@@ -62,14 +66,15 @@ export default function ExercisePickerFiltersPanel({
   onProblemYearChange,
   onProblemAcademyChange,
   onExerciseClassChange,
+  onExerciseChapterChange,
   onExerciseSubchapterChange,
   onExerciseDifficultyChange,
 }: ExercisePickerFiltersPanelProps) {
   return (
-    <div className={`px-4 pt-3 pb-4 border-b border-border-color ${isOpen ? 'block' : 'hidden'}`}>
+    <div className={`px-3 pt-2 pb-3 border-b border-border-color ${isOpen ? 'block' : 'hidden'}`}>
       {tab === 'problems' && (
-        <FilterSection title="Filtres Problems" icon={Filter}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <FilterSection icon={Filter}>
+          <div className="grid grid-cols-2 gap-2">
             <FilterSelect
               label="Classe"
               icon={School}
@@ -126,8 +131,8 @@ export default function ExercisePickerFiltersPanel({
       )}
 
       {tab === 'exercises' && (
-        <FilterSection title="Filtres Exercices" icon={Filter}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <FilterSection icon={Filter}>
+          <div className="grid grid-cols-2 gap-2">
             <FilterSelect
               label="Classe"
               icon={School}
@@ -142,6 +147,13 @@ export default function ExercisePickerFiltersPanel({
               ]}
             />
             <FilterSelect
+              label="Chapitre"
+              icon={BookOpen}
+              value={exerciseFilters.chapterId}
+              onChange={onExerciseChapterChange}
+              options={exerciseChapterOptions}
+            />
+            <FilterSelect
               label="Sous-chapitre"
               icon={BookOpen}
               value={exerciseFilters.subchapterId}
@@ -150,7 +162,6 @@ export default function ExercisePickerFiltersPanel({
                 onExerciseSubchapterChange(value);
               }}
               options={subchapterOptions}
-              disabled={!exerciseFilters.classId}
             />
             <FilterSelect
               label="Difficulté"

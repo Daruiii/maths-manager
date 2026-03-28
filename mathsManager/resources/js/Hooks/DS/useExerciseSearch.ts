@@ -12,16 +12,18 @@ interface PaginatedResponse {
 
 interface Filters {
   search: string;
+  classId: string;
+  chapterId: string;
   subchapterId: string;
   difficulty: string;
-  classId: string;
 }
 
 const INITIAL_FILTERS: Filters = {
   search: '',
+  classId: '',
+  chapterId: '',
   subchapterId: '',
   difficulty: '',
-  classId: '',
 };
 
 export function useExerciseSearch() {
@@ -42,9 +44,10 @@ export function useExerciseSearch() {
     const f = filtersRef.current;
     const params: Record<string, string | number> = { page: pageNum };
     if (f.search) params.search = f.search;
+    if (f.classId) params.class_id = f.classId;
+    if (f.chapterId) params.chapter_id = f.chapterId;
     if (f.subchapterId) params.subchapter_id = f.subchapterId;
     if (f.difficulty) params.difficulty = f.difficulty;
-    if (f.classId) params.class_id = f.classId;
 
     append ? setLoadingMore(true) : setLoading(true);
     try {
@@ -86,14 +89,21 @@ export function useExerciseSearch() {
   }, [page, lastPage, loadingMore, fetchPage]);
 
   const setSearch = (search: string) => setFilters((f) => ({ ...f, search }));
+  const setClassId = (classId: string) =>
+    setFilters((f) => ({ ...f, classId, chapterId: '', subchapterId: '' }));
+  const setChapterId = (chapterId: string) =>
+    setFilters((f) => ({ ...f, chapterId, subchapterId: '' }));
   const setSubchapterId = (subchapterId: string) => setFilters((f) => ({ ...f, subchapterId }));
   const setDifficulty = (difficulty: string) => setFilters((f) => ({ ...f, difficulty }));
-  const setClassId = (classId: string) => setFilters((f) => ({ ...f, classId }));
   const resetFilters = () => setFilters(INITIAL_FILTERS);
 
   const hasMore = page < lastPage;
   const hasActiveFilters =
-    !!filters.search || !!filters.subchapterId || !!filters.difficulty || !!filters.classId;
+    !!filters.search ||
+    !!filters.classId ||
+    !!filters.chapterId ||
+    !!filters.subchapterId ||
+    !!filters.difficulty;
 
   return {
     exercises,
@@ -106,9 +116,10 @@ export function useExerciseSearch() {
     error,
     loadMore,
     setSearch,
+    setClassId,
+    setChapterId,
     setSubchapterId,
     setDifficulty,
-    setClassId,
     resetFilters,
   };
 }

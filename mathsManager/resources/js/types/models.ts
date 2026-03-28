@@ -85,7 +85,6 @@ export interface PickableProblem {
   kind: 'problem';
   id: number;
   name: string;
-  header: string | null;
   difficulty: number | null;
   time: number; // minutes
   harder_exercise: boolean;
@@ -102,6 +101,7 @@ export interface PickableExercise {
   id: number;
   name: string;
   difficulty: number | null;
+  order: number | null;
   subchapter_id: number;
   subchapter: {
     id: number;

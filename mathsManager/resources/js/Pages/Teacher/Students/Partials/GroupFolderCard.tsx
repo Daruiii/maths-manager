@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/react';
 import { StudentGroup } from '@/types/models';
 import { Folder, Pencil, Trash2, BookOpen, FileText } from 'lucide-react';
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
+import IconButton from '@/Components/Common/UI/IconButton';
 import GroupFormModal from '@/Pages/Teacher/Students/Partials/GroupFormModal';
 import { route } from 'ziggy-js';
 
@@ -26,26 +27,26 @@ export default function GroupFolderCard({ group }: Props) {
       <div className="relative card-dot-grid bg-secondary-color border border-border-color rounded-2xl p-4 flex flex-col items-center gap-3 hover:border-teacher-color/50 hover:bg-teacher-color/5 transition-colors group">
         {/* Actions rapides */}
         <div className="absolute top-2 right-2 flex gap-1">
-          <button
+          <IconButton
+            icon={Pencil}
+            iconSize={13}
+            accentColor="teacher"
             onClick={(e) => {
               e.preventDefault();
               setIsEditOpen(true);
             }}
-            className="p-1 rounded-lg text-text-gray hover:text-teacher-color hover:bg-teacher-color/10 transition-colors"
             title="Renommer"
-          >
-            <Pencil size={13} />
-          </button>
-          <button
+          />
+          <IconButton
+            icon={Trash2}
+            iconSize={13}
+            accentColor="error"
             onClick={(e) => {
               e.preventDefault();
               setIsDeleteOpen(true);
             }}
-            className="p-1 rounded-lg text-text-gray hover:text-error-color hover:bg-error-color/10 transition-colors"
             title="Supprimer"
-          >
-            <Trash2 size={13} />
-          </button>
+          />
         </div>
 
         {/* Corps cliquable → navigation */}
@@ -69,23 +70,23 @@ export default function GroupFolderCard({ group }: Props) {
 
         {/* Actions groupe (placeholder) */}
         <div className="flex items-center justify-center gap-2 pt-1">
-          <button
+          <IconButton
+            icon={BookOpen}
+            variant="bordered"
+            accentColor="teacher"
             onClick={(e) => {
               e.preventDefault();
               router.visit(route('teacher.ds.create', { group: group.id }));
             }}
             title="Créer un DS pour ce groupe"
-            className="p-1.5 rounded-lg border border-border-color/50 text-text-gray hover:text-teacher-color hover:border-teacher-color hover:bg-teacher-color/10 transition-colors"
-          >
-            <BookOpen size={14} />
-          </button>
-          <button
+          />
+          <IconButton
+            icon={FileText}
+            variant="bordered"
             disabled
             title="Fiche groupe - Bientôt disponible"
-            className="p-1.5 rounded-lg border border-border-color/50 text-text-gray/40 cursor-not-allowed"
-          >
-            <FileText size={14} />
-          </button>
+            className="opacity-40 cursor-not-allowed"
+          />
         </div>
       </div>
 
