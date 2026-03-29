@@ -2,13 +2,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { route } from 'ziggy-js';
 import { PickableExercise } from '@/types/models';
+import { PaginatedResponse } from '@/types/api';
+import { ExerciseSort } from '@/types/ui';
+import { INITIAL_EXERCISE_SORT } from '@/Constants/ds';
 
-interface PaginatedResponse {
-  data: PickableExercise[];
-  current_page: number;
-  last_page: number;
-  total: number;
-}
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Filters {
   search: string;
@@ -26,8 +24,11 @@ const INITIAL_FILTERS: Filters = {
   difficulty: '',
 };
 
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
 export function useExerciseSearch() {
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
+  const [sort, setSort] = useState<ExerciseSort>(INITIAL_EXERCISE_SORT);
   const [exercises, setExercises] = useState<PickableExercise[]>([]);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -39,21 +40,29 @@ export function useExerciseSearch() {
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
+  const sortRef = useRef(sort);
+  sortRef.current = sort;
 
   const fetchPage = useCallback(async (pageNum: number, append: boolean) => {
     const f = filtersRef.current;
+    const s = sortRef.current;
     const params: Record<string, string | number> = { page: pageNum };
     if (f.search) params.search = f.search;
     if (f.classId) params.class_id = f.classId;
     if (f.chapterId) params.chapter_id = f.chapterId;
     if (f.subchapterId) params.subchapter_id = f.subchapterId;
     if (f.difficulty) params.difficulty = f.difficulty;
+    if (s.by) {
+      params.sort_by = s.by;
+      params.sort_dir = s.dir;
+    }
 
     append ? setLoadingMore(true) : setLoading(true);
     try {
-      const res = await axios.get<PaginatedResponse>(route('teacher.ds.builder.exercises'), {
-        params,
-      });
+      const res = await axios.get<PaginatedResponse<PickableExercise>>(
+        route('teacher.ds.builder.exercises'),
+        { params }
+      );
       const { data, last_page, total: t } = res.data;
       const enriched = data.map((e) => ({ ...e, kind: 'exercise' as const }));
       setExercises((prev) => (append ? [...prev, ...enriched] : enriched));
@@ -80,7 +89,7 @@ export function useExerciseSearch() {
     return () => {
       if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
     };
-  }, [filters, fetchPage]);
+  }, [filters, sort, fetchPage]);
 
   const loadMore = useCallback(() => {
     if (page < lastPage && !loadingMore) {
@@ -112,6 +121,7 @@ export function useExerciseSearch() {
     hasMore,
     total,
     filters,
+    sort,
     hasActiveFilters,
     error,
     loadMore,
@@ -120,6 +130,7 @@ export function useExerciseSearch() {
     setChapterId,
     setSubchapterId,
     setDifficulty,
+    setSort,
     resetFilters,
   };
 }

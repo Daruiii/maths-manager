@@ -55,14 +55,14 @@ export default function DSContent({
   }, 0);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Toolbar */}
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Subject Toolbar */}
       <div className="px-4 py-2 border-b border-border-color flex-shrink-0 flex items-center justify-between">
         <h2 className="text-sm font-comfortaa-bold text-text-color">
           Aperçu du DS
           {items.length > 0 && (
             <span className="ml-1.5 text-xs font-normal text-text-gray">
-              {items.length} exercice{items.length > 1 ? 's' : ''}
+              {items.length} exercices
             </span>
           )}
         </h2>
@@ -82,10 +82,10 @@ export default function DSContent({
             />
           </div>
         ) : (
-          <div className="bg-surface-color p-6 space-y-6 min-h-full">
-            {/* En-tête éditable */}
-            <div className="text-center space-y-1 pb-4 border-b border-border-color">
-              <p className="font-comfortaa-bold text-text-color text-sm">
+          <div className="bg-surface-color p-6 space-y-6 min-h-full font-cmu-serif">
+            {/* Header Académique (Corrigé - Tailles & Couleurs) */}
+            <div className="text-center space-y-2 pb-6 border-b border-border-color">
+              <div className="text-base font-bold uppercase text-text-color">
                 <EditableText
                   value={dsTitle}
                   onChange={onTitleChange}
@@ -93,9 +93,16 @@ export default function DSContent({
                   onDoubleClick={() => setEditingField('title')}
                   onBlur={() => setEditingField(null)}
                   placeholder={DS_DEFAULT_TITLE}
+                  className="text-center"
+                  renderValue={(v: string) => (
+                    <span>
+                      {v.charAt(0)}
+                      <span className="text-xs">{v.slice(1)}</span>
+                    </span>
+                  )}
                 />
-              </p>
-              <p className="text-xs font-medium text-text-gray">
+              </div>
+              <div className="text-base font-bold uppercase text-text-color">
                 <EditableText
                   value={dsLevel}
                   onChange={onLevelChange}
@@ -103,9 +110,16 @@ export default function DSContent({
                   onDoubleClick={() => setEditingField('level')}
                   onBlur={() => setEditingField(null)}
                   placeholder={DS_DEFAULT_LEVEL}
+                  className="text-center"
+                  renderValue={(v: string) => (
+                    <span>
+                      {v.charAt(0)}
+                      <span className="text-xs">{v.slice(1)}</span>
+                    </span>
+                  )}
                 />
-              </p>
-              <p className="text-xs text-text-gray leading-relaxed pt-1">
+              </div>
+              <div className="text-sm font-cmu-italic text-text-color leading-relaxed pt-2">
                 <EditableText
                   value={dsInstructions}
                   onChange={onInstructionsChange}
@@ -114,37 +128,25 @@ export default function DSContent({
                   onBlur={() => setEditingField(null)}
                   multiline
                   placeholder={DS_DEFAULT_INSTRUCTIONS}
-                  className="text-xs"
+                  className="text-center"
                 />
-              </p>
+              </div>
             </div>
 
-            {/* Exercices */}
-            {items.map((dsItem, index) => {
-              const item = dsItem.item;
-              const isProblem = item.kind === 'problem';
-              const label = isProblem
-                ? item.multiple_chapter?.title
-                : `${item.subchapter?.chapter?.title} · ${item.subchapter?.title}`;
-
-              return (
-                <div key={dsItem.uid} className="space-y-2">
-                  <div className="flex items-baseline gap-2">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-teacher-color/15 text-teacher-color text-xs font-comfortaa-bold flex items-center justify-center">
-                      {index + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-comfortaa-bold text-text-color leading-snug">
-                        {item.name}
-                      </p>
-                      {label && <p className="text-xs text-text-gray">{label}</p>}
+            {/* Liste d'exercices */}
+            <div className="space-y-12">
+              {items.map((dsItem, index) => {
+                const item = dsItem.item;
+                return (
+                  <div key={dsItem.uid} className="space-y-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-bold text-sm flex-shrink-0">Exercice {index + 1}.</span>
                     </div>
+                    <div className="text-sm leading-relaxed">{renderItemContent(item)}</div>
                   </div>
-                  <div className="pl-7">{renderItemContent(item)}</div>
-                  {index < items.length - 1 && <hr className="border-border-color mt-4" />}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

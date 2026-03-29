@@ -22,11 +22,11 @@ export default function SearchBar({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <div className="relative flex-1">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-gray" size={15} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-gray" size={15} />
         <input
           type="text"
           value={value}
-          className={`w-full pl-9 pr-9 py-1.5 bg-secondary-color border border-border-color rounded-lg text-sm transition-colors ${focusRingClass}`}
+          className={`w-full h-8 pl-9 pr-9 bg-secondary-color border border-border-color rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-teacher-color/30 ${focusRingClass}`}
           {...props}
         />
         {value && onClear && (

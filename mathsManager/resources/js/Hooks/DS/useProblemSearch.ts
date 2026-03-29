@@ -2,13 +2,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { route } from 'ziggy-js';
 import { PickableProblem } from '@/types/models';
+import { PaginatedResponse } from '@/types/api';
+import { ProblemSort } from '@/types/ui';
+import { INITIAL_PROBLEM_SORT } from '@/Constants/ds';
 
-interface PaginatedResponse {
-  data: PickableProblem[];
-  current_page: number;
-  last_page: number;
-  total: number;
-}
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Filters {
   search: string;
@@ -30,8 +28,11 @@ const INITIAL_FILTERS: Filters = {
   academy: '',
 };
 
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
 export function useProblemSearch() {
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
+  const [sort, setSort] = useState<ProblemSort>(INITIAL_PROBLEM_SORT);
   const [problems, setProblems] = useState<PickableProblem[]>([]);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -43,9 +44,12 @@ export function useProblemSearch() {
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
+  const sortRef = useRef(sort);
+  sortRef.current = sort;
 
   const fetchPage = useCallback(async (pageNum: number, append: boolean) => {
     const f = filtersRef.current;
+    const s = sortRef.current;
     const params: Record<string, string | number> = { page: pageNum };
     if (f.search) params.search = f.search;
     if (f.chapterId) params.chapter_id = f.chapterId;
@@ -54,12 +58,17 @@ export function useProblemSearch() {
     if (f.harder) params.harder = '1';
     if (f.year) params.year = f.year;
     if (f.academy) params.academy = f.academy;
+    if (s.by) {
+      params.sort_by = s.by;
+      params.sort_dir = s.dir;
+    }
 
     append ? setLoadingMore(true) : setLoading(true);
     try {
-      const res = await axios.get<PaginatedResponse>(route('teacher.ds.builder.problems'), {
-        params,
-      });
+      const res = await axios.get<PaginatedResponse<PickableProblem>>(
+        route('teacher.ds.builder.problems'),
+        { params }
+      );
       const { data, last_page, total: t } = res.data;
       const enriched = data.map((p) => ({ ...p, kind: 'problem' as const }));
       setProblems((prev) => (append ? [...prev, ...enriched] : enriched));
@@ -86,7 +95,7 @@ export function useProblemSearch() {
     return () => {
       if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
     };
-  }, [filters, fetchPage]);
+  }, [filters, sort, fetchPage]);
 
   const loadMore = useCallback(() => {
     if (page < lastPage && !loadingMore) {
@@ -120,6 +129,7 @@ export function useProblemSearch() {
     hasMore,
     total,
     filters,
+    sort,
     hasActiveFilters,
     error,
     loadMore,
@@ -130,6 +140,7 @@ export function useProblemSearch() {
     setHarder,
     setYear,
     setAcademy,
+    setSort,
     resetFilters,
   };
 }

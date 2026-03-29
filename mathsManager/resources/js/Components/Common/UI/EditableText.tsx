@@ -10,6 +10,7 @@ interface Props {
   multiline?: boolean;
   className?: string;
   placeholder?: string;
+  renderValue?: (v: string) => React.ReactNode;
 }
 
 const sharedEditClass =
@@ -24,8 +25,11 @@ export default function EditableText({
   multiline = false,
   className = '',
   placeholder = '',
+  renderValue,
 }: Props) {
   const ref = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
+  const displayContent = value || <span className="opacity-40 not-italic">{placeholder}</span>;
+  const renderedContent = renderValue && value ? renderValue(value) : displayContent;
 
   useEffect(() => {
     if (isEditing) ref.current?.focus();
@@ -64,7 +68,7 @@ export default function EditableText({
       title="Double-cliquer pour modifier"
       className={`group inline-flex items-center gap-1 cursor-text underline decoration-dashed decoration-teacher-color/40 underline-offset-2 hover:decoration-teacher-color px-1 ${className}`}
     >
-      {value || <span className="opacity-40 not-italic">{placeholder}</span>}
+      {renderedContent}
       <Pencil
         size={10}
         className="opacity-0 group-hover:opacity-60 text-teacher-color flex-shrink-0 transition-opacity"

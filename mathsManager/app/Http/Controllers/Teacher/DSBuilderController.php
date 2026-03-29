@@ -123,7 +123,18 @@ class DSBuilderController extends Controller
             $query->where('academy', 'like', "%{$academy}%");
         }
 
-        $problems = $query->orderBy('multiple_chapter_id')->orderBy('name')->paginate(20);
+        $sortDir = $request->query('sort_dir') === 'desc' ? 'desc' : 'asc';
+        $sortBy  = in_array($request->query('sort_by'), ['name', 'difficulty', 'year', 'time'])
+            ? $request->query('sort_by')
+            : null;
+
+        if ($sortBy) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            $query->orderBy('multiple_chapter_id')->orderBy('name');
+        }
+
+        $problems = $query->paginate(20);
 
         // Charger les images depuis le filesystem (image_paths n'est pas en DB)
         $problems->getCollection()->transform(function (Problem $problem) {
@@ -183,7 +194,18 @@ class DSBuilderController extends Controller
             });
         }
 
-        $exercises = $query->orderBy('subchapter_id')->orderBy('order')->paginate(20);
+        $sortDir = $request->query('sort_dir') === 'desc' ? 'desc' : 'asc';
+        $sortBy  = in_array($request->query('sort_by'), ['name', 'difficulty', 'order'])
+            ? $request->query('sort_by')
+            : null;
+
+        if ($sortBy) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            $query->orderBy('subchapter_id')->orderBy('order');
+        }
+
+        $exercises = $query->paginate(20);
 
         return response()->json($exercises);
     }

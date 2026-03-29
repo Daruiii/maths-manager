@@ -1,6 +1,12 @@
+import { useRef, useState, useEffect } from 'react';
 import { ArrowUpDown, Filter, X } from 'lucide-react';
 import SearchBar from '@/Components/Common/UI/SearchBar';
 import IconButton from '@/Components/Common/UI/IconButton';
+import { SortOption, ProblemSort, ExerciseSort } from '@/types/ui';
+import { PICKER_TABS, PROBLEM_SORT_OPTIONS, EXERCISE_SORT_OPTIONS } from '@/Constants/ds';
+import { getNextSort } from '@/Utils/dsSort';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Chip {
   key: string;
@@ -8,41 +14,65 @@ interface Chip {
   onClear: () => void;
 }
 
-interface ExercisePickerHeaderProps {
+interface Props {
   tab: 'problems' | 'exercises' | 'private';
   currentTotal: number;
   searchValue: string;
   isFiltersOpen?: boolean;
+  sort: ProblemSort | ExerciseSort;
   onTabChange: (tab: 'problems' | 'exercises' | 'private') => void;
   onSearchChange: (value: string) => void;
   onSearchClear: () => void;
   onToggleFilters: () => void;
+  onSortChange: (by: string, dir: 'asc' | 'desc') => void;
   chips: Chip[];
 }
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function ExercisePickerHeader({
   tab,
   currentTotal,
   searchValue,
   isFiltersOpen = false,
+  sort,
   onTabChange,
   onSearchChange,
   onSearchClear,
   onToggleFilters,
+  onSortChange,
   chips,
-}: ExercisePickerHeaderProps) {
+}: Props) {
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  // Ferme le dropdown au clic extérieur
+  useEffect(() => {
+    if (!isSortOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isSortOpen]);
+
+  const sortOptions: SortOption[] =
+    tab === 'problems' ? PROBLEM_SORT_OPTIONS : EXERCISE_SORT_OPTIONS;
+
+  const handleSortSelect = (option: SortOption) => {
+    const next = getNextSort(option, sort);
+    onSortChange(next.by, next.dir);
+    setIsSortOpen(false);
+  };
+
   return (
     <div className="px-3 pt-2.5 pb-2 border-b border-border-color space-y-2 flex-shrink-0">
       {/* Tabs + compteur */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex gap-1.5">
-          {(
-            [
-              { key: 'problems', label: 'Problems' },
-              { key: 'exercises', label: 'Exercices' },
-              { key: 'private', label: 'Privés' },
-            ] as const
-          ).map((item) => (
+          {PICKER_TABS.map((item) => (
             <button
               key={item.key}
               type="button"
@@ -84,7 +114,46 @@ export default function ExercisePickerHeader({
             onClick={onToggleFilters}
             title="Filtres"
           />
-          <IconButton icon={ArrowUpDown} variant="bordered" accentColor="teacher" title="Trier" />
+          {/* Sort dropdown */}
+          <div ref={sortRef} className="relative">
+            <IconButton
+              icon={ArrowUpDown}
+              variant="bordered"
+              accentColor="teacher"
+              isActive={!!sort.by}
+              onClick={() => setIsSortOpen((v) => !v)}
+              title="Trier"
+            />
+            {isSortOpen && (
+              <div className="absolute right-0 top-full mt-1 z-20 bg-primary-color border border-border-color rounded-xl shadow-lg py-1 min-w-[140px]">
+                {sortOptions.map((opt) => {
+                  const isSelected = sort.by === opt.by;
+                  const dirLabel = isSelected
+                    ? sort.dir === 'asc'
+                      ? opt.ascLabel
+                      : opt.descLabel
+                    : undefined;
+                  return (
+                    <button
+                      key={opt.by}
+                      type="button"
+                      onClick={() => handleSortSelect(opt)}
+                      className={`w-full flex items-center justify-between gap-3 px-3 py-1.5 text-xs text-left transition-colors ${
+                        isSelected
+                          ? 'text-teacher-color bg-teacher-color/5'
+                          : 'text-text-color hover:bg-surface-color'
+                      }`}
+                    >
+                      <span>
+                        {opt.label}
+                        {dirLabel && <span className="ml-1 opacity-70">· {dirLabel}</span>}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

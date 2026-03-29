@@ -133,7 +133,7 @@ export default function Create({
         <div className="flex-1 max-w-screen-xl mx-auto w-full flex overflow-hidden">
           {/* Left — Picker */}
           <div
-            className={`w-full lg:w-[33%] border-r border-border-color flex flex-col overflow-hidden ${
+            className={`w-full lg:w-[30%] border-r border-border-color flex flex-col overflow-hidden ${
               mobileTab !== 'picker' ? 'hidden lg:flex' : 'flex'
             }`}
           >
@@ -148,7 +148,7 @@ export default function Create({
 
           {/* Center — KaTeX preview */}
           <div
-            className={`w-full lg:w-[47%] border-r border-border-color flex flex-col overflow-hidden ${
+            className={`w-full lg:w-[54%] border-r border-border-color flex flex-col overflow-hidden ${
               mobileTab !== 'preview' ? 'hidden lg:flex' : 'flex'
             }`}
           >
