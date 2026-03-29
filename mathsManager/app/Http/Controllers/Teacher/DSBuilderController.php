@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\DS;
+use App\Models\DsBatch;
 use App\Models\Exercise;
 use App\Models\MultipleChapter;
 use App\Models\Problem;
@@ -198,9 +199,9 @@ class DSBuilderController extends Controller
             'problem_ids.*'       => 'exists:problems,id',
             'exercise_ids'        => 'required_without_all:problem_ids|array|min:1',
             'exercise_ids.*'      => 'exists:exercises,id',
-            'student_ids'         => 'required_without:group_ids|array',
+            'student_ids'         => 'required|array|min:1',
             'student_ids.*'       => 'exists:users,id',
-            'group_ids'           => 'required_without:student_ids|array',
+            'group_ids'           => 'nullable|array',
             'group_ids.*'         => 'exists:student_groups,id',
             'custom_title'        => 'nullable|string|max:255',
             'custom_level'        => 'nullable|string|max:255',
@@ -214,26 +215,22 @@ class DSBuilderController extends Controller
         $totalTime = $problems->sum('time') + ($exercises->count() * self::DEFAULT_EXERCISE_MINUTES);
         $multipleChapterIds = $problems->pluck('multiple_chapter_id')->unique()->values()->all();
 
-        // Résoudre les élèves cibles (individuels + membres des groupes)
-        $studentIds = collect($request->input('student_ids', []));
+        $studentIds = collect($request->input('student_ids'))->unique()->values();
+        $groupIds   = collect($request->input('group_ids', []))->filter()->values();
 
-        foreach ($request->input('group_ids', []) as $groupId) {
-            $group = StudentGroup::where('id', $groupId)
-                ->where('teacher_id', $teacher->id)
-                ->first();
-
-            if ($group) {
-                $groupStudentIds = User::where('group_id', $group->id)->pluck('id');
-                $studentIds = $studentIds->merge($groupStudentIds);
-            }
-        }
-
-        $studentIds = $studentIds->unique()->values();
+        // Créer le batch pour l'historique
+        $batch = DsBatch::create([
+            'teacher_id'  => $teacher->id,
+            'group_ids'   => $groupIds->isNotEmpty() ? $groupIds->all() : null,
+            'student_ids' => $studentIds->all(),
+            'ds_count'    => $studentIds->count(),
+        ]);
 
         foreach ($studentIds as $studentId) {
             $ds = new DS();
             $ds->user_id    = $studentId;
             $ds->teacher_id = $teacher->id;
+            $ds->batch_id   = $batch->id;
             $ds->type_bac   = false;
             $ds->exercises_number = $problems->count() + $exercises->count();
             $ds->harder_exercises = false;
@@ -262,6 +259,6 @@ class DSBuilderController extends Controller
             }
         }
 
-        return back()->with('success', count($studentIds) . ' DS assigné(s) avec succès.');
+        return back()->with('success', $studentIds->count() . ' DS assigné(s) avec succès.');
     }
 }

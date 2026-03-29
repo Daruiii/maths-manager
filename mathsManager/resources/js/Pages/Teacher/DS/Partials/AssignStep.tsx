@@ -37,7 +37,9 @@ export default function AssignStep({
   dsLevel,
   dsInstructions,
 }: Props) {
+  /** Single source of truth — individual student IDs who will receive the DS */
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<number>>(new Set());
+  /** Metadata only — tracks which groups were bulk-selected (for batch history) */
   const [selectedGroupIds, setSelectedGroupIds] = useState<Set<number>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,28 +51,68 @@ export default function AssignStep({
       setSelectedGroupIds(new Set());
       return;
     }
-    if (preselectedStudentId) setSelectedStudentIds(new Set([preselectedStudentId]));
-    if (preselectedGroupId) setSelectedGroupIds(new Set([preselectedGroupId]));
-  }, [isOpen, preselectedStudentId, preselectedGroupId]);
+    if (preselectedStudentId) {
+      setSelectedStudentIds(new Set([preselectedStudentId]));
+    }
+    if (preselectedGroupId) {
+      const groupStudentIds = students
+        .filter((s) => s.group_id === preselectedGroupId)
+        .map((s) => s.id);
+      setSelectedStudentIds(new Set(groupStudentIds));
+      setExpandedGroups(new Set([preselectedGroupId]));
+    }
+  }, [isOpen, preselectedStudentId, preselectedGroupId, students]);
 
-  const toggle = <T extends number>(set: Set<T>, id: T): Set<T> => {
-    const next = new Set(set);
-    next.has(id) ? next.delete(id) : next.add(id);
-    return next;
+  const toggleStudent = (id: number) => {
+    setSelectedStudentIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
-  const totalRecipients = useMemo(() => {
-    const groupStudentIds = new Set(
-      students
-        .filter(
-          (s) => s.group_id !== null && s.group_id !== undefined && selectedGroupIds.has(s.group_id)
-        )
-        .map((s) => s.id)
-    );
-    return new Set([...groupStudentIds, ...selectedStudentIds]).size;
-  }, [students, selectedGroupIds, selectedStudentIds]);
+  /** Select all / deselect all students in a group */
+  const toggleGroup = (groupId: number) => {
+    const groupStudentIds = students.filter((s) => s.group_id === groupId).map((s) => s.id);
+    const allSelected = groupStudentIds.every((id) => selectedStudentIds.has(id));
+    setSelectedStudentIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) {
+        groupStudentIds.forEach((id) => next.delete(id));
+      } else {
+        groupStudentIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+    // Track group selection as metadata for batch history
+    setSelectedGroupIds((prev) => {
+      const next = new Set(prev);
+      allSelected ? next.delete(groupId) : next.add(groupId);
+      return next;
+    });
+  };
+
+  const toggleExpanded = (groupId: number) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      next.has(groupId) ? next.delete(groupId) : next.add(groupId);
+      return next;
+    });
+  };
+
+  /** Derive group checkbox state from selectedStudentIds */
+  const groupSelectionState = (groupId: number): 'all' | 'some' | 'none' => {
+    const groupStudentIds = students.filter((s) => s.group_id === groupId).map((s) => s.id);
+    if (groupStudentIds.length === 0) return 'none';
+    const selectedCount = groupStudentIds.filter((id) => selectedStudentIds.has(id)).length;
+    if (selectedCount === groupStudentIds.length) return 'all';
+    if (selectedCount > 0) return 'some';
+    return 'none';
+  };
+
   const problemIds = previewItems.filter((i) => i.item.kind === 'problem').map((i) => i.item.id);
   const exerciseIds = previewItems.filter((i) => i.item.kind === 'exercise').map((i) => i.item.id);
+  const totalRecipients = selectedStudentIds.size;
 
   const handleSubmit = () => {
     if (problemIds.length + exerciseIds.length === 0 || totalRecipients === 0) return;
@@ -103,7 +145,6 @@ export default function AssignStep({
     const reversed = `${s.last_name} ${s.first_name}`.toLowerCase();
     return full.includes(query) || reversed.includes(query);
   };
-  const ungroupedStudents = students.filter((s) => !s.group_id);
 
   const filteredGroups = useMemo(() => {
     if (!q) return groups;
@@ -115,14 +156,16 @@ export default function AssignStep({
   }, [groups, students, q]);
 
   const filteredUngrouped = useMemo(() => {
-    if (!q) return ungroupedStudents;
-    return ungroupedStudents.filter((s) => matchesName(s, q));
-  }, [ungroupedStudents, q]);
+    const ungrouped = students.filter((s) => !s.group_id);
+    if (!q) return ungrouped;
+    return ungrouped.filter((s) => matchesName(s, q));
+  }, [students, q]);
 
   return (
     <SlidePanel
       isOpen={isOpen}
       onClose={onClose}
+      size="sm"
       title="Assigner le DS"
       subtitle={`${previewItems.length} exercice${previewItems.length > 1 ? 's' : ''} · 1 DS créé par élève`}
       footer={
@@ -154,57 +197,56 @@ export default function AssignStep({
           <p className="text-xs font-medium text-text-gray uppercase tracking-wide mb-2">Groupes</p>
           <div className="space-y-1.5">
             {filteredGroups.map((group) => {
-              const isSelected = selectedGroupIds.has(group.id);
+              const state = groupSelectionState(group.id);
               const isExpanded = expandedGroups.has(group.id);
               const groupStudents = students.filter((s) => s.group_id === group.id);
 
               return (
                 <CheckboxCard
                   key={group.id}
-                  isSelected={isSelected}
+                  isSelected={state === 'all' || state === 'some'}
                   onToggle={() => {}}
                   as="div"
                   className="overflow-hidden"
                 >
                   <div className="flex items-center gap-2 p-2.5">
                     <CheckboxIndicator
-                      isSelected={isSelected}
-                      onToggle={() => setSelectedGroupIds(toggle(selectedGroupIds, group.id))}
+                      isSelected={state === 'all'}
+                      indeterminate={state === 'some'}
+                      onToggle={() => toggleGroup(group.id)}
                     />
                     <Users size={14} className="text-teacher-color flex-shrink-0" />
-                    <span className="flex-1 text-sm text-text-color font-medium">{group.name}</span>
-                    <span className="text-xs text-text-gray">
+                    <span className="flex-1 min-w-0 text-sm text-text-color font-medium truncate">
+                      {group.name}
+                    </span>
+                    <span className="text-xs text-text-gray shrink-0">
                       {group.students_count} élève{(group.students_count ?? 0) > 1 ? 's' : ''}
                     </span>
                     {groupStudents.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => setExpandedGroups(toggle(expandedGroups, group.id))}
+                        onClick={() => toggleExpanded(group.id)}
                         className="p-0.5 text-text-gray hover:text-text-color"
                       >
                         {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </button>
                     )}
                   </div>
+
                   {isExpanded && groupStudents.length > 0 && (
                     <div className="border-t border-border-color bg-secondary-color/50 px-3 py-2 space-y-1.5">
                       {groupStudents.map((s) => {
-                        const coveredByGroup = isSelected;
-                        const isStudentSelected = coveredByGroup || selectedStudentIds.has(s.id);
+                        const isSelected = selectedStudentIds.has(s.id);
                         return (
                           <CheckboxCard
                             key={s.id}
-                            isSelected={isStudentSelected}
-                            onToggle={
-                              coveredByGroup
-                                ? undefined
-                                : () => setSelectedStudentIds(toggle(selectedStudentIds, s.id))
-                            }
+                            isSelected={isSelected}
+                            onToggle={() => toggleStudent(s.id)}
                             className="flex items-center gap-2 p-2"
                           >
-                            <CheckboxIndicator isSelected={isStudentSelected} />
+                            <CheckboxIndicator isSelected={isSelected} />
                             <UserAvatar user={s} size="sm" />
-                            <span className="text-xs text-text-color">
+                            <span className="text-xs text-text-color flex-1 min-w-0 truncate">
                               {s.first_name} {s.last_name}
                             </span>
                           </CheckboxCard>
@@ -232,12 +274,12 @@ export default function AssignStep({
                 <CheckboxCard
                   key={student.id}
                   isSelected={isSelected}
-                  onToggle={() => setSelectedStudentIds(toggle(selectedStudentIds, student.id))}
+                  onToggle={() => toggleStudent(student.id)}
                   className="flex items-center gap-3 p-2.5"
                 >
                   <CheckboxIndicator isSelected={isSelected} />
                   <UserAvatar user={student} size="sm" />
-                  <span className="text-sm text-text-color">
+                  <span className="text-sm text-text-color flex-1 min-w-0 truncate">
                     {student.first_name} {student.last_name}
                   </span>
                 </CheckboxCard>

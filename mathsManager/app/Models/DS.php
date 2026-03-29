@@ -12,7 +12,7 @@ class DS extends Model
     protected $table = 'ds';
     protected $fillable = [
         'type_bac', 'exercises_number', 'harder_exercises', 'time', 'timer', 'chrono', 'status', 'teacher_id',
-        'custom_title', 'custom_level', 'custom_instructions',
+        'custom_title', 'custom_level', 'custom_instructions', 'batch_id',
     ];
 
     public function isNotStarted(): bool
@@ -73,6 +73,11 @@ class DS extends Model
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(DsBatch::class, 'batch_id');
     }
 
     public function correctionRequest()

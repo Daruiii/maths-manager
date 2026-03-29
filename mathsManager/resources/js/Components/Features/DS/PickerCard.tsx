@@ -26,17 +26,17 @@ function ProblemMeta({ problem }: { problem: PickableProblem }) {
     <>
       <DifficultyDots value={problem.difficulty} />
       {problem.time > 0 && (
-        <span className="flex items-center gap-0.5 text-[10px] text-text-gray">
+        <span className="flex items-center gap-0.5 text-xxs text-text-gray">
           <Clock size={9} />
           {problem.time}min
         </span>
       )}
       {problem.harder_exercise && (
-        <span className="px-1 py-0.5 rounded bg-error-color/10 text-error-color text-[9px] font-medium leading-none">
+        <span className="px-1 py-0.5 rounded bg-error-color/10 text-error-color text-xxs font-medium leading-none">
           ★
         </span>
       )}
-      {problem.year && <span className="text-[10px] text-text-gray">{problem.year}</span>}
+      {problem.year && <span className="text-xxs text-text-gray">{problem.year}</span>}
     </>
   );
 }
@@ -46,7 +46,7 @@ function ExerciseMeta({ exercise }: { exercise: PickableExercise }) {
     <>
       <DifficultyDots value={exercise.difficulty} />
       {exercise.order != null && (
-        <span className="text-[10px] text-text-gray font-mono">#{exercise.order}</span>
+        <span className="text-xxs text-text-gray font-mono">#{exercise.order}</span>
       )}
     </>
   );
@@ -83,7 +83,7 @@ export default function PickerCard({ item, isSelected, onToggle }: Props) {
 
       {/* Content */}
       <div className="flex-1 min-w-0 px-2.5 py-2">
-        <p className="text-[10px] text-text-gray truncate leading-tight mb-0.5">{breadcrumb}</p>
+        <p className="text-xxs text-text-gray truncate leading-tight mb-0.5">{breadcrumb}</p>
         <p className="text-sm font-comfortaa-bold text-text-color leading-tight truncate">
           {item.name}
         </p>

@@ -38,7 +38,7 @@ export default function StudentCard({ student, groups, showGroupBadge = true }: 
             <Link
               href={route('teacher.students.group', group.id)}
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 text-[10px] text-text-gray bg-surface-color border border-border-color hover:border-teacher-color hover:text-teacher-color px-1.5 py-0.5 rounded-full max-w-[90px] transition-colors"
+              className="flex items-center gap-1 text-xxs text-text-gray bg-surface-color border border-border-color hover:border-teacher-color hover:text-teacher-color px-1.5 py-0.5 rounded-full max-w-[90px] transition-colors"
             >
               <FolderInput size={9} className="flex-shrink-0" />
               <span className="truncate">{group.name}</span>

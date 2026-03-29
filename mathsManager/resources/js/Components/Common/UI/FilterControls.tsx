@@ -45,8 +45,8 @@ export function FilterSelect({
   disabled,
 }: FilterSelectProps) {
   return (
-    <label className="flex flex-col gap-1 text-[11px] text-text-gray">
-      <span className="flex items-center gap-1 text-[11px] font-medium text-text-gray">
+    <label className="flex flex-col gap-1 text-xs text-text-gray">
+      <span className="flex items-center gap-1 text-xs font-medium text-text-gray">
         <Icon size={12} /> {label}
       </span>
       <select
@@ -95,8 +95,8 @@ export function FilterInput({
       : undefined);
 
   return (
-    <label className="flex flex-col gap-1 text-[11px] text-text-gray">
-      <span className="flex items-center gap-1 text-[11px] font-medium text-text-gray">
+    <label className="flex flex-col gap-1 text-xs text-text-gray">
+      <span className="flex items-center gap-1 text-xs font-medium text-text-gray">
         <Icon size={12} /> {label}
       </span>
       <input
@@ -141,7 +141,7 @@ export function FilterToggle({ label, icon: Icon, checked, onToggle }: FilterTog
       <span className="flex items-center gap-1">
         <Icon size={12} /> {label}
       </span>
-      <span className="text-[11px] font-medium">{checked ? 'ON' : 'OFF'}</span>
+      <span className="text-xs font-medium">{checked ? 'ON' : 'OFF'}</span>
     </button>
   );
 }

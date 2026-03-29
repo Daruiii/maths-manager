@@ -121,7 +121,7 @@ export default function Create({
               <Icon size={14} />
               {label}
               {id !== 'picker' && previewItems.length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-teacher-color text-white text-[10px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-full bg-teacher-color text-white text-xxs font-bold">
                   {previewItems.length}
                 </span>
               )}

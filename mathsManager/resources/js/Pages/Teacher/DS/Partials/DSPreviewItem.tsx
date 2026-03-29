@@ -47,7 +47,7 @@ export default function DSPreviewItem({ item, index, onRemove }: Props) {
       </button>
 
       {/* Number */}
-      <span className="flex-shrink-0 w-4 h-4 rounded-full bg-teacher-color/15 text-teacher-color text-[10px] font-comfortaa-bold flex items-center justify-center">
+      <span className="flex-shrink-0 w-4 h-4 rounded-full bg-teacher-color/15 text-teacher-color text-xxs font-comfortaa-bold flex items-center justify-center">
         {index + 1}
       </span>
 
@@ -56,12 +56,12 @@ export default function DSPreviewItem({ item, index, onRemove }: Props) {
         <p className="text-xs font-comfortaa-bold text-text-color leading-tight truncate">
           {item.item.name}
         </p>
-        {chapterName && <p className="text-[9px] text-text-gray truncate">{chapterName}</p>}
+        {chapterName && <p className="text-xxs text-text-gray truncate">{chapterName}</p>}
       </div>
 
       {/* Time */}
       {time != null && time > 0 && (
-        <span className="flex-shrink-0 flex items-center gap-0.5 text-[10px] text-text-gray">
+        <span className="flex-shrink-0 flex items-center gap-0.5 text-xxs text-text-gray">
           <Clock size={9} />
           {time}
         </span>

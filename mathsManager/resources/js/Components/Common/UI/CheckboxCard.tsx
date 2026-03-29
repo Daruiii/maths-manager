@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Minus } from 'lucide-react';
 
 interface Props {
   isSelected: boolean;
@@ -10,6 +10,18 @@ interface Props {
   className?: string;
 }
 
+/**
+ * CheckboxCard — carte sélectionnable style MathsManager.
+ *
+ * État sélectionné : bordure `border-teacher-color/60` + fond `bg-teacher-color/5`
+ * (subtle, token-only — cf. Styleguide > Composants)
+ *
+ * Usage :
+ *   <CheckboxCard isSelected={selected} onToggle={() => toggle(id)}>
+ *     <CheckboxIndicator isSelected={selected} />
+ *     Contenu
+ *   </CheckboxCard>
+ */
 export default function CheckboxCard({
   isSelected,
   onToggle,
@@ -17,11 +29,15 @@ export default function CheckboxCard({
   as: Tag = 'button',
   className = '',
 }: Props) {
-  const baseClass = `w-full text-left rounded-xl border-2 transition-colors ${
+  const baseClass = [
+    'w-full text-left rounded-xl border transition-colors',
     isSelected
-      ? 'border-teacher-color bg-teacher-color/5'
-      : 'border-border-color bg-secondary-color hover:border-teacher-color/50'
-  } ${className}`;
+      ? 'border-teacher-color/60 bg-teacher-color/5'
+      : 'border-border-color bg-secondary-color hover:border-teacher-color/40',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   if (Tag === 'div') {
     return <div className={baseClass}>{children}</div>;
@@ -34,14 +50,32 @@ export default function CheckboxCard({
   );
 }
 
-/** Standalone checkbox indicator — use inside CheckboxCard */
+/**
+ * Standalone checkbox indicator — use inside CheckboxCard.
+ *
+ * `indeterminate` : état partiel (sélection de groupe incomplète) — affiche un tiret.
+ */
 export function CheckboxIndicator({
   isSelected,
+  indeterminate = false,
   onToggle,
 }: {
   isSelected: boolean;
+  indeterminate?: boolean;
   onToggle?: () => void;
 }) {
+  const active = isSelected || indeterminate;
+
+  const colorClass = active
+    ? indeterminate
+      ? 'bg-teacher-color/40 border-teacher-color/60 text-white'
+      : 'bg-teacher-color border-teacher-color text-white'
+    : 'border-border-color hover:border-teacher-color';
+
+  const icon = indeterminate ? <Minus size={12} /> : isSelected ? <Check size={12} /> : null;
+
+  const baseClass = `w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${colorClass}`;
+
   if (onToggle) {
     return (
       <button
@@ -50,24 +84,12 @@ export function CheckboxIndicator({
           e.stopPropagation();
           onToggle();
         }}
-        className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-          isSelected
-            ? 'bg-teacher-color border-teacher-color text-white'
-            : 'border-border-color hover:border-teacher-color'
-        }`}
+        className={baseClass}
       >
-        {isSelected && <Check size={12} />}
+        {icon}
       </button>
     );
   }
 
-  return (
-    <span
-      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-        isSelected ? 'bg-teacher-color border-teacher-color text-white' : 'border-border-color'
-      }`}
-    >
-      {isSelected && <Check size={12} />}
-    </span>
-  );
+  return <span className={baseClass}>{icon}</span>;
 }

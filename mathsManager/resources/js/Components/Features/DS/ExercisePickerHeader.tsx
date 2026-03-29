@@ -58,7 +58,7 @@ export default function ExercisePickerHeader({
           ))}
         </div>
         {currentTotal > 0 && (
-          <span className="text-[11px] text-text-gray shrink-0">({currentTotal})</span>
+          <span className="text-xs text-text-gray shrink-0">({currentTotal})</span>
         )}
       </div>
 
@@ -96,7 +96,7 @@ export default function ExercisePickerHeader({
               key={chip.key}
               type="button"
               onClick={chip.onClear}
-              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border-color text-[10px] text-text-gray hover:text-text-color hover:border-teacher-color"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border-color text-xxs text-text-gray hover:text-text-color hover:border-teacher-color"
             >
               {chip.label}
               <X size={9} />

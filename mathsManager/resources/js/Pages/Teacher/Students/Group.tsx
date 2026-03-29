@@ -39,13 +39,12 @@ export default function Group({ group, students, groups }: Props) {
             ]}
             action={
               <div className="flex gap-2">
-                <button
-                  disabled
-                  title="Bientôt disponible"
-                  className="flex items-center gap-1.5 text-sm text-text-gray border border-border-color rounded-xl px-3 py-2 opacity-50 cursor-not-allowed"
+                <a
+                  href={route('teacher.ds.create', { group: group.id })}
+                  className="flex items-center gap-1.5 text-sm text-teacher-color border border-teacher-color/40 bg-teacher-color/5 hover:bg-teacher-color/10 rounded-xl px-3 py-2 transition-colors"
                 >
                   <BookOpen size={16} /> DS groupe
-                </button>
+                </a>
                 <button
                   disabled
                   title="Bientôt disponible"

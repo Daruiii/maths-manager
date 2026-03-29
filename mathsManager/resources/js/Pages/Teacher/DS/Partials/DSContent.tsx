@@ -130,14 +130,14 @@ export default function DSContent({
               return (
                 <div key={dsItem.uid} className="space-y-2">
                   <div className="flex items-baseline gap-2">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-teacher-color/15 text-teacher-color text-[11px] font-comfortaa-bold flex items-center justify-center">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-teacher-color/15 text-teacher-color text-xs font-comfortaa-bold flex items-center justify-center">
                       {index + 1}
                     </span>
                     <div className="min-w-0">
                       <p className="text-sm font-comfortaa-bold text-text-color leading-snug">
                         {item.name}
                       </p>
-                      {label && <p className="text-[11px] text-text-gray">{label}</p>}
+                      {label && <p className="text-xs text-text-gray">{label}</p>}
                     </div>
                   </div>
                   <div className="pl-7">{renderItemContent(item)}</div>

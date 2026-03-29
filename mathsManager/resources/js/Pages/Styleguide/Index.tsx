@@ -4,6 +4,8 @@ import Card from '@/Components/Common/UI/Card';
 import Button from '@/Components/Common/UI/Button';
 import UserCard from '@/Components/Features/User/UserCard';
 import PageHeader from '@/Components/Common/UI/PageHeader';
+import SlidePanel from '@/Components/Common/UI/SlidePanel';
+import CheckboxCard, { CheckboxIndicator } from '@/Components/Common/UI/CheckboxCard';
 import { useAuth } from '@/Hooks/Auth/useAuth';
 import {
   GraduationCap,
@@ -14,9 +16,10 @@ import {
   Type,
   MousePointer,
   Code2,
+  Layers,
 } from 'lucide-react';
 
-type Tab = 'colors' | 'cards' | 'buttons' | 'typography' | 'usercards' | 'css';
+type Tab = 'colors' | 'cards' | 'buttons' | 'typography' | 'usercards' | 'css' | 'composants';
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'colors', label: 'Couleurs', icon: <Palette className="w-4 h-4" /> },
@@ -25,6 +28,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'typography', label: 'Typographie', icon: <Type className="w-4 h-4" /> },
   { id: 'usercards', label: 'UserCards', icon: <Users className="w-4 h-4" /> },
   { id: 'css', label: 'CSS Classes', icon: <Code2 className="w-4 h-4" /> },
+  { id: 'composants', label: 'Composants', icon: <Layers className="w-4 h-4" /> },
 ];
 
 // Badge nom de classe CSS — affiché sous chaque démo
@@ -395,6 +399,151 @@ function CssClassesTab() {
   );
 }
 
+// ─── Section: Composants ──────────────────────────────────────────────────────
+function ComposantsTab() {
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [selected, setSelected] = useState<Record<string, boolean>>({});
+
+  const toggle = (id: string) => setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  const items = [
+    { id: 'a', label: 'Exercice — Suites numériques', sub: 'Terminale · 15 min' },
+    { id: 'b', label: "Problème — Géométrie dans l'espace", sub: 'Première · 25 min' },
+    { id: 'c', label: 'Exercice — Dérivation', sub: 'Terminale · 10 min' },
+  ];
+
+  return (
+    <div className="space-y-10">
+      {/* ── SlidePanel ── */}
+      <div className="space-y-4 pb-8 border-b border-border-color">
+        <div className="space-y-1">
+          <code className="inline-block text-xs font-mono bg-surface-color border border-border-color text-tertiary-color px-2 py-0.5 rounded-md">
+            {'<SlidePanel />'}
+          </code>
+          <p className="text-sm text-text-color mt-2">
+            Panneau latéral animé. Backdrop fade + slide depuis la droite via{' '}
+            <code className="text-xs font-mono bg-surface-color border border-border-color text-text-gray px-1.5 py-0.5 rounded">
+              @headlessui/react {'<Transition>'}
+            </code>
+            .
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-xs text-text-gray uppercase tracking-widest font-mono">Props</p>
+          <div className="flex gap-1.5 flex-wrap">
+            {[
+              'isOpen',
+              'onClose',
+              'title',
+              'subtitle?',
+              'footer?',
+              'children',
+              "size='sm'|'md'",
+            ].map((p) => (
+              <code
+                key={p}
+                className="text-xs font-mono bg-surface-color border border-border-color text-text-gray px-2 py-0.5 rounded-md"
+              >
+                {p}
+              </code>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-xs text-text-gray uppercase tracking-widest font-mono">Démo</p>
+          <Button variant="teacher" size="sm" onClick={() => setPanelOpen(true)}>
+            Ouvrir le panneau
+          </Button>
+          <SlidePanel
+            isOpen={panelOpen}
+            onClose={() => setPanelOpen(false)}
+            title="Assigner le DS"
+            subtitle="Sélectionnez un élève ou un groupe"
+            footer={
+              <Button variant="teacher" className="w-full justify-center">
+                Confirmer
+              </Button>
+            }
+          >
+            <p className="text-sm text-text-gray">Contenu du panneau…</p>
+          </SlidePanel>
+        </div>
+      </div>
+
+      {/* ── CheckboxCard ── */}
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <code className="inline-block text-xs font-mono bg-surface-color border border-border-color text-tertiary-color px-2 py-0.5 rounded-md">
+            {'<CheckboxCard />'}
+          </code>
+          <p className="text-sm text-text-color mt-2">
+            Carte sélectionnable. État sélectionné : bordure{' '}
+            <code className="text-xs font-mono bg-surface-color border border-border-color text-teacher-color px-1.5 py-0.5 rounded">
+              border-teacher-color/60
+            </code>{' '}
+            + fond{' '}
+            <code className="text-xs font-mono bg-surface-color border border-border-color text-teacher-color px-1.5 py-0.5 rounded">
+              bg-teacher-color/5
+            </code>
+            . Token-only, aucune valeur hardcodée.
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-xs text-text-gray uppercase tracking-widest font-mono">
+            État normal vs sélectionné
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <CheckboxCard isSelected={false}>
+              <div className="flex items-center gap-3 p-3">
+                <CheckboxIndicator isSelected={false} />
+                <div>
+                  <p className="text-sm font-comfortaa-bold text-text-color">Non sélectionné</p>
+                  <p className="text-xs text-text-gray">isSelected=false</p>
+                </div>
+              </div>
+            </CheckboxCard>
+            <CheckboxCard isSelected={true}>
+              <div className="flex items-center gap-3 p-3">
+                <CheckboxIndicator isSelected={true} />
+                <div>
+                  <p className="text-sm font-comfortaa-bold text-text-color">Sélectionné</p>
+                  <p className="text-xs text-text-gray">isSelected=true</p>
+                </div>
+              </div>
+            </CheckboxCard>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-xs text-text-gray uppercase tracking-widest font-mono">
+            Démo interactive
+          </p>
+          <div className="space-y-2">
+            {items.map((item) => (
+              <CheckboxCard
+                key={item.id}
+                isSelected={!!selected[item.id]}
+                onToggle={() => toggle(item.id)}
+              >
+                <div className="flex items-center gap-3 p-3">
+                  <CheckboxIndicator isSelected={!!selected[item.id]} />
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-comfortaa-bold text-text-color">{item.label}</p>
+                    <p className="text-xs text-text-gray">{item.sub}</p>
+                  </div>
+                </div>
+              </CheckboxCard>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page principale ──────────────────────────────────────────────────────────
 export default function StyleguideIndex() {
   const [activeTab, setActiveTab] = useState<Tab>('colors');
@@ -416,6 +565,8 @@ export default function StyleguideIndex() {
         return <UserCardsTab user={user} />;
       case 'css':
         return <CssClassesTab />;
+      case 'composants':
+        return <ComposantsTab />;
     }
   };
 

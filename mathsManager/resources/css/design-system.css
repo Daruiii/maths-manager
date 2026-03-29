@@ -79,6 +79,8 @@
   --font-comfortaa-light: 'Comfortaa Light', sans-serif;
   --font-cmu-serif: 'CMU Serif', serif;
   --font-cmu-bold: 'CMU Exercise Bold', serif;
+  --font-cmu-italic: 'CMU TI', serif;
+  --font-cmu-tt: 'CMU TT', monospace;
 }
 
 /* ========================================

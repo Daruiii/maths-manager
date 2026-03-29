@@ -64,7 +64,7 @@ export default function DSPreview({ items, onReorder, onRemove, onAssign }: Prop
           <h2 className="text-xs font-comfortaa-bold text-text-color">
             Sommaire
             {items.length > 0 && (
-              <span className="ml-1 text-[10px] font-normal text-text-gray">({items.length})</span>
+              <span className="ml-1 text-xxs font-normal text-text-gray">({items.length})</span>
             )}
           </h2>
 
