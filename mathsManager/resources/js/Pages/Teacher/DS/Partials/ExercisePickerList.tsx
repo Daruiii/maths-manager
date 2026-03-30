@@ -68,11 +68,12 @@ export default function ExercisePickerList({
     return <EmptyState icon={SearchX} description={error} accentColor="default" />;
   }
 
-  if (tab === 'private') {
-    return <EmptyState icon={Lock} description="Les exercices privés arrivent bientôt." />;
-  }
-
   if (items.length === 0) {
+    if (tab === 'private') {
+      return (
+        <EmptyState icon={Lock} description="Aucun exercice privé. Créez-en depuis Mon Bureau." />
+      );
+    }
     return (
       <EmptyState
         icon={SearchX}

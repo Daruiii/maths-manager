@@ -1,4 +1,4 @@
-import type { SortOption, ProblemSort, ExerciseSort } from '@/types/ui';
+import type { SortOption, ProblemSort, ExerciseSort, PrivateSort } from '@/types/ui';
 
 // ─── DS Header ────────────────────────────────────────────────────────────────
 
@@ -44,5 +44,25 @@ export const EXERCISE_SORT_OPTIONS: SortOption[] = [
   { by: 'order', label: 'Ordre', defaultDir: 'asc', ascLabel: '1→…', descLabel: '…→1' },
 ];
 
+export const PRIVATE_SORT_OPTIONS: SortOption[] = [
+  { by: 'name', label: 'Nom', defaultDir: 'asc', ascLabel: 'A→Z', descLabel: 'Z→A' },
+  {
+    by: 'difficulty',
+    label: 'Difficulté',
+    defaultDir: 'asc',
+    ascLabel: 'facile',
+    descLabel: 'difficile',
+  },
+  { by: 'time', label: 'Durée', defaultDir: 'asc', ascLabel: 'courte', descLabel: 'longue' },
+  {
+    by: 'created_at',
+    label: 'Date',
+    defaultDir: 'desc',
+    ascLabel: 'ancien',
+    descLabel: 'récent',
+  },
+];
+
 export const INITIAL_PROBLEM_SORT: ProblemSort = { by: '', dir: 'asc' };
 export const INITIAL_EXERCISE_SORT: ExerciseSort = { by: '', dir: 'asc' };
+export const INITIAL_PRIVATE_SORT: PrivateSort = { by: '', dir: 'asc' };

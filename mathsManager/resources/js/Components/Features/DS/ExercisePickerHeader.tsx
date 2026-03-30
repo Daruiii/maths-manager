@@ -2,8 +2,13 @@ import { useRef, useState, useEffect } from 'react';
 import { ArrowUpDown, Filter, X } from 'lucide-react';
 import SearchBar from '@/Components/Common/UI/SearchBar';
 import IconButton from '@/Components/Common/UI/IconButton';
-import { SortOption, ProblemSort, ExerciseSort } from '@/types/ui';
-import { PICKER_TABS, PROBLEM_SORT_OPTIONS, EXERCISE_SORT_OPTIONS } from '@/Constants/ds';
+import { SortOption, ProblemSort, ExerciseSort, PrivateSort } from '@/types/ui';
+import {
+  PICKER_TABS,
+  PROBLEM_SORT_OPTIONS,
+  EXERCISE_SORT_OPTIONS,
+  PRIVATE_SORT_OPTIONS,
+} from '@/Constants/ds';
 import { getNextSort } from '@/Utils/dsSort';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -19,7 +24,7 @@ interface Props {
   currentTotal: number;
   searchValue: string;
   isFiltersOpen?: boolean;
-  sort: ProblemSort | ExerciseSort;
+  sort: ProblemSort | ExerciseSort | PrivateSort;
   onTabChange: (tab: 'problems' | 'exercises' | 'private') => void;
   onSearchChange: (value: string) => void;
   onSearchClear: () => void;
@@ -59,7 +64,11 @@ export default function ExercisePickerHeader({
   }, [isSortOpen]);
 
   const sortOptions: SortOption[] =
-    tab === 'problems' ? PROBLEM_SORT_OPTIONS : EXERCISE_SORT_OPTIONS;
+    tab === 'problems'
+      ? PROBLEM_SORT_OPTIONS
+      : tab === 'exercises'
+        ? EXERCISE_SORT_OPTIONS
+        : PRIVATE_SORT_OPTIONS;
 
   const handleSortSelect = (option: SortOption) => {
     const next = getNextSort(option, sort);
@@ -93,19 +102,23 @@ export default function ExercisePickerHeader({
       </div>
 
       {/* Search + boutons */}
-      {tab !== 'private' && (
-        <div className="flex items-center gap-1.5">
-          <div className="flex-1">
-            <SearchBar
-              placeholder={
-                tab === 'problems' ? 'Rechercher un problème…' : 'Rechercher un exercice…'
-              }
-              value={searchValue}
-              onChange={(e) => onSearchChange(e.target.value)}
-              onClear={onSearchClear}
-              focusRingClass="focus:border-teacher-color focus:ring-teacher-color"
-            />
-          </div>
+      <div className="flex items-center gap-1.5">
+        <div className="flex-1">
+          <SearchBar
+            placeholder={
+              tab === 'problems'
+                ? 'Rechercher un problème…'
+                : tab === 'exercises'
+                  ? 'Rechercher un exercice…'
+                  : 'Rechercher dans mes privés…'
+            }
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
+            onClear={onSearchClear}
+            focusRingClass="focus:border-teacher-color focus:ring-teacher-color"
+          />
+        </div>
+        {tab !== 'private' && (
           <IconButton
             icon={Filter}
             variant="bordered"
@@ -114,48 +127,48 @@ export default function ExercisePickerHeader({
             onClick={onToggleFilters}
             title="Filtres"
           />
-          {/* Sort dropdown */}
-          <div ref={sortRef} className="relative">
-            <IconButton
-              icon={ArrowUpDown}
-              variant="bordered"
-              accentColor="teacher"
-              isActive={!!sort.by}
-              onClick={() => setIsSortOpen((v) => !v)}
-              title="Trier"
-            />
-            {isSortOpen && (
-              <div className="absolute right-0 top-full mt-1 z-20 bg-primary-color border border-border-color rounded-xl shadow-lg py-1 min-w-[140px]">
-                {sortOptions.map((opt) => {
-                  const isSelected = sort.by === opt.by;
-                  const dirLabel = isSelected
-                    ? sort.dir === 'asc'
-                      ? opt.ascLabel
-                      : opt.descLabel
-                    : undefined;
-                  return (
-                    <button
-                      key={opt.by}
-                      type="button"
-                      onClick={() => handleSortSelect(opt)}
-                      className={`w-full flex items-center justify-between gap-3 px-3 py-1.5 text-xs text-left transition-colors ${
-                        isSelected
-                          ? 'text-teacher-color bg-teacher-color/5'
-                          : 'text-text-color hover:bg-surface-color'
-                      }`}
-                    >
-                      <span>
-                        {opt.label}
-                        {dirLabel && <span className="ml-1 opacity-70">· {dirLabel}</span>}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+        )}
+        {/* Sort dropdown */}
+        <div ref={sortRef} className="relative">
+          <IconButton
+            icon={ArrowUpDown}
+            variant="bordered"
+            accentColor="teacher"
+            isActive={!!sort.by}
+            onClick={() => setIsSortOpen((v) => !v)}
+            title="Trier"
+          />
+          {isSortOpen && (
+            <div className="absolute right-0 top-full mt-1 z-20 bg-primary-color border border-border-color rounded-xl shadow-lg py-1 min-w-[140px]">
+              {sortOptions.map((opt) => {
+                const isSelected = sort.by === opt.by;
+                const dirLabel = isSelected
+                  ? sort.dir === 'asc'
+                    ? opt.ascLabel
+                    : opt.descLabel
+                  : undefined;
+                return (
+                  <button
+                    key={opt.by}
+                    type="button"
+                    onClick={() => handleSortSelect(opt)}
+                    className={`w-full flex items-center justify-between gap-3 px-3 py-1.5 text-xs text-left transition-colors ${
+                      isSelected
+                        ? 'text-teacher-color bg-teacher-color/5'
+                        : 'text-text-color hover:bg-surface-color'
+                    }`}
+                  >
+                    <span>
+                      {opt.label}
+                      {dirLabel && <span className="ml-1 opacity-70">· {dirLabel}</span>}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Chips filtres actifs */}
       {tab !== 'private' && chips.length > 0 && (

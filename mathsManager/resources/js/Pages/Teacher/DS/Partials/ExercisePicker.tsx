@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { PickableItem, MultipleChapter, DSPreviewItem, Subchapter } from '@/types/models';
 import { useProblemSearch } from '@/Hooks/DS/useProblemSearch';
 import { useExerciseSearch } from '@/Hooks/DS/useExerciseSearch';
+import { usePrivateExerciseSearch } from '@/Hooks/DS/usePrivateExerciseSearch';
 import ExercisePickerFiltersPanel from '@/Components/Features/DS/ExercisePickerFiltersPanel';
 import ExercisePickerHeader from '@/Components/Features/DS/ExercisePickerHeader';
 import { getDifficultyLabel } from '@/Constants/exercisePicker';
@@ -29,6 +30,7 @@ export default function ExercisePicker({
 
   const problemSearch = useProblemSearch();
   const exerciseSearch = useExerciseSearch();
+  const privateSearch = usePrivateExerciseSearch();
 
   const selectedIds = useMemo(
     () => new Set(previewItems.map((i) => `${i.item.kind}-${i.item.id}`)),
@@ -141,27 +143,47 @@ export default function ExercisePicker({
     <div className="flex flex-col h-full overflow-hidden">
       <ExercisePickerHeader
         tab={tab}
-        currentTotal={tab === 'problems' ? problemSearch.total : exerciseSearch.total}
+        currentTotal={
+          tab === 'problems'
+            ? problemSearch.total
+            : tab === 'exercises'
+              ? exerciseSearch.total
+              : privateSearch.total
+        }
         searchValue={
-          tab === 'problems' ? problemSearch.filters.search : exerciseSearch.filters.search
+          tab === 'problems'
+            ? problemSearch.filters.search
+            : tab === 'exercises'
+              ? exerciseSearch.filters.search
+              : privateSearch.filters.search
         }
         onTabChange={setTab}
         onSearchChange={(value) => {
           if (tab === 'problems') problemSearch.setSearch(value);
           if (tab === 'exercises') exerciseSearch.setSearch(value);
+          if (tab === 'private') privateSearch.setSearch(value);
         }}
         onSearchClear={() => {
           if (tab === 'problems') problemSearch.setSearch('');
           if (tab === 'exercises') exerciseSearch.setSearch('');
+          if (tab === 'private') privateSearch.setSearch('');
         }}
         isFiltersOpen={isFiltersOpen}
         onToggleFilters={() => setIsFiltersOpen((prev) => !prev)}
-        sort={tab === 'problems' ? problemSearch.sort : exerciseSearch.sort}
+        sort={
+          tab === 'problems'
+            ? problemSearch.sort
+            : tab === 'exercises'
+              ? exerciseSearch.sort
+              : privateSearch.sort
+        }
         onSortChange={(by, dir) => {
           if (tab === 'problems')
             problemSearch.setSort({ by: by as typeof problemSearch.sort.by, dir });
           if (tab === 'exercises')
             exerciseSearch.setSort({ by: by as typeof exerciseSearch.sort.by, dir });
+          if (tab === 'private')
+            privateSearch.setSort({ by: by as typeof privateSearch.sort.by, dir });
         }}
         chips={currentChips}
       />
@@ -195,19 +217,63 @@ export default function ExercisePicker({
 
       <ExercisePickerList
         tab={tab}
-        items={tab === 'problems' ? problemSearch.problems : exerciseSearch.exercises}
+        items={
+          tab === 'problems'
+            ? problemSearch.problems
+            : tab === 'exercises'
+              ? exerciseSearch.exercises
+              : privateSearch.exercises
+        }
         selectedIds={selectedIds}
-        loading={tab === 'problems' ? problemSearch.loading : exerciseSearch.loading}
-        loadingMore={tab === 'problems' ? problemSearch.loadingMore : exerciseSearch.loadingMore}
-        hasMore={tab === 'problems' ? problemSearch.hasMore : exerciseSearch.hasMore}
-        error={tab === 'problems' ? problemSearch.error : exerciseSearch.error}
+        loading={
+          tab === 'problems'
+            ? problemSearch.loading
+            : tab === 'exercises'
+              ? exerciseSearch.loading
+              : privateSearch.loading
+        }
+        loadingMore={
+          tab === 'problems'
+            ? problemSearch.loadingMore
+            : tab === 'exercises'
+              ? exerciseSearch.loadingMore
+              : privateSearch.loadingMore
+        }
+        hasMore={
+          tab === 'problems'
+            ? problemSearch.hasMore
+            : tab === 'exercises'
+              ? exerciseSearch.hasMore
+              : privateSearch.hasMore
+        }
+        error={
+          tab === 'problems'
+            ? problemSearch.error
+            : tab === 'exercises'
+              ? exerciseSearch.error
+              : privateSearch.error
+        }
         onToggle={onToggle}
-        onLoadMore={tab === 'problems' ? problemSearch.loadMore : exerciseSearch.loadMore}
+        onLoadMore={
+          tab === 'problems'
+            ? problemSearch.loadMore
+            : tab === 'exercises'
+              ? exerciseSearch.loadMore
+              : privateSearch.loadMore
+        }
         onResetFilters={
-          tab === 'problems' ? problemSearch.resetFilters : exerciseSearch.resetFilters
+          tab === 'problems'
+            ? problemSearch.resetFilters
+            : tab === 'exercises'
+              ? exerciseSearch.resetFilters
+              : privateSearch.resetFilters
         }
         showResetFilters={
-          tab === 'problems' ? problemSearch.hasActiveFilters : exerciseSearch.hasActiveFilters
+          tab === 'problems'
+            ? problemSearch.hasActiveFilters
+            : tab === 'exercises'
+              ? exerciseSearch.hasActiveFilters
+              : privateSearch.hasActiveFilters
         }
       />
     </div>

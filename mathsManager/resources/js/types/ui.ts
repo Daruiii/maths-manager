@@ -32,3 +32,8 @@ export interface ExerciseSort {
   by: 'name' | 'difficulty' | 'order' | '';
   dir: 'asc' | 'desc';
 }
+
+export interface PrivateSort {
+  by: 'name' | 'difficulty' | 'time' | 'created_at' | '';
+  dir: 'asc' | 'desc';
+}

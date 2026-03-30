@@ -7,6 +7,7 @@ use App\Models\DS;
 use App\Models\DsBatch;
 use App\Models\Exercise;
 use App\Models\MultipleChapter;
+use App\Models\PrivateExercise;
 use App\Models\Problem;
 use App\Models\StudentGroup;
 use App\Models\Subchapter;
@@ -207,7 +208,63 @@ class DSBuilderController extends Controller
 
         $exercises = $query->paginate(20);
 
+        // Charger les images depuis le filesystem (même pattern que searchProblems)
+        $exercises->getCollection()->transform(function (Exercise $exercise) {
+            $files = $this->fileUploadService->getFiles(
+                'exercises',
+                'exercise-' . $exercise->id . '/statement',
+                true,
+                'img-*'
+            );
+
+            $imagePaths = [];
+            foreach ($files as $path) {
+                $name = pathinfo($path, PATHINFO_FILENAME);
+                $imagePaths[$name] = $path;
+            }
+
+            $exercise->image_paths = $imagePaths ?: null;
+            return $exercise;
+        });
+
         return response()->json($exercises);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // API — RECHERCHE EXERCICES PRIVÉS (paginated + filtres)
+    // ──────────────────────────────────────────────────────────────────────────
+
+    public function searchPrivate(Request $request): JsonResponse
+    {
+        $teacher = Auth::user();
+
+        $query = PrivateExercise::forTeacher($teacher->id)
+            ->select('id', 'name', 'type', 'difficulty', 'time', 'latex_statement');
+
+        if ($search = $request->query('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($type = $request->query('type')) {
+            $query->where('type', $type);
+        }
+
+        if ($difficulty = $request->query('difficulty')) {
+            $query->where('difficulty', $difficulty);
+        }
+
+        $sortDir = $request->query('sort_dir') === 'desc' ? 'desc' : 'asc';
+        $sortBy  = in_array($request->query('sort_by'), ['name', 'difficulty', 'time', 'created_at'])
+            ? $request->query('sort_by')
+            : null;
+
+        if ($sortBy) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        return response()->json($query->paginate(20));
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -216,25 +273,37 @@ class DSBuilderController extends Controller
 
     public function assign(Request $request)
     {
-        $request->validate([
-            'problem_ids'         => 'required_without_all:exercise_ids|array|min:1',
-            'problem_ids.*'       => 'exists:problems,id',
-            'exercise_ids'        => 'required_without_all:problem_ids|array|min:1',
-            'exercise_ids.*'      => 'exists:exercises,id',
-            'student_ids'         => 'required|array|min:1',
-            'student_ids.*'       => 'exists:users,id',
-            'group_ids'           => 'nullable|array',
-            'group_ids.*'         => 'exists:student_groups,id',
-            'custom_title'        => 'nullable|string|max:255',
-            'custom_level'        => 'nullable|string|max:255',
-            'custom_instructions' => 'nullable|string',
-        ]);
-
         $teacher = Auth::user();
+
+        $request->validate([
+            'problem_ids'              => 'required_without_all:exercise_ids,private_exercise_ids|array|min:1',
+            'problem_ids.*'            => 'exists:problems,id',
+            'exercise_ids'             => 'required_without_all:problem_ids,private_exercise_ids|array|min:1',
+            'exercise_ids.*'           => 'exists:exercises,id',
+            'private_exercise_ids'     => 'required_without_all:problem_ids,exercise_ids|array|min:1',
+            'private_exercise_ids.*'   => 'exists:private_exercises,id',
+            'student_ids'              => 'required|array|min:1',
+            'student_ids.*'            => 'exists:users,id',
+            'group_ids'                => 'nullable|array',
+            'group_ids.*'              => 'exists:student_groups,id',
+            'custom_title'             => 'nullable|string|max:255',
+            'custom_level'             => 'nullable|string|max:255',
+            'custom_instructions'      => 'nullable|string',
+        ]);
 
         $problems = Problem::findMany($request->input('problem_ids', []));
         $exercises = Exercise::findMany($request->input('exercise_ids', []));
-        $totalTime = $problems->sum('time') + ($exercises->count() * self::DEFAULT_EXERCISE_MINUTES);
+
+        // Exercices privés — on vérifie qu'ils appartiennent bien au prof connecté
+        $privateExercises = PrivateExercise::whereIn('id', $request->input('private_exercise_ids', []))
+            ->where('teacher_id', $teacher->id)
+            ->get();
+
+        $privateTime = $privateExercises->sum(fn ($e) => $e->time ?? self::DEFAULT_EXERCISE_MINUTES);
+        $totalTime   = $problems->sum('time')
+            + ($exercises->count() * self::DEFAULT_EXERCISE_MINUTES)
+            + $privateTime;
+
         $multipleChapterIds = $problems->pluck('multiple_chapter_id')->unique()->values()->all();
 
         $studentIds = collect($request->input('student_ids'))->unique()->values();
@@ -254,7 +323,7 @@ class DSBuilderController extends Controller
             $ds->teacher_id = $teacher->id;
             $ds->batch_id   = $batch->id;
             $ds->type_bac   = false;
-            $ds->exercises_number = $problems->count() + $exercises->count();
+            $ds->exercises_number = $problems->count() + $exercises->count() + $privateExercises->count();
             $ds->harder_exercises = false;
             $ds->time   = $totalTime;
             $ds->timer  = $totalTime * 60;
@@ -271,6 +340,9 @@ class DSBuilderController extends Controller
             }
             if ($exercises->isNotEmpty()) {
                 $ds->exercises()->attach($exercises->pluck('id'));
+            }
+            if ($privateExercises->isNotEmpty()) {
+                $ds->privateExercises()->attach($privateExercises->pluck('id'));
             }
 
             $student = User::find($studentId);

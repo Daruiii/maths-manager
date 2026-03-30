@@ -35,6 +35,8 @@ class User extends Authenticatable implements MustVerifyEmail
         // Calendly invite tracking
         'calendly_invite_sent',
         'calendly_invite_sent_at',
+        // LaTeX personal shortcuts
+        'latex_macros',
     ];
 
     // Legacy constants - use UserRole enum or helper methods instead
@@ -140,6 +142,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'latex_macros' => 'array',
         ];
     }
 

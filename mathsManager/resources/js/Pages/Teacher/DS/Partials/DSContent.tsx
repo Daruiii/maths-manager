@@ -19,10 +19,15 @@ function formatTime(totalMinutes: number): string {
 }
 
 function renderItemContent(item: PickableItem) {
-  const isProblem = item.kind === 'problem';
-  if (isProblem && item.statement) return <KatexHtmlBlock html={item.statement} />;
-  if (item.latex_statement) {
-    const images = isProblem && item.image_paths ? Object.values(item.image_paths) : [];
+  if (item.kind === 'problem') {
+    if (item.statement) return <KatexHtmlBlock html={item.statement} />;
+    if (item.latex_statement) {
+      const images = item.image_paths ? Object.values(item.image_paths) : [];
+      return <LatexRenderer latex={item.latex_statement} images={images} />;
+    }
+  }
+  if ((item.kind === 'exercise' || item.kind === 'private') && item.latex_statement) {
+    const images = item.image_paths ? Object.values(item.image_paths) : [];
     return <LatexRenderer latex={item.latex_statement} images={images} />;
   }
   return <p className="text-xs text-text-gray italic">Énoncé non disponible</p>;

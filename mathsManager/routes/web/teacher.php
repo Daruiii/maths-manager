@@ -33,6 +33,7 @@ Route::middleware(['auth', IsTeacher::class])
         // DS Builder — API search (JSON)
         Route::get('/ds/builder/problems', [DSBuilderController::class, 'searchProblems'])->name('ds.builder.problems');
         Route::get('/ds/builder/exercises', [DSBuilderController::class, 'searchExercises'])->name('ds.builder.exercises');
+        Route::get('/ds/builder/private', [DSBuilderController::class, 'searchPrivate'])->name('ds.builder.private');
     });
 
 // ─── Join via invitation (public preview / auth for accept) ───────────────────

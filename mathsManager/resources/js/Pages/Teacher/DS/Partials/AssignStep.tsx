@@ -112,16 +112,19 @@ export default function AssignStep({
 
   const problemIds = previewItems.filter((i) => i.item.kind === 'problem').map((i) => i.item.id);
   const exerciseIds = previewItems.filter((i) => i.item.kind === 'exercise').map((i) => i.item.id);
+  const privateIds = previewItems.filter((i) => i.item.kind === 'private').map((i) => i.item.id);
   const totalRecipients = selectedStudentIds.size;
 
   const handleSubmit = () => {
-    if (problemIds.length + exerciseIds.length === 0 || totalRecipients === 0) return;
+    if (problemIds.length + exerciseIds.length + privateIds.length === 0 || totalRecipients === 0)
+      return;
     setIsSubmitting(true);
     router.post(
       route('teacher.ds.assign'),
       {
         problem_ids: problemIds,
         exercise_ids: exerciseIds,
+        private_exercise_ids: privateIds,
         student_ids: Array.from(selectedStudentIds),
         group_ids: Array.from(selectedGroupIds),
         custom_title: dsTitle,

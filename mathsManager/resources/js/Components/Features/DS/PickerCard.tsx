@@ -1,5 +1,10 @@
 import { Plus, Minus, Clock } from 'lucide-react';
-import { PickableItem, PickableProblem, PickableExercise } from '@/types/models';
+import {
+  PickableItem,
+  PickableProblem,
+  PickableExercise,
+  PickablePrivateExercise,
+} from '@/types/models';
 
 interface Props {
   item: PickableItem;
@@ -52,17 +57,35 @@ function ExerciseMeta({ exercise }: { exercise: PickableExercise }) {
   );
 }
 
-export default function PickerCard({ item, isSelected, onToggle }: Props) {
-  const isProblem = item.kind === 'problem';
+function PrivateMeta({ exercise }: { exercise: PickablePrivateExercise }) {
+  return (
+    <>
+      <DifficultyDots value={exercise.difficulty} />
+      {exercise.time != null && exercise.time > 0 && (
+        <span className="flex items-center gap-0.5 text-xxs text-text-gray">
+          <Clock size={9} />
+          {exercise.time}min
+        </span>
+      )}
+      <span className="px-1 py-0.5 rounded bg-teacher-color/10 text-teacher-color text-xxs font-medium leading-none">
+        {exercise.type === 'problem' ? 'Pb' : 'Ex'}
+      </span>
+    </>
+  );
+}
 
-  const breadcrumb = isProblem
-    ? ((item as PickableProblem).multiple_chapter?.title ?? '—')
-    : (() => {
-        const ex = item as PickableExercise;
-        const chapter = ex.subchapter?.chapter?.title;
-        const sub = ex.subchapter?.title;
-        return chapter && sub ? `${chapter} · ${sub}` : (sub ?? chapter ?? '—');
-      })();
+export default function PickerCard({ item, isSelected, onToggle }: Props) {
+  const breadcrumb =
+    item.kind === 'problem'
+      ? ((item as PickableProblem).multiple_chapter?.title ?? '—')
+      : item.kind === 'exercise'
+        ? (() => {
+            const ex = item as PickableExercise;
+            const chapter = ex.subchapter?.chapter?.title;
+            const sub = ex.subchapter?.title;
+            return chapter && sub ? `${chapter} · ${sub}` : (sub ?? chapter ?? '—');
+          })()
+        : 'Privé';
 
   return (
     <button
@@ -91,10 +114,12 @@ export default function PickerCard({ item, isSelected, onToggle }: Props) {
 
       {/* Metadata */}
       <div className="flex items-center gap-1.5 px-2 shrink-0">
-        {isProblem ? (
+        {item.kind === 'problem' ? (
           <ProblemMeta problem={item as PickableProblem} />
-        ) : (
+        ) : item.kind === 'exercise' ? (
           <ExerciseMeta exercise={item as PickableExercise} />
+        ) : (
+          <PrivateMeta exercise={item as PickablePrivateExercise} />
         )}
       </div>
 

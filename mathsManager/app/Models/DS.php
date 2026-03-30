@@ -65,6 +65,11 @@ class DS extends Model
         return $this->belongsToMany(Exercise::class, 'ds_exercises', 'ds_id', 'exercise_id');
     }
 
+    public function privateExercises()
+    {
+        return $this->belongsToMany(PrivateExercise::class, 'ds_private_exercises', 'ds_id', 'private_exercise_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

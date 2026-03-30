@@ -21,9 +21,14 @@ export default function DSPreviewItem({ item, index, onRemove }: Props) {
   };
 
   const current = item.item;
-  const isProblem = current.kind === 'problem';
-  const chapterName = isProblem ? current.multiple_chapter?.title : current.subchapter?.title;
-  const time = isProblem ? current.time : null;
+  const chapterName =
+    current.kind === 'problem'
+      ? current.multiple_chapter?.title
+      : current.kind === 'exercise'
+        ? current.subchapter?.title
+        : 'Privé';
+  const time =
+    current.kind === 'problem' ? current.time : current.kind === 'private' ? current.time : null;
 
   return (
     <div

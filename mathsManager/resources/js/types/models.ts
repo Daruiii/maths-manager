@@ -112,9 +112,22 @@ export interface PickableExercise {
     chapter: { id: number; title: string };
   };
   latex_statement?: string | null;
+  image_paths?: Record<string, string> | null;
 }
 
-export type PickableItem = PickableProblem | PickableExercise;
+/** Exercice privé du prof (non global) */
+export interface PickablePrivateExercise {
+  kind: 'private';
+  id: number;
+  name: string;
+  type: 'basic' | 'problem';
+  difficulty: number | null;
+  time: number | null;
+  latex_statement?: string | null;
+  image_paths?: Record<string, string> | null;
+}
+
+export type PickableItem = PickableProblem | PickableExercise | PickablePrivateExercise;
 
 /** Item dans la preview du DS — inclut un uid unique pour le d&d */
 export interface DSPreviewItem {
