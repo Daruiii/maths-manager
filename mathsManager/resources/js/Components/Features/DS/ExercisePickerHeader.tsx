@@ -118,16 +118,14 @@ export default function ExercisePickerHeader({
             focusRingClass="focus:border-teacher-color focus:ring-teacher-color"
           />
         </div>
-        {tab !== 'private' && (
-          <IconButton
-            icon={Filter}
-            variant="bordered"
-            accentColor="teacher"
-            isActive={isFiltersOpen}
-            onClick={onToggleFilters}
-            title="Filtres"
-          />
-        )}
+        <IconButton
+          icon={Filter}
+          variant="bordered"
+          accentColor="teacher"
+          isActive={isFiltersOpen}
+          onClick={onToggleFilters}
+          title="Filtres"
+        />
         {/* Sort dropdown */}
         <div ref={sortRef} className="relative">
           <IconButton
@@ -171,7 +169,7 @@ export default function ExercisePickerHeader({
       </div>
 
       {/* Chips filtres actifs */}
-      {tab !== 'private' && chips.length > 0 && (
+      {chips.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {chips.map((chip) => (
             <button

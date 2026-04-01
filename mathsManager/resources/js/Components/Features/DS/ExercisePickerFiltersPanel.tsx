@@ -1,4 +1,4 @@
-import { BookOpen, Calendar, Filter, GraduationCap, Layers, School } from 'lucide-react';
+import { BookOpen, Calendar, Filter, GraduationCap, Layers, School, Tag } from 'lucide-react';
 import {
   FilterInput,
   FilterSection,
@@ -22,17 +22,33 @@ interface ExerciseFilters {
   difficulty: string;
 }
 
+interface PrivateFilters {
+  type: string;
+  difficulty: string;
+  tagId: string;
+  classeId: string;
+  chapterId: string;
+  subchapterId: string;
+}
+
+interface TeacherTagOption {
+  id: number;
+  name: string;
+}
+
 interface ClassOption {
   id: number;
   name: string;
 }
 
 interface ExercisePickerFiltersPanelProps {
-  tab: 'problems' | 'exercises';
+  tab: 'problems' | 'exercises' | 'private';
   isOpen: boolean;
   academies: string[];
   problemFilters: ProblemFilters;
   exerciseFilters: ExerciseFilters;
+  privateFilters: PrivateFilters;
+  privateTags: TeacherTagOption[];
   classesForProblems: ClassOption[];
   classesForExercises: ClassOption[];
   chapterOptions: FilterSelectOption[];
@@ -47,6 +63,12 @@ interface ExercisePickerFiltersPanelProps {
   onExerciseChapterChange: (value: string) => void;
   onExerciseSubchapterChange: (value: string) => void;
   onExerciseDifficultyChange: (value: string) => void;
+  onPrivateTypeChange: (value: string) => void;
+  onPrivateDifficultyChange: (value: string) => void;
+  onPrivateTagChange: (value: string) => void;
+  onPrivateClasseChange: (value: string) => void;
+  onPrivateChapterChange: (value: string) => void;
+  onPrivateSubchapterChange: (value: string) => void;
 }
 
 export default function ExercisePickerFiltersPanel({
@@ -55,6 +77,8 @@ export default function ExercisePickerFiltersPanel({
   academies,
   problemFilters,
   exerciseFilters,
+  privateFilters,
+  privateTags,
   classesForProblems,
   classesForExercises,
   chapterOptions,
@@ -69,6 +93,12 @@ export default function ExercisePickerFiltersPanel({
   onExerciseChapterChange,
   onExerciseSubchapterChange,
   onExerciseDifficultyChange,
+  onPrivateTypeChange,
+  onPrivateDifficultyChange,
+  onPrivateTagChange,
+  onPrivateClasseChange,
+  onPrivateChapterChange,
+  onPrivateSubchapterChange,
 }: ExercisePickerFiltersPanelProps) {
   return (
     <div className={`px-3 pt-2 pb-3 border-b border-border-color ${isOpen ? 'block' : 'hidden'}`}>
@@ -173,6 +203,76 @@ export default function ExercisePickerFiltersPanel({
                 label: opt.value ? `Diff. ${opt.label}` : 'Toute difficulté',
               }))}
             />
+          </div>
+        </FilterSection>
+      )}
+
+      {tab === 'private' && (
+        <FilterSection icon={Filter}>
+          <div className="grid grid-cols-2 gap-2">
+            <FilterSelect
+              label="Type"
+              icon={Filter}
+              value={privateFilters.type}
+              onChange={onPrivateTypeChange}
+              options={[
+                { value: '', label: 'Tous types' },
+                { value: 'basic', label: 'Exercice' },
+                { value: 'problem', label: 'Problème' },
+              ]}
+            />
+            <FilterSelect
+              label="Difficulté"
+              icon={Layers}
+              value={privateFilters.difficulty}
+              onChange={onPrivateDifficultyChange}
+              options={DIFFICULTY_OPTIONS.map((opt) => ({
+                value: opt.value,
+                label: opt.value ? `Diff. ${opt.label}` : 'Toute difficulté',
+              }))}
+            />
+            <FilterSelect
+              label="Classe"
+              icon={School}
+              value={privateFilters.classeId}
+              onChange={onPrivateClasseChange}
+              options={[
+                { value: '', label: 'Toutes classes' },
+                ...classesForExercises.map((c) => ({ value: String(c.id), label: c.name })),
+              ]}
+            />
+            <FilterSelect
+              label="Chapitre"
+              icon={BookOpen}
+              value={privateFilters.chapterId}
+              onChange={(value) => {
+                if (value.startsWith('__group__')) return;
+                onPrivateChapterChange(value);
+              }}
+              options={exerciseChapterOptions}
+            />
+            <FilterSelect
+              label="Sous-chapitre"
+              icon={BookOpen}
+              value={privateFilters.subchapterId}
+              onChange={(value) => {
+                if (value.startsWith('__group__')) return;
+                onPrivateSubchapterChange(value);
+              }}
+              options={subchapterOptions}
+            />
+            {privateTags.length > 0 && (
+              <FilterSelect
+                label="Tag"
+                icon={Tag}
+                value={privateFilters.tagId}
+                onChange={onPrivateTagChange}
+                options={[
+                  { value: '', label: 'Tous tags' },
+                  ...privateTags.map((t) => ({ value: String(t.id), label: t.name })),
+                ]}
+              />
+            )}
           </div>
         </FilterSection>
       )}

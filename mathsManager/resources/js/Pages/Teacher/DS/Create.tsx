@@ -4,7 +4,14 @@ import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import FlashToast from '@/Components/Common/UI/FlashToast';
 import { route } from 'ziggy-js';
-import { MultipleChapter, StudentGroup, User, PickableItem, Subchapter } from '@/types/models';
+import {
+  MultipleChapter,
+  StudentGroup,
+  User,
+  PickableItem,
+  Subchapter,
+  TeacherTag,
+} from '@/types/models';
 import ExercisePicker from '@/Pages/Teacher/DS/Partials/ExercisePicker';
 import DSPreview from '@/Pages/Teacher/DS/Partials/DSPreview';
 import DSContent from '@/Pages/Teacher/DS/Partials/DSContent';
@@ -18,6 +25,7 @@ interface Props {
   multipleChapters: MultipleChapter[];
   subchapters: Subchapter[];
   academies: string[];
+  privateTags: TeacherTag[];
   preselectedStudentId?: number | null;
   preselectedGroupId?: number | null;
 }
@@ -30,6 +38,7 @@ export default function Create({
   multipleChapters,
   subchapters,
   academies,
+  privateTags,
   preselectedStudentId,
   preselectedGroupId,
 }: Props) {
@@ -141,6 +150,7 @@ export default function Create({
               multipleChapters={multipleChapters}
               subchapters={subchapters}
               academies={academies}
+              privateTags={privateTags}
               previewItems={previewItems}
               onToggle={handleToggle}
             />

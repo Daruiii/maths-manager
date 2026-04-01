@@ -115,6 +115,37 @@ export interface PickableExercise {
   image_paths?: Record<string, string> | null;
 }
 
+export interface TeacherTag {
+  id: number;
+  teacher_id: number;
+  name: string;
+  color?: string | null;
+}
+
+/** Exercice privé du prof — modèle complet */
+export interface PrivateExercise {
+  id: number;
+  teacher_id: number;
+  type: 'basic' | 'problem';
+  name: string;
+  notes?: string | null;
+  classe_id?: number | null;
+  chapter_id?: number | null;
+  subchapter_id?: number | null;
+  statement?: string | null;
+  latex_statement?: string | null;
+  solution?: string | null;
+  latex_solution?: string | null;
+  clue?: string | null;
+  latex_clue?: string | null;
+  difficulty?: number | null;
+  time?: number | null;
+  image_paths?: Record<string, string> | null;
+  tags?: TeacherTag[];
+  created_at?: string;
+  updated_at?: string;
+}
+
 /** Exercice privé du prof (non global) */
 export interface PickablePrivateExercise {
   kind: 'private';

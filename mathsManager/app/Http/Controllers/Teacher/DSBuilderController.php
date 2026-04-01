@@ -71,6 +71,7 @@ class DSBuilderController extends Controller
             'multipleChapters' => $multipleChapters,
             'subchapters'      => $subchapters,
             'academies'        => $academies,
+            'privateTags'      => $teacher->teacherTags()->get(['id', 'name', 'color']),
             // Pré-sélection depuis la page élèves
             'preselectedStudentId' => $request->integer('student') ?: null,
             'preselectedGroupId'   => $request->integer('group') ?: null,
@@ -253,6 +254,22 @@ class DSBuilderController extends Controller
             $query->where('difficulty', $difficulty);
         }
 
+        if ($tagId = $request->query('tag_id')) {
+            $query->whereHas('tags', fn ($q) => $q->where('teacher_tags.id', $tagId));
+        }
+
+        if ($classeId = $request->query('classe_id')) {
+            $query->where('classe_id', $classeId);
+        }
+
+        if ($chapterId = $request->query('chapter_id')) {
+            $query->where('chapter_id', $chapterId);
+        }
+
+        if ($subchapterId = $request->query('subchapter_id')) {
+            $query->where('subchapter_id', $subchapterId);
+        }
+
         $sortDir = $request->query('sort_dir') === 'desc' ? 'desc' : 'asc';
         $sortBy  = in_array($request->query('sort_by'), ['name', 'difficulty', 'time', 'created_at'])
             ? $request->query('sort_by')
@@ -264,7 +281,27 @@ class DSBuilderController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        return response()->json($query->paginate(20));
+        $exercises = $query->paginate(20);
+
+        $exercises->getCollection()->transform(function (PrivateExercise $exercise) {
+            $files = $this->fileUploadService->getFiles(
+                'private-exercises',
+                'private-exercise-' . $exercise->id,
+                true,
+                'img-*'
+            );
+
+            $imagePaths = [];
+            foreach ($files as $path) {
+                $name = pathinfo($path, PATHINFO_FILENAME);
+                $imagePaths[$name] = $path;
+            }
+
+            $exercise->image_paths = $imagePaths ?: null;
+            return $exercise;
+        });
+
+        return response()->json($exercises);
     }
 
     // ──────────────────────────────────────────────────────────────────────────

@@ -12,12 +12,20 @@ interface Filters {
   search: string;
   type: 'basic' | 'problem' | '';
   difficulty: string;
+  tagId: string;
+  classeId: string;
+  chapterId: string;
+  subchapterId: string;
 }
 
 const INITIAL_FILTERS: Filters = {
   search: '',
   type: '',
   difficulty: '',
+  tagId: '',
+  classeId: '',
+  chapterId: '',
+  subchapterId: '',
 };
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -46,6 +54,10 @@ export function usePrivateExerciseSearch() {
     if (f.search) params.search = f.search;
     if (f.type) params.type = f.type;
     if (f.difficulty) params.difficulty = f.difficulty;
+    if (f.tagId) params.tag_id = f.tagId;
+    if (f.classeId) params.classe_id = f.classeId;
+    if (f.chapterId) params.chapter_id = f.chapterId;
+    if (f.subchapterId) params.subchapter_id = f.subchapterId;
     if (s.by) {
       params.sort_by = s.by;
       params.sort_dir = s.dir;
@@ -94,10 +106,21 @@ export function usePrivateExerciseSearch() {
   const setSearch = (search: string) => setFilters((f) => ({ ...f, search }));
   const setType = (type: Filters['type']) => setFilters((f) => ({ ...f, type }));
   const setDifficulty = (difficulty: string) => setFilters((f) => ({ ...f, difficulty }));
+  const setTagId = (tagId: string) => setFilters((f) => ({ ...f, tagId }));
+  const setClasseId = (classeId: string) => setFilters((f) => ({ ...f, classeId }));
+  const setChapterId = (chapterId: string) => setFilters((f) => ({ ...f, chapterId }));
+  const setSubchapterId = (subchapterId: string) => setFilters((f) => ({ ...f, subchapterId }));
   const resetFilters = () => setFilters(INITIAL_FILTERS);
 
   const hasMore = page < lastPage;
-  const hasActiveFilters = !!filters.search || !!filters.type || !!filters.difficulty;
+  const hasActiveFilters =
+    !!filters.search ||
+    !!filters.type ||
+    !!filters.difficulty ||
+    !!filters.tagId ||
+    !!filters.classeId ||
+    !!filters.chapterId ||
+    !!filters.subchapterId;
 
   return {
     exercises,
@@ -113,6 +136,10 @@ export function usePrivateExerciseSearch() {
     setSearch,
     setType,
     setDifficulty,
+    setTagId,
+    setClasseId,
+    setChapterId,
+    setSubchapterId,
     setSort,
     resetFilters,
   };

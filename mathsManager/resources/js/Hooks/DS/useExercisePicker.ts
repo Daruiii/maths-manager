@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { PickableItem, MultipleChapter, Subchapter } from '@/types/models';
+import { PickableItem, MultipleChapter, Subchapter, TeacherTag } from '@/types/models';
 import { ProblemSort, ExerciseSort, PrivateSort } from '@/types/ui';
 import { PickerTab } from '@/Constants/ds';
 import { getDifficultyLabel } from '@/Constants/exercisePicker';
@@ -35,11 +35,12 @@ export interface ActiveSearch {
 interface Options {
   multipleChapters: MultipleChapter[];
   subchapters: Subchapter[];
+  privateTags?: TeacherTag[];
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export function useExercisePicker({ multipleChapters, subchapters }: Options) {
+export function useExercisePicker({ multipleChapters, subchapters, privateTags = [] }: Options) {
   const [tab, setTab] = useState<PickerTab>('problems');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
@@ -103,8 +104,7 @@ export function useExercisePicker({ multipleChapters, subchapters }: Options) {
       error: privateSearch.error,
       hasActiveFilters: privateSearch.hasActiveFilters,
       setSearch: privateSearch.setSearch,
-      setSort: (by, dir) =>
-        privateSearch.setSort({ by: by as typeof privateSearch.sort.by, dir }),
+      setSort: (by, dir) => privateSearch.setSort({ by: by as typeof privateSearch.sort.by, dir }),
       loadMore: privateSearch.loadMore,
       resetFilters: privateSearch.resetFilters,
     };
@@ -122,7 +122,10 @@ export function useExercisePicker({ multipleChapters, subchapters }: Options) {
           ? {
               key: 'class',
               label: `Classe: ${problemClassMap.get(filters.classId) ?? filters.classId}`,
-              onClear: () => { setClassId(''); setChapterId(''); },
+              onClear: () => {
+                setClassId('');
+                setChapterId('');
+              },
             }
           : null,
         filters.chapterId
@@ -182,8 +185,58 @@ export function useExercisePicker({ multipleChapters, subchapters }: Options) {
       ].filter(Boolean) as Chip[];
     }
 
-    return [];
-  }, [tab, problemSearch, exerciseSearch, pickerOptions]);
+    // Private tab chips
+    const {
+      filters,
+      setType,
+      setDifficulty,
+      setTagId,
+      setClasseId,
+      setChapterId,
+      setSubchapterId,
+    } = privateSearch;
+    const tagLabel = privateTags.find((t) => String(t.id) === filters.tagId)?.name;
+    return [
+      filters.type
+        ? {
+            key: 'type',
+            label: filters.type === 'basic' ? 'Exercice' : 'Problème',
+            onClear: () => setType(''),
+          }
+        : null,
+      filters.difficulty
+        ? {
+            key: 'difficulty',
+            label: `Diff.: ${getDifficultyLabel(filters.difficulty) ?? filters.difficulty}`,
+            onClear: () => setDifficulty(''),
+          }
+        : null,
+      filters.classeId
+        ? {
+            key: 'classe',
+            label: `Classe: ${exerciseClassMap.get(filters.classeId) ?? filters.classeId}`,
+            onClear: () => setClasseId(''),
+          }
+        : null,
+      filters.chapterId
+        ? {
+            key: 'chapter',
+            label: `Chapitre: ${exerciseChapterMap.get(filters.chapterId) ?? filters.chapterId}`,
+            onClear: () => setChapterId(''),
+          }
+        : null,
+      filters.subchapterId
+        ? {
+            key: 'subchapter',
+            label: `Sous-ch.: ${subchapterMap.get(filters.subchapterId) ?? filters.subchapterId}`,
+            onClear: () => setSubchapterId(''),
+          }
+        : null,
+      filters.tagId
+        ? { key: 'tag', label: `Tag: ${tagLabel ?? filters.tagId}`, onClear: () => setTagId('') }
+        : null,
+    ].filter(Boolean) as Chip[];
+  }, [tab, problemSearch, exerciseSearch, privateSearch, privateTags, pickerOptions]);
 
   return {
     tab,
@@ -194,6 +247,7 @@ export function useExercisePicker({ multipleChapters, subchapters }: Options) {
     currentChips,
     problemSearch,
     exerciseSearch,
+    privateSearch,
     pickerOptions,
   };
 }
