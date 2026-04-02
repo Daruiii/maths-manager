@@ -14,7 +14,6 @@ use App\Models\Subchapter;
 use App\Models\Chapter;
 use App\Models\Classe;
 use Illuminate\Support\Facades\Log;
-use App\Services\LatexToHtmlConverter;
 use App\Services\OrderingService;
 use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\Exercise\StoreExerciseRequest;
@@ -195,13 +194,13 @@ class ExerciseController extends Controller
     
             // Étape 1 : Enregistrer l'exercice pour obtenir son ID
             $exercise = new Exercise();
-            $exercise->clue = $request->clue ? LatexToHtmlConverter::convertForExercise($request->clue) : null;
+            $exercise->clue = null;
             $exercise->latex_clue = $request->clue;
             $exercise->name = $request->name;
             $exercise->subchapter_id = $request->subchapter_id;
             $exercise->difficulty = $request->difficulty;
             $exercise->order = $maxOrder + 1;
-            $exercise->statement = 'temp'; // Temporaire pour éviter les erreurs de validation
+            $exercise->statement = '';
             $exercise->save(); // Sauvegarde pour générer l'ID
     
             // Étape 2 : Gestion des images pour statement via ImageManagementService
@@ -221,7 +220,7 @@ class ExerciseController extends Controller
                 'statement'
             );
 
-            $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
+            $exercise->statement = '';
             $exercise->latex_statement = $request->statement;
 
             // Étape 3 : Gestion des images pour solution via ImageManagementService
@@ -243,9 +242,9 @@ class ExerciseController extends Controller
                 );
             }
 
-            $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
+            $exercise->solution = null;
             $exercise->latex_solution = $request->solution;
-    
+
             // Étape 4 : Mise à jour des images et sauvegarde finale
             $exercise->save();
             
@@ -319,7 +318,7 @@ class ExerciseController extends Controller
                 'statement'
             );
 
-            $exercise->statement = LatexToHtmlConverter::convertForExercise($request->statement, $imagePathsStatement);
+            $exercise->statement = '';
 
             $imagePathsSolution = $this->imageManagementService->handleImageUpload(
                 request: $request,
@@ -339,10 +338,10 @@ class ExerciseController extends Controller
                 );
             }
 
-            $exercise->solution = $request->solution ? LatexToHtmlConverter::convertForExercise($request->solution, $imagePathsSolution) : null;
-    
+            $exercise->solution = null;
+
             // Mise à jour des indices (`clue`)
-            $exercise->clue = $request->clue ? LatexToHtmlConverter::convertForExercise($request->clue) : null;
+            $exercise->clue = null;
             $exercise->latex_clue = $request->clue;
     
             // Mise à jour des autres champs

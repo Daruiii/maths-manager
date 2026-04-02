@@ -10,13 +10,14 @@ interface Props {
   subtitle?: string;
   footer?: ReactNode;
   children: ReactNode;
-  /** Panel width. 'sm' = max-w-sm (384px) for lists, 'md' = max-w-md (448px) for richer content. Default: 'md' */
-  size?: 'sm' | 'md';
+  /** Panel width. 'sm' = 384px, 'md' = 448px, 'lg' = 672px for forms with preview. Default: 'md' */
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const SIZE_CLASS: Record<NonNullable<Props['size']>, string> = {
   sm: 'max-w-sm',
   md: 'max-w-md',
+  lg: 'max-w-2xl',
 };
 
 /**

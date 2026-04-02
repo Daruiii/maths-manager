@@ -38,29 +38,22 @@ export default function Logo({ className = '', size = 'md', showBadge = true }: 
   const showEnvBadge = showBadge && (isLocal || isPreprod);
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <span className={`${sizeClasses[size]} font-comfortaa-bold text-text-color tracking-tight`}>
+    <div className={`inline-flex items-center gap-2 ${className}`}>
+      <span
+        className={`${sizeClasses[size]} font-comfortaa-bold text-text-color tracking-tight whitespace-nowrap`}
+      >
         {appName || 'Maths Manager'}
       </span>
-
       {showEnvBadge && (
         <span
-          className={`hidden sm:inline-flex items-center justify-center font-bold rounded-full uppercase text-white shadow-sm ${badgeSizeClasses[size]} ${
-            isLocal ? 'bg-success-color' : 'bg-orange-500'
-          }`}
+          className={[
+            badgeSizeClasses[size],
+            'rounded font-comfortaa-bold uppercase tracking-widest whitespace-nowrap',
+            isLocal ? 'bg-success-color/15 text-success-color' : 'bg-orange-500/15 text-orange-500',
+          ].join(' ')}
         >
-          {isLocal ? 'LOCAL' : 'PREPROD'}
+          {isLocal ? 'local' : 'preprod'}
         </span>
-      )}
-
-      {/* Mobile: Simple colored dot */}
-      {showEnvBadge && (
-        <span
-          className={`sm:hidden w-2 h-2 rounded-full ${
-            isLocal ? 'bg-success-color' : 'bg-orange-500'
-          }`}
-          aria-label={isLocal ? 'Environnement local' : 'Environnement preprod'}
-        />
       )}
     </div>
   );

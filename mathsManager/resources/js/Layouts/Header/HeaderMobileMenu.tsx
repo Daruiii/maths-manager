@@ -99,12 +99,20 @@ export default function HeaderMobileMenu({
                   )}
 
                   {isStaff && (
-                    <Link
-                      href={route('teacher.students.index')}
-                      className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
-                    >
-                      Mes élèves
-                    </Link>
+                    <>
+                      <Link
+                        href={route('teacher.students.index')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Mes élèves
+                      </Link>
+                      <Link
+                        href={route('teacher.bureau.index')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Mon Bureau
+                      </Link>
+                    </>
                   )}
                 </div>
               </div>

@@ -28,12 +28,12 @@ interface Props {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 /**
- * Rend du HTML pré-converti côté serveur avec un passage KaTeX pour les maths.
+ * Rend du HTML pré-converti côté serveur (legacy) avec un passage KaTeX pour les maths.
+ * Utilisé pour les Exercise et Problem existants dont le HTML est stocké en base.
  *
- * Même pattern que LatexRenderer : innerHTML dans useEffect pour éviter que React
- * n'écrase le DOM que KaTeX vient de construire entre les re-renders.
+ * Pour les nouveaux contenus (PrivateExercise et futurs), utiliser LatexRenderer.
  */
-export default function KatexHtmlBlock({ html, className = '' }: Props) {
+export default function LegacyKatexHtmlBlock({ html, className = '' }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const normalizedHtml = normalizeServerHtml(html);
 

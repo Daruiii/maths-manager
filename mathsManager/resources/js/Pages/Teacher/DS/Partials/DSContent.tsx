@@ -4,7 +4,7 @@ import { DSPreviewItem, DEFAULT_EXERCISE_MINUTES, PickableItem } from '@/types/m
 import { DS_DEFAULT_TITLE, DS_DEFAULT_LEVEL, DS_DEFAULT_INSTRUCTIONS } from '@/Constants/ds';
 import LatexRenderer from '@/Components/Common/UI/LatexRenderer';
 import EmptyState from '@/Components/Common/UI/EmptyState';
-import KatexHtmlBlock from '@/Components/Common/UI/KatexHtmlBlock';
+import LegacyKatexHtmlBlock from '@/Components/Common/UI/LegacyKatexHtmlBlock';
 import EditableText from '@/Components/Common/UI/EditableText';
 
 type EditingField = 'title' | 'level' | 'instructions' | null;
@@ -20,7 +20,7 @@ function formatTime(totalMinutes: number): string {
 
 function renderItemContent(item: PickableItem) {
   if (item.kind === 'problem') {
-    if (item.statement) return <KatexHtmlBlock html={item.statement} />;
+    if (item.statement) return <LegacyKatexHtmlBlock html={item.statement} />;
     if (item.latex_statement) {
       const images = item.image_paths ? Object.values(item.image_paths) : [];
       return <LatexRenderer latex={item.latex_statement} images={images} />;

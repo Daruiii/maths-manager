@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Teacher\BureauController;
 use App\Http\Controllers\Teacher\DSBuilderController;
+use App\Http\Controllers\Teacher\PrivateExerciseController;
 use App\Http\Controllers\Teacher\TeacherGroupController;
 use App\Http\Controllers\Teacher\TeacherInvitationController;
 use App\Http\Controllers\Teacher\TeacherStudentController;
+use App\Http\Controllers\Teacher\TeacherTagController;
 use App\Http\Middleware\IsTeacher;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +28,23 @@ Route::middleware(['auth', IsTeacher::class])
 
         // Invitation
         Route::post('/invitation', [TeacherInvitationController::class, 'configure'])->name('invitation.configure');
+
+        // Mon Bureau (dashboard)
+        Route::get('/bureau', [BureauController::class, 'index'])->name('bureau.index');
+
+        // Exercices privés
+        Route::get('/exercices', [PrivateExerciseController::class, 'index'])->name('exercices.index');
+        Route::get('/exercices/create', [PrivateExerciseController::class, 'create'])->name('exercices.create');
+        Route::post('/exercices', [PrivateExerciseController::class, 'store'])->name('exercices.store');
+        Route::get('/exercices/{exercise}/edit', [PrivateExerciseController::class, 'edit'])->name('exercices.edit');
+        Route::put('/exercices/{exercise}', [PrivateExerciseController::class, 'update'])->name('exercices.update');
+        Route::delete('/exercices/{exercise}', [PrivateExerciseController::class, 'destroy'])->name('exercices.destroy');
+        Route::post('/exercices/{exercise}/images', [PrivateExerciseController::class, 'uploadImage'])->name('exercices.images.upload');
+        Route::delete('/exercices/{exercise}/images/{imageName}', [PrivateExerciseController::class, 'deleteImage'])->name('exercices.images.delete');
+        // Tags
+        Route::post('/tags', [TeacherTagController::class, 'store'])->name('tags.store');
+        Route::patch('/tags/{tag}', [TeacherTagController::class, 'update'])->name('tags.update');
+        Route::delete('/tags/{tag}', [TeacherTagController::class, 'destroy'])->name('tags.destroy');
 
         // DS Builder
         Route::get('/ds/create', [DSBuilderController::class, 'create'])->name('ds.create');

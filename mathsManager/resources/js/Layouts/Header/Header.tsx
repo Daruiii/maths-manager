@@ -19,12 +19,12 @@ export default function Header() {
         ${scrollDirection === 'down' ? '-translate-y-full shadow-none' : 'translate-y-0'}
       `}
     >
-      <nav className="w-full flex items-center mx-auto px-4 lg:px-8">
-        <div className="flex-1 flex justify-start items-center">
+      <nav className="w-full flex flex-wrap items-center mx-auto px-4 lg:px-8">
+        <div className="shrink-0 flex items-center">
           <HeaderLogo />
         </div>
 
-        <div className="flex-none flex justify-center items-center">
+        <div className="flex-1 flex justify-center items-center">
           <HeaderNav
             user={user}
             classes={classes}
@@ -33,7 +33,7 @@ export default function Header() {
           />
         </div>
 
-        <div className="flex-1 flex justify-end items-center gap-2">
+        <div className="shrink-0 flex items-center gap-2">
           <HeaderActions user={user} />
           <HeaderMobileMenu
             user={user}

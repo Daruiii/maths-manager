@@ -113,14 +113,22 @@ export default function HeaderNav({ user, classes, dsNotStarted, tdNotStarted }:
         </>
       )}
 
-      {/* 4. STAFF ONLY: Mes élèves */}
+      {/* 4. STAFF ONLY: Mes élèves + Mon Bureau */}
       {isStaff && (
-        <Link
-          href={route('teacher.students.index')}
-          className={`nav-link focus:outline-none ${isActive('/teacher/students')}`}
-        >
-          Mes élèves
-        </Link>
+        <>
+          <Link
+            href={route('teacher.students.index')}
+            className={`nav-link focus:outline-none ${isActive('/teacher/students')}`}
+          >
+            Mes élèves
+          </Link>
+          <Link
+            href={route('teacher.bureau.index')}
+            className={`nav-link focus:outline-none ${isActive('/teacher/bureau')}`}
+          >
+            Mon Bureau
+          </Link>
+        </>
       )}
     </div>
   );

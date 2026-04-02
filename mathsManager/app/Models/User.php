@@ -211,6 +211,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(TeacherInvitation::class, 'teacher_id');
     }
 
+    public function teacherTags()
+    {
+        return $this->hasMany(TeacherTag::class, 'teacher_id');
+    }
+
     /**
      * Get the currently active invitation link for this teacher.
      */

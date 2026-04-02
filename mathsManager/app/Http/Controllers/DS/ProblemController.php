@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Problem;
 use App\Models\Chapter;
 use App\Models\MultipleChapter;
-use App\Services\LatexToHtmlConverter;
 use App\Http\Requests\Problem\StoreProblemRequest;
 use App\Http\Requests\Problem\UpdateProblemRequest;
 use App\Services\FileUploadService;
@@ -117,7 +116,7 @@ class ProblemController extends Controller
         $problem = new Problem();
         $problem->fill($request->except('images'));
         $problem->latex_statement = $request->statement;
-        $problem->statement = $request->statement; // Temporary, will be updated after image upload
+        $problem->statement = '';
         $problem->save(); // ✅ Get auto-generated ID from database
 
         // Now handle image uploads with the generated ID
@@ -137,8 +136,7 @@ class ProblemController extends Controller
             'statement'
         );
 
-        // Update statement with converted LaTeX
-        $problem->statement = LatexToHtmlConverter::convertForProblem($problem->statement, $imagePaths);
+        $problem->statement = '';
 
         // Handle PDF upload if present
         if ($request->hasFile('correction_pdf')) {
@@ -231,7 +229,7 @@ class ProblemController extends Controller
             'statement'
         );
 
-        $problem->statement = LatexToHtmlConverter::convertForProblem($request->statement, $imagePaths);
+        $problem->statement = '';
 
         // Suppression du PDF de correction si demandé
         if ($request->has('delete_correction_pdf') && $problem->correction_pdf) {

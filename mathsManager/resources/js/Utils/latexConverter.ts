@@ -6,7 +6,13 @@
  * 1. Sauvegarder les blocs mathématiques ($$, \[, \begin{...}, $, \() pour les protéger
  * 2. Appliquer les remplacements texte (\\→<br>, \graph, listes, sections…)
  * 3. Restaurer les blocs mathématiques
+ *
+ * Variants :
+ * - 'exercise' (défaut) : tabularx → <span>, center → latex-center
+ * - 'problem'           : tabularx → <table>, center → latex latex-center
  */
+
+export type LatexVariant = 'exercise' | 'problem';
 
 const BASE_REPLACEMENTS: [RegExp, string][] = [
   [/\\begin\{itemize\}/g, '<ul>'],
@@ -36,10 +42,6 @@ const BASE_REPLACEMENTS: [RegExp, string][] = [
   ],
   [/\\PC/g, "<div class='latex latex-center'><span class='textbf'>Troisième partie</span></div>"],
   [/\\(textbf|textit|texttt|textup)\{(.*?)\}/g, "<span class='$1'>$2</span>"],
-  [/\\begin\{center\}/g, "<div class='latex-center'>"],
-  [/\\end\{center\}/g, '</div>'],
-  [/\\begin\{tabularx\}\{(.+?)\}/g, "<table class='latex-tabularx' style='width: $1%;'>"],
-  [/\\end\{tabularx\}/g, '</table>'],
 ];
 
 const CUSTOM_COMMANDS: [string, string][] = [
@@ -64,7 +66,11 @@ function resolveImage(images: string[], identifier: string): string | null {
   return found ? `/storage/${found}` : null;
 }
 
-export function convertLatexToHtml(latex: string, images: string[] = []): string {
+export function convertLatexToHtml(
+  latex: string,
+  images: string[] = [],
+  variant: LatexVariant = 'exercise'
+): string {
   // 1. Nettoyer les espaces insécables
   let html = latex.replace(/\xc2\xa0/g, ' ');
 
@@ -116,6 +122,26 @@ export function convertLatexToHtml(latex: string, images: string[] = []): string
   // Remplacements de base (listes, sections, mise en page…)
   for (const [pattern, replacement] of BASE_REPLACEMENTS) {
     html = html.replace(pattern, replacement);
+  }
+
+  // Remplacements variant-dépendants
+  if (variant === 'problem') {
+    html = html.replace(/\\begin\{center\}/g, "<div class='latex latex-center'>");
+    html = html.replace(/\\end\{center\}/g, '</div>');
+    html = html.replace(
+      /\\begin\{tabularx\}\{(.+?)\}/g,
+      "<table class='latex-tabularx' style='width: $1%;'>"
+    );
+    html = html.replace(/\\end\{tabularx\}/g, '</table>');
+  } else {
+    // exercise (défaut), quiz, recap
+    html = html.replace(/\\begin\{center\}/g, "<div class='latex-center'>");
+    html = html.replace(/\\end\{center\}/g, '</div>');
+    html = html.replace(
+      /\\begin\{tabularx\}\{(.+?)\}/g,
+      "<span class='latex latex-tabularx' style='width: $1%;'>"
+    );
+    html = html.replace(/\\end\{tabularx\}/g, '</span>');
   }
 
   // Commandes custom (enmb, enm, itm…)

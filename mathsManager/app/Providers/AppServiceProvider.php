@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Models\PrivateExercise;
+use App\Models\TeacherTag;
 use App\Models\User;
 use App\Models\StudentGroup;
 use App\Policies\PrivateExercisePolicy;
 use App\Policies\StudentGroupPolicy;
 use App\Policies\TeacherStudentPolicy;
+use App\Policies\TeacherTagPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use View;
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(StudentGroup::class, StudentGroupPolicy::class);
         Gate::policy(User::class, TeacherStudentPolicy::class);
         Gate::policy(PrivateExercise::class, PrivateExercisePolicy::class);
+        Gate::policy(TeacherTag::class, TeacherTagPolicy::class);
 
         // Vérifier si les tables existent avant d'exécuter les requêtes
         try {
