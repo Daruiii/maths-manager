@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { Loader2, Trash2 } from 'lucide-react';
 import { PrivateExercise, TeacherTag } from '@/types/models';
-import { usePrivateExerciseForm } from '@/Hooks/Bureau/usePrivateExerciseForm';
+import { usePrivateExerciseForm } from '@/Hooks/PrivateExercise/usePrivateExerciseForm';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import PrivateExerciseForm from '@/Components/Features/PrivateExercise/PrivateExerciseForm';

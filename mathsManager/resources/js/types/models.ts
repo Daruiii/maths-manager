@@ -167,3 +167,23 @@ export interface DSPreviewItem {
 }
 
 export const DEFAULT_EXERCISE_MINUTES = 10;
+
+
+// ─── PrivateExercise form ─────────────────────────────────────────────────────
+
+export interface PrivateExerciseFormData {
+  type: 'basic' | 'problem';
+  name: string;
+  notes: string;
+  latex_statement: string;
+  latex_solution: string;
+  latex_clue: string;
+  difficulty: string;
+  time: string;
+  classe_id: string;
+  chapter_id: string;
+  subchapter_id: string;
+  tag_ids: number[];
+}
+
+export type LatexField = 'latex_statement' | 'latex_solution' | 'latex_clue';

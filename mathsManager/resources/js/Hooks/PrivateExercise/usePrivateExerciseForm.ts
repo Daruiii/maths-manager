@@ -1,26 +1,9 @@
 import { useState, useRef } from 'react';
 import { router } from '@inertiajs/react';
 import axios from 'axios';
-import { PrivateExercise, TeacherTag } from '@/types/models';
+import { PrivateExercise, TeacherTag, PrivateExerciseFormData, LatexField } from '@/types/models';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-export interface PrivateExerciseFormData {
-  type: 'basic' | 'problem';
-  name: string;
-  notes: string;
-  latex_statement: string;
-  latex_solution: string;
-  latex_clue: string;
-  difficulty: string;
-  time: string;
-  classe_id: string;
-  chapter_id: string;
-  subchapter_id: string;
-  tag_ids: number[];
-}
-
-export type LatexField = 'latex_statement' | 'latex_solution' | 'latex_clue';
+export type { PrivateExerciseFormData, LatexField };
 
 interface PendingImage {
   file: File;
@@ -72,6 +55,7 @@ export function usePrivateExerciseForm(exercise?: PrivateExercise | null) {
 
   // Images en attente (Create uniquement) : nom → { file, blobUrl }
   const [pendingImages, setPendingImages] = useState<Record<string, PendingImage>>({});
+  const pendingCountRef = useRef(0);
   const lastFocusedFieldRef = useRef<LatexField>('latex_statement');
 
   function set<K extends keyof PrivateExerciseFormData>(key: K, value: PrivateExerciseFormData[K]) {
@@ -88,8 +72,8 @@ export function usePrivateExerciseForm(exercise?: PrivateExercise | null) {
   );
 
   function addPendingImage(file: File) {
-    const index = Object.keys(pendingImages).length + 1;
-    const name = `img-${index}`;
+    pendingCountRef.current += 1;
+    const name = `img-${pendingCountRef.current}`;
     const blobUrl = URL.createObjectURL(file);
     setPendingImages((prev) => ({ ...prev, [name]: { file, blobUrl } }));
     // Auto-insert dans le champ LaTeX actif
@@ -225,6 +209,5 @@ export function usePrivateExerciseForm(exercise?: PrivateExercise | null) {
     pendingImageMap,
     addPendingImage,
     removePendingImage,
-    pendingImages,
   };
 }

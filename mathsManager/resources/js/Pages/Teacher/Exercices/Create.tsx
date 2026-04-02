@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { Loader2, Upload, X, Check, Copy } from 'lucide-react';
 import { TeacherTag } from '@/types/models';
-import { usePrivateExerciseForm } from '@/Hooks/Bureau/usePrivateExerciseForm';
+import { usePrivateExerciseForm } from '@/Hooks/PrivateExercise/usePrivateExerciseForm';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import PrivateExerciseForm from '@/Components/Features/PrivateExercise/PrivateExerciseForm';
@@ -33,7 +33,6 @@ export default function ExercicesCreate({
     pendingImageMap,
     addPendingImage,
     removePendingImage,
-    pendingImages,
   } = usePrivateExerciseForm();
   const [allTags, setAllTags] = useState(initialTags);
   const [copiedName, setCopiedName] = useState<string | null>(null);
@@ -97,9 +96,9 @@ export default function ExercicesCreate({
           <div className="p-4 bg-surface-color border border-border-color rounded-2xl space-y-3">
             <p className="text-xs font-comfortaa-bold text-text-color">Images</p>
 
-            {Object.keys(pendingImages).length > 0 && (
+            {Object.keys(pendingImageMap).length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {Object.entries(pendingImages).map(([name, { blobUrl }]) => (
+                {Object.entries(pendingImageMap).map(([name, blobUrl]) => (
                   <div
                     key={name}
                     className="relative group rounded-xl overflow-hidden border border-border-color"

@@ -1,7 +1,7 @@
 import { Tag, Timer } from 'lucide-react';
 import { TeacherTag } from '@/types/models';
 import { CatalogueClasse, CatalogueChapter, CatalogueSubchapter } from '@/types/api';
-import { PrivateExerciseFormData, LatexField } from '@/Hooks/Bureau/usePrivateExerciseForm';
+import { PrivateExerciseFormData, LatexField } from '@/types/models';
 import LatexPreviewField from '@/Components/Common/Form/LatexPreviewField';
 import DifficultyPicker from '@/Components/Common/Form/DifficultyPicker';
 import ClassificationCascade from '@/Components/Features/PrivateExercise/ClassificationCascade';
