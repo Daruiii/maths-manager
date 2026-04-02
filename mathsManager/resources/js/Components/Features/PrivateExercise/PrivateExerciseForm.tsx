@@ -19,7 +19,7 @@ interface Props {
   classes: CatalogueClasse[];
   chapters: CatalogueChapter[];
   subchapters: CatalogueSubchapter[];
-  imageUrls?: string[];
+  images?: Record<string, string>;
 }
 
 // ─── Type toggle ──────────────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ export default function ExerciseForm({
   classes,
   chapters,
   subchapters,
-  imageUrls = [],
+  images = {},
 }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
@@ -171,7 +171,7 @@ export default function ExerciseForm({
           onChange={(v) => set('latex_statement', v)}
           onFocus={() => setFocusedField('latex_statement')}
           placeholder="\text{Soit } f : x \mapsto x^2..."
-          images={imageUrls}
+          images={images}
           error={errors.latex_statement}
           rows={7}
         />
@@ -181,7 +181,7 @@ export default function ExerciseForm({
           onChange={(v) => set('latex_solution', v)}
           onFocus={() => setFocusedField('latex_solution')}
           placeholder="Solution LaTeX…"
-          images={imageUrls}
+          images={images}
           rows={6}
         />
         <LatexPreviewField

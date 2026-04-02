@@ -105,9 +105,13 @@ class PrivateExerciseController extends Controller
             $exercise->tags()->sync($tagIds);
         }
 
+        if ($request->wantsJson()) {
+            return response()->json($exercise);
+        }
+
         return redirect()
             ->route('teacher.exercices.edit', $exercise)
-            ->with('success', 'Exercice créé. Vous pouvez maintenant ajouter des images.');
+            ->with('success', 'Exercice créé.');
     }
 
     public function update(UpdatePrivateExerciseRequest $request, PrivateExercise $exercise)

@@ -22,12 +22,16 @@ function renderItemContent(item: PickableItem) {
   if (item.kind === 'problem') {
     if (item.statement) return <LegacyKatexHtmlBlock html={item.statement} />;
     if (item.latex_statement) {
-      const images = item.image_paths ? Object.values(item.image_paths) : [];
+      const images = item.image_paths
+        ? Object.fromEntries(Object.entries(item.image_paths).map(([k, v]) => [k, `/storage/${v}`]))
+        : {};
       return <LatexRenderer latex={item.latex_statement} images={images} />;
     }
   }
   if ((item.kind === 'exercise' || item.kind === 'private') && item.latex_statement) {
-    const images = item.image_paths ? Object.values(item.image_paths) : [];
+    const images = item.image_paths
+      ? Object.fromEntries(Object.entries(item.image_paths).map(([k, v]) => [k, `/storage/${v}`]))
+      : {};
     return <LatexRenderer latex={item.latex_statement} images={images} />;
   }
   return <p className="text-xs text-text-gray italic">Énoncé non disponible</p>;

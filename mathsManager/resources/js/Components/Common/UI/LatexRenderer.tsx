@@ -6,7 +6,8 @@ import { convertLatexToHtml } from '@/Utils/latexConverter';
 
 interface Props {
   latex: string;
-  images?: string[];
+  /** Map nom → URL complète (blob: pour pending, /storage/... pour sauvegardé) */
+  images?: Record<string, string>;
   className?: string;
 }
 
@@ -19,7 +20,7 @@ interface Props {
  * En gérant innerHTML dans useEffect (déclenché uniquement quand html change), le DOM
  * KaTeX persiste entre les re-renders du parent.
  */
-export default function LatexRenderer({ latex, images = [], className = '' }: Props) {
+export default function LatexRenderer({ latex, images = {}, className = '' }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const html = convertLatexToHtml(latex, images);
 

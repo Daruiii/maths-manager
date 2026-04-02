@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { Loader2, Upload, X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Check, Copy, Loader2, Upload, X } from 'lucide-react';
 import { PrivateExercise } from '@/types/models';
 
 interface Props {
@@ -23,8 +23,15 @@ export default function ExerciseImageSection({
   uploadError,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [copiedName, setCopiedName] = useState<string | null>(null);
   const imagePaths = exercise.image_paths ?? {};
   const imageEntries = Object.entries(imagePaths);
+
+  function copyLatex(name: string) {
+    navigator.clipboard.writeText(`\\graph{${name}}{0.5}{Description}`);
+    setCopiedName(name);
+    setTimeout(() => setCopiedName(null), 2000);
+  }
 
   return (
     <div className="space-y-3">
@@ -38,19 +45,31 @@ export default function ExerciseImageSection({
               className="relative group rounded-xl overflow-hidden border border-border-color"
             >
               <img src={`/storage/${path}`} alt={name} className="w-full h-24 object-cover" />
-              <button
-                type="button"
-                onClick={() => onDelete(exercise.id, name)}
-                className="absolute top-1.5 right-1.5 p-1 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error-color"
-              >
-                <X size={10} />
-              </button>
+
+              <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  type="button"
+                  onClick={() => copyLatex(name)}
+                  className="p-1 bg-black/60 text-white rounded-full hover:bg-teacher-color transition-colors"
+                  title="Copier le code LaTeX"
+                >
+                  {copiedName === name ? <Check size={10} /> : <Copy size={10} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(exercise.id, name)}
+                  className="p-1 bg-black/60 text-white rounded-full hover:bg-error-color transition-colors"
+                >
+                  <X size={10} />
+                </button>
+              </div>
+
               <div className="absolute bottom-0 inset-x-0 bg-black/50 px-2 py-1">
                 <p className="text-xxs text-white/80 truncate">{name}</p>
-                <p className="text-xxs text-white/50 font-mono">
+                <p className="text-xxs text-white/50 font-mono truncate">
                   \graph{'{'}
                   {name}
-                  {'}'}
+                  {'}{0.5}{…}'}
                 </p>
               </div>
             </div>
@@ -83,11 +102,9 @@ export default function ExerciseImageSection({
       </button>
 
       <p className="text-xxs text-text-gray/70 italic">
-        Après upload, le code{' '}
-        <span className="font-mono">
-          \graph{'{'}img-N{'}'}
-        </span>{' '}
-        est inséré automatiquement dans le champ LaTeX actif.
+        Hover sur une image → copier{' '}
+        <span className="font-mono">\graph{'{'}img-1{'}'}{'{'}0.5{'}'}{'{'}Description{'}'}</span>{' '}
+        dans le clipboard.
       </p>
     </div>
   );

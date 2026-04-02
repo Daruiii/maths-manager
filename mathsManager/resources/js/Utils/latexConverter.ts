@@ -53,22 +53,9 @@ const CUSTOM_COMMANDS: [string, string][] = [
   ['\\fitm', '</ul>'],
 ];
 
-/** Résout une image par son identifiant (nouveau format) ou par index (ancien format). */
-function resolveImage(images: string[], identifier: string): string | null {
-  // Chercher par nom de fichier (sans extension)
-  const found = images.find((p) => {
-    const name = p
-      .split('/')
-      .pop()
-      ?.replace(/\.[^.]+$/, '');
-    return name === identifier || p.includes(identifier);
-  });
-  return found ? `/storage/${found}` : null;
-}
-
 export function convertLatexToHtml(
   latex: string,
-  images: string[] = [],
+  images: Record<string, string> = {},
   variant: LatexVariant = 'exercise'
 ): string {
   // 1. Nettoyer les espaces insécables
@@ -101,7 +88,7 @@ export function convertLatexToHtml(
   html = html.replace(
     /\\graph\{([a-zA-Z0-9_-]+)\}\{([0-9.]+)\}\{(.*?)\}/g,
     (_, id, width, desc) => {
-      const src = resolveImage(images, id);
+      const src = images[id] ?? null;
       const w = parseFloat(width) * 100;
       if (src)
         return `<div class='latex-center'><img src='${src}' alt='${desc}' class='png' style='width:${w}%'></div>`;
@@ -110,12 +97,13 @@ export function convertLatexToHtml(
   );
 
   // \graph ancienne syntaxe : \graph{width}{description}  (width est numérique)
+  const imageValues = Object.values(images);
   let graphIndex = 0;
   html = html.replace(/\\graph\{([0-9.]+)\}\{(.*?)\}/g, (_, width, desc) => {
-    const imagePath = images[graphIndex++];
+    const src = imageValues[graphIndex++] ?? null;
     const w = parseFloat(width) * 100;
-    if (imagePath)
-      return `<div class='latex-center'><img src='/storage/${imagePath}' alt='${desc}' class='png' style='width:${w}%'></div>`;
+    if (src)
+      return `<div class='latex-center'><img src='${src}' alt='${desc}' class='png' style='width:${w}%'></div>`;
     return `<div class='latex-center latex-img-placeholder text-xs text-text-gray italic'>[Image : ${desc}]</div>`;
   });
 

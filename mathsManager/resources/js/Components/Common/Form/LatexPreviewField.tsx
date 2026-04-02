@@ -8,8 +8,8 @@ interface Props {
   onChange: (v: string) => void;
   onFocus?: () => void;
   placeholder?: string;
-  /** URLs des images uploadées (pour le rendu LaTeX) */
-  images?: string[];
+  /** Map nom → URL (blob: ou /storage/...) pour le rendu LaTeX */
+  images?: Record<string, string>;
   error?: string;
   rows?: number;
 }
@@ -24,7 +24,7 @@ export default function LatexPreviewField({
   onChange,
   onFocus,
   placeholder,
-  images = [],
+  images = {},
   error,
   rows = 5,
 }: Props) {
