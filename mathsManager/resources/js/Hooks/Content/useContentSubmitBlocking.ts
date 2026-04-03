@@ -6,6 +6,7 @@ interface Params {
   data: PrivateExerciseFormData;
   errors: Partial<Record<keyof PrivateExerciseFormData, string>>;
   images: Record<string, string>;
+  macros: Record<string, string>;
 }
 
 export function useContentSubmitBlocking() {
@@ -16,11 +17,12 @@ export function useContentSubmitBlocking() {
     setIsSubmitBlockedModalOpen(false);
   }
 
-  function guardBeforeSubmit({ data, errors, images }: Params): boolean {
+  function guardBeforeSubmit({ data, errors, images, macros }: Params): boolean {
     const issues = collectContentBlockingIssues({
       data,
       errors,
       images,
+      macros,
     });
 
     if (issues.length > 0) {

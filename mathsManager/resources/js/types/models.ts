@@ -22,6 +22,7 @@ export interface User {
   provider?: string | null;
 
   // Teacher Specific Fields
+  latex_macros?: Record<string, string> | null;
   bio?: string;
   location?: string;
   teaching_level?: string;

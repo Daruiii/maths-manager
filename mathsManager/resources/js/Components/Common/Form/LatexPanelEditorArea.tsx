@@ -2,6 +2,7 @@ import { EditorView } from '@codemirror/view';
 import CodeMirror from '@uiw/react-codemirror';
 import { ReactNode } from 'react';
 import { Extension } from '@codemirror/state';
+import { Sigma } from 'lucide-react';
 import { LatexField } from '@/types/models';
 import { LatexTabConfig, LATEX_SNIPPETS } from '@/Constants/latexEditor';
 import AiPanel from '@/Components/Common/Form/AiPanel';
@@ -15,6 +16,7 @@ interface Props {
   tab: LatexTabConfig;
   error?: string;
   images: Record<string, string>;
+  macros: Record<string, string>;
   activeTab: LatexField;
   setFocusedField: (field: LatexField) => void;
   setActiveTabValue: (value: string) => void;
@@ -28,6 +30,7 @@ interface Props {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   imageSlot?: ReactNode;
+  onManageMacros?: () => void;
 }
 
 export default function LatexPanelEditorArea({
@@ -37,6 +40,7 @@ export default function LatexPanelEditorArea({
   tab,
   error,
   images,
+  macros,
   activeTab,
   setFocusedField,
   setActiveTabValue,
@@ -50,6 +54,7 @@ export default function LatexPanelEditorArea({
   onDragLeave,
   onDrop,
   imageSlot,
+  onManageMacros,
 }: Props) {
   return (
     <>
@@ -64,18 +69,31 @@ export default function LatexPanelEditorArea({
         ) : (
           <>
             <div
-              className={`mb-2 flex flex-wrap items-center gap-1.5 ${mode === 'latex' ? 'block' : 'hidden'}`}
+              className={`mb-2 flex items-center justify-between gap-1.5 ${mode === 'latex' ? 'flex' : 'hidden'}`}
             >
-              {LATEX_SNIPPETS.map((snippet) => (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {LATEX_SNIPPETS.map((snippet) => (
+                  <button
+                    key={snippet.label}
+                    type="button"
+                    onClick={() => insertSnippet(snippet.value)}
+                    className="rounded-lg border border-border-color px-2 py-1 text-xxs text-text-gray transition-colors hover:border-teacher-color/50 hover:text-text-color"
+                  >
+                    {snippet.label}
+                  </button>
+                ))}
+              </div>
+              {onManageMacros && (
                 <button
-                  key={snippet.label}
                   type="button"
-                  onClick={() => insertSnippet(snippet.value)}
-                  className="rounded-lg border border-border-color px-2 py-1 text-xxs text-text-gray transition-colors hover:border-teacher-color/50 hover:text-text-color"
+                  onClick={onManageMacros}
+                  className="shrink-0 flex items-center gap-1 px-2.5 py-1 text-xxs font-comfortaa-bold rounded-lg border border-border-color text-text-gray transition-colors hover:border-teacher-color/60 hover:text-teacher-color"
+                  title="Gérer mes macros LaTeX"
                 >
-                  {snippet.label}
+                  <Sigma size={11} />
+                  Macros
                 </button>
-              ))}
+              )}
             </div>
 
             <div
@@ -114,7 +132,7 @@ export default function LatexPanelEditorArea({
               className={`${mode === 'preview' ? 'h-full' : 'hidden h-0'} overflow-y-auto custom-scrollbar p-2 text-sm font-cmu-serif`}
             >
               {value.trim() ? (
-                <LatexRenderer latex={value} images={images} />
+                <LatexRenderer latex={value} images={images} macros={macros} />
               ) : (
                 <p className="text-text-gray/50 italic text-xs">{tab.label} vide.</p>
               )}

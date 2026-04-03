@@ -107,6 +107,28 @@ class ProfileController extends Controller
     }
 
 
+    public function updateMacros(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'macros'   => ['nullable', 'array'],
+            'macros.*' => ['string', 'max:500'],
+        ]);
+
+        $macros = $request->input('macros', []);
+
+        // Keep only keys that look like LaTeX commands (\letters)
+        $sanitized = [];
+        foreach ($macros as $key => $definition) {
+            if (is_string($key) && preg_match('/^\\\\[a-zA-Z]+$/', $key)) {
+                $sanitized[$key] = $definition;
+            }
+        }
+
+        $request->user()->update(['latex_macros' => empty($sanitized) ? null : $sanitized]);
+
+        return Redirect::route('profile.edit')->with('success', 'Macros LaTeX mises à jour.');
+    }
+
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

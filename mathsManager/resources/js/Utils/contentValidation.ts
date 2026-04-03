@@ -11,6 +11,7 @@ interface ContentBlockingValidationParams {
   data: PrivateExerciseFormData;
   errors: Partial<Record<keyof PrivateExerciseFormData, string>>;
   images: Record<string, string>;
+  macros: Record<string, string>;
 }
 
 const LATEX_FIELD_LABELS: Record<LatexField, string> = {
@@ -38,6 +39,7 @@ export function collectContentBlockingIssues({
   data,
   errors,
   images,
+  macros,
 }: ContentBlockingValidationParams): ContentBlockingIssue[] {
   const issues: ContentBlockingIssue[] = [];
 
@@ -74,7 +76,7 @@ export function collectContentBlockingIssues({
       });
     }
 
-    const macroIssues = collectContentMacroIssues(data[field]);
+    const macroIssues = collectContentMacroIssues(data[field], macros);
     for (const macroIssue of macroIssues) {
       issues.push({
         key: `macro-${field}-${macroIssue.key}`,

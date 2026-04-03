@@ -1,5 +1,3 @@
-import { KATEX_MACROS } from '@/Utils/katex';
-
 export interface ContentMacroIssue {
   key: string;
   message: string;
@@ -8,13 +6,6 @@ export interface ContentMacroIssue {
 }
 
 const DISALLOWED_MACRO_DEFINITION_REGEX = /\\(newcommand|renewcommand|def)\b/g;
-
-const CUSTOM_MACROS_REQUIRED_ARGS = Object.entries(KATEX_MACROS)
-  .map(([macro, definition]) => ({
-    macro,
-    requiredArgs: getRequiredArgumentCount(definition),
-  }))
-  .filter((entry) => entry.requiredArgs > 0);
 
 function getRequiredArgumentCount(definition: string): number {
   const placeholders = definition.match(/#([1-9])/g);
@@ -54,7 +45,17 @@ function consumeBracedArgument(latex: string, from: number): number | null {
   return null;
 }
 
-export function collectContentMacroIssues(latex: string): ContentMacroIssue[] {
+/**
+ * Validate LaTeX content against a given set of macros.
+ *
+ * @param latex  - The LaTeX source to validate.
+ * @param macros - The macro definitions in scope (global or teacher-private).
+ *                 Use getMacrosForContent() from MacroRegistry to resolve the correct set.
+ */
+export function collectContentMacroIssues(
+  latex: string,
+  macros: Record<string, string>
+): ContentMacroIssue[] {
   const issues: ContentMacroIssue[] = [];
 
   for (const match of latex.matchAll(DISALLOWED_MACRO_DEFINITION_REGEX)) {
@@ -71,7 +72,11 @@ export function collectContentMacroIssues(latex: string): ContentMacroIssue[] {
     });
   }
 
-  for (const { macro, requiredArgs } of CUSTOM_MACROS_REQUIRED_ARGS) {
+  const customMacrosRequiredArgs = Object.entries(macros)
+    .map(([macro, definition]) => ({ macro, requiredArgs: getRequiredArgumentCount(definition) }))
+    .filter((entry) => entry.requiredArgs > 0);
+
+  for (const { macro, requiredArgs } of customMacrosRequiredArgs) {
     const usageRegex = new RegExp(`${escapeForRegex(macro)}(?![a-zA-Z])`, 'g');
 
     for (const usage of latex.matchAll(usageRegex)) {

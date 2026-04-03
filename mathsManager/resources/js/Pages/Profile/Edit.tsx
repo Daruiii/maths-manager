@@ -1,10 +1,11 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Link } from '@inertiajs/react';
-import { User, Lock, Trash2, GraduationCap, Shield, ArrowLeft } from 'lucide-react';
+import { User, Lock, Trash2, GraduationCap, Shield, ArrowLeft, Sigma } from 'lucide-react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import type { PageProps } from '@/types';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm';
 import UpdateTeacherInformationForm from '@/Pages/Profile/Partials/UpdateTeacherInformationForm';
+import UpdateTeacherMacrosForm from '@/Components/Features/Profile/UpdateTeacherMacrosForm';
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm';
 import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm';
 import Card from '@/Components/Common/UI/Card';
@@ -89,6 +90,22 @@ export default function Edit({ mustVerifyEmail }: ProfileProps) {
               <Lock className="w-4 h-4 mr-2" /> Modification désactivée
             </div>
           </div>
+        </Card>
+      ),
+    },
+    {
+      id: 'macros',
+      label: 'Macros LaTeX',
+      icon: Sigma,
+      show: canActAsTeacher,
+      activeClasses: 'bg-teacher-color/10 text-teacher-color border-teacher-color/30 shadow-sm',
+      panel: (
+        <Card
+          title="Macros LaTeX"
+          variant="teacher"
+          icon={<Sigma className="w-5 h-5" strokeWidth={2.5} />}
+        >
+          <UpdateTeacherMacrosForm />
         </Card>
       ),
     },

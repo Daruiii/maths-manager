@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { Loader2, Trash2 } from 'lucide-react';
+import { getMacrosForContent } from '@/Utils/MacroRegistry';
+import { PageProps } from '@/types';
 import { PrivateExercise, TeacherTag } from '@/types/models';
 import { usePrivateExerciseForm } from '@/Hooks/PrivateExercise/usePrivateExerciseForm';
 import { useContentSubmitBlocking } from '@/Hooks/Content/useContentSubmitBlocking';
@@ -50,6 +52,8 @@ export default function ExercicesEdit({
   );
   const { blockingIssues, isSubmitBlockedModalOpen, closeSubmitBlockedModal, guardBeforeSubmit } =
     useContentSubmitBlocking();
+  const { auth } = usePage<PageProps>().props;
+  const macros = getMacrosForContent('private-content', auth.user?.latex_macros);
 
   async function handleCreateTag(name: string, color?: string) {
     const tag = await createTag(name, color);
@@ -90,6 +94,7 @@ export default function ExercicesEdit({
       data,
       errors,
       images: imageMap,
+      macros,
     });
 
     if (!canSubmit) return;
@@ -139,6 +144,7 @@ export default function ExercicesEdit({
               chapters={chapters}
               subchapters={subchapters}
               images={imageMap}
+              macros={macros}
               imageSlot={
                 <ImageSection
                   exercise={exercise}

@@ -49,6 +49,7 @@ interface Props {
   chapters: CatalogueChapter[];
   subchapters: CatalogueSubchapter[];
   images?: Record<string, string>;
+  macros: Record<string, string>;
   imageSlot?: ReactNode;
 }
 
@@ -65,6 +66,7 @@ export default function PrivateExerciseForm({
   chapters,
   subchapters,
   images = {},
+  macros,
   imageSlot,
 }: Props) {
   const [mobileTab, setMobileTab] = useState<PrivateExerciseMobileTab>('latex');
@@ -100,6 +102,7 @@ export default function PrivateExerciseForm({
             errors={errors}
             setFocusedField={setFocusedField}
             images={images}
+            macros={macros}
             imageSlot={imageSlot}
           />
         </div>

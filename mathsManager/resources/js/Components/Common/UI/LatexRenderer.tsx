@@ -8,6 +8,8 @@ interface Props {
   latex: string;
   /** Map nom → URL complète (blob: pour pending, /storage/... pour sauvegardé) */
   images?: Record<string, string>;
+  /** KaTeX macros in scope — use getMacrosForContent() to resolve. Defaults to KATEX_MACROS. */
+  macros?: Record<string, string>;
   className?: string;
 }
 
@@ -20,7 +22,12 @@ interface Props {
  * En gérant innerHTML dans useEffect (déclenché uniquement quand html change), le DOM
  * KaTeX persiste entre les re-renders du parent.
  */
-export default function LatexRenderer({ latex, images = {}, className = '' }: Props) {
+export default function LatexRenderer({
+  latex,
+  images = {},
+  macros = KATEX_MACROS,
+  className = '',
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const html = convertLatexToHtml(latex, images);
 
@@ -29,10 +36,10 @@ export default function LatexRenderer({ latex, images = {}, className = '' }: Pr
     ref.current.innerHTML = html;
     renderMathInElement(ref.current, {
       delimiters: KATEX_DELIMITERS,
-      macros: KATEX_MACROS,
+      macros,
       throwOnError: false,
     });
-  }, [html]);
+  }, [html, macros]);
 
   return <div ref={ref} className={`latex-content ${className}`} />;
 }
