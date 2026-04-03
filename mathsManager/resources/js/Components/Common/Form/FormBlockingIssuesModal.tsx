@@ -1,10 +1,10 @@
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
-import { PrivateExerciseBlockingIssue } from '@/Utils/privateExerciseValidation';
+import { ContentBlockingIssue } from '@/Utils/contentValidation';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  issues: PrivateExerciseBlockingIssue[];
+  issues: ContentBlockingIssue[];
   title?: string;
   description?: string;
 }

@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { PrivateExerciseFormData } from '@/types/models';
-import {
-  collectPrivateExerciseBlockingIssues,
-  PrivateExerciseBlockingIssue,
-} from '@/Utils/privateExerciseValidation';
+import { collectContentBlockingIssues, ContentBlockingIssue } from '@/Utils/contentValidation';
 
 interface Params {
   data: PrivateExerciseFormData;
@@ -12,7 +9,7 @@ interface Params {
 }
 
 export function useContentSubmitBlocking() {
-  const [blockingIssues, setBlockingIssues] = useState<PrivateExerciseBlockingIssue[]>([]);
+  const [blockingIssues, setBlockingIssues] = useState<ContentBlockingIssue[]>([]);
   const [isSubmitBlockedModalOpen, setIsSubmitBlockedModalOpen] = useState(false);
 
   function closeSubmitBlockedModal() {
@@ -20,7 +17,7 @@ export function useContentSubmitBlocking() {
   }
 
   function guardBeforeSubmit({ data, errors, images }: Params): boolean {
-    const issues = collectPrivateExerciseBlockingIssues({
+    const issues = collectContentBlockingIssues({
       data,
       errors,
       images,

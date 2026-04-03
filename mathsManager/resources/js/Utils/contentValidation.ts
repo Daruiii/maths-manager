@@ -1,12 +1,13 @@
 import { LatexField, PrivateExerciseFormData } from '@/types/models';
+import { collectContentMacroIssues } from '@/Utils/contentMacroValidation';
 import { findMissingGraphReferences } from '@/Utils/latexInsertion';
 
-export interface PrivateExerciseBlockingIssue {
+export interface ContentBlockingIssue {
   key: string;
   message: string;
 }
 
-interface Params {
+interface ContentBlockingValidationParams {
   data: PrivateExerciseFormData;
   errors: Partial<Record<keyof PrivateExerciseFormData, string>>;
   images: Record<string, string>;
@@ -33,12 +34,12 @@ const FORM_FIELD_LABELS: Partial<Record<keyof PrivateExerciseFormData, string>> 
   tag_ids: 'Tags',
 };
 
-export function collectPrivateExerciseBlockingIssues({
+export function collectContentBlockingIssues({
   data,
   errors,
   images,
-}: Params): PrivateExerciseBlockingIssue[] {
-  const issues: PrivateExerciseBlockingIssue[] = [];
+}: ContentBlockingValidationParams): ContentBlockingIssue[] {
+  const issues: ContentBlockingIssue[] = [];
 
   if (!data.name.trim()) {
     issues.push({
@@ -70,6 +71,14 @@ export function collectPrivateExerciseBlockingIssues({
       issues.push({
         key: `missing-graph-${field}-${missing.id}-${missing.idStart}`,
         message: `${label} : image introuvable pour \\graph{${missing.id}}.`,
+      });
+    }
+
+    const macroIssues = collectContentMacroIssues(data[field]);
+    for (const macroIssue of macroIssues) {
+      issues.push({
+        key: `macro-${field}-${macroIssue.key}`,
+        message: `${label} : ${macroIssue.message}`,
       });
     }
   });
