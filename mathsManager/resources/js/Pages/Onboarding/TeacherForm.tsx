@@ -4,7 +4,7 @@ import Card from '@/Components/Common/UI/Card';
 import Button from '@/Components/Common/UI/Button';
 import TextInput from '@/Components/Common/Form/TextInput';
 import InputLabel from '@/Components/Common/Form/InputLabel';
-import SelectInput from '@/Components/Common/Form/SelectInput';
+import Select from '@/Components/Common/Form/Select';
 import TextAreaInput from '@/Components/Common/Form/TextAreaInput';
 import InputError from '@/Components/Common/Form/InputError';
 import CityAutocomplete from '@/Components/Features/Onboarding/CityAutocomplete';
@@ -44,36 +44,22 @@ export default function TeacherForm() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <InputLabel htmlFor="teaching_level" value="Niveau *" />
-                  <SelectInput
-                    id="teaching_level"
+                  <Select
                     value={data.teaching_level}
-                    onChange={(e) => setData('teaching_level', e.target.value)}
+                    onChange={(v) => setData('teaching_level', v)}
+                    options={[{ value: '', label: 'Sélectionner...' }, ...TEACHING_LEVELS]}
                     className="mt-1 w-full"
-                  >
-                    <option value="">Sélectionner...</option>
-                    {TEACHING_LEVELS.map(({ value, label }) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </SelectInput>
+                  />
                   <InputError message={errors.teaching_level} />
                 </div>
                 <div>
                   <InputLabel htmlFor="diploma" value="Diplôme *" />
-                  <SelectInput
-                    id="diploma"
+                  <Select
                     value={data.diploma}
-                    onChange={(e) => setData('diploma', e.target.value)}
+                    onChange={(v) => setData('diploma', v)}
+                    options={[{ value: '', label: 'Sélectionner...' }, ...DIPLOMAS]}
                     className="mt-1 w-full"
-                  >
-                    <option value="">Sélectionner...</option>
-                    {DIPLOMAS.map(({ value, label }) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </SelectInput>
+                  />
                   <InputError message={errors.diploma} />
                 </div>
               </div>

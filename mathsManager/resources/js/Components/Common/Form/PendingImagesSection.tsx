@@ -1,36 +1,27 @@
-import { useRef, useState } from 'react';
+import { RefObject } from 'react';
 import { Check, Copy, Image as ImageIcon, Plus, X } from 'lucide-react';
-import { PrivateExercise } from '@/types/models';
 import { useImageUploadDropZone } from '@/Hooks/UI/useImageUploadDropZone';
-import { buildGraphSnippet } from '@/Utils/latexInsertion';
 
 interface Props {
-  exercise: PrivateExercise;
-  onUpload: (file: File) => Promise<unknown>;
-  onDelete: (exerciseId: number, name: string) => Promise<void>;
-  uploading: boolean;
-  uploadError: string | null;
+  pendingImageMap: Record<string, string>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
+  copiedName: string | null;
+  onCopy: (name: string) => void;
+  onRemove: (name: string) => void;
+  onFileChange: (file: File) => void;
 }
 
-export default function ExerciseImageSection({
-  exercise,
-  onUpload,
-  onDelete,
-  uploading,
-  uploadError,
+export default function PendingImagesSection({
+  pendingImageMap,
+  fileInputRef,
+  copiedName,
+  onCopy,
+  onRemove,
+  onFileChange,
 }: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [copiedName, setCopiedName] = useState<string | null>(null);
   const { isUploadDragOver, handleUploadDragOver, handleUploadDragLeave, handleUploadDrop } =
-    useImageUploadDropZone({ onFileDrop: onUpload });
-  const imagePaths = exercise.image_paths ?? {};
-  const imageEntries = Object.entries(imagePaths);
-
-  function copyLatex(name: string) {
-    navigator.clipboard.writeText(buildGraphSnippet(name));
-    setCopiedName(name);
-    setTimeout(() => setCopiedName(null), 2000);
-  }
+    useImageUploadDropZone({ onFileDrop: onFileChange });
+  const entries = Object.entries(pendingImageMap);
 
   return (
     <div className="flex flex-col gap-1 px-3 py-2">
@@ -38,8 +29,6 @@ export default function ExerciseImageSection({
         <ImageIcon size={11} className="text-teacher-color" />
         <span>Images LaTeX — glissez/déposez ou cliquez sur +</span>
       </div>
-
-      {uploadError && <p className="text-[10px] text-error-color">{uploadError}</p>}
 
       <div
         className={[
@@ -50,7 +39,7 @@ export default function ExerciseImageSection({
         onDragLeave={handleUploadDragLeave}
         onDrop={handleUploadDrop}
       >
-        {imageEntries.map(([name, path]) => (
+        {entries.map(([name, blobUrl]) => (
           <div
             key={name}
             draggable
@@ -60,12 +49,12 @@ export default function ExerciseImageSection({
             }}
             className="relative group w-16 h-16 shrink-0 rounded-xl overflow-hidden border border-border-color"
           >
-            <img src={`/storage/${path}`} alt={name} className="w-full h-full object-cover" />
+            <img src={blobUrl} alt={name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
             <div className="absolute top-0.5 right-0.5 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 type="button"
-                onClick={() => copyLatex(name)}
+                onClick={() => onCopy(name)}
                 className="p-0.5 bg-black/60 text-white rounded hover:bg-teacher-color transition-colors"
                 title="Copier le code LaTeX"
               >
@@ -73,7 +62,7 @@ export default function ExerciseImageSection({
               </button>
               <button
                 type="button"
-                onClick={() => onDelete(exercise.id, name)}
+                onClick={() => onRemove(name)}
                 className="p-0.5 bg-black/60 text-white rounded hover:bg-error-color transition-colors"
               >
                 <X size={9} />
@@ -92,7 +81,7 @@ export default function ExerciseImageSection({
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
-            if (file) onUpload(file);
+            if (file) onFileChange(file);
             e.target.value = '';
           }}
         />
@@ -100,13 +89,10 @@ export default function ExerciseImageSection({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="w-16 h-16 shrink-0 flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border-color text-text-gray hover:border-teacher-color/50 hover:text-teacher-color/70 transition-colors disabled:opacity-50"
+          className="w-16 h-16 shrink-0 flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border-color text-text-gray hover:border-teacher-color/50 hover:text-teacher-color/70 transition-colors"
         >
-          <Plus size={16} strokeWidth={1.5} className={uploading ? 'animate-pulse' : ''} />
-          <span className="text-[9px] font-comfortaa leading-tight text-center">
-            {uploading ? 'Upload…' : 'Ajouter'}
-          </span>
+          <Plus size={16} strokeWidth={1.5} />
+          <span className="text-[9px] font-comfortaa leading-tight text-center">Ajouter</span>
         </button>
 
         {isUploadDragOver && (

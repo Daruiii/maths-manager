@@ -1,11 +1,15 @@
 import { useRef, useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
-import { Loader2, Upload, X, Check, Copy } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react';
 import { TeacherTag } from '@/types/models';
 import { usePrivateExerciseForm } from '@/Hooks/PrivateExercise/usePrivateExerciseForm';
+import { useContentSubmitBlocking } from '@/Hooks/Content/useContentSubmitBlocking';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
+import FormBlockingIssuesModal from '@/Components/Common/Form/FormBlockingIssuesModal';
 import PrivateExerciseForm from '@/Components/Features/PrivateExercise/PrivateExerciseForm';
+import PendingImagesSection from '@/Components/Common/Form/PendingImagesSection';
+import { buildGraphSnippet } from '@/Utils/latexInsertion';
 
 import { CatalogueClasse, CatalogueChapter, CatalogueSubchapter } from '@/types/api';
 
@@ -34,6 +38,8 @@ export default function ExercicesCreate({
     addPendingImage,
     removePendingImage,
   } = usePrivateExerciseForm();
+  const { blockingIssues, isSubmitBlockedModalOpen, closeSubmitBlockedModal, guardBeforeSubmit } =
+    useContentSubmitBlocking();
   const [allTags, setAllTags] = useState(initialTags);
   const [copiedName, setCopiedName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,133 +59,96 @@ export default function ExercicesCreate({
 
   function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
+
+    const canSubmit = guardBeforeSubmit({
+      data,
+      errors,
+      images: pendingImageMap,
+    });
+
+    if (!canSubmit) return;
+
     submit('teacher.exercices.store');
   }
 
   function copyLatex(name: string) {
-    navigator.clipboard.writeText(`\\graph{${name}}{0.5}{Description}`);
+    navigator.clipboard.writeText(buildGraphSnippet(name));
     setCopiedName(name);
     setTimeout(() => setCopiedName(null), 2000);
   }
 
   return (
-    <AppLayout>
+    <AppLayout hideFooter>
       <Head title="Nouvel exercice" />
 
-      <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <PageHeader
-          title="Nouvel exercice"
-          breadcrumbs={[
-            { label: 'Mon Bureau', href: route('teacher.bureau.index') },
-            { label: 'Exercices', href: route('teacher.exercices.index') },
-            { label: 'Nouveau' },
-          ]}
-        />
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <PrivateExerciseForm
-            data={data}
-            set={set}
-            errors={errors}
-            setFocusedField={setFocusedField}
-            allTags={allTags}
-            onCreateTag={handleCreateTag}
-            onUpdateTag={handleUpdateTag}
-            onDeleteTag={handleDeleteTag}
-            classes={classes}
-            chapters={chapters}
-            subchapters={subchapters}
-            images={pendingImageMap}
+      <div className="flex h-[calc(100vh-72px)] min-h-0 flex-col">
+        {/* Header */}
+        <div className="flex-shrink-0 px-4 pt-4 pb-2 max-w-screen-xl mx-auto w-full">
+          <PageHeader
+            title="Nouvel exercice"
+            breadcrumbs={[
+              { label: 'Mon Bureau', href: route('teacher.bureau.index') },
+              { label: 'Exercices', href: route('teacher.exercices.index') },
+              { label: 'Nouveau' },
+            ]}
           />
+        </div>
 
-          {/* Images en attente */}
-          <div className="p-4 bg-surface-color border border-border-color rounded-2xl space-y-3">
-            <p className="text-xs font-comfortaa-bold text-text-color">Images</p>
-
-            {Object.keys(pendingImageMap).length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {Object.entries(pendingImageMap).map(([name, blobUrl]) => (
-                  <div
-                    key={name}
-                    className="relative group rounded-xl overflow-hidden border border-border-color"
-                  >
-                    <img src={blobUrl} alt={name} className="w-full h-24 object-cover" />
-
-                    <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => copyLatex(name)}
-                        className="p-1 bg-black/60 text-white rounded-full hover:bg-teacher-color transition-colors"
-                        title="Copier le code LaTeX"
-                      >
-                        {copiedName === name ? <Check size={10} /> : <Copy size={10} />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removePendingImage(name)}
-                        className="p-1 bg-black/60 text-white rounded-full hover:bg-error-color transition-colors"
-                      >
-                        <X size={10} />
-                      </button>
-                    </div>
-
-                    <div className="absolute bottom-0 inset-x-0 bg-black/50 px-2 py-1">
-                      <p className="text-xxs text-white/80 truncate">{name}</p>
-                      <p className="text-xxs text-white/50 font-mono truncate">
-                        \graph{'{'}
-                        {name}
-                        {'}{0.5}{…}'}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) addPendingImage(file);
-                e.target.value = '';
-              }}
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto flex w-full max-w-screen-xl min-h-0 flex-1 flex-col overflow-hidden px-4"
+        >
+          {/* Form body */}
+          <div className="flex-1 min-h-0 overflow-y-auto pb-3">
+            <PrivateExerciseForm
+              data={data}
+              set={set}
+              errors={errors}
+              setFocusedField={setFocusedField}
+              allTags={allTags}
+              onCreateTag={handleCreateTag}
+              onUpdateTag={handleUpdateTag}
+              onDeleteTag={handleDeleteTag}
+              classes={classes}
+              chapters={chapters}
+              subchapters={subchapters}
+              images={pendingImageMap}
+              imageSlot={
+                <PendingImagesSection
+                  pendingImageMap={pendingImageMap}
+                  fileInputRef={fileInputRef}
+                  copiedName={copiedName}
+                  onCopy={copyLatex}
+                  onRemove={removePendingImage}
+                  onFileChange={addPendingImage}
+                />
+              }
             />
-
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-3 py-2 text-xs border border-dashed border-border-color rounded-xl text-text-gray hover:border-teacher-color hover:text-teacher-color transition-colors"
-            >
-              <Upload size={14} /> Ajouter une image
-            </button>
-
-            <p className="text-xxs text-text-gray/70 italic">
-              Les images seront uploadées à la création. Hover →{' '}
-              <span className="font-mono">\graph{'{'}img-1{'}'}{'{'}0.5{'}'}{'{'}Description{'}'}</span>
-            </p>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-border-color">
-            <Link
-              href={route('teacher.exercices.index')}
-              className="px-4 py-2 text-sm text-text-gray hover:text-text-color transition-colors"
-            >
-              Annuler
-            </Link>
-            <button
-              type="submit"
-              disabled={processing}
-              className="flex items-center gap-2 px-5 py-2.5 bg-teacher-color text-white text-sm font-comfortaa-bold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
-            >
-              {processing && <Loader2 size={14} className="animate-spin" />}
-              Créer l'exercice
-            </button>
+          {/* Action bar */}
+          <div className="shrink-0 border-t border-border-color px-1 py-4">
+            <div className="flex items-center justify-end">
+              <button
+                type="submit"
+                disabled={processing}
+                className="flex items-center gap-2 px-5 py-2 bg-teacher-color text-white text-sm font-comfortaa-bold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                {processing && <Loader2 size={14} className="animate-spin" />}
+                Créer l'exercice
+              </button>
+            </div>
           </div>
         </form>
       </div>
+
+      <FormBlockingIssuesModal
+        isOpen={isSubmitBlockedModalOpen}
+        onClose={closeSubmitBlockedModal}
+        issues={blockingIssues}
+        description="Corrigez ces points avant d'enregistrer l'exercice."
+      />
     </AppLayout>
   );
 }

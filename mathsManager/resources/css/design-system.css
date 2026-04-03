@@ -99,7 +99,7 @@
   --text-gray: 156 163 175;        /* gray-400 */
 
   /* Borders */
-  --border-color: 55 65 81;        /* gray-700 */
+   --border-color: 75 85 99;        /* gray-600 — plus lisible sur fonds dark */
 
   /* Brand — plus clair sur fond sombre */
   --tertiary-color: 96 165 250;    /* blue-400 */

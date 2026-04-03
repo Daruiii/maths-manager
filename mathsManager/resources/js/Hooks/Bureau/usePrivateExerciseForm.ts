@@ -1,9 +1,26 @@
 import { useState, useRef } from 'react';
 import { router } from '@inertiajs/react';
 import axios from 'axios';
-import { PrivateExercise, TeacherTag, PrivateExerciseFormData, LatexField } from '@/types/models';
+import { PrivateExercise, TeacherTag } from '@/types/models';
 
-export type { PrivateExerciseFormData, LatexField };
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface PrivateExerciseFormData {
+  type: 'basic' | 'problem';
+  name: string;
+  notes: string;
+  latex_statement: string;
+  latex_solution: string;
+  latex_clue: string;
+  difficulty: string;
+  time: string;
+  classe_id: string;
+  chapter_id: string;
+  subchapter_id: string;
+  tag_ids: number[];
+}
+
+export type LatexField = 'latex_statement' | 'latex_solution' | 'latex_clue';
 
 interface PendingImage {
   file: File;
@@ -76,6 +93,12 @@ export function usePrivateExerciseForm(exercise?: PrivateExercise | null) {
     const name = `img-${pendingCountRef.current}`;
     const blobUrl = URL.createObjectURL(file);
     setPendingImages((prev) => ({ ...prev, [name]: { file, blobUrl } }));
+    // Auto-insert dans le champ LaTeX actif
+    const field = lastFocusedFieldRef.current;
+    setData((prev) => ({
+      ...prev,
+      [field]: prev[field] + `\n\\graph{${name}}{0.5}{Description}`,
+    }));
   }
 
   function removePendingImage(name: string) {
@@ -158,6 +181,12 @@ export function usePrivateExerciseForm(exercise?: PrivateExercise | null) {
       const formData = new FormData();
       formData.append('image', file);
       const res = await axios.post(route('teacher.exercices.images.upload', exerciseId), formData);
+      const { name } = res.data as { name: string; url: string };
+      const field = lastFocusedFieldRef.current;
+      setData((prev) => ({
+        ...prev,
+        [field]: prev[field] + `\n\\graph{${name}}{0.5}{Description}`,
+      }));
       return res.data;
     } catch {
       setImageError("Erreur lors de l'upload.");

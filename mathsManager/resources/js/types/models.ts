@@ -168,7 +168,6 @@ export interface DSPreviewItem {
 
 export const DEFAULT_EXERCISE_MINUTES = 10;
 
-
 // ─── PrivateExercise form ─────────────────────────────────────────────────────
 
 export interface PrivateExerciseFormData {

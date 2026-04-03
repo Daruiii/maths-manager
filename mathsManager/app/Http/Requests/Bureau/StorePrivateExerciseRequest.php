@@ -17,7 +17,7 @@ class StorePrivateExerciseRequest extends FormRequest
             'type'             => 'required|in:basic,problem',
             'name'             => 'required|string|max:255',
             'notes'            => 'nullable|string|max:500',
-            'latex_statement'  => 'nullable|string',
+            'latex_statement'  => 'required|string',
             'latex_solution'   => 'nullable|string',
             'latex_clue'       => 'nullable|string',
             'difficulty'       => 'nullable|integer|min:1|max:5',
@@ -35,7 +35,8 @@ class StorePrivateExerciseRequest extends FormRequest
         return [
             'type.required'  => 'Le type est obligatoire.',
             'name.required'  => 'Le nom est obligatoire.',
-            'name.max'       => 'Le nom ne doit pas dépasser 255 caractères.',
+            'name.max'            => 'Le nom ne doit pas dépasser 255 caractères.',
+            'latex_statement.required' => "L'énoncé est obligatoire.",
             'difficulty.min' => 'La difficulté doit être entre 1 et 5.',
             'difficulty.max' => 'La difficulté doit être entre 1 et 5.',
             'time.min'       => 'La durée doit être d\'au moins 1 minute.',

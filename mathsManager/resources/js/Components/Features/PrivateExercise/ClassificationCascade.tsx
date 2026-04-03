@@ -1,5 +1,6 @@
 import { BookOpen, GraduationCap, Library } from 'lucide-react';
 import { CatalogueClasse, CatalogueChapter, CatalogueSubchapter } from '@/types/api';
+import Select from '@/Components/Common/Form/Select';
 
 interface Props {
   classes: CatalogueClasse[];
@@ -18,36 +19,33 @@ function CascadeSelect({
   icon: Icon,
   value,
   onChange,
-  children,
+  options,
+  searchable = false,
 }: {
   label: string;
   icon: React.ElementType;
   value: string;
   onChange: (v: string) => void;
-  children: React.ReactNode;
+  options: { value: string; label: string }[];
+  searchable?: boolean;
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="flex items-center gap-1 text-xs font-medium text-text-gray">
+    <div className="flex items-center gap-2">
+      <span className="flex items-center gap-1 text-xs text-text-gray whitespace-nowrap w-28 shrink-0">
         <Icon size={12} /> {label}
       </span>
-      <select
+      <Select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`text-xs px-2 py-1.5 rounded-lg border-2 bg-secondary-color transition-colors cursor-pointer ${
-          value ? 'border-teacher-color text-text-color' : 'border-border-color text-text-gray'
-        }`}
-      >
-        {children}
-      </select>
-    </label>
+        onChange={onChange}
+        options={options}
+        searchable={searchable}
+        size="sm"
+        className="flex-1"
+      />
+    </div>
   );
 }
 
-/**
- * Sélecteur de classification en 3 niveaux indépendants (classe → chapitre → sous-chapitre).
- * Chaque niveau est optionnel. La sélection d'un enfant auto-popule les parents manquants.
- */
 export default function ClassificationCascade({
   classes,
   chapters,
@@ -104,49 +102,46 @@ export default function ClassificationCascade({
     }
   }
 
+  const classeOptions = [
+    { value: '', label: 'Aucune' },
+    ...classes.map((c) => ({ value: String(c.id), label: c.name })),
+  ];
+
+  const chapterOptions = [
+    { value: '', label: 'Aucun' },
+    ...visibleChapters.map((c) => ({ value: String(c.id), label: c.title })),
+  ];
+
+  const subchapterOptions = [
+    { value: '', label: 'Aucun' },
+    ...visibleSubchapters.map((s) => ({ value: String(s.id), label: s.title })),
+  ];
+
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 gap-2">
       <CascadeSelect
         label="Classe"
         icon={GraduationCap}
         value={classeId}
         onChange={handleClasseChange}
-      >
-        <option value="">Aucune</option>
-        {classes.map((c) => (
-          <option key={c.id} value={String(c.id)}>
-            {c.name}
-          </option>
-        ))}
-      </CascadeSelect>
-
+        options={classeOptions}
+      />
       <CascadeSelect
         label="Chapitre"
         icon={BookOpen}
         value={chapterId}
         onChange={handleChapterChange}
-      >
-        <option value="">Aucun</option>
-        {visibleChapters.map((c) => (
-          <option key={c.id} value={String(c.id)}>
-            {c.title}
-          </option>
-        ))}
-      </CascadeSelect>
-
+        options={chapterOptions}
+        searchable
+      />
       <CascadeSelect
         label="Sous-chapitre"
         icon={Library}
         value={subchapterId}
         onChange={handleSubchapterChange}
-      >
-        <option value="">Aucun</option>
-        {visibleSubchapters.map((s) => (
-          <option key={s.id} value={String(s.id)}>
-            {s.title}
-          </option>
-        ))}
-      </CascadeSelect>
+        options={subchapterOptions}
+        searchable
+      />
     </div>
   );
 }

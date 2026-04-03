@@ -208,7 +208,7 @@ export default function TagSelector({
       <button
         type="button"
         onClick={() => setIsOpen((v) => !v)}
-        className="w-full min-h-[34px] flex flex-wrap items-center gap-1.5 px-2 py-1.5 bg-surface-color border border-border-color rounded-lg text-left hover:border-teacher-color/50 transition-colors"
+        className="w-full min-h-[34px] flex flex-wrap items-center gap-1.5 px-2 py-1.5 bg-surface-color border-2 border-border-color rounded-lg text-left hover:border-teacher-color/50 transition-colors"
       >
         {selectedTags.length === 0 ? (
           <span className="text-xs text-text-gray/50">Ajouter des tags…</span>
@@ -235,7 +235,7 @@ export default function TagSelector({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-30 mt-1 w-full bg-primary-color border border-border-color rounded-xl shadow-xl overflow-hidden">
+        <div className="absolute z-30 mt-1 w-full bg-surface-color border-2 border-border-color rounded-xl shadow-xl overflow-hidden">
           {/* Search */}
           <div className="px-2 pt-2 pb-1">
             <input
@@ -283,7 +283,14 @@ export default function TagSelector({
             ))}
 
             {filtered.length === 0 && !canCreate && (
-              <p className="text-xxs text-text-gray text-center py-3">Aucun tag trouvé</p>
+              <div className="flex flex-col items-center gap-1.5 py-4">
+                <Plus size={16} className="text-text-gray/40" />
+                <p className="text-xxs text-text-gray/60 text-center">
+                  {allTags.length === 0
+                    ? 'Tapez un nom pour créer votre premier tag'
+                    : 'Aucun tag trouvé'}
+                </p>
+              </div>
             )}
           </div>
 

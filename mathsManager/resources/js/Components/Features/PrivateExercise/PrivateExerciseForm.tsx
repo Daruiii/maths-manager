@@ -1,28 +1,13 @@
-import { Tag, Timer } from 'lucide-react';
+import { ReactNode, useState } from 'react';
 import { TeacherTag } from '@/types/models';
 import { CatalogueClasse, CatalogueChapter, CatalogueSubchapter } from '@/types/api';
 import { PrivateExerciseFormData, LatexField } from '@/types/models';
-import LatexPreviewField from '@/Components/Common/Form/LatexPreviewField';
-import DifficultyPicker from '@/Components/Common/Form/DifficultyPicker';
-import ClassificationCascade from '@/Components/Features/PrivateExercise/ClassificationCascade';
-import TagSelector from '@/Components/Features/PrivateExercise/TagSelector';
-
-interface Props {
-  data: PrivateExerciseFormData;
-  set: <K extends keyof PrivateExerciseFormData>(key: K, value: PrivateExerciseFormData[K]) => void;
-  errors: Partial<Record<keyof PrivateExerciseFormData, string>>;
-  setFocusedField: (field: LatexField) => void;
-  allTags: TeacherTag[];
-  onCreateTag: (name: string, color?: string) => Promise<TeacherTag | null>;
-  onUpdateTag?: (tag: TeacherTag) => void;
-  onDeleteTag?: (id: number) => void;
-  classes: CatalogueClasse[];
-  chapters: CatalogueChapter[];
-  subchapters: CatalogueSubchapter[];
-  images?: Record<string, string>;
-}
-
-// ─── Type toggle ──────────────────────────────────────────────────────────────
+import LatexPanel from '@/Components/Common/Form/LatexPanel';
+import PrivateExerciseMobileTabs, {
+  PrivateExerciseMobileTab,
+} from '@/Components/Features/PrivateExercise/PrivateExerciseMobileTabs';
+import PrivateExerciseSettingsColumn from '@/Components/Features/PrivateExercise/PrivateExerciseSettingsColumn';
+import PrivateExerciseMetaColumn from '@/Components/Features/PrivateExercise/PrivateExerciseMetaColumn';
 
 function TypeToggle({
   value,
@@ -51,13 +36,23 @@ function TypeToggle({
   );
 }
 
-// ─── Composant principal ──────────────────────────────────────────────────────
+interface Props {
+  data: PrivateExerciseFormData;
+  set: <K extends keyof PrivateExerciseFormData>(key: K, value: PrivateExerciseFormData[K]) => void;
+  errors: Partial<Record<keyof PrivateExerciseFormData, string>>;
+  setFocusedField: (field: LatexField) => void;
+  allTags: TeacherTag[];
+  onCreateTag: (name: string, color?: string) => Promise<TeacherTag | null>;
+  onUpdateTag?: (tag: TeacherTag) => void;
+  onDeleteTag?: (id: number) => void;
+  classes: CatalogueClasse[];
+  chapters: CatalogueChapter[];
+  subchapters: CatalogueSubchapter[];
+  images?: Record<string, string>;
+  imageSlot?: ReactNode;
+}
 
-/**
- * Formulaire d'exercice privé — réutilisé par Create et Edit.
- * 2 colonnes sur desktop : métadonnées à gauche, LaTeX à droite.
- */
-export default function ExerciseForm({
+export default function PrivateExerciseForm({
   data,
   set,
   errors,
@@ -70,128 +65,64 @@ export default function ExerciseForm({
   chapters,
   subchapters,
   images = {},
+  imageSlot,
 }: Props) {
+  const [mobileTab, setMobileTab] = useState<PrivateExerciseMobileTab>('latex');
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-      {/* ── Colonne gauche : métadonnées ── */}
-      <div className="space-y-5">
-        {/* Nom */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-comfortaa-bold text-text-color">Nom *</label>
-          <input
-            type="text"
-            value={data.name}
-            onChange={(e) => set('name', e.target.value)}
-            placeholder="Ex : Suites arithmétiques — TD1"
-            className={`w-full px-3 py-2 text-sm bg-surface-color border rounded-xl text-text-color placeholder:text-text-gray/50 outline-none focus:border-teacher-color transition-colors ${
-              errors.name ? 'border-error-color' : 'border-border-color'
-            }`}
-          />
-          {errors.name && <p className="text-xxs text-error-color">{errors.name}</p>}
-        </div>
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <PrivateExerciseMobileTabs mobileTab={mobileTab} onChange={setMobileTab} />
 
-        {/* Type */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-comfortaa-bold text-text-color">Type</label>
-          <TypeToggle value={data.type} onChange={(v) => set('type', v)} />
-        </div>
-
-        {/* Difficulté */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-comfortaa-bold text-text-color">Difficulté</label>
-          <DifficultyPicker value={data.difficulty} onChange={(v) => set('difficulty', v)} />
-        </div>
-
-        {/* Durée */}
-        <div className="space-y-1.5">
-          <label className="flex items-center gap-1 text-xs font-comfortaa-bold text-text-color">
-            <Timer size={12} /> Durée (min)
-          </label>
-          <input
-            type="number"
-            value={data.time}
-            onChange={(e) => set('time', e.target.value)}
-            placeholder="Ex : 20"
-            min={1}
-            max={300}
-            className="w-full px-3 py-2 text-sm bg-surface-color border border-border-color rounded-xl text-text-color placeholder:text-text-gray/50 outline-none focus:border-teacher-color transition-colors"
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 xl:grid-cols-[220px_minmax(0,1fr)_320px] xl:gap-4">
+        {/* ── Col gauche : Identité + Paramètres ── */}
+        <div
+          className={`order-2 min-h-0 space-y-3 xl:order-1 xl:pr-1 ${
+            mobileTab === 'settings' ? 'block' : 'hidden xl:block'
+          }`}
+        >
+          <PrivateExerciseSettingsColumn
+            data={data}
+            errors={errors}
+            set={set}
+            typeToggle={<TypeToggle value={data.type} onChange={(v) => set('type', v)} />}
           />
         </div>
 
-        {/* Notes */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-comfortaa-bold text-text-color">Notes personnelles</label>
-          <textarea
-            value={data.notes}
-            onChange={(e) => set('notes', e.target.value)}
-            placeholder="Source, remarques, contexte pédagogique…"
-            rows={3}
-            className="w-full px-3 py-2 text-sm bg-surface-color border border-border-color rounded-xl text-text-color placeholder:text-text-gray/50 outline-none focus:border-teacher-color transition-colors resize-none custom-scrollbar"
-          />
-          {errors.notes && <p className="text-xxs text-error-color">{errors.notes}</p>}
-        </div>
-
-        {/* Classification */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-comfortaa-bold text-text-color">Classification</label>
-          <ClassificationCascade
-            classes={classes}
-            chapters={chapters}
-            subchapters={subchapters}
-            classeId={data.classe_id}
-            chapterId={data.chapter_id}
-            subchapterId={data.subchapter_id}
-            onClasseChange={(v) => set('classe_id', v)}
-            onChapterChange={(v) => set('chapter_id', v)}
-            onSubchapterChange={(v) => set('subchapter_id', v)}
+        {/* ── Col centrale : Éditeur LaTeX + image strip ── */}
+        <div
+          className={`order-1 min-h-0 xl:order-2 ${
+            mobileTab === 'latex' ? 'block' : 'hidden xl:block'
+          }`}
+        >
+          <LatexPanel
+            data={data}
+            set={set}
+            errors={errors}
+            setFocusedField={setFocusedField}
+            images={images}
+            imageSlot={imageSlot}
           />
         </div>
 
-        {/* Tags */}
-        <div className="space-y-1.5">
-          <label className="flex items-center gap-1 text-xs font-comfortaa-bold text-text-color">
-            <Tag size={12} /> Tags
-          </label>
-          <TagSelector
+        {/* ── Col droite : Recherche + Notes ── */}
+        <div
+          className={`order-3 min-h-0 space-y-3 xl:pl-1 ${
+            mobileTab === 'meta' ? 'block' : 'hidden xl:block'
+          }`}
+        >
+          <PrivateExerciseMetaColumn
+            data={data}
+            errors={errors}
+            set={set}
             allTags={allTags}
-            selectedIds={data.tag_ids}
-            onChange={(ids: number[]) => set('tag_ids', ids)}
             onCreateTag={onCreateTag}
             onUpdateTag={onUpdateTag}
             onDeleteTag={onDeleteTag}
+            classes={classes}
+            chapters={chapters}
+            subchapters={subchapters}
           />
         </div>
-      </div>
-
-      {/* ── Colonne droite : LaTeX ── */}
-      <div className="space-y-5">
-        <LatexPreviewField
-          label="Énoncé"
-          value={data.latex_statement}
-          onChange={(v) => set('latex_statement', v)}
-          onFocus={() => setFocusedField('latex_statement')}
-          placeholder="\text{Soit } f : x \mapsto x^2..."
-          images={images}
-          error={errors.latex_statement}
-          rows={7}
-        />
-        <LatexPreviewField
-          label="Solution"
-          value={data.latex_solution}
-          onChange={(v) => set('latex_solution', v)}
-          onFocus={() => setFocusedField('latex_solution')}
-          placeholder="Solution LaTeX…"
-          images={images}
-          rows={6}
-        />
-        <LatexPreviewField
-          label="Indice"
-          value={data.latex_clue}
-          onChange={(v) => set('latex_clue', v)}
-          onFocus={() => setFocusedField('latex_clue')}
-          placeholder="Indice LaTeX…"
-          rows={4}
-        />
       </div>
     </div>
   );
