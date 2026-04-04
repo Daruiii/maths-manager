@@ -34,7 +34,7 @@ export default function Logo({ className = '', size = 'md', showBadge = true }: 
   };
 
   const isLocal = ['local', 'dev', 'develop', 'development'].includes(appEnv?.toLowerCase() || '');
-  const isPreprod = appEnv?.toLowerCase() === 'preprod';
+  const isPreprod = ['preprod', 'staging'].includes(appEnv?.toLowerCase() || '');
   const showEnvBadge = showBadge && (isLocal || isPreprod);
 
   return (

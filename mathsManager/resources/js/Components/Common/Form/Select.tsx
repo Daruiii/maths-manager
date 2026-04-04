@@ -163,7 +163,7 @@ export default function Select({
             className={
               selected && selected.value !== ''
                 ? 'flex-1 min-w-0 text-text-color truncate'
-                : 'flex-1 min-w-0 text-text-gray'
+                : 'flex-1 min-w-0 text-text-gray truncate'
             }
           >
             {selected ? selected.label : placeholder}

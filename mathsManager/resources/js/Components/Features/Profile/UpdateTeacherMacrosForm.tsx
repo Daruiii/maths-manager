@@ -45,8 +45,7 @@ export default function UpdateTeacherMacrosForm({ onSuccess }: Props) {
     setRows((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
   }
 
-  function handleSubmit(e: { preventDefault(): void }) {
-    e.preventDefault();
+  function handleSubmit() {
     const localErrors: Record<string, string> = {};
     const macros: Record<string, string> = {};
 
@@ -95,7 +94,7 @@ export default function UpdateTeacherMacrosForm({ onSuccess }: Props) {
         exercices privés.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="space-y-3">
         {rows.length > 0 && (
           <div className="flex gap-2 items-center mb-1">
             <div className="w-44 shrink-0">
@@ -149,11 +148,11 @@ export default function UpdateTeacherMacrosForm({ onSuccess }: Props) {
           <Button type="button" variant="ghost" size="sm" icon={Plus} onClick={addRow}>
             Ajouter une macro
           </Button>
-          <Button type="submit" variant="teacher" isLoading={processing}>
+          <Button type="button" variant="teacher" isLoading={processing} onClick={handleSubmit}>
             Enregistrer
           </Button>
         </div>
-      </form>
+      </div>
     </section>
   );
 }

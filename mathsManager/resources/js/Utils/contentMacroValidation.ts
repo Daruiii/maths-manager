@@ -3,6 +3,7 @@ export interface ContentMacroIssue {
   message: string;
   start: number;
   end: number;
+  blocking: boolean;
 }
 
 const DISALLOWED_MACRO_DEFINITION_REGEX = /\\(newcommand|renewcommand|def)\b/g;
@@ -69,6 +70,7 @@ export function collectContentMacroIssues(
         'Les définitions de macros (\\newcommand, \\renewcommand, \\def) ne sont pas autorisées ici.',
       start,
       end: start + command.length,
+      blocking: true,
     });
   }
 
@@ -99,6 +101,7 @@ export function collectContentMacroIssues(
           message: `La macro ${macro} attend ${requiredArgs} argument(s), mais ${providedArgs} ont été détecté(s).`,
           start,
           end: start + macro.length,
+          blocking: false,
         });
       }
     }

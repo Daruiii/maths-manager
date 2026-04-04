@@ -78,6 +78,7 @@ export function collectContentBlockingIssues({
 
     const macroIssues = collectContentMacroIssues(data[field], macros);
     for (const macroIssue of macroIssues) {
+      if (!macroIssue.blocking) continue;
       issues.push({
         key: `macro-${field}-${macroIssue.key}`,
         message: `${label} : ${macroIssue.message}`,

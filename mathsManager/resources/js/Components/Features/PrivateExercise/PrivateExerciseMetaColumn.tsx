@@ -34,7 +34,7 @@ export default function PrivateExerciseMetaColumn({
 }: Props) {
   return (
     <>
-      <div className="p-3 bg-surface-color border border-border-color rounded-2xl">
+      <div className="p-3 bg-surface-color border border-border-color rounded-2xl overflow-hidden">
         <InputLabel>
           <span className="flex items-center gap-1">
             <BookOpen size={11} /> Classification

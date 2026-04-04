@@ -30,7 +30,7 @@ function CascadeSelect({
   searchable?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 min-w-0 overflow-hidden">
       <span className="flex items-center gap-1 text-xs text-text-gray whitespace-nowrap w-28 shrink-0">
         <Icon size={12} /> {label}
       </span>
@@ -40,7 +40,7 @@ function CascadeSelect({
         options={options}
         searchable={searchable}
         size="sm"
-        className="flex-1"
+        className="flex-1 min-w-0"
       />
     </div>
   );
