@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Quizze;
 use App\Models\QuizzDetail;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -107,7 +108,7 @@ class ProfileController extends Controller
     }
 
 
-    public function updateMacros(Request $request): RedirectResponse
+    public function updateMacros(Request $request): RedirectResponse|JsonResponse
     {
         $request->validate([
             'macros'   => ['nullable', 'array'],
@@ -125,6 +126,10 @@ class ProfileController extends Controller
         }
 
         $request->user()->update(['latex_macros' => empty($sanitized) ? null : $sanitized]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Macros LaTeX mises à jour.']);
+        }
 
         return Redirect::route('profile.edit')->with('success', 'Macros LaTeX mises à jour.');
     }

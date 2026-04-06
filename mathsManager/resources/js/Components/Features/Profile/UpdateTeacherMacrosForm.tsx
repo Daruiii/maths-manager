@@ -71,10 +71,15 @@ export default function UpdateTeacherMacrosForm({ onSuccess }: Props) {
       axios
         .patch(route('profile.macros.update'), { macros })
         .then(() => {
-          router.reload({ only: ['auth'] });
-          onSuccess();
+          router.reload({
+            only: ['auth'],
+            onFinish: () => {
+              setProcessing(false);
+              onSuccess();
+            },
+          });
         })
-        .finally(() => setProcessing(false));
+        .catch(() => setProcessing(false));
     } else {
       router.patch(
         route('profile.macros.update'),
