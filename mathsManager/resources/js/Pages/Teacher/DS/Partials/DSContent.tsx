@@ -157,7 +157,9 @@ export default function DSContent({
                     <div className="flex items-baseline gap-2">
                       <span className="font-bold text-sm flex-shrink-0">Exercice {index + 1}.</span>
                     </div>
-                    <div className="text-sm leading-relaxed">{renderItemContent(item, teacherMacros)}</div>
+                    <div className="text-sm leading-relaxed">
+                      {renderItemContent(item, teacherMacros)}
+                    </div>
                   </div>
                 );
               })}

@@ -34,6 +34,7 @@ interface FilterSelectProps {
   onChange: (value: string) => void;
   options: FilterSelectOption[];
   disabled?: boolean;
+  searchable?: boolean;
 }
 
 export function FilterSelect({
@@ -43,7 +44,50 @@ export function FilterSelect({
   onChange,
   options,
   disabled,
+  searchable = false,
 }: FilterSelectProps) {
+  const inputClass = `text-xs px-2 py-1.5 rounded-lg border-2 bg-secondary-color transition-colors ${
+    value ? 'border-teacher-color text-text-color' : 'border-border-color text-text-gray'
+  }`;
+
+  if (searchable) {
+    const searchableOptions = options.filter((o) => o.value && !o.value.startsWith('__group__'));
+    const displayValue =
+      searchableOptions.find((o) => o.value === value)?.label.replace(/^[—–\s]+/, '') ?? '';
+    const listId = `filter-search-${label.toLowerCase().replace(/\s+/g, '-')}`;
+
+    return (
+      <label className="flex flex-col gap-1 text-xs text-text-gray">
+        <span className="flex items-center gap-1 text-xs font-medium text-text-gray">
+          <Icon size={12} /> {label}
+        </span>
+        <input
+          key={displayValue}
+          defaultValue={displayValue}
+          type="search"
+          list={listId}
+          disabled={disabled}
+          placeholder={options[0]?.label ?? '—'}
+          onChange={(e) => {
+            const text = e.target.value;
+            if (!text) {
+              onChange('');
+              return;
+            }
+            const match = searchableOptions.find((o) => o.label.replace(/^[—–\s]+/, '') === text);
+            if (match) onChange(match.value);
+          }}
+          className={`${inputClass} disabled:cursor-not-allowed disabled:opacity-60`}
+        />
+        <datalist id={listId}>
+          {searchableOptions.map((o) => (
+            <option key={o.value} value={o.label.replace(/^[—–\s]+/, '')} />
+          ))}
+        </datalist>
+      </label>
+    );
+  }
+
   return (
     <label className="flex flex-col gap-1 text-xs text-text-gray">
       <span className="flex items-center gap-1 text-xs font-medium text-text-gray">
@@ -53,9 +97,7 @@ export function FilterSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`text-xs px-2 py-1.5 rounded-lg border-2 bg-secondary-color transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${
-          value ? 'border-teacher-color text-text-color' : 'border-border-color text-text-gray'
-        }`}
+        className={`${inputClass} cursor-pointer disabled:cursor-not-allowed disabled:opacity-60`}
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>

@@ -122,11 +122,9 @@ export default function ExercisePickerFiltersPanel({
               label="Chapitre"
               icon={BookOpen}
               value={problemFilters.chapterId}
-              onChange={(value) => {
-                if (value.startsWith('__group__')) return;
-                onProblemChapterChange(value);
-              }}
+              onChange={onProblemChapterChange}
               options={chapterOptions}
+              searchable
             />
             <FilterSelect
               label="Difficulté"
@@ -182,16 +180,15 @@ export default function ExercisePickerFiltersPanel({
               value={exerciseFilters.chapterId}
               onChange={onExerciseChapterChange}
               options={exerciseChapterOptions}
+              searchable
             />
             <FilterSelect
               label="Sous-chapitre"
               icon={BookOpen}
               value={exerciseFilters.subchapterId}
-              onChange={(value) => {
-                if (value.startsWith('__group__')) return;
-                onExerciseSubchapterChange(value);
-              }}
+              onChange={onExerciseSubchapterChange}
               options={subchapterOptions}
+              searchable
             />
             <FilterSelect
               label="Difficulté"
@@ -245,21 +242,17 @@ export default function ExercisePickerFiltersPanel({
               label="Chapitre"
               icon={BookOpen}
               value={privateFilters.chapterId}
-              onChange={(value) => {
-                if (value.startsWith('__group__')) return;
-                onPrivateChapterChange(value);
-              }}
+              onChange={onPrivateChapterChange}
               options={exerciseChapterOptions}
+              searchable
             />
             <FilterSelect
               label="Sous-chapitre"
               icon={BookOpen}
               value={privateFilters.subchapterId}
-              onChange={(value) => {
-                if (value.startsWith('__group__')) return;
-                onPrivateSubchapterChange(value);
-              }}
+              onChange={onPrivateSubchapterChange}
               options={subchapterOptions}
+              searchable
             />
             {privateTags.length > 0 && (
               <FilterSelect
