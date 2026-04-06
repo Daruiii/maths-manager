@@ -19,13 +19,19 @@ interface Chip {
   onClear: () => void;
 }
 
+interface PickerTabDef {
+  key: string;
+  label: string;
+}
+
 interface Props {
-  tab: 'problems' | 'exercises' | 'private';
+  tab: string;
   currentTotal: number;
   searchValue: string;
   isFiltersOpen?: boolean;
   sort: ProblemSort | ExerciseSort | PrivateSort;
-  onTabChange: (tab: 'problems' | 'exercises' | 'private') => void;
+  tabs?: readonly PickerTabDef[];
+  onTabChange: (tab: string) => void;
   onSearchChange: (value: string) => void;
   onSearchClear: () => void;
   onToggleFilters: () => void;
@@ -41,6 +47,7 @@ export default function ExercisePickerHeader({
   searchValue,
   isFiltersOpen = false,
   sort,
+  tabs = PICKER_TABS,
   onTabChange,
   onSearchChange,
   onSearchClear,
@@ -81,7 +88,7 @@ export default function ExercisePickerHeader({
       {/* Tabs + compteur */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex gap-1.5">
-          {PICKER_TABS.map((item) => (
+          {tabs.map((item) => (
             <button
               key={item.key}
               type="button"

@@ -1,29 +1,20 @@
 import { useMemo } from 'react';
-import {
-  PickableItem,
-  MultipleChapter,
-  DSPreviewItem,
-  Subchapter,
-  TeacherTag,
-} from '@/types/models';
-import { useExercisePicker } from '@/Hooks/DS/useExercisePicker';
+import { PickableItem, DSPreviewItem, Subchapter, TeacherTag } from '@/types/models';
+import { useTDExercisePicker } from '@/Hooks/TD/useTDExercisePicker';
+import { TD_PICKER_TABS } from '@/Constants/td';
 import ExercisePickerFiltersPanel from '@/Components/Features/DS/ExercisePickerFiltersPanel';
 import ExercisePickerHeader from '@/Components/Features/DS/ExercisePickerHeader';
-import ExercisePickerList from './ExercisePickerList';
+import ExercisePickerList from '@/Pages/Teacher/DS/Partials/ExercisePickerList';
 
 interface Props {
-  multipleChapters: MultipleChapter[];
   subchapters: Subchapter[];
-  academies: string[];
   privateTags: TeacherTag[];
   previewItems: DSPreviewItem[];
   onToggle: (item: PickableItem) => void;
 }
 
 export default function ExercisePicker({
-  multipleChapters,
   subchapters,
-  academies,
   privateTags,
   previewItems,
   onToggle,
@@ -35,11 +26,10 @@ export default function ExercisePicker({
     setIsFiltersOpen,
     activeSearch,
     currentChips,
-    problemSearch,
     exerciseSearch,
     privateSearch,
     pickerOptions,
-  } = useExercisePicker({ multipleChapters, subchapters, privateTags });
+  } = useTDExercisePicker({ subchapters, privateTags });
 
   const selectedIds = useMemo(
     () => new Set(previewItems.map((i) => `${i.item.kind}-${i.item.id}`)),
@@ -50,6 +40,7 @@ export default function ExercisePicker({
     <div className="flex flex-col h-full overflow-hidden">
       <ExercisePickerHeader
         tab={tab}
+        tabs={TD_PICKER_TABS}
         currentTotal={activeSearch.total}
         searchValue={activeSearch.searchValue}
         onTabChange={setTab as (tab: string) => void}
@@ -65,29 +56,27 @@ export default function ExercisePicker({
       <ExercisePickerFiltersPanel
         tab={tab}
         isOpen={isFiltersOpen}
-        academies={academies}
-        problemFilters={problemSearch.filters}
+        academies={[]}
+        problemFilters={{ classId: '', chapterId: '', difficulty: '', year: '', academy: '' }}
         exerciseFilters={exerciseSearch.filters}
         privateFilters={privateSearch.filters}
+        showPrivateType={false}
         privateTags={privateTags}
-        classesForProblems={pickerOptions.classesForProblems}
+        classesForProblems={[]}
         classesForExercises={pickerOptions.classesForExercises}
-        chapterOptions={pickerOptions.chapterOptions}
+        chapterOptions={[]}
         exerciseChapterOptions={pickerOptions.exerciseChapterOptions}
         subchapterOptions={pickerOptions.subchapterOptions}
-        onProblemClassChange={(value) => {
-          problemSearch.setClassId(value);
-          problemSearch.setChapterId('');
-        }}
-        onProblemChapterChange={problemSearch.setChapterId}
-        onProblemDifficultyChange={problemSearch.setDifficulty}
-        onProblemYearChange={problemSearch.setYear}
-        onProblemAcademyChange={problemSearch.setAcademy}
+        onProblemClassChange={() => {}}
+        onProblemChapterChange={() => {}}
+        onProblemDifficultyChange={() => {}}
+        onProblemYearChange={() => {}}
+        onProblemAcademyChange={() => {}}
         onExerciseClassChange={exerciseSearch.setClassId}
         onExerciseChapterChange={exerciseSearch.setChapterId}
         onExerciseSubchapterChange={exerciseSearch.setSubchapterId}
         onExerciseDifficultyChange={exerciseSearch.setDifficulty}
-        onPrivateTypeChange={(v) => privateSearch.setType(v as 'basic' | 'problem' | '')}
+        onPrivateTypeChange={() => {}}
         onPrivateDifficultyChange={privateSearch.setDifficulty}
         onPrivateTagChange={privateSearch.setTagId}
         onPrivateClasseChange={privateSearch.setClasseId}

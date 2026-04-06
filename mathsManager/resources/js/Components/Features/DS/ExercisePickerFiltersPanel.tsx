@@ -23,7 +23,7 @@ interface ExerciseFilters {
 }
 
 interface PrivateFilters {
-  type: string;
+  type?: string;
   difficulty: string;
   tagId: string;
   classeId: string;
@@ -63,6 +63,7 @@ interface ExercisePickerFiltersPanelProps {
   onExerciseChapterChange: (value: string) => void;
   onExerciseSubchapterChange: (value: string) => void;
   onExerciseDifficultyChange: (value: string) => void;
+  showPrivateType?: boolean;
   onPrivateTypeChange: (value: string) => void;
   onPrivateDifficultyChange: (value: string) => void;
   onPrivateTagChange: (value: string) => void;
@@ -93,6 +94,7 @@ export default function ExercisePickerFiltersPanel({
   onExerciseChapterChange,
   onExerciseSubchapterChange,
   onExerciseDifficultyChange,
+  showPrivateType = true,
   onPrivateTypeChange,
   onPrivateDifficultyChange,
   onPrivateTagChange,
@@ -207,17 +209,19 @@ export default function ExercisePickerFiltersPanel({
       {tab === 'private' && (
         <FilterSection icon={Filter}>
           <div className="grid grid-cols-2 gap-2">
-            <FilterSelect
-              label="Type"
-              icon={Filter}
-              value={privateFilters.type}
-              onChange={onPrivateTypeChange}
-              options={[
-                { value: '', label: 'Tous types' },
-                { value: 'basic', label: 'Exercice' },
-                { value: 'problem', label: 'Problème' },
-              ]}
-            />
+            {showPrivateType && (
+              <FilterSelect
+                label="Type"
+                icon={Filter}
+                value={privateFilters.type ?? ''}
+                onChange={onPrivateTypeChange}
+                options={[
+                  { value: '', label: 'Tous types' },
+                  { value: 'basic', label: 'Exercice' },
+                  { value: 'problem', label: 'Problème' },
+                ]}
+              />
+            )}
             <FilterSelect
               label="Difficulté"
               icon={Layers}
