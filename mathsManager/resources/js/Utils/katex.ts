@@ -42,6 +42,7 @@ export const KATEX_DELIMITERS = [
 
 export const KATEX_MACROS: Record<string, string> = {
   // Ensembles
+  '\\TestGlobal': '\\text{Test global}',
   '\\R': '\\mathbb{R}',
   '\\Z': '\\mathbb{Z}',
   '\\N': '\\mathbb{N}',

@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { BookOpen } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
 import { DSPreviewItem, DEFAULT_EXERCISE_MINUTES, PickableItem } from '@/types/models';
 import { DS_DEFAULT_TITLE, DS_DEFAULT_LEVEL, DS_DEFAULT_INSTRUCTIONS } from '@/Constants/ds';
+import { getMacrosForContent } from '@/Utils/MacroRegistry';
+import { PageProps } from '@/types';
 import LatexRenderer from '@/Components/Common/UI/LatexRenderer';
 import EmptyState from '@/Components/Common/UI/EmptyState';
 import LegacyKatexHtmlBlock from '@/Components/Common/UI/LegacyKatexHtmlBlock';
@@ -18,7 +21,7 @@ function formatTime(totalMinutes: number): string {
   return `${h}h${String(m).padStart(2, '0')}`;
 }
 
-function renderItemContent(item: PickableItem) {
+function renderItemContent(item: PickableItem, teacherMacros: Record<string, string>) {
   if (item.kind === 'problem') {
     if (item.statement) return <LegacyKatexHtmlBlock html={item.statement} />;
     if (item.latex_statement) {
@@ -32,7 +35,8 @@ function renderItemContent(item: PickableItem) {
     const images = item.image_paths
       ? Object.fromEntries(Object.entries(item.image_paths).map(([k, v]) => [k, `/storage/${v}`]))
       : {};
-    return <LatexRenderer latex={item.latex_statement} images={images} />;
+    const macros = item.kind === 'private' ? teacherMacros : undefined;
+    return <LatexRenderer latex={item.latex_statement} images={images} macros={macros} />;
   }
   return <p className="text-xs text-text-gray italic">Énoncé non disponible</p>;
 }
@@ -56,6 +60,8 @@ export default function DSContent({
   onLevelChange,
   onInstructionsChange,
 }: Props) {
+  const { auth } = usePage<PageProps>().props;
+  const teacherMacros = getMacrosForContent('private-content', auth.user?.latex_macros);
   const [editingField, setEditingField] = useState<EditingField>(null);
 
   const totalMinutes = items.reduce((sum, i) => {
@@ -151,7 +157,7 @@ export default function DSContent({
                     <div className="flex items-baseline gap-2">
                       <span className="font-bold text-sm flex-shrink-0">Exercice {index + 1}.</span>
                     </div>
-                    <div className="text-sm leading-relaxed">{renderItemContent(item)}</div>
+                    <div className="text-sm leading-relaxed">{renderItemContent(item, teacherMacros)}</div>
                   </div>
                 );
               })}

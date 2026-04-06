@@ -10,7 +10,13 @@ interface Props {
   onRemove: (name: string) => void;
   onFileChange: (file: File) => void;
 }
-
+/**
+ * PendingImagesSection — section de gestion des images en attente d'insertion dans le LaTeX.
+ *
+ * Affiche les images récemment uploadées (blob URLs) avec options pour copier le code LaTeX ou supprimer l'image.
+ * Permet d'ajouter de nouvelles images via glisser-déposer ou sélection de fichier.
+ *
+ */
 export default function PendingImagesSection({
   pendingImageMap,
   fileInputRef,
