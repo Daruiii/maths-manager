@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import InputLabel from '@/Components/Common/Form/InputLabel';
 import TextInput from '@/Components/Common/Form/TextInput';
+import PasswordInput from '@/Components/Common/Form/PasswordInput';
 import Checkbox from '@/Components/Common/Form/Checkbox';
 import Button from '@/Components/Common/UI/Button';
 import GoogleButton from '@/Components/Features/Auth/GoogleButton';
@@ -68,9 +69,8 @@ export default function Login({ canResetPassword, redirect }: Props) {
 
           <div>
             <InputLabel htmlFor="password" value="Mot de passe" />
-            <TextInput
+            <PasswordInput
               id="password"
-              type="password"
               name="password"
               value={data.password}
               className="mt-1 block w-full"

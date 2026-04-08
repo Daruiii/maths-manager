@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import InputLabel from '@/Components/Common/Form/InputLabel';
 import TextInput from '@/Components/Common/Form/TextInput';
+import PasswordInput from '@/Components/Common/Form/PasswordInput';
 import Button from '@/Components/Common/UI/Button';
 import AvatarInput from '@/Components/Common/Avatar/AvatarInput';
 
@@ -113,9 +114,8 @@ export default function Register({ redirectUrl }: { redirectUrl?: string }) {
 
             <div>
               <InputLabel htmlFor="password" value="Mot de passe" />
-              <TextInput
+              <PasswordInput
                 id="password"
-                type="password"
                 name="password"
                 value={data.password}
                 className="mt-1 block w-full"
@@ -130,9 +130,8 @@ export default function Register({ redirectUrl }: { redirectUrl?: string }) {
 
             <div>
               <InputLabel htmlFor="password_confirmation" value="Confirmation du mot de passe" />
-              <TextInput
+              <PasswordInput
                 id="password_confirmation"
-                type="password"
                 name="password_confirmation"
                 value={data.password_confirmation}
                 className="mt-1 block w-full"

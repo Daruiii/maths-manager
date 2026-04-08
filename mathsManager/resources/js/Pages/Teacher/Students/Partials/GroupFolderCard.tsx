@@ -83,9 +83,12 @@ export default function GroupFolderCard({ group }: Props) {
           <IconButton
             icon={FileText}
             variant="bordered"
-            disabled
-            title="Fiche groupe - Bientôt disponible"
-            className="opacity-40 cursor-not-allowed"
+            accentColor="teacher"
+            onClick={(e) => {
+              e.preventDefault();
+              router.visit(route('teacher.td.create', { group: group.id }));
+            }}
+            title="Créer un TD pour ce groupe"
           />
         </div>
       </div>

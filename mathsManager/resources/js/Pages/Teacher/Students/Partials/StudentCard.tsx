@@ -84,9 +84,12 @@ export default function StudentCard({ student, groups, showGroupBadge = true }: 
           <IconButton
             icon={FileText}
             variant="bordered"
-            disabled
-            title="Fiche - Bientôt disponible"
-            className="opacity-40 cursor-not-allowed"
+            accentColor="teacher"
+            onClick={(e) => {
+              e.preventDefault();
+              router.visit(route('teacher.td.create', { student: student.id }));
+            }}
+            title="Créer un TD"
           />
         </div>
       </UserCard>

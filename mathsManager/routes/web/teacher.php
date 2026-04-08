@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Teacher\BureauController;
 use App\Http\Controllers\Teacher\DSBuilderController;
+use App\Http\Controllers\Teacher\TdBuilderController;
 use App\Http\Controllers\Teacher\PrivateExerciseController;
 use App\Http\Controllers\Teacher\TeacherGroupController;
 use App\Http\Controllers\Teacher\TeacherInvitationController;
@@ -54,6 +55,14 @@ Route::middleware(['auth', IsTeacher::class])
         Route::get('/ds/builder/problems', [DSBuilderController::class, 'searchProblems'])->name('ds.builder.problems');
         Route::get('/ds/builder/exercises', [DSBuilderController::class, 'searchExercises'])->name('ds.builder.exercises');
         Route::get('/ds/builder/private', [DSBuilderController::class, 'searchPrivate'])->name('ds.builder.private');
+
+        // TD Builder
+        Route::get('/td/create', [TdBuilderController::class, 'create'])->name('td.create');
+        Route::post('/td/assign', [TdBuilderController::class, 'assign'])->name('td.assign');
+
+        // TD Builder — API search (JSON)
+        Route::get('/td/builder/exercises', [TdBuilderController::class, 'searchExercises'])->name('td.builder.exercises');
+        Route::get('/td/builder/private', [TdBuilderController::class, 'searchPrivate'])->name('td.builder.private');
     });
 
 // ─── Join via invitation (public preview / auth for accept) ───────────────────

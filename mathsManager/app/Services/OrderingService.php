@@ -37,7 +37,8 @@ class OrderingService
                         // Assigner l'ordre global aux exercices VISIBLES uniquement
                         $exercises = $subchapter->exercises()
                             ->where('is_hidden', false)
-                            ->orderBy('order')
+                            ->orderBy('difficulty', 'asc')
+                            ->orderBy('order', 'asc')
                             ->get();
                         
                         foreach ($exercises as $exercise) {

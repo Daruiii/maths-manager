@@ -69,6 +69,15 @@ export default {
         xl: ['1.25rem', { lineHeight: '1.75rem' }], // 20px — titres principaux
         '2xl': ['1.5rem', { lineHeight: '2rem' }], // 24px — titres principaux
       },
+      keyframes: {
+        slideInRight: {
+          '0%': { opacity: '0', transform: 'translateX(12px) scale(0.95)' },
+          '100%': { opacity: '1', transform: 'translateX(0) scale(1)' },
+        },
+      },
+      animation: {
+        slideInRight: 'slideInRight 0.18s ease both',
+      },
     },
   },
 

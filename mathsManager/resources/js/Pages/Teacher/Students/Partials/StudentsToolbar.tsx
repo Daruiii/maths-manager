@@ -22,7 +22,7 @@ export default function StudentsToolbar({ search, onSearchChange, onNewGroup }: 
           <button
             disabled
             title="Bientôt disponible"
-            className="flex items-center gap-1.5 text-sm text-text-gray border border-border-color rounded-xl px-3 py-2 opacity-50 cursor-not-allowed"
+            className="flex items-center justify-center h-10 w-10 text-sm text-text-gray border border-border-color rounded-xl opacity-50 cursor-not-allowed"
           >
             <Filter size={16} />
           </button>
@@ -31,15 +31,21 @@ export default function StudentsToolbar({ search, onSearchChange, onNewGroup }: 
           <button
             disabled
             title="Bientôt disponible"
-            className="flex items-center gap-1.5 text-sm text-text-gray border border-border-color rounded-xl px-3 py-2 opacity-50 cursor-not-allowed"
+            className="flex items-center justify-center h-10 w-10 text-sm text-text-gray border border-border-color rounded-xl opacity-50 cursor-not-allowed"
           >
             <ArrowUpDown size={16} />
           </button>
         }
       />
       {onNewGroup && (
-        <Button variant="secondary" icon={FolderPlus} iconSize={18} onClick={onNewGroup}>
-          <span className="sm:inline">Nouveau groupe</span>
+        <Button
+          variant="secondary"
+          icon={FolderPlus}
+          iconSize={18}
+          onClick={onNewGroup}
+          className="h-10 px-4 py-0 shrink-0"
+        >
+          <span className="sm:inline font-medium">Nouveau groupe</span>
         </Button>
       )}
     </div>

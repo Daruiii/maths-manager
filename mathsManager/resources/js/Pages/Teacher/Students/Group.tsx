@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import StatusCard from '@/Components/Common/UI/StatusCard';
@@ -45,13 +46,12 @@ export default function Group({ group, students, groups }: Props) {
                 >
                   <BookOpen size={16} /> DS groupe
                 </a>
-                <button
-                  disabled
-                  title="Bientôt disponible"
-                  className="flex items-center gap-1.5 text-sm text-text-gray border border-border-color rounded-xl px-3 py-2 opacity-50 cursor-not-allowed"
+                <Link
+                  href={route('teacher.td.create', { group: group.id })}
+                  className="flex items-center gap-1.5 text-sm text-teacher-color border border-teacher-color/40 bg-teacher-color/5 hover:bg-teacher-color/10 rounded-xl px-3 py-2 transition-colors"
                 >
                   <FileText size={16} /> Fiche groupe
-                </button>
+                </Link>
               </div>
             }
           />

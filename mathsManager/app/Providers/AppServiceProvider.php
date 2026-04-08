@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\Exercise;
+use App\Models\Problem;
 use App\Models\PrivateExercise;
 use App\Models\TeacherTag;
 use App\Models\User;
 use App\Models\StudentGroup;
+use App\Observers\ExerciseObserver;
+use App\Observers\ProblemObserver;
+use App\Observers\PrivateExerciseObserver;
 use App\Policies\PrivateExercisePolicy;
 use App\Policies\StudentGroupPolicy;
 use App\Policies\TeacherStudentPolicy;
@@ -15,7 +20,6 @@ use Illuminate\Support\ServiceProvider;
 use View;
 use App\Models\Classe;
 use App\Models\DS;
-use App\Models\Td;
 use App\Models\Content;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,6 +37,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ─── Observers ─────────────────────────────────────────────────────────
+        PrivateExercise::observe(PrivateExerciseObserver::class);
+        Exercise::observe(ExerciseObserver::class);
+        Problem::observe(ProblemObserver::class);
+
         // ─── Policies ──────────────────────────────────────────────────────────
         Gate::policy(StudentGroup::class, StudentGroupPolicy::class);
         Gate::policy(User::class, TeacherStudentPolicy::class);
@@ -67,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
                         // Compter seulement si l'utilisateur est connecté
                         if (auth()->check() && auth()->id()) {
                             $dsNotStarted = DS::where('user_id', auth()->id())->where('status', 'not_started')->count();
-                            $tdNotStarted = Td::where('user_id', auth()->id())->where('status', 'not_started')->count();
+                            $tdNotStarted = \App\Models\Td::where('user_id', auth()->id())->where('correction_unlocked', false)->count();
                         }
                     } catch (\Exception $e) {
                         // Ignorer les erreurs et garder les valeurs par défaut

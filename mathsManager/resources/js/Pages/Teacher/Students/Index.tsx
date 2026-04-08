@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { route } from 'ziggy-js';
-import { BookOpen, PenLine, UserPlus } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import StatusCard from '@/Components/Common/UI/StatusCard';
@@ -54,18 +52,6 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
             breadcrumbs={[{ label: 'Mes Élèves' }]}
             action={
               <div className="flex items-center gap-2">
-                <Link
-                  href={route('teacher.ds.create')}
-                  className="flex items-center gap-1.5 text-sm text-teacher-color border border-teacher-color/40 bg-teacher-color/5 hover:bg-teacher-color/10 rounded-xl px-3 py-2 transition-colors"
-                >
-                  <PenLine size={15} /> Créer un DS
-                </Link>
-                <Link
-                  href={route('teacher.td.create')}
-                  className="flex items-center gap-1.5 text-sm text-teacher-color border border-teacher-color/40 bg-teacher-color/5 hover:bg-teacher-color/10 rounded-xl px-3 py-2 transition-colors"
-                >
-                  <BookOpen size={15} /> Créer un TD
-                </Link>
                 <InvitationLinkCompact
                   invitation={invitation}
                   onConfigure={() => setIsInviteOpen(true)}

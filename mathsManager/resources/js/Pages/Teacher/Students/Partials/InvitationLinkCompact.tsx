@@ -34,36 +34,36 @@ export default function InvitationLinkCompact({ invitation, onConfigure }: Props
   const progress = (invitation.current_uses / invitation.max_uses) * 100;
 
   return (
-    <div className="flex items-end gap-2 min-w-0">
-      <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="text-xxs text-text-gray/60 font-medium tracking-wide px-1">
-          Lien d'invitation
+    <div className="flex items-center gap-2 min-w-0">
+      <button
+        onClick={handleCopy}
+        className="group relative flex items-center gap-2 border border-border-color rounded-xl px-3 py-2 overflow-hidden cursor-pointer min-w-0 outline-none focus-visible:ring-2 focus-visible:ring-teacher-color/50"
+        title="Copier le lien d'invitation"
+      >
+        <div
+          className="absolute inset-0 bg-teacher-color/15 transition-all"
+          style={{ width: `${progress}%` }}
+        />
+        <div className="absolute inset-0 bg-surface-color opacity-0 group-hover:opacity-100 transition-opacity" />
+        <Link
+          size={14}
+          className="relative text-text-gray group-hover:text-teacher-color transition-colors shrink-0"
+        />
+        <span className="relative text-sm text-text-color font-mono truncate min-w-0">
+          {inviteUrl}
         </span>
-        <button
-          onClick={handleCopy}
-          className="group relative flex items-center gap-2 border border-border-color rounded-xl px-3 py-2 overflow-hidden cursor-pointer min-w-0"
-        >
-          <div
-            className="absolute inset-0 bg-teacher-color/15 transition-all"
-            style={{ width: `${progress}%` }}
+        <span className="relative text-xs text-teacher-color font-bold shrink-0 bg-teacher-color/10 px-1.5 py-0.5 rounded-md">
+          {invitation.current_uses}/{invitation.max_uses}
+        </span>
+        {copied ? (
+          <Check size={14} className="relative text-success-color shrink-0" />
+        ) : (
+          <Copy
+            size={14}
+            className="relative text-text-gray group-hover:text-text-color transition-colors shrink-0"
           />
-          <div className="absolute inset-0 bg-surface-color opacity-0 group-hover:opacity-100 transition-opacity" />
-          <span className="relative text-xs text-text-color font-mono truncate min-w-0">
-            {inviteUrl}
-          </span>
-          <span className="relative text-xxs text-teacher-color font-bold shrink-0">
-            {invitation.current_uses}/{invitation.max_uses}
-          </span>
-          {copied ? (
-            <Check size={14} className="relative text-success-color shrink-0" />
-          ) : (
-            <Copy
-              size={14}
-              className="relative text-text-gray group-hover:text-text-color transition-colors shrink-0"
-            />
-          )}
-        </button>
-      </div>
+        )}
+      </button>
 
       <button
         onClick={onConfigure}

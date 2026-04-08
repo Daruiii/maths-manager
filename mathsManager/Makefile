@@ -26,6 +26,7 @@ help:
 	@echo "  sync-images  - Synchroniser les images vers la production"
 	@echo "  fetch-images - Récupérer les images depuis la production"
 	@echo "  export-prod-to-sample - Exporter la base prod → sample local"
+	@echo "  export-preprod-to-sample - Exporter la base preprod → sample local"
 	@echo "  import-sample-local - Importer le sample → base locale"
 	@echo "  deploy-sample-to-preprod - Déployer le sample → preprod"
 	@echo "  clean        - Nettoyer les caches"
@@ -212,6 +213,17 @@ export-prod-to-sample:
 	@echo "🧹 Nettoyage du serveur..."
 	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f temp-dump.sql.gz'
 	@echo "✅ Base de données exportée dans mathsmanager-sample.sql.gz"
+
+# Exporter la base de données de preprod vers le fichier sample local
+export-preprod-to-sample:
+	@echo "📥 Export de la base de données preprod..."
+	@echo "🗄️  Dump de la base preprod sur le serveur (saisissez le mot de passe MySQL de preprod)..."
+	ssh -t $(SERVER_USER) 'cd $(PREPROD_HOST) && mysqldump -h dm2blc.myd.infomaniak.com -u dm2blc_david -p dm2blc_mathsManager_preprod > temp-dump-preprod.sql && gzip -f temp-dump-preprod.sql'
+	@echo "📥 Téléchargement du dump..."
+	rsync -avz $(SERVER_USER):$(PREPROD_HOST)/temp-dump-preprod.sql.gz mathsmanager-sample.sql.gz
+	@echo "🧹 Nettoyage du serveur..."
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && rm -f temp-dump-preprod.sql.gz'
+	@echo "✅ Base de données preprod exportée dans mathsmanager-sample.sql.gz"
 
 # Importer les données sample en local
 # Utilité : Remplir la base de données locale avec les données sample (données de prod)

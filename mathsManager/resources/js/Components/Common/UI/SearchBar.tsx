@@ -26,7 +26,7 @@ export default function SearchBar({
         <input
           type="text"
           value={value}
-          className={`w-full h-8 pl-9 pr-9 bg-secondary-color border border-border-color rounded-lg text-sm transition-all focus:outline-none focus:ring-1 focus:ring-teacher-color/30 ${focusRingClass}`}
+          className={`w-full h-10 pl-9 pr-9 bg-secondary-color border border-border-color rounded-xl text-sm transition-all focus:outline-none focus:ring-1 focus:ring-teacher-color/30 ${focusRingClass}`}
           {...props}
         />
         {value && onClear && (

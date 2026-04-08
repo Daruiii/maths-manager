@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Teacher;
 
-use App\Http\Requests\DS\AssignDsBuilderRequest;
-use App\Models\MultipleChapter;
-use App\Models\Problem;
+use App\Http\Requests\Td\AssignTdRequest;
 use App\Models\StudentGroup;
 use App\Models\Subchapter;
 use App\Models\User;
@@ -13,11 +11,10 @@ use App\Services\BuilderSearchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DSBuilderController extends BaseBuilderController
+class TdBuilderController extends BaseBuilderController
 {
     public function __construct(
         private BuilderSearchService $searchService,
@@ -41,64 +38,19 @@ class DSBuilderController extends BaseBuilderController
             ->orderBy('first_name')
             ->get(['id', 'first_name', 'last_name', 'avatar', 'group_id']);
 
-        $multipleChapters = MultipleChapter::with('classe')
-            ->where('title', 'not like', 'BONUS%')
-            ->orderBy('title')
-            ->get(['id', 'title', 'theme', 'classe_id']);
-
         $subchapters = Subchapter::with(['chapter:id,title,class_id', 'chapter.classe:id,name'])
             ->orderBy('chapter_id')
             ->orderBy('order')
             ->get(['id', 'title', 'chapter_id']);
 
-        $academies = Problem::whereNotNull('academy')
-            ->distinct()
-            ->orderBy('academy')
-            ->pluck('academy')
-            ->values();
-
-        return Inertia::render('Teacher/DS/Create', [
+        return Inertia::render('Teacher/TD/Create', [
             'groups'               => $groups,
             'students'             => $students,
-            'multipleChapters'     => $multipleChapters,
             'subchapters'          => $subchapters,
-            'academies'            => $academies,
             'privateTags'          => $teacher->teacherTags()->get(['id', 'name', 'color']),
             'preselectedStudentId' => $request->integer('student') ?: null,
             'preselectedGroupId'   => $request->integer('group') ?: null,
         ]);
-    }
-
-    // ──────────────────────────────────────────────────────────────────────────
-    // API — RECHERCHE PROBLEMS (paginated + filtres)
-    // ──────────────────────────────────────────────────────────────────────────
-
-    public function searchProblems(Request $request): JsonResponse
-    {
-        $hasHarder = Schema::hasColumn('problems', 'harder_exercise');
-        $columns = ['id', 'name', 'difficulty', 'time', 'type', 'year', 'academy', 'multiple_chapter_id', 'latex_statement', 'statement'];
-        if ($hasHarder) $columns[] = 'harder_exercise';
-        if (Schema::hasColumn('problems', 'image_paths')) $columns[] = 'image_paths';
-
-        $query = Problem::with('multipleChapter')->select($columns);
-
-        if ($search = $request->query('search')) $query->where('name', 'like', "%{$search}%");
-        if ($chapterId = $request->query('chapter_id')) $query->where('multiple_chapter_id', $chapterId);
-        if ($classId = $request->query('class_id')) {
-            $query->whereHas('multipleChapter', fn ($q) => $q->where('classe_id', $classId));
-        }
-        if ($difficulty = $request->query('difficulty')) $query->where('difficulty', $difficulty);
-        if ($hasHarder && $request->query('harder') === '1') $query->where('harder_exercise', true);
-        if ($year = $request->query('year')) $query->where('year', $year);
-        if ($academy = $request->query('academy')) $query->where('academy', 'like', "%{$academy}%");
-
-        $this->applySortOrDefault($query, $request, ['name', 'difficulty', 'year', 'time'], 'multiple_chapter_id', 'name');
-
-        $problems = $query->paginate(20);
-
-        return response()->json(
-            $this->searchService->withImages($problems, 'problems', fn ($p) => 'problem-' . $p->id)
-        );
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -131,7 +83,7 @@ class DSBuilderController extends BaseBuilderController
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    // API — RECHERCHE EXERCICES PRIVÉS (paginated + filtres)
+    // API — RECHERCHE EXERCICES PRIVÉS type basic uniquement
     // ──────────────────────────────────────────────────────────────────────────
 
     public function searchPrivate(Request $request): JsonResponse
@@ -139,10 +91,10 @@ class DSBuilderController extends BaseBuilderController
         $teacher = Auth::user();
 
         $query = \App\Models\PrivateExercise::forTeacher($teacher->id)
+            ->where('type', 'basic')
             ->select('id', 'name', 'type', 'difficulty', 'time', 'latex_statement');
 
         if ($search = $request->query('search')) $query->where('name', 'like', "%{$search}%");
-        if ($type = $request->query('type')) $query->where('type', $type);
         if ($difficulty = $request->query('difficulty')) $query->where('difficulty', $difficulty);
         if ($tagId = $request->query('tag_id')) {
             $query->whereHas('tags', fn ($q) => $q->where('teacher_tags.id', $tagId));
@@ -151,7 +103,7 @@ class DSBuilderController extends BaseBuilderController
         if ($chapterId = $request->query('chapter_id')) $query->where('chapter_id', $chapterId);
         if ($subchapterId = $request->query('subchapter_id')) $query->where('subchapter_id', $subchapterId);
 
-        $this->applySortOrDefault($query, $request, ['name', 'difficulty', 'time', 'created_at'], defaultCol: 'created_at', defaultDir: 'desc');
+        $this->applySortOrDefault($query, $request, ['name', 'difficulty', 'created_at'], defaultCol: 'created_at', defaultDir: 'desc');
 
         $exercises = $query->paginate(20);
 
@@ -161,14 +113,14 @@ class DSBuilderController extends BaseBuilderController
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    // ASSIGN — crée 1 DS par élève sélectionné
+    // ASSIGN — crée 1 TD par élève sélectionné
     // ──────────────────────────────────────────────────────────────────────────
 
-    public function assign(AssignDsBuilderRequest $request)
+    public function assign(AssignTdRequest $request)
     {
-        $count = $this->assignmentService->assignDs($request, Auth::user());
+        $count = $this->assignmentService->assignTd($request, Auth::user());
 
-        return back()->with('success', $count . ' DS assigné(s) avec succès.');
+        return back()->with('success', $count . ' TD assigné(s) avec succès.');
     }
 
 }

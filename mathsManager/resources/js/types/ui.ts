@@ -3,6 +3,8 @@
  * Types used purely on the frontend (not database entities).
  */
 
+import type { LucideIcon } from 'lucide-react';
+
 // ─── Profile ──────────────────────────────────────────────────────────────────
 
 export interface ProfileStatistics {
@@ -36,4 +38,17 @@ export interface ExerciseSort {
 export interface PrivateSort {
   by: 'name' | 'difficulty' | 'time' | 'created_at' | '';
   dir: 'asc' | 'desc';
+}
+
+// ─── Quick Action Hub ─────────────────────────────────────────────────────────
+
+export interface QuickAction {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  href?: string;
+  badge?: number;
+  disabled?: boolean;
+  comingSoon?: boolean;
+  separatorBefore?: boolean; // renders a divider above this item
 }
