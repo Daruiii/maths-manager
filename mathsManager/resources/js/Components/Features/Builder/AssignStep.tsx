@@ -19,9 +19,13 @@ interface Props {
   groups: StudentGroup[];
   preselectedStudentId?: number | null;
   preselectedGroupId?: number | null;
-  tdTitle?: string;
-  tdLevel?: string;
-  tdInstructions?: string;
+  assignRoute: string;
+  title: string;
+  entityLabel: string;
+  includeProblems?: boolean;
+  customTitle?: string;
+  customLevel?: string;
+  customInstructions?: string;
 }
 
 export default function AssignStep({
@@ -33,9 +37,13 @@ export default function AssignStep({
   groups,
   preselectedStudentId,
   preselectedGroupId,
-  tdTitle,
-  tdLevel,
-  tdInstructions,
+  assignRoute,
+  title,
+  entityLabel,
+  includeProblems = false,
+  customTitle,
+  customLevel,
+  customInstructions,
 }: Props) {
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<number>>(new Set());
   const [selectedGroupIds, setSelectedGroupIds] = useState<Set<number>>(new Set());
@@ -105,33 +113,35 @@ export default function AssignStep({
     return 'none';
   };
 
+  const problemIds = includeProblems
+    ? previewItems.filter((i) => i.item.kind === 'problem').map((i) => i.item.id)
+    : [];
   const exerciseIds = previewItems.filter((i) => i.item.kind === 'exercise').map((i) => i.item.id);
   const privateIds = previewItems.filter((i) => i.item.kind === 'private').map((i) => i.item.id);
+  const totalItems = problemIds.length + exerciseIds.length + privateIds.length;
   const totalRecipients = selectedStudentIds.size;
 
   const handleSubmit = () => {
-    if (exerciseIds.length + privateIds.length === 0 || totalRecipients === 0) return;
+    if (totalItems === 0 || totalRecipients === 0) return;
     setIsSubmitting(true);
-    router.post(
-      route('teacher.td.assign'),
-      {
-        exercise_ids: exerciseIds,
-        private_exercise_ids: privateIds,
-        student_ids: Array.from(selectedStudentIds),
-        group_ids: Array.from(selectedGroupIds),
-        custom_title: tdTitle,
-        custom_level: tdLevel,
-        custom_instructions: tdInstructions,
+    const payload = {
+      exercise_ids: exerciseIds,
+      private_exercise_ids: privateIds,
+      student_ids: Array.from(selectedStudentIds),
+      group_ids: Array.from(selectedGroupIds),
+      custom_title: customTitle,
+      custom_level: customLevel,
+      custom_instructions: customInstructions,
+      ...(includeProblems ? { problem_ids: problemIds } : {}),
+    };
+    router.post(route(assignRoute), payload, {
+      onSuccess: () => {
+        setIsSubmitting(false);
+        onSuccess?.();
+        onClose();
       },
-      {
-        onSuccess: () => {
-          setIsSubmitting(false);
-          onSuccess?.();
-          onClose();
-        },
-        onError: () => setIsSubmitting(false),
-      }
-    );
+      onError: () => setIsSubmitting(false),
+    });
   };
 
   const q = search.toLowerCase().trim();
@@ -161,12 +171,12 @@ export default function AssignStep({
       isOpen={isOpen}
       onClose={onClose}
       size="sm"
-      title="Assigner le TD"
-      subtitle={`${previewItems.length} exercice${previewItems.length > 1 ? 's' : ''} · 1 TD créé par élève`}
+      title={title}
+      subtitle={`${previewItems.length} exercice${previewItems.length > 1 ? 's' : ''} · 1 ${entityLabel} créé par élève`}
       footer={
         <Button
           onClick={handleSubmit}
-          disabled={totalRecipients === 0 || exerciseIds.length + privateIds.length === 0}
+          disabled={totalRecipients === 0 || totalItems === 0}
           isLoading={isSubmitting}
           variant="teacher"
           className="w-full justify-center"

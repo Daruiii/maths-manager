@@ -3,10 +3,14 @@
 namespace App\Services;
 
 use App\Helpers\ErrorResponseHelper;
+use App\Http\Requests\DM\AssignDmBuilderRequest;
 use App\Http\Requests\DS\AssignDsBuilderRequest;
 use App\Http\Requests\Td\AssignTdRequest;
+use App\Mail\AssignDMMail;
 use App\Mail\AssignDSMail;
 use App\Mail\AssignTDMail;
+use App\Models\Dm;
+use App\Models\DmBatch;
 use App\Models\DS;
 use App\Models\DsBatch;
 use App\Models\Exercise;
@@ -74,6 +78,49 @@ class BatchAssignmentService
             if ($privateExercises->isNotEmpty()) $ds->privateExercises()->attach($privateExercises->pluck('id'));
 
             $this->sendMailSafe(new AssignDSMail($ds), $studentId, 'DS builder assign');
+        }
+
+        return $studentIds->count();
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // DM
+    // ──────────────────────────────────────────────────────────────────────────
+
+    public function assignDm(AssignDmBuilderRequest $request, User $teacher): int
+    {
+        $problems  = Problem::findMany($request->input('problem_ids', []));
+        $exercises = Exercise::findMany($request->input('exercise_ids', []));
+        $privateExercises = $this->scopedPrivateExercises(
+            $request->input('private_exercise_ids', []),
+            $teacher->id
+        );
+
+        [$studentIds, $groupIds] = $this->extractRecipients($request);
+
+        $batch = DmBatch::create([
+            'teacher_id'  => $teacher->id,
+            'group_ids'   => $groupIds->isNotEmpty() ? $groupIds->all() : null,
+            'student_ids' => $studentIds->all(),
+            'dm_count'    => $studentIds->count(),
+        ]);
+
+        foreach ($studentIds as $studentId) {
+            $dm = Dm::create([
+                'user_id'             => $studentId,
+                'teacher_id'          => $teacher->id,
+                'batch_id'            => $batch->id,
+                'status'              => 'not_started',
+                'custom_title'        => $request->input('custom_title'),
+                'custom_level'        => $request->input('custom_level'),
+                'custom_instructions' => $request->input('custom_instructions'),
+            ]);
+
+            if ($problems->isNotEmpty())         $dm->problems()->attach($problems->pluck('id'));
+            if ($exercises->isNotEmpty())        $dm->exercises()->attach($exercises->pluck('id'));
+            if ($privateExercises->isNotEmpty()) $dm->privateExercises()->attach($privateExercises->pluck('id'));
+
+            $this->sendMailSafe(new AssignDMMail($dm), $studentId, 'DM builder assign');
         }
 
         return $studentIds->count();

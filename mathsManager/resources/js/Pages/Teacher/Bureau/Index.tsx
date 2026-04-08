@@ -1,8 +1,8 @@
 import { Head } from '@inertiajs/react';
-import { BookOpen, FileText, FolderOpen } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import RessourceCard from '@/Components/Common/UI/RessourceCard';
+import { CONTENT_ITEM_META, CONTENT_TYPE_META } from '@/Constants/contentTypes';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,9 +24,9 @@ export default function BureauIndex({ stats }: Props) {
           breadcrumbs={[{ label: 'Mon Bureau' }]}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <RessourceCard
-            icon={BookOpen}
+            icon={CONTENT_ITEM_META.private.icon}
             title="Exercices privés"
             subtitle="Créez et gérez vos exercices personnels"
             count={stats.exercisesCount}
@@ -34,16 +34,23 @@ export default function BureauIndex({ stats }: Props) {
             color="teacher"
           />
           <RessourceCard
-            icon={FileText}
-            title="DS sauvegardés"
-            subtitle="Retrouvez vos devoirs surveillés enregistrés"
+            icon={CONTENT_TYPE_META.ds.icon}
+            title={CONTENT_TYPE_META.ds.savedTitle}
+            subtitle={CONTENT_TYPE_META.ds.savedSubtitle}
             href="#"
             available={false}
           />
           <RessourceCard
-            icon={FolderOpen}
-            title="TD sauvegardés"
-            subtitle="Retrouvez vos fiches de travaux dirigés"
+            icon={CONTENT_TYPE_META.td.icon}
+            title={CONTENT_TYPE_META.td.savedTitle}
+            subtitle={CONTENT_TYPE_META.td.savedSubtitle}
+            href="#"
+            available={false}
+          />
+          <RessourceCard
+            icon={CONTENT_TYPE_META.dm.icon}
+            title={CONTENT_TYPE_META.dm.savedTitle}
+            subtitle={CONTENT_TYPE_META.dm.savedSubtitle}
             href="#"
             available={false}
           />

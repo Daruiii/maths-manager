@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import { StudentGroup } from '@/types/models';
-import { Folder, Pencil, Trash2, BookOpen, FileText } from 'lucide-react';
+import { Folder, Pencil, Trash2 } from 'lucide-react';
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
 import IconButton from '@/Components/Common/UI/IconButton';
 import GroupFormModal from '@/Pages/Teacher/Students/Partials/GroupFormModal';
 import { route } from 'ziggy-js';
+import { CONTENT_TYPE_META } from '@/Constants/contentTypes';
 
 interface Props {
   group: StudentGroup;
@@ -71,24 +72,34 @@ export default function GroupFolderCard({ group }: Props) {
         {/* Actions groupe (placeholder) */}
         <div className="flex items-center justify-center gap-2 pt-1">
           <IconButton
-            icon={BookOpen}
+            icon={CONTENT_TYPE_META.ds.icon}
             variant="bordered"
             accentColor="teacher"
             onClick={(e) => {
               e.preventDefault();
               router.visit(route('teacher.ds.create', { group: group.id }));
             }}
-            title="Créer un DS pour ce groupe"
+            title={CONTENT_TYPE_META.ds.createForGroupLabel}
           />
           <IconButton
-            icon={FileText}
+            icon={CONTENT_TYPE_META.td.icon}
             variant="bordered"
             accentColor="teacher"
             onClick={(e) => {
               e.preventDefault();
               router.visit(route('teacher.td.create', { group: group.id }));
             }}
-            title="Créer un TD pour ce groupe"
+            title={CONTENT_TYPE_META.td.createForGroupLabel}
+          />
+          <IconButton
+            icon={CONTENT_TYPE_META.dm.icon}
+            variant="bordered"
+            accentColor="teacher"
+            onClick={(e) => {
+              e.preventDefault();
+              router.visit(route('teacher.dm.create', { group: group.id }));
+            }}
+            title={CONTENT_TYPE_META.dm.createForGroupLabel}
           />
         </div>
       </div>

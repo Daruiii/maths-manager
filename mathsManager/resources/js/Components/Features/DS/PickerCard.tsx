@@ -5,11 +5,24 @@ import {
   PickableExercise,
   PickablePrivateExercise,
 } from '@/types/models';
+import { CONTENT_ITEM_META } from '@/Constants/contentTypes';
 
 interface Props {
   item: PickableItem;
   isSelected: boolean;
   onToggle: (item: PickableItem) => void;
+}
+
+function KindChip({ kind }: { kind: PickableItem['kind'] }) {
+  const meta = CONTENT_ITEM_META[kind];
+  const Icon = meta.icon;
+
+  return (
+    <span className="inline-flex items-center gap-1 rounded-md bg-surface-color px-1.5 py-0.5 text-xxs text-text-gray">
+      <Icon size={9} />
+      {meta.shortLabel}
+    </span>
+  );
 }
 
 function DifficultyDots({ value }: { value: number | null }) {
@@ -49,6 +62,7 @@ function ProblemMeta({ problem }: { problem: PickableProblem }) {
 function ExerciseMeta({ exercise }: { exercise: PickableExercise }) {
   return (
     <>
+      <KindChip kind="exercise" />
       <DifficultyDots value={exercise.difficulty} />
       {exercise.order != null && (
         <span className="text-xxs text-text-gray font-mono">#{exercise.order}</span>
@@ -60,6 +74,7 @@ function ExerciseMeta({ exercise }: { exercise: PickableExercise }) {
 function PrivateMeta({ exercise }: { exercise: PickablePrivateExercise }) {
   return (
     <>
+      <KindChip kind="private" />
       <DifficultyDots value={exercise.difficulty} />
       {exercise.time != null && exercise.time > 0 && (
         <span className="flex items-center gap-0.5 text-xxs text-text-gray">
@@ -68,8 +83,19 @@ function PrivateMeta({ exercise }: { exercise: PickablePrivateExercise }) {
         </span>
       )}
       <span className="px-1 py-0.5 rounded bg-teacher-color/10 text-teacher-color text-xxs font-medium leading-none">
-        {exercise.type === 'problem' ? 'Pb' : 'Ex'}
+        {exercise.type === 'problem'
+          ? CONTENT_ITEM_META.problem.shortLabel
+          : CONTENT_ITEM_META.exercise.shortLabel}
       </span>
+    </>
+  );
+}
+
+function ProblemMetaWithKind({ problem }: { problem: PickableProblem }) {
+  return (
+    <>
+      <KindChip kind="problem" />
+      <ProblemMeta problem={problem} />
     </>
   );
 }
@@ -115,7 +141,7 @@ export default function PickerCard({ item, isSelected, onToggle }: Props) {
       {/* Metadata */}
       <div className="flex items-center gap-1.5 px-2 shrink-0">
         {item.kind === 'problem' ? (
-          <ProblemMeta problem={item as PickableProblem} />
+          <ProblemMetaWithKind problem={item as PickableProblem} />
         ) : item.kind === 'exercise' ? (
           <ExerciseMeta exercise={item as PickableExercise} />
         ) : (

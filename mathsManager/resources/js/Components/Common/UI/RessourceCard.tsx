@@ -62,13 +62,13 @@ export default function RessourceCard({
 
   const inner = (
     <div
-      className={`relative p-4 bg-surface-color border border-border-color border-l-2 ${styles.border} rounded-2xl transition-transform duration-200 ${
+      className={`relative p-3 sm:p-4 bg-surface-color border border-border-color border-l-2 ${styles.border} rounded-2xl transition-transform duration-200 ${
         available ? 'hover:-translate-y-0.5' : 'opacity-60'
       }`}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className={`p-2 ${styles.iconBg} rounded-xl`}>
-          <Icon size={18} className={styles.iconText} />
+      <div className="flex items-start justify-between mb-2 sm:mb-3">
+        <div className={`p-1.5 sm:p-2 ${styles.iconBg} rounded-xl`}>
+          <Icon size={16} className={`${styles.iconText} sm:w-[18px] sm:h-[18px]`} />
         </div>
         {available ? (
           <ChevronRight size={16} className="text-text-gray mt-1" />
@@ -79,16 +79,22 @@ export default function RessourceCard({
         )}
       </div>
 
-      <p className="text-sm font-comfortaa-bold text-text-color">{title}</p>
-      <p className="text-xs text-text-gray mt-0.5">{subtitle}</p>
+      <p className="text-sm font-comfortaa-bold text-text-color leading-tight">{title}</p>
+      <p className="text-[11px] sm:text-xs text-text-gray mt-0.5 leading-tight">{subtitle}</p>
 
       {available && count !== undefined && (
-        <p className={`text-xs font-comfortaa-bold mt-2 ${styles.count}`}>
+        <p className={`text-xs font-comfortaa-bold mt-1.5 sm:mt-2 ${styles.count}`}>
           {count} {count !== 1 ? 'éléments' : 'élément'}
         </p>
       )}
     </div>
   );
 
-  return available ? <Link href={href}>{inner}</Link> : inner;
+  return available ? (
+    <Link href={href} className="block w-full">
+      {inner}
+    </Link>
+  ) : (
+    inner
+  );
 }

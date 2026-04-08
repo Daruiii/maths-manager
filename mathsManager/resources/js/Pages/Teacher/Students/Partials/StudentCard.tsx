@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { router, Link } from '@inertiajs/react';
 import { StudentGroup, User } from '@/types/models';
-import { Unlink, BookOpen, FileText, FolderInput } from 'lucide-react';
+import { Unlink, FolderInput } from 'lucide-react';
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
 import IconButton from '@/Components/Common/UI/IconButton';
 import UserCard from '@/Components/Features/User/UserCard';
 import AssignGroupModal from '@/Pages/Teacher/Students/Partials/AssignGroupModal';
 import { route } from 'ziggy-js';
+import { CONTENT_TYPE_META } from '@/Constants/contentTypes';
 
 interface Props {
   student: User;
@@ -72,24 +73,34 @@ export default function StudentCard({ student, groups, showGroupBadge = true }: 
       >
         <div className="flex items-center justify-center gap-2 pt-1">
           <IconButton
-            icon={BookOpen}
+            icon={CONTENT_TYPE_META.ds.icon}
             variant="bordered"
             accentColor="teacher"
             onClick={(e) => {
               e.preventDefault();
               router.visit(route('teacher.ds.create', { student: student.id }));
             }}
-            title="Créer un DS"
+            title={CONTENT_TYPE_META.ds.createLabel}
           />
           <IconButton
-            icon={FileText}
+            icon={CONTENT_TYPE_META.td.icon}
             variant="bordered"
             accentColor="teacher"
             onClick={(e) => {
               e.preventDefault();
               router.visit(route('teacher.td.create', { student: student.id }));
             }}
-            title="Créer un TD"
+            title={CONTENT_TYPE_META.td.createLabel}
+          />
+          <IconButton
+            icon={CONTENT_TYPE_META.dm.icon}
+            variant="bordered"
+            accentColor="teacher"
+            onClick={(e) => {
+              e.preventDefault();
+              router.visit(route('teacher.dm.create', { student: student.id }));
+            }}
+            title={CONTENT_TYPE_META.dm.createLabel}
           />
         </div>
       </UserCard>

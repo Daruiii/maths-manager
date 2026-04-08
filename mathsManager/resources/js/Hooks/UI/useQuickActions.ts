@@ -1,59 +1,33 @@
 import { route } from 'ziggy-js';
-import { PenLine, BookOpen, FileEdit, Bell, ShieldCheck, Sparkles } from 'lucide-react';
 import type { QuickAction } from '@/types';
+import { CONTENT_ITEM_META, CONTENT_TYPE_META } from '@/Constants/contentTypes';
 
-interface UseQuickActionsOptions {
-  correctionCount?: number;
-  whitelistCount?: number;
-}
-
-export function useQuickActions({
-  correctionCount = 0,
-  whitelistCount = 0,
-}: UseQuickActionsOptions = {}): QuickAction[] {
+export function useQuickActions(): QuickAction[] {
   return [
     {
       id: 'create-ds',
-      label: 'Créer un DS',
-      icon: PenLine,
+      label: CONTENT_TYPE_META.ds.createLabel,
+      icon: CONTENT_TYPE_META.ds.icon,
       href: route('teacher.ds.create'),
     },
     {
       id: 'create-td',
-      label: 'Créer un TD',
-      icon: BookOpen,
+      label: CONTENT_TYPE_META.td.createLabel,
+      icon: CONTENT_TYPE_META.td.icon,
       href: route('teacher.td.create'),
     },
     {
       id: 'create-dm',
-      label: 'Créer un DM',
-      icon: Sparkles,
-      disabled: true,
-      comingSoon: true,
-      separatorBefore: true,
+      label: CONTENT_TYPE_META.dm.createLabel,
+      icon: CONTENT_TYPE_META.dm.icon,
+      href: route('teacher.dm.create'),
+      separatorBefore: false,
     },
     {
       id: 'create-exercise',
-      label: 'Exercice privé',
-      icon: FileEdit,
-      disabled: true,
-      comingSoon: true,
-    },
-    {
-      id: 'corrections',
-      label: 'Corrections en attente',
-      icon: Bell,
-      badge: correctionCount || undefined,
-      disabled: true,
-      comingSoon: true,
-    },
-    {
-      id: 'whitelist',
-      label: 'Demandes whitelist',
-      icon: ShieldCheck,
-      badge: whitelistCount || undefined,
-      disabled: true,
-      comingSoon: true,
+      label: 'Créer un exercice',
+      icon: CONTENT_ITEM_META.private.icon,
+      href: route('teacher.exercices.create'),
     },
   ];
 }

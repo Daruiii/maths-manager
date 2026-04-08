@@ -12,12 +12,12 @@ import {
   Subchapter,
   TeacherTag,
 } from '@/types/models';
-import ExercisePicker from '@/Pages/Teacher/DS/Partials/ExercisePicker';
-import DSPreview from '@/Pages/Teacher/DS/Partials/DSPreview';
-import DSContent from '@/Pages/Teacher/DS/Partials/DSContent';
-import DSBuilderActions from '@/Pages/Teacher/DS/Partials/DSBuilderActions';
+import DmExercisePicker from '@/Pages/Teacher/DM/Partials/DmExercisePicker';
+import DmPreview from '@/Pages/Teacher/DM/Partials/DmPreview';
+import DmContent from '@/Pages/Teacher/DM/Partials/DmContent';
+import DmBuilderActions from '@/Pages/Teacher/DM/Partials/DmBuilderActions';
 import AssignStep from '@/Components/Features/Builder/AssignStep';
-import { useDSBuilderDraft, makeItemUid } from '@/Hooks/DS/useDSBuilderDraft';
+import { useDMBuilderDraft, makeItemUid } from '@/Hooks/DM/useDMBuilderDraft';
 
 interface Props {
   groups: StudentGroup[];
@@ -45,15 +45,15 @@ export default function Create({
   const {
     previewItems,
     setPreviewItems,
-    dsTitle,
-    setDsTitle,
-    dsLevel,
-    setDsLevel,
-    dsInstructions,
-    setDsInstructions,
+    dmTitle,
+    setDmTitle,
+    dmLevel,
+    setDmLevel,
+    dmInstructions,
+    setDmInstructions,
     hadDraftOnMount,
     resetAll,
-  } = useDSBuilderDraft();
+  } = useDMBuilderDraft();
 
   const [mobileTab, setMobileTab] = useState<MobileTab>('picker');
   const [isAssignOpen, setIsAssignOpen] = useState(false);
@@ -85,7 +85,7 @@ export default function Create({
   );
 
   return (
-    <AppLayout title="Créer un DS" hideFooter>
+    <AppLayout title="Créer un DM" hideFooter>
       <FlashToast
         message={
           hadDraftOnMount ? 'Brouillon restauré — vos exercices ont été récupérés.' : undefined
@@ -93,22 +93,19 @@ export default function Create({
         type="info"
       />
 
-      {/* Outer wrapper — fills exactly the space below the fixed nav */}
       <div className="flex flex-col h-[calc(100vh-72px)]">
-        {/* Page header */}
         <div className="flex-shrink-0 px-4 pt-4 pb-2 max-w-screen-xl mx-auto w-full">
           <PageHeader
-            title="Créer un DS"
-            subtitle="Profitez de la base MathsManager pour construire votre DS en sélectionnant des exercices et problèmes, puis assignez-le à vos élèves ou groupes."
+            title="Créer un DM"
+            subtitle="Créez un devoir maison avec des exercices et problèmes, puis assignez-le à vos élèves ou groupes."
             breadcrumbs={[
               { label: 'Mes Élèves', href: route('teacher.students.index') },
-              { label: 'Créer un DS' },
+              { label: 'Créer un DM' },
             ]}
-            action={<DSBuilderActions itemCount={previewItems.length} onReset={resetAll} />}
+            action={<DmBuilderActions itemCount={previewItems.length} onReset={resetAll} />}
           />
         </div>
 
-        {/* Mobile tabs */}
         <div className="lg:hidden flex-shrink-0 flex border-b border-border-color mx-4">
           {(
             [
@@ -138,15 +135,13 @@ export default function Create({
           ))}
         </div>
 
-        {/* Split layout — takes all remaining height */}
         <div className="flex-1 max-w-screen-xl mx-auto w-full flex overflow-hidden">
-          {/* Left — Picker */}
           <div
             className={`w-full lg:w-[30%] border-r border-border-color flex flex-col overflow-hidden ${
               mobileTab !== 'picker' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <ExercisePicker
+            <DmExercisePicker
               multipleChapters={multipleChapters}
               subchapters={subchapters}
               academies={academies}
@@ -156,30 +151,28 @@ export default function Create({
             />
           </div>
 
-          {/* Center — KaTeX preview */}
           <div
             className={`w-full lg:w-[54%] border-r border-border-color flex flex-col overflow-hidden ${
               mobileTab !== 'preview' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <DSContent
+            <DmContent
               items={previewItems}
-              dsTitle={dsTitle}
-              dsLevel={dsLevel}
-              dsInstructions={dsInstructions}
-              onTitleChange={setDsTitle}
-              onLevelChange={setDsLevel}
-              onInstructionsChange={setDsInstructions}
+              dmTitle={dmTitle}
+              dmLevel={dmLevel}
+              dmInstructions={dmInstructions}
+              onTitleChange={setDmTitle}
+              onLevelChange={setDmLevel}
+              onInstructionsChange={setDmInstructions}
             />
           </div>
 
-          {/* Right — Sommaire DnD */}
           <div
             className={`w-full lg:w-[16%] flex-col overflow-hidden ${
               mobileTab !== 'sommaire' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <DSPreview
+            <DmPreview
               items={previewItems}
               onReorder={handleReorder}
               onRemove={handleRemove}
@@ -198,13 +191,13 @@ export default function Create({
         groups={groups}
         preselectedStudentId={preselectedStudentId}
         preselectedGroupId={preselectedGroupId}
-        assignRoute="teacher.ds.assign"
-        title="Assigner le DS"
-        entityLabel="DS"
+        assignRoute="teacher.dm.assign"
+        title="Assigner le DM"
+        entityLabel="DM"
         includeProblems
-        customTitle={dsTitle}
-        customLevel={dsLevel}
-        customInstructions={dsInstructions}
+        customTitle={dmTitle}
+        customLevel={dmLevel}
+        customInstructions={dmInstructions}
       />
     </AppLayout>
   );

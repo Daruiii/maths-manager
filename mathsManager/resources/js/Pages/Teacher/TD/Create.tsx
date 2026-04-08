@@ -8,8 +8,8 @@ import { StudentGroup, User, PickableItem, Subchapter, TeacherTag } from '@/type
 import ExercisePicker from '@/Pages/Teacher/TD/Partials/ExercisePicker';
 import TDPreview from '@/Pages/Teacher/TD/Partials/TDPreview';
 import TDContent from '@/Pages/Teacher/TD/Partials/TDContent';
-import AssignStep from '@/Pages/Teacher/TD/Partials/AssignStep';
 import TDBuilderActions from '@/Pages/Teacher/TD/Partials/TDBuilderActions';
+import AssignStep from '@/Components/Features/Builder/AssignStep';
 import { useTDBuilderDraft, makeItemUid } from '@/Hooks/TD/useTDBuilderDraft';
 
 interface Props {
@@ -182,9 +182,12 @@ export default function Create({
         groups={groups}
         preselectedStudentId={preselectedStudentId}
         preselectedGroupId={preselectedGroupId}
-        tdTitle={tdTitle}
-        tdLevel={tdLevel}
-        tdInstructions={tdInstructions}
+        assignRoute="teacher.td.assign"
+        title="Assigner le TD"
+        entityLabel="TD"
+        customTitle={tdTitle}
+        customLevel={tdLevel}
+        customInstructions={tdInstructions}
       />
     </AppLayout>
   );

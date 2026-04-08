@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Dm;
 use App\Models\Exercise;
 use App\Models\Problem;
 use App\Models\PrivateExercise;
@@ -11,6 +12,7 @@ use App\Models\StudentGroup;
 use App\Observers\ExerciseObserver;
 use App\Observers\ProblemObserver;
 use App\Observers\PrivateExerciseObserver;
+use App\Policies\DmPolicy;
 use App\Policies\PrivateExercisePolicy;
 use App\Policies\StudentGroupPolicy;
 use App\Policies\TeacherStudentPolicy;
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         Problem::observe(ProblemObserver::class);
 
         // ─── Policies ──────────────────────────────────────────────────────────
+        Gate::policy(Dm::class, DmPolicy::class);
         Gate::policy(StudentGroup::class, StudentGroupPolicy::class);
         Gate::policy(User::class, TeacherStudentPolicy::class);
         Gate::policy(PrivateExercise::class, PrivateExercisePolicy::class);

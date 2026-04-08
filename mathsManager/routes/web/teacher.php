@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Teacher\BureauController;
+use App\Http\Controllers\Teacher\DmBuilderController;
 use App\Http\Controllers\Teacher\DSBuilderController;
 use App\Http\Controllers\Teacher\TdBuilderController;
 use App\Http\Controllers\Teacher\PrivateExerciseController;
@@ -55,6 +56,15 @@ Route::middleware(['auth', IsTeacher::class])
         Route::get('/ds/builder/problems', [DSBuilderController::class, 'searchProblems'])->name('ds.builder.problems');
         Route::get('/ds/builder/exercises', [DSBuilderController::class, 'searchExercises'])->name('ds.builder.exercises');
         Route::get('/ds/builder/private', [DSBuilderController::class, 'searchPrivate'])->name('ds.builder.private');
+
+        // DM Builder
+        Route::get('/dm/create', [DmBuilderController::class, 'create'])->name('dm.create');
+        Route::post('/dm/assign', [DmBuilderController::class, 'assign'])->name('dm.assign');
+
+        // DM Builder — API search (JSON)
+        Route::get('/dm/builder/problems', [DmBuilderController::class, 'searchProblems'])->name('dm.builder.problems');
+        Route::get('/dm/builder/exercises', [DmBuilderController::class, 'searchExercises'])->name('dm.builder.exercises');
+        Route::get('/dm/builder/private', [DmBuilderController::class, 'searchPrivate'])->name('dm.builder.private');
 
         // TD Builder
         Route::get('/td/create', [TdBuilderController::class, 'create'])->name('td.create');

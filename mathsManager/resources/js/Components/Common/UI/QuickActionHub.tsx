@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Zap, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useQuickActions } from '@/Hooks/UI/useQuickActions';
 import { useDraggable } from '@/Hooks/UI/useDraggable';
 import QuickActionItem from '@/Components/Common/UI/QuickActionItem';
@@ -8,12 +8,7 @@ const MENU_WIDTH = 224;
 const HEADER_HEIGHT = 72;
 const FAB_SIZE = 48;
 
-interface Props {
-  correctionCount?: number;
-  whitelistCount?: number;
-}
-
-export default function QuickActionHub({ correctionCount = 0, whitelistCount = 0 }: Props) {
+export default function QuickActionHub() {
   const [isOpen, setIsOpen] = useState(false);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -23,8 +18,7 @@ export default function QuickActionHub({ correctionCount = 0, whitelistCount = 0
     onDragStart: () => setIsOpen(false),
   });
 
-  const actions = useQuickActions({ correctionCount, whitelistCount });
-  const totalBadge = correctionCount + whitelistCount;
+  const actions = useQuickActions();
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -89,10 +83,6 @@ export default function QuickActionHub({ correctionCount = 0, whitelistCount = 0
 
       {/* FAB trigger */}
       <div className="relative">
-        {!isOpen && totalBadge > 0 && (
-          <span className="absolute inset-0 rounded-full animate-ping bg-teacher-color/30 pointer-events-none" />
-        )}
-
         <button
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
@@ -106,12 +96,7 @@ export default function QuickActionHub({ correctionCount = 0, whitelistCount = 0
             ${isOpen ? 'rotate-45' : 'rotate-0'}
           `}
         >
-          {isOpen ? <X size={20} /> : <Zap size={20} />}
-          {!isOpen && totalBadge > 0 && (
-            <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-error-color text-white w-4 h-4 flex items-center justify-center rounded-full">
-              {totalBadge > 9 ? '9+' : totalBadge}
-            </span>
-          )}
+          <Plus size={20} />
         </button>
       </div>
     </div>
