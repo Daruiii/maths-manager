@@ -5,6 +5,8 @@ import { useDraggable } from '@/Hooks/UI/useDraggable';
 import QuickActionItem from '@/Components/Common/UI/QuickActionItem';
 
 const MENU_WIDTH = 224;
+const HEADER_HEIGHT = 72;
+const FAB_SIZE = 48;
 
 interface Props {
   correctionCount?: number;
@@ -17,6 +19,7 @@ export default function QuickActionHub({ correctionCount = 0, whitelistCount = 0
 
   const { position, isDragging, hasMoved, handleMouseDown, handleTouchStart } = useDraggable({
     storageKey: 'quick-action-hub-position',
+    topMargin: 80,
     onDragStart: () => setIsOpen(false),
   });
 
@@ -51,7 +54,7 @@ export default function QuickActionHub({ correctionCount = 0, whitelistCount = 0
     if (!hasMoved) setIsOpen((o) => !o);
   };
 
-  const opensUpward = position.y > windowSize.height / 2;
+  const opensUpward = position.y - HEADER_HEIGHT > windowSize.height - position.y - FAB_SIZE;
   const menuAlignRight = position.x + MENU_WIDTH < windowSize.width;
 
   return (
@@ -64,27 +67,22 @@ export default function QuickActionHub({ correctionCount = 0, whitelistCount = 0
       {/* Actions menu */}
       {isOpen && (
         <div
-          className={`absolute flex flex-col gap-1 min-w-[224px] pb-2 ${
+          className={`absolute flex flex-col gap-0.5 min-w-[200px] overflow-y-auto pb-2 ${
             opensUpward ? 'bottom-14' : 'top-14'
           } ${menuAlignRight ? 'left-0' : 'right-0'}`}
+          style={{
+            maxHeight: opensUpward
+              ? position.y - HEADER_HEIGHT - 8
+              : windowSize.height - position.y - FAB_SIZE - 8,
+          }}
         >
           {actions.map((action, i) => (
-            <div key={action.id}>
-              {action.separatorBefore && (
-                <div className="flex items-center gap-2 px-1 py-1.5">
-                  <div className="flex-1 h-px bg-border-color/60" />
-                  <span className="text-[10px] uppercase tracking-widest text-text-gray/50 font-bold">
-                    Prochainement
-                  </span>
-                  <div className="flex-1 h-px bg-border-color/60" />
-                </div>
-              )}
-              <QuickActionItem
-                action={action}
-                animationDelay={i * 35}
-                onNavigate={() => setIsOpen(false)}
-              />
-            </div>
+            <QuickActionItem
+              key={action.id}
+              action={action}
+              animationDelay={i * 35}
+              onNavigate={() => setIsOpen(false)}
+            />
           ))}
         </div>
       )}

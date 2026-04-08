@@ -9,6 +9,7 @@ interface Position {
 
 interface UseDraggableOptions {
   margin?: number; // min distance from window edges
+  topMargin?: number; // min distance from top edge (overrides margin for top)
   storageKey?: string; // localStorage key to persist position
   onDragStart?: () => void;
   onDragEnd?: () => void;
@@ -57,10 +58,12 @@ function savePosition(storageKey: string, position: Position): void {
 
 export function useDraggable({
   margin = 8,
+  topMargin,
   storageKey,
   onDragStart,
   onDragEnd,
 }: UseDraggableOptions = {}): UseDraggableReturn {
+  const effectiveTopMargin = topMargin ?? margin;
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [hasMoved, setHasMoved] = useState(false);
@@ -81,9 +84,9 @@ export function useDraggable({
   const clamp = useCallback(
     (x: number, y: number): Position => ({
       x: Math.max(margin, Math.min(window.innerWidth - ELEMENT_SIZE - margin, x)),
-      y: Math.max(margin, Math.min(window.innerHeight - ELEMENT_SIZE - margin, y)),
+      y: Math.max(effectiveTopMargin, Math.min(window.innerHeight - ELEMENT_SIZE - margin, y)),
     }),
-    [margin]
+    [margin, effectiveTopMargin]
   );
 
   const startDrag = useCallback(
