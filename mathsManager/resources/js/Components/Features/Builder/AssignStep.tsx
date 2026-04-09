@@ -55,16 +55,19 @@ export default function AssignStep({
     if (!isOpen) {
       setSelectedStudentIds(new Set());
       setSelectedGroupIds(new Set());
+      setExpandedGroups(new Set());
       return;
     }
     if (preselectedStudentId) {
       setSelectedStudentIds(new Set([preselectedStudentId]));
+      setSelectedGroupIds(new Set());
     }
     if (preselectedGroupId) {
       const groupStudentIds = students
         .filter((s) => s.group_id === preselectedGroupId)
         .map((s) => s.id);
       setSelectedStudentIds(new Set(groupStudentIds));
+      setSelectedGroupIds(new Set([preselectedGroupId]));
       setExpandedGroups(new Set([preselectedGroupId]));
     }
   }, [isOpen, preselectedStudentId, preselectedGroupId, students]);

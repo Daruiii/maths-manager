@@ -233,10 +233,14 @@ import-sample-local:
 	@echo "⚠️  Cette opération va écraser toutes les données locales !"
 	@if docker ps 2>/dev/null | grep -q mathsmanager-db; then \
 		echo "🐳 Détecté : Docker container (mathsmanager-db)"; \
+		echo "🗄️  Réinitialisation de la base..."; \
+		docker exec mathsmanager-db mysql -u root -proot -e "DROP DATABASE IF EXISTS mathsManager; CREATE DATABASE mathsManager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; \
 		echo "🗄️  Import via Docker..."; \
 		gunzip -c mathsmanager-sample.sql.gz | docker exec -i mathsmanager-db mysql -u root -proot mathsManager; \
 	elif command -v mysql >/dev/null 2>&1; then \
 		echo "💻 Détecté : MySQL natif"; \
+		echo "🗄️  Réinitialisation de la base (saisissez votre mot de passe)..."; \
+		mysql -u root -p -e "DROP DATABASE IF EXISTS mathsmanager; CREATE DATABASE mathsmanager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; \
 		echo "🗄️  Import en base locale (saisissez votre mot de passe)..."; \
 		gunzip -c mathsmanager-sample.sql.gz | mysql -u root -p mathsmanager; \
 	else \

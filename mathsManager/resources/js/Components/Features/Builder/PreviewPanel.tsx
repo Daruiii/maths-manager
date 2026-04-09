@@ -14,9 +14,9 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
-import { BookOpen, Users } from 'lucide-react';
-import { DSPreviewItem as DSPreviewItemType } from '@/types/models';
-import DmPreviewItem from '@/Pages/Teacher/DM/Partials/DmPreviewItem';
+import { Clock, BookOpen, Users } from 'lucide-react';
+import { DSPreviewItem as DSPreviewItemType, DEFAULT_EXERCISE_MINUTES } from '@/types/models';
+import PreviewItem from '@/Components/Features/Builder/PreviewItem';
 import Button from '@/Components/Common/UI/Button';
 import EmptyState from '@/Components/Common/UI/EmptyState';
 
@@ -25,13 +25,38 @@ interface Props {
   onReorder: (items: DSPreviewItemType[]) => void;
   onRemove: (uid: string) => void;
   onAssign: () => void;
+  entityLabel: string;
+  showTime?: boolean;
 }
 
-export default function DmPreview({ items, onReorder, onRemove, onAssign }: Props) {
+function formatTime(totalMinutes: number): string {
+  if (totalMinutes === 0) return '0 min';
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${String(m).padStart(2, '0')}`;
+}
+
+export default function PreviewPanel({
+  items,
+  onReorder,
+  onRemove,
+  onAssign,
+  entityLabel,
+  showTime = false,
+}: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+
+  const totalMinutes = showTime
+    ? items.reduce((sum, i) => {
+        if (i.item.kind === 'problem') return sum + (i.item.time ?? 0);
+        return sum + DEFAULT_EXERCISE_MINUTES;
+      }, 0)
+    : 0;
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -45,19 +70,28 @@ export default function DmPreview({ items, onReorder, onRemove, onAssign }: Prop
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="px-2.5 py-2 border-b border-border-color flex-shrink-0">
-        <h2 className="text-xs font-comfortaa-bold text-text-color">
-          Sommaire
-          {items.length > 0 && (
-            <span className="ml-1 text-xxs font-normal text-text-gray">({items.length})</span>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-comfortaa-bold text-text-color">
+            Sommaire
+            {items.length > 0 && (
+              <span className="ml-1 text-xxs font-normal text-text-gray">({items.length})</span>
+            )}
+          </h2>
+
+          {showTime && totalMinutes > 0 && (
+            <span className="flex items-center gap-0.5 text-xs font-comfortaa-bold text-teacher-color">
+              <Clock size={11} />
+              {formatTime(totalMinutes)}
+            </span>
           )}
-        </h2>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
         {items.length === 0 ? (
           <EmptyState
             icon={BookOpen}
-            description="Clique sur un exercice pour l'ajouter au DM"
+            description={`Clique sur un exercice pour l'ajouter au ${entityLabel}`}
             accentColor="teacher"
           />
         ) : (
@@ -70,7 +104,13 @@ export default function DmPreview({ items, onReorder, onRemove, onAssign }: Prop
             <SortableContext items={items.map((i) => i.uid)} strategy={verticalListSortingStrategy}>
               <div className="space-y-1">
                 {items.map((item, index) => (
-                  <DmPreviewItem key={item.uid} item={item} index={index} onRemove={onRemove} />
+                  <PreviewItem
+                    key={item.uid}
+                    item={item}
+                    index={index}
+                    onRemove={onRemove}
+                    showTime={showTime}
+                  />
                 ))}
               </div>
             </SortableContext>

@@ -8,9 +8,9 @@ import {
 } from '@/types/models';
 import { DM_PICKER_TABS } from '@/Constants/dm';
 import { useDMExercisePicker } from '@/Hooks/DM/useDMExercisePicker';
-import ExercisePickerFiltersPanel from '@/Components/Features/DS/ExercisePickerFiltersPanel';
-import ExercisePickerHeader from '@/Components/Features/DS/ExercisePickerHeader';
-import ExercisePickerList from '@/Pages/Teacher/DS/Partials/ExercisePickerList';
+import ExercisePickerFiltersPanel from '@/Components/Features/Builder/ExercisePickerFiltersPanel';
+import ExercisePickerHeader from '@/Components/Features/Builder/ExercisePickerHeader';
+import ExercisePickerList from '@/Components/Features/Builder/ExercisePickerList';
 
 interface Props {
   multipleChapters: MultipleChapter[];
@@ -21,7 +21,7 @@ interface Props {
   onToggle: (item: PickableItem) => void;
 }
 
-export default function DmExercisePicker({
+export default function ExercisePicker({
   multipleChapters,
   subchapters,
   academies,

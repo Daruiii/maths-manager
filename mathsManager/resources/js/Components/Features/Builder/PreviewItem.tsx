@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, X } from 'lucide-react';
+import { GripVertical, X, Clock } from 'lucide-react';
 import IconButton from '@/Components/Common/UI/IconButton';
 import { DSPreviewItem as DSPreviewItemType } from '@/types/models';
 
@@ -8,9 +8,10 @@ interface Props {
   item: DSPreviewItemType;
   index: number;
   onRemove: (uid: string) => void;
+  showTime?: boolean;
 }
 
-export default function DmPreviewItem({ item, index, onRemove }: Props) {
+export default function PreviewItem({ item, index, onRemove, showTime = false }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.uid,
   });
@@ -27,6 +28,8 @@ export default function DmPreviewItem({ item, index, onRemove }: Props) {
       : current.kind === 'exercise'
         ? current.subchapter?.title
         : 'Privé';
+  const time =
+    current.kind === 'problem' ? current.time : current.kind === 'private' ? current.time : null;
 
   return (
     <div
@@ -58,6 +61,13 @@ export default function DmPreviewItem({ item, index, onRemove }: Props) {
         </p>
         {chapterName && <p className="text-xxs text-text-gray truncate">{chapterName}</p>}
       </div>
+
+      {showTime && time != null && time > 0 && (
+        <span className="flex-shrink-0 flex items-center gap-0.5 text-xxs text-text-gray">
+          <Clock size={9} />
+          {time}
+        </span>
+      )}
 
       <IconButton
         icon={X}

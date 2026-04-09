@@ -3,10 +3,10 @@ import { PickableItem, MultipleChapter, Subchapter, TeacherTag } from '@/types/m
 import { ProblemSort, ExerciseSort, PrivateSort } from '@/types/ui';
 import { PickerTab } from '@/Constants/ds';
 import { getDifficultyLabel } from '@/Constants/exercisePicker';
-import { useProblemSearch } from '@/Hooks/DS/useProblemSearch';
-import { useExerciseSearch } from '@/Hooks/DS/useExerciseSearch';
-import { usePrivateExerciseSearch } from '@/Hooks/DS/usePrivateExerciseSearch';
-import { useExercisePickerOptions } from '@/Hooks/DS/useExercisePickerOptions';
+import { useDSProblemSearch } from '@/Hooks/DS/useDSProblemSearch';
+import { useDSExerciseSearch } from '@/Hooks/DS/useDSExerciseSearch';
+import { useDSPrivateSearch } from '@/Hooks/DS/useDSPrivateSearch';
+import { useExercisePickerOptions } from '@/Hooks/Builder/useExercisePickerOptions';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,13 +40,13 @@ interface Options {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export function useExercisePicker({ multipleChapters, subchapters, privateTags = [] }: Options) {
+export function useDSExercisePicker({ multipleChapters, subchapters, privateTags = [] }: Options) {
   const [tab, setTab] = useState<PickerTab>('problems');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
-  const problemSearch = useProblemSearch();
-  const exerciseSearch = useExerciseSearch();
-  const privateSearch = usePrivateExerciseSearch();
+  const problemSearch = useDSProblemSearch();
+  const exerciseSearch = useDSExerciseSearch();
+  const privateSearch = useDSPrivateSearch();
 
   const pickerOptions = useExercisePickerOptions({
     multipleChapters,

@@ -1,6 +1,6 @@
 import { useExerciseSearch } from '@/Hooks/Builder/useExerciseSearch';
 import { INITIAL_EXERCISE_SORT } from '@/Constants/ds';
 
-export function useTDExerciseSearch() {
-  return useExerciseSearch('teacher.td.builder.exercises', INITIAL_EXERCISE_SORT);
+export function useDSExerciseSearch() {
+  return useExerciseSearch('teacher.ds.builder.exercises', INITIAL_EXERCISE_SORT);
 }

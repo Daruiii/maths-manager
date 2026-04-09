@@ -12,12 +12,13 @@ import {
   Subchapter,
   TeacherTag,
 } from '@/types/models';
-import DmExercisePicker from '@/Pages/Teacher/DM/Partials/DmExercisePicker';
-import DmPreview from '@/Pages/Teacher/DM/Partials/DmPreview';
-import DmContent from '@/Pages/Teacher/DM/Partials/DmContent';
-import DmBuilderActions from '@/Pages/Teacher/DM/Partials/DmBuilderActions';
+import ExercisePicker from '@/Pages/Teacher/DM/Partials/ExercisePicker';
+import PreviewPanel from '@/Components/Features/Builder/PreviewPanel';
+import BuilderContent from '@/Components/Features/Builder/BuilderContent';
+import BuilderActions from '@/Components/Features/Builder/BuilderActions';
 import AssignStep from '@/Components/Features/Builder/AssignStep';
 import { useDMBuilderDraft, makeItemUid } from '@/Hooks/DM/useDMBuilderDraft';
+import { DM_DEFAULT_TITLE, DM_DEFAULT_LEVEL, DM_DEFAULT_INSTRUCTIONS } from '@/Constants/dm';
 
 interface Props {
   groups: StudentGroup[];
@@ -102,7 +103,9 @@ export default function Create({
               { label: 'Mes Élèves', href: route('teacher.students.index') },
               { label: 'Créer un DM' },
             ]}
-            action={<DmBuilderActions itemCount={previewItems.length} onReset={resetAll} />}
+            action={
+              <BuilderActions itemCount={previewItems.length} onReset={resetAll} entityLabel="DM" />
+            }
           />
         </div>
 
@@ -141,7 +144,7 @@ export default function Create({
               mobileTab !== 'picker' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <DmExercisePicker
+            <ExercisePicker
               multipleChapters={multipleChapters}
               subchapters={subchapters}
               academies={academies}
@@ -156,11 +159,16 @@ export default function Create({
               mobileTab !== 'preview' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <DmContent
+            <BuilderContent
               items={previewItems}
-              dmTitle={dmTitle}
-              dmLevel={dmLevel}
-              dmInstructions={dmInstructions}
+              entityLabel="DM"
+              includeProblems
+              title={dmTitle}
+              level={dmLevel}
+              instructions={dmInstructions}
+              defaultTitle={DM_DEFAULT_TITLE}
+              defaultLevel={DM_DEFAULT_LEVEL}
+              defaultInstructions={DM_DEFAULT_INSTRUCTIONS}
               onTitleChange={setDmTitle}
               onLevelChange={setDmLevel}
               onInstructionsChange={setDmInstructions}
@@ -172,11 +180,12 @@ export default function Create({
               mobileTab !== 'sommaire' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <DmPreview
+            <PreviewPanel
               items={previewItems}
               onReorder={handleReorder}
               onRemove={handleRemove}
               onAssign={() => setIsAssignOpen(true)}
+              entityLabel="DM"
             />
           </div>
         </div>

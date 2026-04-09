@@ -5,7 +5,7 @@ import { TDPickerTab } from '@/Constants/td';
 import { getDifficultyLabel } from '@/Constants/exercisePicker';
 import { useTDExerciseSearch } from '@/Hooks/TD/useTDExerciseSearch';
 import { useTDPrivateSearch } from '@/Hooks/TD/useTDPrivateSearch';
-import { useExercisePickerOptions } from '@/Hooks/DS/useExercisePickerOptions';
+import { useExercisePickerOptions } from '@/Hooks/Builder/useExercisePickerOptions';
 
 interface Chip {
   key: string;

@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { Loader2, SearchX, Lock } from 'lucide-react';
 import { PickableItem } from '@/types/models';
-import PickerCard from '@/Components/Features/DS/PickerCard';
+import PickerCard from '@/Components/Features/Builder/PickerCard';
 import EmptyState from '@/Components/Common/UI/EmptyState';
 import { PickerTab } from '@/Constants/ds';
 

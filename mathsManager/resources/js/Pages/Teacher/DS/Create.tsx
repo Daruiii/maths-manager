@@ -13,10 +13,11 @@ import {
   TeacherTag,
 } from '@/types/models';
 import ExercisePicker from '@/Pages/Teacher/DS/Partials/ExercisePicker';
-import DSPreview from '@/Pages/Teacher/DS/Partials/DSPreview';
-import DSContent from '@/Pages/Teacher/DS/Partials/DSContent';
-import DSBuilderActions from '@/Pages/Teacher/DS/Partials/DSBuilderActions';
+import PreviewPanel from '@/Components/Features/Builder/PreviewPanel';
+import BuilderContent from '@/Components/Features/Builder/BuilderContent';
+import BuilderActions from '@/Components/Features/Builder/BuilderActions';
 import AssignStep from '@/Components/Features/Builder/AssignStep';
+import { DS_DEFAULT_TITLE, DS_DEFAULT_LEVEL, DS_DEFAULT_INSTRUCTIONS } from '@/Constants/ds';
 import { useDSBuilderDraft, makeItemUid } from '@/Hooks/DS/useDSBuilderDraft';
 
 interface Props {
@@ -104,7 +105,9 @@ export default function Create({
               { label: 'Mes Élèves', href: route('teacher.students.index') },
               { label: 'Créer un DS' },
             ]}
-            action={<DSBuilderActions itemCount={previewItems.length} onReset={resetAll} />}
+            action={
+              <BuilderActions itemCount={previewItems.length} onReset={resetAll} entityLabel="DS" />
+            }
           />
         </div>
 
@@ -162,11 +165,17 @@ export default function Create({
               mobileTab !== 'preview' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <DSContent
+            <BuilderContent
               items={previewItems}
-              dsTitle={dsTitle}
-              dsLevel={dsLevel}
-              dsInstructions={dsInstructions}
+              entityLabel="DS"
+              includeProblems
+              showTime
+              title={dsTitle}
+              level={dsLevel}
+              instructions={dsInstructions}
+              defaultTitle={DS_DEFAULT_TITLE}
+              defaultLevel={DS_DEFAULT_LEVEL}
+              defaultInstructions={DS_DEFAULT_INSTRUCTIONS}
               onTitleChange={setDsTitle}
               onLevelChange={setDsLevel}
               onInstructionsChange={setDsInstructions}
@@ -179,11 +188,13 @@ export default function Create({
               mobileTab !== 'sommaire' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <DSPreview
+            <PreviewPanel
               items={previewItems}
               onReorder={handleReorder}
               onRemove={handleRemove}
               onAssign={() => setIsAssignOpen(true)}
+              entityLabel="DS"
+              showTime
             />
           </div>
         </div>

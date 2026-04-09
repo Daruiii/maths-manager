@@ -6,9 +6,10 @@ import Modal from '@/Components/Common/UI/Modal';
 interface Props {
   itemCount: number;
   onReset: () => void;
+  entityLabel: string;
 }
 
-export default function DSBuilderActions({ itemCount, onReset }: Props) {
+export default function BuilderActions({ itemCount, onReset, entityLabel }: Props) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   if (itemCount === 0) return null;
@@ -32,7 +33,9 @@ export default function DSBuilderActions({ itemCount, onReset }: Props) {
               <AlertTriangle size={18} className="text-error-color" />
             </div>
             <div>
-              <p className="font-comfortaa-bold text-text-color text-sm">Réinitialiser le DS ?</p>
+              <p className="font-comfortaa-bold text-text-color text-sm">
+                Réinitialiser le {entityLabel} ?
+              </p>
               <p className="text-xs text-text-gray mt-0.5">
                 Les {itemCount} exercice{itemCount > 1 ? 's' : ''} et les modifications du titre
                 seront perdus.

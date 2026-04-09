@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { PickableItem, DSPreviewItem, Subchapter, TeacherTag } from '@/types/models';
 import { useTDExercisePicker } from '@/Hooks/TD/useTDExercisePicker';
 import { TD_PICKER_TABS } from '@/Constants/td';
-import ExercisePickerFiltersPanel from '@/Components/Features/DS/ExercisePickerFiltersPanel';
-import ExercisePickerHeader from '@/Components/Features/DS/ExercisePickerHeader';
-import ExercisePickerList from '@/Pages/Teacher/DS/Partials/ExercisePickerList';
+import ExercisePickerFiltersPanel from '@/Components/Features/Builder/ExercisePickerFiltersPanel';
+import ExercisePickerHeader from '@/Components/Features/Builder/ExercisePickerHeader';
+import ExercisePickerList from '@/Components/Features/Builder/ExercisePickerList';
 
 interface Props {
   subchapters: Subchapter[];

@@ -6,10 +6,10 @@ import {
   Subchapter,
   TeacherTag,
 } from '@/types/models';
-import { useExercisePicker } from '@/Hooks/DS/useExercisePicker';
-import ExercisePickerFiltersPanel from '@/Components/Features/DS/ExercisePickerFiltersPanel';
-import ExercisePickerHeader from '@/Components/Features/DS/ExercisePickerHeader';
-import ExercisePickerList from './ExercisePickerList';
+import { useDSExercisePicker } from '@/Hooks/DS/useDSExercisePicker';
+import ExercisePickerFiltersPanel from '@/Components/Features/Builder/ExercisePickerFiltersPanel';
+import ExercisePickerHeader from '@/Components/Features/Builder/ExercisePickerHeader';
+import ExercisePickerList from '@/Components/Features/Builder/ExercisePickerList';
 
 interface Props {
   multipleChapters: MultipleChapter[];
@@ -39,7 +39,7 @@ export default function ExercisePicker({
     exerciseSearch,
     privateSearch,
     pickerOptions,
-  } = useExercisePicker({ multipleChapters, subchapters, privateTags });
+  } = useDSExercisePicker({ multipleChapters, subchapters, privateTags });
 
   const selectedIds = useMemo(
     () => new Set(previewItems.map((i) => `${i.item.kind}-${i.item.id}`)),

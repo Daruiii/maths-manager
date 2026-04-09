@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
-import { DSPreviewItem, PickableItem } from '@/types/models';
-import { DM_DEFAULT_TITLE, DM_DEFAULT_LEVEL, DM_DEFAULT_INSTRUCTIONS } from '@/Constants/dm';
+import { DSPreviewItem, DEFAULT_EXERCISE_MINUTES, PickableItem } from '@/types/models';
 import { getMacrosForContent } from '@/Utils/MacroRegistry';
 import { PageProps } from '@/types';
 import LatexRenderer from '@/Components/Common/UI/LatexRenderer';
@@ -12,8 +11,21 @@ import EditableText from '@/Components/Common/UI/EditableText';
 
 type EditingField = 'title' | 'level' | 'instructions' | null;
 
-function renderItemContent(item: PickableItem, teacherMacros: Record<string, string>) {
-  if (item.kind === 'problem') {
+function formatTime(totalMinutes: number): string {
+  if (totalMinutes === 0) return '0 min';
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${String(m).padStart(2, '0')}`;
+}
+
+function renderItemContent(
+  item: PickableItem,
+  teacherMacros: Record<string, string>,
+  includeProblems: boolean
+) {
+  if (includeProblems && item.kind === 'problem') {
     if (item.statement) return <LegacyKatexHtmlBlock html={item.statement} />;
     if (item.latex_statement) {
       const images = item.image_paths
@@ -34,19 +46,31 @@ function renderItemContent(item: PickableItem, teacherMacros: Record<string, str
 
 interface Props {
   items: DSPreviewItem[];
-  dmTitle: string;
-  dmLevel: string;
-  dmInstructions: string;
+  entityLabel: string;
+  includeProblems?: boolean;
+  showTime?: boolean;
+  title: string;
+  level: string;
+  instructions: string;
+  defaultTitle: string;
+  defaultLevel: string;
+  defaultInstructions: string;
   onTitleChange: (v: string) => void;
   onLevelChange: (v: string) => void;
   onInstructionsChange: (v: string) => void;
 }
 
-export default function DmContent({
+export default function BuilderContent({
   items,
-  dmTitle,
-  dmLevel,
-  dmInstructions,
+  entityLabel,
+  includeProblems = false,
+  showTime = false,
+  title,
+  level,
+  instructions,
+  defaultTitle,
+  defaultLevel,
+  defaultInstructions,
   onTitleChange,
   onLevelChange,
   onInstructionsChange,
@@ -55,17 +79,27 @@ export default function DmContent({
   const teacherMacros = getMacrosForContent('private-content', auth.user?.latex_macros);
   const [editingField, setEditingField] = useState<EditingField>(null);
 
+  const totalMinutes = showTime
+    ? items.reduce((sum, i) => {
+        if (i.item.kind === 'problem') return sum + (i.item.time ?? 0);
+        return sum + DEFAULT_EXERCISE_MINUTES;
+      }, 0)
+    : 0;
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="px-4 py-2 border-b border-border-color flex-shrink-0 flex items-center justify-between">
         <h2 className="text-sm font-comfortaa-bold text-text-color">
-          Aperçu du DM
+          Aperçu du {entityLabel}
           {items.length > 0 && (
             <span className="ml-1.5 text-xs font-normal text-text-gray">
               {items.length} exercices
             </span>
           )}
         </h2>
+        {showTime && totalMinutes > 0 && (
+          <span className="text-xs text-text-gray">{formatTime(totalMinutes)}</span>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -73,7 +107,7 @@ export default function DmContent({
           <div className="p-4">
             <EmptyState
               icon={BookOpen}
-              description="Sélectionne des exercices pour voir l'aperçu du DM"
+              description={`Sélectionne des exercices pour voir l'aperçu du ${entityLabel}`}
               accentColor="teacher"
             />
           </div>
@@ -82,12 +116,12 @@ export default function DmContent({
             <div className="text-center space-y-2 pb-6 border-b border-border-color">
               <div className="text-base font-bold uppercase text-text-color">
                 <EditableText
-                  value={dmTitle}
+                  value={title}
                   onChange={onTitleChange}
                   isEditing={editingField === 'title'}
                   onDoubleClick={() => setEditingField('title')}
                   onBlur={() => setEditingField(null)}
-                  placeholder={DM_DEFAULT_TITLE}
+                  placeholder={defaultTitle}
                   className="text-center"
                   renderValue={(v: string) => (
                     <span>
@@ -99,12 +133,12 @@ export default function DmContent({
               </div>
               <div className="text-base font-bold uppercase text-text-color">
                 <EditableText
-                  value={dmLevel}
+                  value={level}
                   onChange={onLevelChange}
                   isEditing={editingField === 'level'}
                   onDoubleClick={() => setEditingField('level')}
                   onBlur={() => setEditingField(null)}
-                  placeholder={DM_DEFAULT_LEVEL}
+                  placeholder={defaultLevel}
                   className="text-center"
                   renderValue={(v: string) => (
                     <span>
@@ -116,28 +150,28 @@ export default function DmContent({
               </div>
               <div className="text-sm font-cmu-italic text-text-color leading-relaxed pt-2">
                 <EditableText
-                  value={dmInstructions}
+                  value={instructions}
                   onChange={onInstructionsChange}
                   isEditing={editingField === 'instructions'}
                   onDoubleClick={() => setEditingField('instructions')}
                   onBlur={() => setEditingField(null)}
                   multiline
-                  placeholder={DM_DEFAULT_INSTRUCTIONS}
+                  placeholder={defaultInstructions}
                   className="text-center"
                 />
               </div>
             </div>
 
             <div className="space-y-12">
-              {items.map((dmItem, index) => {
-                const item = dmItem.item;
+              {items.map((previewItem, index) => {
+                const item = previewItem.item;
                 return (
-                  <div key={dmItem.uid} className="space-y-3">
+                  <div key={previewItem.uid} className="space-y-3">
                     <div className="flex items-baseline gap-2">
                       <span className="font-bold text-sm flex-shrink-0">Exercice {index + 1}.</span>
                     </div>
                     <div className="text-sm leading-relaxed">
-                      {renderItemContent(item, teacherMacros)}
+                      {renderItemContent(item, teacherMacros, includeProblems)}
                     </div>
                   </div>
                 );

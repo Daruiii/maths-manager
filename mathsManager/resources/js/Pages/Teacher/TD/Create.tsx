@@ -6,10 +6,11 @@ import FlashToast from '@/Components/Common/UI/FlashToast';
 import { route } from 'ziggy-js';
 import { StudentGroup, User, PickableItem, Subchapter, TeacherTag } from '@/types/models';
 import ExercisePicker from '@/Pages/Teacher/TD/Partials/ExercisePicker';
-import TDPreview from '@/Pages/Teacher/TD/Partials/TDPreview';
-import TDContent from '@/Pages/Teacher/TD/Partials/TDContent';
-import TDBuilderActions from '@/Pages/Teacher/TD/Partials/TDBuilderActions';
+import PreviewPanel from '@/Components/Features/Builder/PreviewPanel';
+import BuilderContent from '@/Components/Features/Builder/BuilderContent';
+import BuilderActions from '@/Components/Features/Builder/BuilderActions';
 import AssignStep from '@/Components/Features/Builder/AssignStep';
+import { TD_DEFAULT_TITLE, TD_DEFAULT_LEVEL, TD_DEFAULT_INSTRUCTIONS } from '@/Constants/td';
 import { useTDBuilderDraft, makeItemUid } from '@/Hooks/TD/useTDBuilderDraft';
 
 interface Props {
@@ -91,7 +92,9 @@ export default function Create({
               { label: 'Mes Élèves', href: route('teacher.students.index') },
               { label: 'Créer un TD' },
             ]}
-            action={<TDBuilderActions itemCount={previewItems.length} onReset={resetAll} />}
+            action={
+              <BuilderActions itemCount={previewItems.length} onReset={resetAll} entityLabel="TD" />
+            }
           />
         </div>
 
@@ -146,11 +149,15 @@ export default function Create({
               mobileTab !== 'preview' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <TDContent
+            <BuilderContent
               items={previewItems}
-              tdTitle={tdTitle}
-              tdLevel={tdLevel}
-              tdInstructions={tdInstructions}
+              entityLabel="TD"
+              title={tdTitle}
+              level={tdLevel}
+              instructions={tdInstructions}
+              defaultTitle={TD_DEFAULT_TITLE}
+              defaultLevel={TD_DEFAULT_LEVEL}
+              defaultInstructions={TD_DEFAULT_INSTRUCTIONS}
               onTitleChange={setTdTitle}
               onLevelChange={setTdLevel}
               onInstructionsChange={setTdInstructions}
@@ -163,11 +170,12 @@ export default function Create({
               mobileTab !== 'sommaire' ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <TDPreview
+            <PreviewPanel
               items={previewItems}
               onReorder={handleReorder}
               onRemove={handleRemove}
               onAssign={() => setIsAssignOpen(true)}
+              entityLabel="TD"
             />
           </div>
         </div>

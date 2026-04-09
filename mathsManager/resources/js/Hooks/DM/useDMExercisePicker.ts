@@ -6,7 +6,7 @@ import { getDifficultyLabel } from '@/Constants/exercisePicker';
 import { useDMProblemSearch } from '@/Hooks/DM/useDMProblemSearch';
 import { useDMExerciseSearch } from '@/Hooks/DM/useDMExerciseSearch';
 import { useDMPrivateSearch } from '@/Hooks/DM/useDMPrivateSearch';
-import { useExercisePickerOptions } from '@/Hooks/DS/useExercisePickerOptions';
+import { useExercisePickerOptions } from '@/Hooks/Builder/useExercisePickerOptions';
 
 interface Chip {
   key: string;
