@@ -33,6 +33,7 @@ Route::middleware(['auth', IsTeacher::class])
 
         // Mon Bureau (dashboard)
         Route::get('/bureau', [BureauController::class, 'index'])->name('bureau.index');
+        Route::get('/bureau/history', [BureauController::class, 'history'])->name('bureau.history');
 
         // Exercices privés
         Route::get('/exercices', [PrivateExerciseController::class, 'index'])->name('exercices.index');

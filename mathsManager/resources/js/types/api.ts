@@ -13,6 +13,34 @@ export interface PaginatedResponse<T> {
   total: number;
 }
 
+export type BureauActivityType =
+  | 'ds_assigned'
+  | 'td_assigned'
+  | 'dm_assigned'
+  | 'student_joined'
+  | 'invitation_configured'
+  | 'correction_requested'
+  | 'correction_processed';
+
+export type BureauActivityScope = 'assignments' | 'students' | 'corrections';
+
+export interface BureauActivity {
+  id: string;
+  type: BureauActivityType;
+  scope: BureauActivityScope;
+  title: string;
+  description: string;
+  occurred_at: string | null;
+}
+
+export interface BureauHistoryFilters {
+  search: string;
+  scope: 'all' | BureauActivityScope;
+  type: 'all' | BureauActivityType;
+  sort: 'asc' | 'desc';
+  per_page: number;
+}
+
 // ─── Catalogue (dropdowns classification) ─────────────────────────────────────
 
 /** Sous-ensemble allégé de Classe pour les selects/filtres */

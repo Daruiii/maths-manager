@@ -1,7 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import { History } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import RessourceCard from '@/Components/Common/UI/RessourceCard';
+import Button from '@/Components/Common/UI/Button';
 import { CONTENT_ITEM_META, CONTENT_TYPE_META } from '@/Constants/contentTypes';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -22,6 +24,13 @@ export default function BureauIndex({ stats }: Props) {
           title="Mon Bureau"
           subtitle="Vos ressources pédagogiques personnelles"
           breadcrumbs={[{ label: 'Mon Bureau' }]}
+          action={
+            <Link href={route('teacher.bureau.history')}>
+              <Button variant="ghost" icon={History} size="sm">
+                Historique
+              </Button>
+            </Link>
+          }
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

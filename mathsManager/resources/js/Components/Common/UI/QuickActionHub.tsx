@@ -61,7 +61,7 @@ export default function QuickActionHub() {
       {/* Actions menu */}
       {isOpen && (
         <div
-          className={`absolute flex flex-col gap-0.5 min-w-[200px] overflow-y-auto pb-2 ${
+          className={`absolute flex flex-col gap-0.5 min-w-[200px] overflow-y-auto overflow-x-hidden pb-2 ${
             opensUpward ? 'bottom-14' : 'top-14'
           } ${menuAlignRight ? 'left-0' : 'right-0'}`}
           style={{

@@ -106,8 +106,13 @@ class TeacherInvitationController extends Controller
                 ->with('error', 'Les professeurs et administrateurs ne peuvent pas rejoindre une classe en tant qu\'élève.');
         }
 
+        $teacherJoinedAt = $student->teacher_id === $invitation->teacher_id
+            ? ($student->teacher_joined_at ?? now())
+            : now();
+
         $student->update([
             'teacher_id' => $invitation->teacher_id,
+            'teacher_joined_at' => $teacherJoinedAt,
             'group_id'   => $invitation->group_id,
         ]);
 

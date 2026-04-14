@@ -19,6 +19,7 @@ use App\Policies\TeacherStudentPolicy;
 use App\Policies\TeacherTagPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use RuntimeException;
 use View;
 use App\Models\Classe;
 use App\Models\DS;
@@ -39,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->guardAgainstUnsafeDatabaseCommands();
+
         // ─── Observers ─────────────────────────────────────────────────────────
         PrivateExercise::observe(PrivateExerciseObserver::class);
         Exercise::observe(ExerciseObserver::class);
@@ -105,5 +108,78 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Prevent destructive commands from targeting non-test databases.
+     */
+    private function guardAgainstUnsafeDatabaseCommands(): void
+    {
+        if (!app()->runningInConsole()) {
+            return;
+        }
+
+        $argv = $_SERVER['argv'] ?? [];
+        $command = $this->extractArtisanCommand($argv);
+
+        if (!$command) {
+            return;
+        }
+
+        $dangerousCommands = ['test', 'migrate:fresh', 'migrate:refresh', 'db:wipe'];
+        if (!in_array($command, $dangerousCommands, true)) {
+            return;
+        }
+
+        $forcedEnv = null;
+        foreach ($argv as $arg) {
+            if (str_starts_with($arg, '--env=')) {
+                $forcedEnv = substr($arg, 6);
+                break;
+            }
+        }
+
+        $effectiveEnv = $forcedEnv ?: app()->environment();
+        $connection = (string) config('database.default');
+        $database = (string) config("database.connections.{$connection}.database");
+
+        if ($connection === 'sqlite') {
+            return;
+        }
+
+        $databaseLooksLikeTest = str_contains(strtolower($database), 'test');
+
+        if ($command === 'test') {
+            if ($effectiveEnv !== 'testing') {
+                throw new RuntimeException(
+                    "Blocked unsafe `artisan test`: env='{$effectiveEnv}'. Use `--env=testing`."
+                );
+            }
+
+            return;
+        }
+
+        if (!$databaseLooksLikeTest) {
+            throw new RuntimeException(
+                "Blocked unsafe `artisan {$command}` on non-test database '{$database}'."
+            );
+        }
+    }
+
+    private function extractArtisanCommand(array $argv): ?string
+    {
+        foreach ($argv as $arg) {
+            if ($arg === 'artisan') {
+                continue;
+            }
+
+            if (str_starts_with($arg, '-')) {
+                continue;
+            }
+
+            return $arg;
+        }
+
+        return null;
     }
 }

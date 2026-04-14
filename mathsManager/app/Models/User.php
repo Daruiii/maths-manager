@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'provider_id',
         'provider_token',
         'teacher_id',
+    'teacher_joined_at',
         'group_id',
         // Teacher profile fields
         'phone',
@@ -141,6 +142,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'teacher_joined_at' => 'datetime',
             'password' => 'hashed',
             'latex_macros' => 'array',
         ];

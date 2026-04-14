@@ -75,6 +75,7 @@ class TeacherStudentController extends Controller
 
         $student->update([
             'teacher_id' => null,
+            'teacher_joined_at' => null,
             'group_id'   => null,
         ]);
 
