@@ -3,6 +3,7 @@ import { Check, Copy, Image as ImageIcon, Plus, X } from 'lucide-react';
 import { PrivateExercise } from '@/types/models';
 import { useImageUploadDropZone } from '@/Hooks/UI/useImageUploadDropZone';
 import { buildGraphSnippet } from '@/Utils/latexInsertion';
+import { normalizeStoragePath } from '@/Utils/pickableItemContent';
 
 interface Props {
   exercise: PrivateExercise;
@@ -60,7 +61,11 @@ export default function ExerciseImageSection({
             }}
             className="relative group w-16 h-16 shrink-0 rounded-xl overflow-hidden border border-border-color"
           >
-            <img src={`/storage/${path}`} alt={name} className="w-full h-full object-cover" />
+            <img
+              src={normalizeStoragePath(path)}
+              alt={name}
+              className="w-full h-full object-cover"
+            />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
             <div className="absolute top-0.5 right-0.5 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button

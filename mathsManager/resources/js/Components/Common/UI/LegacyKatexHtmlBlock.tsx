@@ -15,6 +15,8 @@ function normalizeServerHtml(html: string): string {
       /storage\/ds_exercises\/ds_exercise_(\d+)\/(\d+)\.(png|jpg|jpeg|gif|webp)/g,
       'storage/ds-exercises/ds-exercise-$1/img-$2.$3'
     )
+    .replace(/(["'(])storage\//g, '$1/storage/')
+    .replace(/(["'(])public\/storage\//g, '$1/storage/')
     .replace(/\\\\[ \t]*/g, '<br>');
 }
 

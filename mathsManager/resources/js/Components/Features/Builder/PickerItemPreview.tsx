@@ -9,6 +9,8 @@ import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import LatexRenderer from '@/Components/Common/UI/LatexRenderer';
 import { getMacrosForContent } from '@/Utils/MacroRegistry';
+import LegacyKatexHtmlBlock from '@/Components/Common/UI/LegacyKatexHtmlBlock';
+import { getRenderablePickableContent } from '@/Utils/pickableItemContent';
 
 interface Props {
   item: PickableItem;
@@ -90,8 +92,7 @@ export default function PickerItemPreview({ item, onClose }: Props) {
   const academy = item.kind === 'problem' ? (item as PickableProblem).academy : null;
   const harder = item.kind === 'problem' ? (item as PickableProblem).harder_exercise : false;
 
-  const latexStatement = item.latex_statement;
-  const imagePaths = (item as PickableProblem).image_paths ?? undefined;
+  const { statementHtml, latexStatement, images } = getRenderablePickableContent(item);
 
   const macros =
     item.kind === 'private'
@@ -135,19 +136,25 @@ export default function PickerItemPreview({ item, onClose }: Props) {
           </div>
         )}
 
-        {/* LaTeX statement */}
-        {latexStatement && latexStatement.trim() !== '' && (
+        {/* Statement */}
+        {statementHtml && (
+          <div className="border-t border-border-color pt-3">
+            <LegacyKatexHtmlBlock html={statementHtml} />
+          </div>
+        )}
+
+        {!statementHtml && latexStatement && (
           <div className="border-t border-border-color pt-3">
             <LatexRenderer
               latex={latexStatement}
-              images={imagePaths}
+              images={images}
               macros={macros}
               className="text-sm text-text-color"
             />
           </div>
         )}
 
-        {!latexStatement && (
+        {!statementHtml && !latexStatement && (
           <p className="text-xs text-text-gray italic">Aucun énoncé disponible.</p>
         )}
       </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Loader2, Trash2 } from 'lucide-react';
 import { getMacrosForContent } from '@/Utils/MacroRegistry';
+import { normalizeStoragePath } from '@/Utils/pickableItemContent';
 import { PageProps } from '@/types';
 import { PrivateExercise, TeacherTag } from '@/types/models';
 import { usePrivateExerciseForm } from '@/Hooks/PrivateExercise/usePrivateExerciseForm';
@@ -48,7 +49,7 @@ export default function ExercicesEdit({
     createTag,
   } = usePrivateExerciseForm(exercise);
   const imageMap = Object.fromEntries(
-    Object.entries(exercise.image_paths ?? {}).map(([k, v]) => [k, `/storage/${v}`])
+    Object.entries(exercise.image_paths ?? {}).map(([k, v]) => [k, normalizeStoragePath(v)])
   );
   const { blockingIssues, isSubmitBlockedModalOpen, closeSubmitBlockedModal, guardBeforeSubmit } =
     useContentSubmitBlocking();

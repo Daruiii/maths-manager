@@ -3,6 +3,7 @@ import { BookOpen } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { DSPreviewItem, DEFAULT_EXERCISE_MINUTES, PickableItem } from '@/types/models';
 import { getMacrosForContent } from '@/Utils/MacroRegistry';
+import { getRenderablePickableContent } from '@/Utils/pickableItemContent';
 import { PageProps } from '@/types';
 import LatexRenderer from '@/Components/Common/UI/LatexRenderer';
 import EmptyState from '@/Components/Common/UI/EmptyState';
@@ -25,21 +26,15 @@ function renderItemContent(
   teacherMacros: Record<string, string>,
   includeProblems: boolean
 ) {
+  const { statementHtml, latexStatement, images } = getRenderablePickableContent(item);
+
   if (includeProblems && item.kind === 'problem') {
-    if (item.statement) return <LegacyKatexHtmlBlock html={item.statement} />;
-    if (item.latex_statement) {
-      const images = item.image_paths
-        ? Object.fromEntries(Object.entries(item.image_paths).map(([k, v]) => [k, `/storage/${v}`]))
-        : {};
-      return <LatexRenderer latex={item.latex_statement} images={images} />;
-    }
+    if (statementHtml) return <LegacyKatexHtmlBlock html={statementHtml} />;
+    if (latexStatement) return <LatexRenderer latex={latexStatement} images={images} />;
   }
-  if ((item.kind === 'exercise' || item.kind === 'private') && item.latex_statement) {
-    const images = item.image_paths
-      ? Object.fromEntries(Object.entries(item.image_paths).map(([k, v]) => [k, `/storage/${v}`]))
-      : {};
+  if ((item.kind === 'exercise' || item.kind === 'private') && latexStatement) {
     const macros = item.kind === 'private' ? teacherMacros : undefined;
-    return <LatexRenderer latex={item.latex_statement} images={images} macros={macros} />;
+    return <LatexRenderer latex={latexStatement} images={images} macros={macros} />;
   }
   return <p className="text-xs text-text-gray italic">Énoncé non disponible</p>;
 }
