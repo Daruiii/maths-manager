@@ -11,7 +11,7 @@
     "tsc": "tsc --noEmit",
     "test:react": "vitest run",
     "test:react:watch": "vitest",
-    "precommit": "npm run tsc && npm run lint && npm run prettier:check && npm run test:react && php artisan test --env=testing"
+    "precommit": "npm run tsc && npm run lint && npm run prettier:check && npm run test:react && php artisan config:clear && php artisan test --env=testing"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.2",

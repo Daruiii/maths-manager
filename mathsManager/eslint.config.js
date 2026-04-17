@@ -59,6 +59,8 @@ export default [
         Element: 'readonly',
         Node: 'readonly',
         MouseEvent: 'readonly',
+        KeyboardEvent: 'readonly',
+        DOMRect: 'readonly',
         fetch: 'readonly',
         Event: 'readonly',
         // Node globals

@@ -20,7 +20,8 @@ abstract class TestCase extends BaseTestCase
 
         if ($database === '' || !str_contains(strtolower($database), 'test')) {
             throw new RuntimeException(
-                "Unsafe test database detected: '{$database}'. Expected a dedicated test database."
+                "Unsafe test database detected: '{$database}'. Expected a dedicated test database. " .
+                "If this is local, clear cached config first: `php artisan config:clear`."
             );
         }
     }

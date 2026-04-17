@@ -85,7 +85,6 @@ export default function ExercisePickerHeader({
 
   return (
     <div className="px-3 pt-2.5 pb-2 border-b border-border-color space-y-2 flex-shrink-0">
-      {/* Tabs + compteur */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex gap-1.5">
           {tabs.map((item) => (
@@ -108,7 +107,6 @@ export default function ExercisePickerHeader({
         )}
       </div>
 
-      {/* Search + boutons */}
       <div className="flex items-center gap-1.5">
         <div className="flex-1">
           <SearchBar
@@ -132,8 +130,8 @@ export default function ExercisePickerHeader({
           isActive={isFiltersOpen}
           onClick={onToggleFilters}
           title="Filtres"
+          size="md"
         />
-        {/* Sort dropdown */}
         <div ref={sortRef} className="relative">
           <IconButton
             icon={ArrowUpDown}
@@ -142,6 +140,7 @@ export default function ExercisePickerHeader({
             isActive={!!sort.by}
             onClick={() => setIsSortOpen((v) => !v)}
             title="Trier"
+            size="md"
           />
           {isSortOpen && (
             <div className="absolute right-0 top-full mt-1 z-20 bg-primary-color border border-border-color rounded-xl shadow-lg py-1 min-w-[140px]">
@@ -175,7 +174,6 @@ export default function ExercisePickerHeader({
         </div>
       </div>
 
-      {/* Chips filtres actifs */}
       {chips.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {chips.map((chip) => (

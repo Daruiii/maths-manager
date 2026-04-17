@@ -77,16 +77,16 @@ else
     echo ""
 fi
 
-# 5. Tests (PHPUnit) - Désactivé pendant la migration Inertia
-# echo "🐘 Running PHPUnit tests..."
-# if ./vendor/bin/phpunit --stop-on-failure; then
-#     echo -e "${GREEN}✓ PHP tests OK${NC}"
-#     echo ""
-# else
-#     echo -e "${RED}✗ PHP tests failed${NC}"
-#     echo ""
-#     ERRORS=$((ERRORS + 1))
-# fi
+# 5. PHP tests (safe testing env)
+echo "🐘 Running PHP tests..."
+if php artisan config:clear && php artisan test --env=testing; then
+    echo -e "${GREEN}✓ PHP tests OK${NC}"
+    echo ""
+else
+    echo -e "${RED}✗ PHP tests failed${NC}"
+    echo ""
+    ERRORS=$((ERRORS + 1))
+fi
 
 # Summary
 echo "=============================="

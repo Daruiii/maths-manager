@@ -2,8 +2,10 @@ import { useCallback, useRef } from 'react';
 import { Loader2, SearchX, Lock } from 'lucide-react';
 import { PickableItem } from '@/types/models';
 import PickerCard from '@/Components/Features/Builder/PickerCard';
+import PickerPreviewPortal from '@/Components/Features/Builder/PickerPreviewPortal';
 import EmptyState from '@/Components/Common/UI/EmptyState';
 import { PickerTab } from '@/Constants/ds';
+import { usePickerPreview } from '@/Hooks/Builder/usePickerPreview';
 
 interface Props {
   tab: PickerTab;
@@ -21,7 +23,7 @@ interface Props {
 
 /**
  * ExercisePickerList — Composant interne du Picker gérant l'affichage de la liste
- * avec scroll infini et états de chargement/erreur.
+ * avec scroll infini, états de chargement/erreur, et preview au survol/tap.
  */
 export default function ExercisePickerList({
   tab,
@@ -36,7 +38,18 @@ export default function ExercisePickerList({
   onResetFilters,
   showResetFilters,
 }: Props) {
-  // Callback ref pour l'Intersection Observer (infinite scroll)
+  const {
+    isTouch,
+    canPreview,
+    previewState,
+    handlePreview,
+    scheduleClose,
+    handleClose,
+    handleToggle,
+    cancelCloseTimer,
+  } = usePickerPreview({ onToggle });
+
+  // ── Infinite scroll ──────────────────────────────────────────────────────────
   const observerRef = useRef<InstanceType<typeof window.IntersectionObserver> | null>(null);
   const sentinelRef = useCallback(
     (el: HTMLDivElement | null) => {
@@ -56,6 +69,7 @@ export default function ExercisePickerList({
     [onLoadMore]
   );
 
+  // ── Early returns ────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -91,26 +105,45 @@ export default function ExercisePickerList({
     );
   }
 
+  // ── List ─────────────────────────────────────────────────────────────────────
   return (
-    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-      {items.map((item) => (
-        <PickerCard
-          key={`${item.kind}-${item.id}`}
-          item={item}
-          isSelected={selectedIds.has(`${item.kind}-${item.id}`)}
-          onToggle={onToggle}
-        />
-      ))}
+    <>
+      <div
+        className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2"
+        onMouseLeave={scheduleClose}
+      >
+        {items.map((item) => {
+          const isSelected = selectedIds.has(`${item.kind}-${item.id}`);
 
-      {hasMore && (
-        <div ref={sentinelRef} className="flex items-center justify-center py-4">
-          {loadingMore ? (
-            <Loader2 size={18} className="animate-spin text-teacher-color" />
-          ) : (
-            <div className="h-4" />
-          )}
-        </div>
-      )}
-    </div>
+          return (
+            <PickerCard
+              key={`${item.kind}-${item.id}`}
+              item={item}
+              isSelected={isSelected}
+              onToggle={handleToggle}
+              onPreview={canPreview && !isSelected ? handlePreview : undefined}
+            />
+          );
+        })}
+
+        {hasMore && (
+          <div ref={sentinelRef} className="flex items-center justify-center py-4">
+            {loadingMore ? (
+              <Loader2 size={18} className="animate-spin text-teacher-color" />
+            ) : (
+              <div className="h-4" />
+            )}
+          </div>
+        )}
+      </div>
+
+      <PickerPreviewPortal
+        isTouch={isTouch}
+        previewState={canPreview ? previewState : null}
+        onClose={handleClose}
+        onMouseEnter={cancelCloseTimer}
+        onMouseLeave={scheduleClose}
+      />
+    </>
   );
 }

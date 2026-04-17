@@ -73,7 +73,12 @@ export function convertLatexToHtml(
   // Ordre important : display math avant inline math pour éviter les faux matchs
   html = html.replace(/\$\$[\s\S]*?\$\$/g, save);
   html = html.replace(/\\\[[\s\S]*?\\\]/g, save);
-  html = html.replace(/\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\}/g, save);
+  // Sauvegarder uniquement les environnements mathématiques KaTeX (pas center, itemize, etc.)
+  const MATH_ENVS =
+    /^(equation\*?|matrix|[bBpvV]matrix|cases|align\*?|gather\*?|split|multiline\*?|array|subequations|gathered|smallmatrix|CD)$/;
+  html = html.replace(/\\begin\{([^}]+)\}[\s\S]*?\\end\{\1\}/g, (match, env: string) =>
+    MATH_ENVS.test(env) ? save(match) : match
+  );
   html = html.replace(/\\\([\s\S]*?\\\)/g, save);
   html = html.replace(/\$[^$\n]+?\$/g, save);
   // Commandes display standalone (pas de right delimiter — on protège jusqu'à fin de "mot" LaTeX)

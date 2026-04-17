@@ -3,6 +3,7 @@ import { LucideIcon } from 'lucide-react';
 
 type AccentColor = 'teacher' | 'student' | 'admin' | 'error' | 'default';
 type Variant = 'ghost' | 'bordered';
+type Size = 'sm' | 'md';
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: LucideIcon;
@@ -10,6 +11,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   isActive?: boolean;
   accentColor?: AccentColor;
   variant?: Variant;
+  size?: Size;
 }
 
 const accentMap: Record<AccentColor, { hover: string; active: string }> = {
@@ -41,14 +43,16 @@ export default function IconButton({
   isActive = false,
   accentColor = 'default',
   variant = 'ghost',
+  size = 'sm',
   className = '',
   ...props
 }: Props) {
   const accent = accentMap[accentColor];
+  const sizeClass = size === 'md' ? 'h-10 w-10' : 'h-8 w-8';
 
   const base =
     variant === 'bordered'
-      ? `inline-flex items-center justify-center h-8 w-8 rounded-lg border transition-colors shrink-0 ${
+      ? `inline-flex items-center justify-center ${sizeClass} rounded-lg border transition-colors shrink-0 ${
           isActive ? accent.active : `border-border-color text-text-gray ${accent.hover}`
         }`
       : `p-1 rounded-lg transition-colors ${

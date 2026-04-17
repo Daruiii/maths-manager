@@ -4,6 +4,7 @@
  */
 
 import type { LucideIcon } from 'lucide-react';
+import type { PickableItem } from '@/types/models';
 
 // ─── Profile ──────────────────────────────────────────────────────────────────
 
@@ -51,4 +52,13 @@ export interface QuickAction {
   disabled?: boolean;
   comingSoon?: boolean;
   separatorBefore?: boolean; // renders a divider above this item
+}
+
+// ─── Builder Preview ──────────────────────────────────────────────────────────
+
+export type PreviewTriggerSource = 'hover' | 'action';
+
+export interface PickerPreviewState {
+  item: PickableItem;
+  rect: DOMRect;
 }

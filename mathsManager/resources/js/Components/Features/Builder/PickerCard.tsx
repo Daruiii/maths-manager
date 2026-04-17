@@ -6,11 +6,13 @@ import {
   PickablePrivateExercise,
 } from '@/types/models';
 import { CONTENT_ITEM_META } from '@/Constants/contentTypes';
+import { PreviewTriggerSource } from '@/types/ui';
 
 interface Props {
   item: PickableItem;
   isSelected: boolean;
   onToggle: (item: PickableItem) => void;
+  onPreview?: (item: PickableItem, rect: DOMRect, source: PreviewTriggerSource) => void;
 }
 
 function KindChip({ kind }: { kind: PickableItem['kind'] }) {
@@ -100,7 +102,7 @@ function ProblemMetaWithKind({ problem }: { problem: PickableProblem }) {
   );
 }
 
-export default function PickerCard({ item, isSelected, onToggle }: Props) {
+export default function PickerCard({ item, isSelected, onToggle, onPreview }: Props) {
   const breadcrumb =
     item.kind === 'problem'
       ? ((item as PickableProblem).multiple_chapter?.title ?? '—')
@@ -117,7 +119,12 @@ export default function PickerCard({ item, isSelected, onToggle }: Props) {
     <button
       type="button"
       onClick={() => onToggle(item)}
-      className={`w-full text-left flex items-center gap-0 rounded-xl border-2 transition-all group overflow-hidden ${
+      onMouseEnter={
+        onPreview
+          ? (e) => onPreview(item, e.currentTarget.getBoundingClientRect(), 'hover')
+          : undefined
+      }
+      className={`relative w-full text-left flex items-center gap-0 rounded-xl border-2 transition-all group overflow-hidden ${
         isSelected
           ? 'border-teacher-color bg-teacher-color/5'
           : 'border-border-color bg-secondary-color hover:border-teacher-color/50 hover:bg-teacher-color/5'
