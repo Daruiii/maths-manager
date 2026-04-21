@@ -101,7 +101,7 @@ export function usePrivateExerciseForm(exercise?: PrivateExercise | null) {
   /**
    * Submit :
    * - Edit (routeParams fourni) → router.put Inertia classique
-   * - Create (pas de routeParams) → axios.post JSON → upload pending images → router.visit Edit
+   * - Create (pas de routeParams) → router.post Inertia + upload d'images intégré
    */
   function submit(routeName: string, routeParams?: object, onSuccess?: () => void) {
     setProcessing(true);
@@ -122,32 +122,32 @@ export function usePrivateExerciseForm(exercise?: PrivateExercise | null) {
         },
       });
     } else {
-      // ── Mode Create : axios pour récupérer l'ID puis uploader les images pending ──
-      axios
-        .post(route(routeName), buildPayload())
-        .then(async (res) => {
-          const exerciseId = (res.data as { id: number }).id;
+      // ── Mode Create : submit Inertia avec images pending pour garder redirect + flash serveur ──
+      const pendingFiles = Object.fromEntries(
+        Object.entries(pendingImages).map(([name, pending]) => [name, pending.file])
+      );
 
-          // Upload des images pending dans l'ordre
-          for (const [, { file }] of Object.entries(pendingImages)) {
-            const formData = new FormData();
-            formData.append('image', file);
-            await axios.post(route('teacher.exercices.images.upload', exerciseId), formData);
-          }
-
-          // Cleanup blob URLs
-          Object.values(pendingImages).forEach(({ blobUrl }) => URL.revokeObjectURL(blobUrl));
-
-          router.visit(route('teacher.exercices.edit', exerciseId));
-        })
-        .catch((err) => {
-          setProcessing(false);
-          if (err.response?.data?.errors) {
-            setErrors(
-              err.response.data.errors as Partial<Record<keyof PrivateExerciseFormData, string>>
-            );
-          }
-        });
+      router.post(
+        route(routeName),
+        {
+          ...buildPayload(),
+          pending_images: pendingFiles,
+        },
+        {
+          forceFormData: true,
+          preserveScroll: true,
+          onSuccess: () => {
+            Object.values(pendingImages).forEach(({ blobUrl }) => URL.revokeObjectURL(blobUrl));
+            setPendingImages({});
+            setProcessing(false);
+            onSuccess?.();
+          },
+          onError: (errs: Record<string, string>) => {
+            setProcessing(false);
+            setErrors(errs as Partial<Record<keyof PrivateExerciseFormData, string>>);
+          },
+        }
+      );
     }
   }
 
