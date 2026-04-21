@@ -1,15 +1,20 @@
 import { Head, Link } from '@inertiajs/react';
-import { History } from 'lucide-react';
+import { History, BookMarked } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import RessourceCard from '@/Components/Common/UI/RessourceCard';
 import Button from '@/Components/Common/UI/Button';
-import { CONTENT_ITEM_META, CONTENT_TYPE_META } from '@/Constants/contentTypes';
+import { CONTENT_ITEM_META } from '@/Constants/contentTypes';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Props {
-  stats: { exercisesCount: number };
+  stats: {
+    exercisesCount: number;
+    dsTemplatesCount: number;
+    tdTemplatesCount: number;
+    dmTemplatesCount: number;
+  };
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -33,7 +38,7 @@ export default function BureauIndex({ stats }: Props) {
           }
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <RessourceCard
             icon={CONTENT_ITEM_META.private.icon}
             title="Exercices privés"
@@ -43,25 +48,12 @@ export default function BureauIndex({ stats }: Props) {
             color="teacher"
           />
           <RessourceCard
-            icon={CONTENT_TYPE_META.ds.icon}
-            title={CONTENT_TYPE_META.ds.savedTitle}
-            subtitle={CONTENT_TYPE_META.ds.savedSubtitle}
-            href="#"
-            available={false}
-          />
-          <RessourceCard
-            icon={CONTENT_TYPE_META.td.icon}
-            title={CONTENT_TYPE_META.td.savedTitle}
-            subtitle={CONTENT_TYPE_META.td.savedSubtitle}
-            href="#"
-            available={false}
-          />
-          <RessourceCard
-            icon={CONTENT_TYPE_META.dm.icon}
-            title={CONTENT_TYPE_META.dm.savedTitle}
-            subtitle={CONTENT_TYPE_META.dm.savedSubtitle}
-            href="#"
-            available={false}
+            icon={BookMarked}
+            title="Mes modèles"
+            subtitle="DS, TD et DM sauvegardés"
+            count={stats.dsTemplatesCount + stats.tdTemplatesCount + stats.dmTemplatesCount}
+            href={route('teacher.bureau.templates')}
+            color="teacher"
           />
         </div>
       </div>

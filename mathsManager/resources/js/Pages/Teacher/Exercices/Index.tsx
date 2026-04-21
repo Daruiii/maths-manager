@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, Plus, Search } from 'lucide-react';
+import { BookOpen, Plus, Filter, RotateCcw } from 'lucide-react';
 import { PrivateExercise, TeacherTag } from '@/types/models';
 import { PaginatedResponse } from '@/types/api';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import Pagination from '@/Components/Common/UI/Pagination';
 import EmptyState from '@/Components/Common/UI/EmptyState';
-import DifficultyPicker from '@/Components/Common/Form/DifficultyPicker';
+import SearchBar from '@/Components/Common/UI/SearchBar';
+import ButtonModal from '@/Components/Common/UI/ButtonModal';
+import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
+import Button from '@/Components/Common/UI/Button';
+import ExerciseRow from '@/Pages/Teacher/Exercices/Partials/ExerciseRow';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -15,6 +20,7 @@ interface Filters {
   type?: string;
   difficulty?: string;
   tag_id?: string;
+  sort?: string;
 }
 
 interface Props {
@@ -23,31 +29,26 @@ interface Props {
   filters: Filters;
 }
 
-// ─── Exercise card ─────────────────────────────────────────────────────────────
-
-function ExerciseRow({ exercise }: { exercise: PrivateExercise }) {
-  return (
-    <Link
-      href={route('teacher.exercices.edit', exercise.id)}
-      className="flex items-center gap-3 px-4 py-3 bg-surface-color border border-border-color rounded-xl hover:border-teacher-color/40 transition-colors group"
-    >
-      <span
-        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${exercise.type === 'problem' ? 'bg-teacher-color' : 'bg-teacher-color/40'}`}
-      />
-      <span className="flex-1 text-sm text-text-color truncate">{exercise.name}</span>
-      {exercise.difficulty != null && (
-        <DifficultyPicker value={String(exercise.difficulty)} onChange={() => {}} readOnly />
-      )}
-      <span className="text-xxs text-text-gray/60 flex-shrink-0 hidden sm:block">
-        {exercise.type === 'problem' ? 'Problème' : 'Exercice'}
-      </span>
-    </Link>
-  );
+function iconControlClass(active: boolean) {
+  return `h-10 w-10 inline-flex items-center justify-center rounded-xl border transition-colors ${
+    active
+      ? 'border-teacher-color/50 bg-teacher-color/10 text-teacher-color'
+      : 'border-border-color bg-secondary-color text-text-gray hover:text-text-color hover:border-teacher-color/40'
+  }`;
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ExercicesIndex({ exercises, tags, filters }: Props) {
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [exerciseToDelete, setExerciseToDelete] = useState<PrivateExercise | null>(null);
+  const [draftFilters, setDraftFilters] = useState<Filters>({
+    type: filters.type ?? '',
+    difficulty: filters.difficulty ?? '',
+    tag_id: filters.tag_id ?? '',
+    sort: filters.sort ?? 'recent',
+  });
+
   function applyFilter(patch: Partial<Filters & { page?: number }>) {
     router.get(
       route('teacher.exercices.index'),
@@ -55,6 +56,47 @@ export default function ExercicesIndex({ exercises, tags, filters }: Props) {
       { preserveState: true, replace: true }
     );
   }
+
+  function confirmDelete() {
+    if (!exerciseToDelete) return;
+    router.delete(route('teacher.exercices.destroy', exerciseToDelete.id), {
+      preserveScroll: true,
+      onFinish: () => setExerciseToDelete(null),
+    });
+  }
+
+  function openFilterModal() {
+    setDraftFilters({
+      type: filters.type ?? '',
+      difficulty: filters.difficulty ?? '',
+      tag_id: filters.tag_id ?? '',
+      sort: filters.sort ?? 'recent',
+    });
+    setIsFilterModalOpen(true);
+  }
+
+  function applyDraftFilters() {
+    applyFilter({
+      type: draftFilters.type || undefined,
+      difficulty: draftFilters.difficulty || undefined,
+      tag_id: draftFilters.tag_id || undefined,
+      sort: draftFilters.sort || undefined,
+    });
+    setIsFilterModalOpen(false);
+  }
+
+  function resetDraftFilters() {
+    setDraftFilters({
+      type: '',
+      difficulty: '',
+      tag_id: '',
+      sort: 'recent',
+    });
+  }
+
+  const hasActiveFilters = Boolean(
+    filters.type || filters.difficulty || filters.tag_id || (filters.sort ?? 'recent') === 'old'
+  );
 
   return (
     <AppLayout>
@@ -79,60 +121,115 @@ export default function ExercicesIndex({ exercises, tags, filters }: Props) {
         />
 
         {/* Filtres */}
-        <div className="flex flex-wrap gap-3">
-          {/* Search */}
-          <div className="relative flex-1 min-w-[180px]">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-gray" />
-            <input
-              type="search"
-              value={filters.search ?? ''}
-              onChange={(e) => applyFilter({ search: e.target.value || undefined })}
-              placeholder="Rechercher…"
-              className="w-full pl-9 pr-3 py-2 text-sm bg-surface-color border border-border-color rounded-xl text-text-color placeholder:text-text-gray/50 outline-none focus:border-teacher-color transition-colors"
-            />
-          </div>
-
-          {/* Type */}
-          <select
-            value={filters.type ?? ''}
-            onChange={(e) => applyFilter({ type: e.target.value || undefined })}
-            className="text-sm px-3 py-2 bg-surface-color border border-border-color rounded-xl text-text-color outline-none focus:border-teacher-color transition-colors cursor-pointer"
-          >
-            <option value="">Tous types</option>
-            <option value="basic">Exercice</option>
-            <option value="problem">Problème</option>
-          </select>
-
-          {/* Difficulty */}
-          <select
-            value={filters.difficulty ?? ''}
-            onChange={(e) => applyFilter({ difficulty: e.target.value || undefined })}
-            className="text-sm px-3 py-2 bg-surface-color border border-border-color rounded-xl text-text-color outline-none focus:border-teacher-color transition-colors cursor-pointer"
-          >
-            <option value="">Toute difficulté</option>
-            {[1, 2, 3, 4, 5].map((n) => (
-              <option key={n} value={String(n)}>
-                Diff. {n}
-              </option>
-            ))}
-          </select>
-
-          {/* Tag */}
-          {tags.length > 0 && (
-            <select
-              value={filters.tag_id ?? ''}
-              onChange={(e) => applyFilter({ tag_id: e.target.value || undefined })}
-              className="text-sm px-3 py-2 bg-surface-color border border-border-color rounded-xl text-text-color outline-none focus:border-teacher-color transition-colors cursor-pointer"
+        <SearchBar
+          value={filters.search ?? ''}
+          onChange={(e) => applyFilter({ search: e.target.value || undefined })}
+          onClear={() => applyFilter({ search: undefined })}
+          placeholder="Rechercher…"
+          focusRingClass="focus:border-teacher-color"
+          sort={
+            <ButtonModal
+              isOpen={isFilterModalOpen}
+              onOpenChange={(nextOpen) => {
+                if (nextOpen) {
+                  openFilterModal();
+                  return;
+                }
+                setIsFilterModalOpen(false);
+              }}
+              trigger={
+                <span className={iconControlClass(hasActiveFilters)}>
+                  <Filter size={15} />
+                </span>
+              }
+              panelWidthClassName="w-[min(15rem,calc(100vw-2rem))]"
             >
-              <option value="">Tous tags</option>
-              {tags.map((t) => (
-                <option key={t.id} value={String(t.id)}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+              <div className="space-y-2.5">
+                <p className="px-0.5 text-xs font-comfortaa-bold text-text-color">Filtres</p>
+
+                <div className="space-y-1">
+                  <label className="px-0.5 text-[11px] font-comfortaa-bold text-text-gray">
+                    Type
+                  </label>
+                  <select
+                    value={draftFilters.type ?? ''}
+                    onChange={(e) => setDraftFilters((prev) => ({ ...prev, type: e.target.value }))}
+                    className="w-full h-9 px-2.5 text-xs rounded-lg border border-border-color bg-secondary-color text-text-color focus:outline-none focus:border-teacher-color"
+                  >
+                    <option value="">Tous types</option>
+                    <option value="basic">Exercice</option>
+                    <option value="problem">Problème</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="px-0.5 text-[11px] font-comfortaa-bold text-text-gray">
+                    Difficulté
+                  </label>
+                  <select
+                    value={draftFilters.difficulty ?? ''}
+                    onChange={(e) =>
+                      setDraftFilters((prev) => ({ ...prev, difficulty: e.target.value }))
+                    }
+                    className="w-full h-9 px-2.5 text-xs rounded-lg border border-border-color bg-secondary-color text-text-color focus:outline-none focus:border-teacher-color"
+                  >
+                    <option value="">Toute difficulté</option>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n} value={String(n)}>
+                        Diff. {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {tags.length > 0 && (
+                  <div className="space-y-1">
+                    <label className="px-0.5 text-[11px] font-comfortaa-bold text-text-gray">
+                      Tag
+                    </label>
+                    <select
+                      value={draftFilters.tag_id ?? ''}
+                      onChange={(e) =>
+                        setDraftFilters((prev) => ({ ...prev, tag_id: e.target.value }))
+                      }
+                      className="w-full h-9 px-2.5 text-xs rounded-lg border border-border-color bg-secondary-color text-text-color focus:outline-none focus:border-teacher-color"
+                    >
+                      <option value="">Tous tags</option>
+                      {tags.map((t) => (
+                        <option key={t.id} value={String(t.id)}>
+                          {t.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="px-0.5 text-[11px] font-comfortaa-bold text-text-gray">
+                    Tri
+                  </label>
+                  <select
+                    value={draftFilters.sort ?? 'recent'}
+                    onChange={(e) => setDraftFilters((prev) => ({ ...prev, sort: e.target.value }))}
+                    className="w-full h-9 px-2.5 text-xs rounded-lg border border-border-color bg-secondary-color text-text-color focus:outline-none focus:border-teacher-color"
+                  >
+                    <option value="recent">Récent</option>
+                    <option value="old">Ancien</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center justify-end gap-1.5 pt-0.5">
+                  <Button variant="ghost" size="sm" icon={RotateCcw} onClick={resetDraftFilters}>
+                    Reset
+                  </Button>
+                  <Button variant="primary" size="sm" onClick={applyDraftFilters}>
+                    OK
+                  </Button>
+                </div>
+              </div>
+            </ButtonModal>
+          }
+        />
 
         {/* Liste */}
         {exercises.data.length === 0 ? (
@@ -140,7 +237,7 @@ export default function ExercicesIndex({ exercises, tags, filters }: Props) {
         ) : (
           <div className="space-y-2">
             {exercises.data.map((ex: PrivateExercise) => (
-              <ExerciseRow key={ex.id} exercise={ex} />
+              <ExerciseRow key={ex.id} exercise={ex} onDelete={() => setExerciseToDelete(ex)} />
             ))}
           </div>
         )}
@@ -152,6 +249,15 @@ export default function ExercicesIndex({ exercises, tags, filters }: Props) {
           info={`${exercises.total} au total`}
         />
       </div>
+      <ConfirmationModal
+        isOpen={!!exerciseToDelete}
+        onClose={() => setExerciseToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Supprimer l'exercice"
+        description={`« ${exerciseToDelete?.name} » sera définitivement supprimé.`}
+        confirmText="Supprimer"
+        type="danger"
+      />
     </AppLayout>
   );
 }

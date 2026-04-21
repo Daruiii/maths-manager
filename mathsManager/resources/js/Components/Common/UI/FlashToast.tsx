@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { Transition } from '@headlessui/react';
@@ -8,108 +8,105 @@ interface FlashToastProps {
   message?: string;
   type?: 'success' | 'error' | 'warning' | 'info';
   onClose?: () => void;
+  /** Ignore Inertia flash — pour les toasts prop-driven dans les pages qui ont déjà AppLayout */
+  noFlash?: boolean;
 }
 
 export default function FlashToast({
   message: propMessage,
   type: propType,
   onClose,
+  noFlash = false,
 }: FlashToastProps = {}) {
   const { flash } = usePage<PageProps>().props;
   const [show, setShow] = useState(false);
+  const [toastKey, setToastKey] = useState(0);
   const [message, setMessage] = useState<{
     type: 'success' | 'error' | 'warning' | 'info';
     text: string;
   } | null>(null);
+  const showRef = useRef(false);
+  showRef.current = show;
 
-  // Consolidate logic: Props take precedence, then Flash messages
-  useEffect(() => {
-    // 1. Direct Props usage (Manual trigger)
-    if (propMessage && propType) {
-      setMessage({ type: propType, text: propMessage });
+  function trigger(type: 'success' | 'error' | 'warning' | 'info', text: string) {
+    if (showRef.current) {
+      setShow(false);
+      setTimeout(() => {
+        setMessage({ type, text });
+        setShow(true);
+        setToastKey((k) => k + 1);
+      }, 200);
+    } else {
+      setMessage({ type, text });
       setShow(true);
-      return;
+      setToastKey((k) => k + 1);
     }
+  }
 
-    // 2. Inertia Flash Messages (Auto trigger on navigation)
-    // We check if any flash message exists and is different from current to avoid loops
-    // (Though here we just set on mount/update of flash)
+  useEffect(() => {
+    if (propMessage && propType) trigger(propType, propMessage);
+  }, [propMessage, propType]);
+
+  useEffect(() => {
+    if (noFlash) return;
     const flashType = (Object.keys(flash || {}) as Array<keyof typeof flash>).find(
       (key) => ['success', 'error', 'warning', 'info'].includes(key) && flash?.[key]
     );
-
     if (flashType) {
-      setMessage({
-        type: flashType as 'success' | 'error' | 'warning' | 'info',
-        text: flash![flashType]!,
-      });
-      setShow(true);
+      trigger(flashType as 'success' | 'error' | 'warning' | 'info', flash![flashType]!);
     }
-  }, [flash, propMessage, propType]);
+  }, [flash, noFlash]);
 
-  // Auto-hide timer
   useEffect(() => {
-    if (show) {
-      const timer = setTimeout(() => {
-        setShow(false);
-        if (onClose) onClose();
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [show, onClose]);
+    if (!show) return;
+    const timer = setTimeout(() => {
+      setShow(false);
+      onClose?.();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [toastKey]);
 
   if (!message) return null;
 
   const icons = {
-    success: <CheckCircle className="w-6 h-6" />,
-    error: <XCircle className="w-6 h-6" />,
-    warning: <AlertTriangle className="w-6 h-6" />,
-    info: <Info className="w-6 h-6" />,
+    success: <CheckCircle className="w-5 h-5" />,
+    error: <XCircle className="w-5 h-5" />,
+    warning: <AlertTriangle className="w-5 h-5" />,
+    info: <Info className="w-5 h-5" />,
   };
 
-  const colors = {
-    // Using semantic colors with opacity via Tailwind utilities defined in tailwind.config.js
-    success: 'bg-success-color/10 border-success-color/20 text-success-color',
-    error: 'bg-error-color/10 border-error-color/20 text-error-color',
-    warning: 'bg-warning-color/10 border-warning-color/20 text-warning-color',
-    info: 'bg-info-color/10 border-info-color/20 text-info-color',
+  const iconColors = {
+    success: 'text-success-color',
+    error: 'text-error-color',
+    warning: 'text-warning-color',
+    info: 'text-info-color',
   };
 
   return (
-    <div className="fixed top-24 right-4 z-[9999] flex flex-col gap-2 w-full max-w-sm">
+    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-sm px-4">
       <Transition
         show={show}
-        enter="transform ease-out duration-300 transition"
-        enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-        enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
+        enter="transform transition ease-out duration-300"
+        enterFrom="-translate-y-12 opacity-0 scale-95"
+        enterTo="translate-y-0 opacity-100 scale-100"
+        leave="transition ease-in duration-200"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-95"
       >
-        <div className={`rounded-xl border shadow-lg p-4 ${colors[message.type]} relative`}>
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0">{icons[message.type]}</div>
-            <div className="flex-1 pt-0.5">
-              <p className="text-sm font-comfortaa-bold">
-                {message.type === 'success' && 'Succès'}
-                {message.type === 'error' && 'Erreur'}
-                {message.type === 'warning' && 'Attention'}
-                {message.type === 'info' && 'Information'}
-              </p>
-              <p className="mt-1 text-sm opacity-90">{message.text}</p>
-            </div>
-            <div className="flex-shrink-0 ml-4 flex">
-              <button
-                className="bg-transparent rounded-md inline-flex hover:opacity-75 focus:outline-none transition-opacity"
-                onClick={() => {
-                  setShow(false);
-                  if (onClose) onClose();
-                }}
-              >
-                <span className="sr-only">Fermer</span>
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+        <div className="rounded-xl border border-border-color bg-surface-color shadow-xl p-3.5">
+          <div className="flex items-center gap-3">
+            <div className={`flex-shrink-0 ${iconColors[message.type]}`}>{icons[message.type]}</div>
+            <p className="flex-1 text-sm text-text-color">{message.text}</p>
+            <button
+              className="flex-shrink-0 text-text-gray hover:text-text-color transition-colors"
+              onClick={() => {
+                setShow(false);
+                if (onClose) onClose();
+              }}
+            >
+              <span className="sr-only">Fermer</span>
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </Transition>

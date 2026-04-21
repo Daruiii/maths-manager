@@ -1,5 +1,6 @@
 import { TD_DEFAULT_TITLE, TD_DEFAULT_LEVEL, TD_DEFAULT_INSTRUCTIONS } from '@/Constants/td';
 import { useBuilderDraft } from '@/Hooks/useBuilderDraft';
+import { TemplatePayload } from '@/types/models';
 
 export { makeItemUid } from '@/Hooks/useBuilderDraft';
 
@@ -9,7 +10,7 @@ const TD_DEFAULTS = {
   instructions: TD_DEFAULT_INSTRUCTIONS,
 };
 
-export function useTDBuilderDraft() {
+export function useTDBuilderDraft(initialTemplate?: TemplatePayload) {
   const {
     title: tdTitle,
     setTitle: setTdTitle,
@@ -18,7 +19,7 @@ export function useTDBuilderDraft() {
     instructions: tdInstructions,
     setInstructions: setTdInstructions,
     ...rest
-  } = useBuilderDraft('td', TD_DEFAULTS);
+  } = useBuilderDraft('td', TD_DEFAULTS, initialTemplate);
 
   return { tdTitle, setTdTitle, tdLevel, setTdLevel, tdInstructions, setTdInstructions, ...rest };
 }

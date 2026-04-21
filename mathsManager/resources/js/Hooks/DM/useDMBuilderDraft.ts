@@ -1,5 +1,6 @@
 import { DM_DEFAULT_TITLE, DM_DEFAULT_LEVEL, DM_DEFAULT_INSTRUCTIONS } from '@/Constants/dm';
 import { useBuilderDraft } from '@/Hooks/useBuilderDraft';
+import { TemplatePayload } from '@/types/models';
 
 export { makeItemUid } from '@/Hooks/useBuilderDraft';
 
@@ -9,7 +10,7 @@ const DM_DEFAULTS = {
   instructions: DM_DEFAULT_INSTRUCTIONS,
 };
 
-export function useDMBuilderDraft() {
+export function useDMBuilderDraft(initialTemplate?: TemplatePayload) {
   const {
     title: dmTitle,
     setTitle: setDmTitle,
@@ -18,7 +19,7 @@ export function useDMBuilderDraft() {
     instructions: dmInstructions,
     setInstructions: setDmInstructions,
     ...rest
-  } = useBuilderDraft('dm', DM_DEFAULTS);
+  } = useBuilderDraft('dm', DM_DEFAULTS, initialTemplate);
 
   return { dmTitle, setDmTitle, dmLevel, setDmLevel, dmInstructions, setDmInstructions, ...rest };
 }

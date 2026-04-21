@@ -14,7 +14,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
-import { Clock, BookOpen, Users } from 'lucide-react';
+import { Clock, BookOpen, Users, Save } from 'lucide-react';
 import { DSPreviewItem as DSPreviewItemType, DEFAULT_EXERCISE_MINUTES } from '@/types/models';
 import PreviewItem from '@/Components/Features/Builder/PreviewItem';
 import Button from '@/Components/Common/UI/Button';
@@ -25,6 +25,7 @@ interface Props {
   onReorder: (items: DSPreviewItemType[]) => void;
   onRemove: (uid: string) => void;
   onAssign: () => void;
+  onSave?: () => void;
   entityLabel: string;
   showTime?: boolean;
 }
@@ -43,6 +44,7 @@ export default function PreviewPanel({
   onReorder,
   onRemove,
   onAssign,
+  onSave,
   entityLabel,
   showTime = false,
 }: Props) {
@@ -130,14 +132,16 @@ export default function PreviewPanel({
           Assigner
         </Button>
 
-        <button
-          type="button"
-          disabled
-          title="Bientôt disponible"
-          className="w-full py-1.5 px-3 rounded-lg border border-dashed border-border-color text-text-gray text-xs cursor-not-allowed opacity-50"
+        <Button
+          onClick={onSave}
+          disabled={!onSave || items.length === 0}
+          size="sm"
+          className="w-full justify-center gap-1.5 border border-teacher-color text-teacher-color hover:bg-teacher-color/10"
+          variant="ghost"
         >
+          <Save size={13} />
           Sauvegarder
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -33,10 +33,13 @@ class PrivateExerciseController extends Controller
         $this->authorize('viewAny', PrivateExercise::class);
 
         $teacher = Auth::user();
+        $sort = in_array($request->query('sort'), ['recent', 'old'], true)
+            ? $request->query('sort')
+            : 'recent';
 
         $query = PrivateExercise::forTeacher($teacher->id)
             ->with(['subchapter.chapter.classe', 'tags'])
-            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', $sort === 'old' ? 'asc' : 'desc');
 
         if ($search = $request->query('search')) {
             $query->where('name', 'like', "%{$search}%");
@@ -60,7 +63,7 @@ class PrivateExerciseController extends Controller
         return Inertia::render('Teacher/Exercices/Index', [
             'exercises' => $exercises,
             'tags'      => $teacher->teacherTags()->orderBy('name')->get(['id', 'name', 'color']),
-            'filters'   => $request->only(['search', 'type', 'difficulty', 'subchapter_id', 'tag_id']),
+            'filters'   => $request->only(['search', 'type', 'difficulty', 'subchapter_id', 'tag_id', 'sort']),
         ]);
     }
 
@@ -97,7 +100,7 @@ class PrivateExerciseController extends Controller
         $this->authorize('create', PrivateExercise::class);
 
         $exercise = PrivateExercise::create([
-            ...$request->safe()->except('tag_ids'),
+            ...$request->safe()->except(['tag_ids', 'pending_images']),
             'teacher_id' => Auth::id(),
         ]);
 
@@ -105,13 +108,27 @@ class PrivateExerciseController extends Controller
             $exercise->tags()->sync($tagIds);
         }
 
+        $pendingImages = $request->file('pending_images', []);
+        if (is_array($pendingImages) && !empty($pendingImages)) {
+            foreach ($pendingImages as $customName => $file) {
+                $this->fileUploadService->upload(
+                    file: $file,
+                    context: 'private-exercises',
+                    identifier: 'private-exercise-' . $exercise->id,
+                    type: 'image',
+                    isPublic: true,
+                    customName: (string) $customName,
+                );
+            }
+        }
+
         if ($request->wantsJson()) {
             return response()->json($exercise);
         }
 
         return redirect()
-            ->route('teacher.exercices.edit', $exercise)
-            ->with('success', 'Exercice créé.');
+            ->route('teacher.exercices.index')
+            ->with('success', 'Exercice créé avec succès.');
     }
 
     public function update(UpdatePrivateExerciseRequest $request, PrivateExercise $exercise)

@@ -27,6 +27,8 @@ class StorePrivateExerciseRequest extends FormRequest
             'subchapter_id'    => 'nullable|exists:subchapters,id',
             'tag_ids'          => 'nullable|array',
             'tag_ids.*'        => 'exists:teacher_tags,id',
+            'pending_images'   => 'nullable|array',
+            'pending_images.*' => 'image|max:2048',
         ];
     }
 

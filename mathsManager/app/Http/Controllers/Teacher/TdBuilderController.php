@@ -43,6 +43,8 @@ class TdBuilderController extends BaseBuilderController
             ->orderBy('order')
             ->get(['id', 'title', 'chapter_id']);
 
+        $initialTemplate = $this->loadInitialTemplate($request, $teacher, 'td');
+
         return Inertia::render('Teacher/TD/Create', [
             'groups'               => $groups,
             'students'             => $students,
@@ -50,6 +52,7 @@ class TdBuilderController extends BaseBuilderController
             'privateTags'          => $teacher->teacherTags()->get(['id', 'name', 'color']),
             'preselectedStudentId' => $request->integer('student') ?: null,
             'preselectedGroupId'   => $request->integer('group') ?: null,
+            'initialTemplate'      => $initialTemplate,
         ]);
     }
 

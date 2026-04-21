@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Models\BuilderTemplate;
 use App\Models\PrivateExercise;
+use App\Models\StudentGroup;
 use App\Services\BureauActivityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,8 +23,36 @@ class BureauController extends Controller
 
         return Inertia::render('Teacher/Bureau/Index', [
             'stats' => [
-                'exercisesCount' => PrivateExercise::forTeacher($teacher->id)->count(),
+                'exercisesCount'   => PrivateExercise::forTeacher($teacher->id)->count(),
+                'dsTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'ds')->count(),
+                'tdTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'td')->count(),
+                'dmTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'dm')->count(),
             ],
+        ]);
+    }
+
+    /**
+     * Listing unifié des templates sauvegardés (DS + TD + DM).
+     */
+    public function templates(): Response
+    {
+        $teacher = Auth::user();
+
+        $cols = ['id', 'name', 'type', 'student_group_id', 'created_at', 'payload'];
+
+        $base = BuilderTemplate::where('teacher_id', $teacher->id)
+            ->with('studentGroup:id,name')
+            ->orderByDesc('created_at');
+
+        $groups = StudentGroup::where('teacher_id', $teacher->id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return Inertia::render('Teacher/Bureau/Templates', [
+            'dsTemplates' => (clone $base)->where('type', 'ds')->get($cols),
+            'tdTemplates' => (clone $base)->where('type', 'td')->get($cols),
+            'dmTemplates' => (clone $base)->where('type', 'dm')->get($cols),
+            'groups'      => $groups,
         ]);
     }
 

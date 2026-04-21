@@ -1,5 +1,6 @@
 import { DS_DEFAULT_TITLE, DS_DEFAULT_LEVEL, DS_DEFAULT_INSTRUCTIONS } from '@/Constants/ds';
 import { useBuilderDraft } from '@/Hooks/useBuilderDraft';
+import { TemplatePayload } from '@/types/models';
 
 export { makeItemUid } from '@/Hooks/useBuilderDraft';
 
@@ -9,7 +10,7 @@ const DS_DEFAULTS = {
   instructions: DS_DEFAULT_INSTRUCTIONS,
 };
 
-export function useDSBuilderDraft() {
+export function useDSBuilderDraft(initialTemplate?: TemplatePayload) {
   const {
     title: dsTitle,
     setTitle: setDsTitle,
@@ -18,7 +19,7 @@ export function useDSBuilderDraft() {
     instructions: dsInstructions,
     setInstructions: setDsInstructions,
     ...rest
-  } = useBuilderDraft('ds', DS_DEFAULTS);
+  } = useBuilderDraft('ds', DS_DEFAULTS, initialTemplate);
 
   return { dsTitle, setDsTitle, dsLevel, setDsLevel, dsInstructions, setDsInstructions, ...rest };
 }

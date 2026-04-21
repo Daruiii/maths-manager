@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Teacher\BureauController;
+use App\Http\Controllers\Teacher\BuilderTemplateController;
 use App\Http\Controllers\Teacher\DmBuilderController;
 use App\Http\Controllers\Teacher\DSBuilderController;
 use App\Http\Controllers\Teacher\TdBuilderController;
@@ -34,6 +35,12 @@ Route::middleware(['auth', IsTeacher::class])
         // Mon Bureau (dashboard)
         Route::get('/bureau', [BureauController::class, 'index'])->name('bureau.index');
         Route::get('/bureau/history', [BureauController::class, 'history'])->name('bureau.history');
+        Route::get('/bureau/templates', [BureauController::class, 'templates'])->name('bureau.templates');
+
+        // Builder Templates
+        Route::post('/templates', [BuilderTemplateController::class, 'store'])->name('templates.store');
+        Route::patch('/templates/{template}', [BuilderTemplateController::class, 'update'])->name('templates.update');
+        Route::delete('/templates/{template}', [BuilderTemplateController::class, 'destroy'])->name('templates.destroy');
 
         // Exercices privés
         Route::get('/exercices', [PrivateExerciseController::class, 'index'])->name('exercices.index');

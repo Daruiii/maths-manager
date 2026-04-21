@@ -187,3 +187,33 @@ export interface PrivateExerciseFormData {
 }
 
 export type LatexField = 'latex_statement' | 'latex_solution' | 'latex_clue';
+
+// ─── Builder Templates ────────────────────────────────────────────────────────
+
+export type BuilderType = 'ds' | 'td' | 'dm';
+
+/** Payload stocké dans un template sauvegardé */
+export interface TemplatePayload {
+  items: DSPreviewItem[];
+  title?: string;
+  level?: string;
+  instructions?: string;
+}
+
+export interface BuilderTemplate {
+  id: number;
+  teacher_id: number;
+  type: BuilderType;
+  name: string;
+  student_group_id: number | null;
+  student_group?: { id: number; name: string } | null;
+  payload: TemplatePayload;
+  created_at: string;
+}
+
+/** Template chargé dans le builder (payload + meta d'identification pour l'update) */
+export interface LoadedTemplate extends TemplatePayload {
+  id: number;
+  name: string;
+  student_group_id: number | null;
+}

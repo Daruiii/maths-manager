@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
-import { DSPreviewItem } from '@/types/models';
+import { DSPreviewItem, TemplatePayload } from '@/types/models';
 import { PageProps } from '@/types';
 
 export function makeItemUid(kind: string, id: number, index: number) {
@@ -42,17 +42,33 @@ function readDraft(prefix: string, userId: number): Draft | null {
   }
 }
 
-export function useBuilderDraft(prefix: string, defaults: BuilderDefaults) {
+export function useBuilderDraft(
+  prefix: string,
+  defaults: BuilderDefaults,
+  initialTemplate?: TemplatePayload
+) {
   const { props } = usePage<PageProps>();
   const userId = props.auth.user!.id;
 
-  const init = readDraft(prefix, userId);
+  const init = initialTemplate ? null : readDraft(prefix, userId);
 
   const [hadDraftOnMount] = useState(() => !!init?.previewItems?.length);
-  const [previewItems, setPreviewItems] = useState<DSPreviewItem[]>(init?.previewItems ?? []);
-  const [title, setTitle] = useState(init?.title ?? defaults.title);
-  const [level, setLevel] = useState(init?.level ?? defaults.level);
-  const [instructions, setInstructions] = useState(init?.instructions ?? defaults.instructions);
+  const [hadTemplateLoad] = useState(() => !!initialTemplate?.items?.length);
+  const [previewItems, setPreviewItems] = useState<DSPreviewItem[]>(
+    initialTemplate?.items ?? init?.previewItems ?? []
+  );
+  const [title, setTitle] = useState(initialTemplate?.title ?? init?.title ?? defaults.title);
+  const [level, setLevel] = useState(initialTemplate?.level ?? init?.level ?? defaults.level);
+  const [instructions, setInstructions] = useState(
+    initialTemplate?.instructions ?? init?.instructions ?? defaults.instructions
+  );
+
+  // Si chargement depuis template, vide le brouillon localStorage pour éviter un conflit au prochain rechargement
+  useEffect(() => {
+    if (initialTemplate) {
+      localStorage.removeItem(draftKey(prefix, userId));
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(
@@ -85,6 +101,7 @@ export function useBuilderDraft(prefix: string, defaults: BuilderDefaults) {
     instructions,
     setInstructions,
     hadDraftOnMount,
+    hadTemplateLoad,
     resetAll,
   };
 }

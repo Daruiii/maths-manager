@@ -57,6 +57,8 @@ class DSBuilderController extends BaseBuilderController
             ->pluck('academy')
             ->values();
 
+        $initialTemplate = $this->loadInitialTemplate($request, $teacher, 'ds');
+
         return Inertia::render('Teacher/DS/Create', [
             'groups'               => $groups,
             'students'             => $students,
@@ -66,6 +68,7 @@ class DSBuilderController extends BaseBuilderController
             'privateTags'          => $teacher->teacherTags()->get(['id', 'name', 'color']),
             'preselectedStudentId' => $request->integer('student') ?: null,
             'preselectedGroupId'   => $request->integer('group') ?: null,
+            'initialTemplate'      => $initialTemplate,
         ]);
     }
 
