@@ -10,6 +10,7 @@ use App\Http\Controllers\Teacher\TeacherGroupController;
 use App\Http\Controllers\Teacher\TeacherInvitationController;
 use App\Http\Controllers\Teacher\TeacherStudentController;
 use App\Http\Controllers\Teacher\TeacherTagController;
+use App\Http\Controllers\Teacher\TeacherTdUnlockController;
 use App\Http\Middleware\IsTeacher;
 use Illuminate\Support\Facades\Route;
 
@@ -81,6 +82,10 @@ Route::middleware(['auth', IsTeacher::class])
         // TD Builder — API search (JSON)
         Route::get('/td/builder/exercises', [TdBuilderController::class, 'searchExercises'])->name('td.builder.exercises');
         Route::get('/td/builder/private', [TdBuilderController::class, 'searchPrivate'])->name('td.builder.private');
+
+        // TD — Déblocage corrections
+        Route::patch('/td/{td}/unlock', [TeacherTdUnlockController::class, 'unlock'])->name('td.unlock');
+        Route::patch('/td-batches/{batch}/unlock-all', [TeacherTdUnlockController::class, 'unlockBatch'])->name('td.batch.unlock');
     });
 
 // ─── Join via invitation (public preview / auth for accept) ───────────────────

@@ -72,6 +72,7 @@ require __DIR__.'/web/chapters.php';
 require __DIR__.'/web/exercises.php';
 require __DIR__.'/web/td.php';
 require __DIR__.'/web/ds.php';
+require __DIR__.'/web/dm.php';
 require __DIR__.'/web/whitelist.php';
 require __DIR__.'/web/recap.php';
 require __DIR__.'/web/corrections.php';

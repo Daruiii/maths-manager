@@ -4,18 +4,21 @@ namespace App\Http\Controllers\Sheet;
 
 use App\Http\Controllers\Controller;
 
+use App\Enums\TdStatus;
 use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\Td\StoreTdRequest;
 use App\Http\Requests\Td\UpdateTdRequest;
+use App\Http\Requests\Td\UpdateTdStatusRequest;
 use App\Mail\AssignSheetMail;
 use App\Models\Chapter;
 use App\Models\Exercise;
 use App\Models\Td;
 use App\Models\User;
+use App\Notifications\StudentRequestedUnlock;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-
 class TdController extends Controller
 {
     protected \App\Services\SheetFormattingService $sheetFormattingService;
@@ -175,5 +178,26 @@ class TdController extends Controller
 
         // Legacy view - kept for old_blade reference
         return view('td.show', ['td' => $td, 'exercises' => $exercises]);
+    }
+
+    public function updateStatus(UpdateTdStatusRequest $request, Td $td): RedirectResponse
+    {
+        abort_unless(Auth::id() === $td->user_id, 403);
+
+        $td->update(['status' => $request->validated('status')]);
+
+        return back();
+    }
+
+    public function requestUnlock(Td $td): RedirectResponse
+    {
+        abort_unless(Auth::id() === $td->user_id, 403);
+        abort_unless($td->status === TdStatus::Ongoing, 422);
+
+        $td->update(['status' => TdStatus::CorrectionRequested]);
+
+        $td->teacher?->notify(new StudentRequestedUnlock($td));
+
+        return back()->with('success', 'Demande de correction envoyée à votre professeur.');
     }
 }

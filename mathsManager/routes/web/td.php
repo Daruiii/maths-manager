@@ -23,4 +23,8 @@ Route::middleware('auth')->group(function () {
     // Student routes
     Route::get('/td/{id}', [TdController::class, 'show'])->name('td.show');
     Route::get('/td/my/{id}', [TdController::class, 'indexUser'])->name('td.myTd');
+    Route::patch('/td/{td}/status', [TdController::class, 'updateStatus'])->name('td.status.update');
+    Route::post('/td/{td}/request-unlock', [TdController::class, 'requestUnlock'])
+        ->middleware('throttle:5,1')
+        ->name('td.request-unlock');
 });

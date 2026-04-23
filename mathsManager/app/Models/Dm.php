@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Dm extends Model
 {
@@ -76,5 +77,10 @@ class Dm extends Model
     public function privateExercises(): BelongsToMany
     {
         return $this->belongsToMany(PrivateExercise::class, 'dm_private_exercise', 'dm_id', 'private_exercise_id');
+    }
+
+    public function correctionRequest(): HasOne
+    {
+        return $this->hasOne(CorrectionRequest::class, 'dm_id');
     }
 }
