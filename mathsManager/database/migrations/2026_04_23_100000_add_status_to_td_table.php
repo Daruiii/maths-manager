@@ -14,6 +14,11 @@ return new class extends Migration
     public function up(): void
     {
         if (Schema::hasColumn('td', 'status')) {
+            // Étape 1 : élargir l'ENUM pour accepter les deux anciennes et nouvelles valeurs
+            DB::statement("ALTER TABLE td MODIFY COLUMN status ENUM('not_started','opened','ongoing','correction_requested','correction_unlocked') NOT NULL DEFAULT 'not_started'");
+            // Étape 2 : migrer opened → ongoing
+            DB::statement("UPDATE td SET status = 'ongoing' WHERE status = 'opened'");
+            // Étape 3 : restreindre l'ENUM aux nouvelles valeurs uniquement
             DB::statement("ALTER TABLE td MODIFY COLUMN status ENUM('not_started','ongoing','correction_requested','correction_unlocked') NOT NULL DEFAULT 'not_started'");
         } else {
             Schema::table('td', function (Blueprint $table) {
