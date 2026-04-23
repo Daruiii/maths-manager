@@ -13,11 +13,13 @@ class TdBatch extends Model
         'group_ids',
         'student_ids',
         'td_count',
+        'due_date',
     ];
 
     protected $casts = [
         'group_ids'   => 'array',
         'student_ids' => 'array',
+        'due_date'    => 'date',
     ];
 
     public function teacher(): BelongsTo

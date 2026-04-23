@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\DmStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Dm extends Model
 {
@@ -21,53 +24,57 @@ class Dm extends Model
         'custom_instructions',
     ];
 
+    protected $casts = [
+        'status' => DmStatus::class,
+    ];
+
     public function isNotStarted(): bool
     {
-        return $this->status === 'not_started';
+        return $this->status === DmStatus::NotStarted;
     }
 
     public function isOngoing(): bool
     {
-        return $this->status === 'ongoing';
+        return $this->status === DmStatus::Ongoing;
     }
 
     public function isFinished(): bool
     {
-        return $this->status === 'finished';
+        return $this->status === DmStatus::Finished;
     }
 
     public function isCorrected(): bool
     {
-        return $this->status === 'corrected';
+        return $this->status === DmStatus::Corrected;
     }
 
-    public function problems()
-    {
-        return $this->belongsToMany(Problem::class, 'dm_problem', 'dm_id', 'problem_id');
-    }
-
-    public function exercises()
-    {
-        return $this->belongsToMany(Exercise::class, 'dm_exercise', 'dm_id', 'exercise_id');
-    }
-
-    public function privateExercises()
-    {
-        return $this->belongsToMany(PrivateExercise::class, 'dm_private_exercise', 'dm_id', 'private_exercise_id');
-    }
-
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function teacher()
+    public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id');
     }
 
-    public function batch()
+    public function batch(): BelongsTo
     {
         return $this->belongsTo(DmBatch::class, 'batch_id');
+    }
+
+    public function problems(): BelongsToMany
+    {
+        return $this->belongsToMany(Problem::class, 'dm_problem', 'dm_id', 'problem_id');
+    }
+
+    public function exercises(): BelongsToMany
+    {
+        return $this->belongsToMany(Exercise::class, 'dm_exercise', 'dm_id', 'exercise_id');
+    }
+
+    public function privateExercises(): BelongsToMany
+    {
+        return $this->belongsToMany(PrivateExercise::class, 'dm_private_exercise', 'dm_id', 'private_exercise_id');
     }
 }

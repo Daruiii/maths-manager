@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TdStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,7 @@ class Td extends Model
         'teacher_id',
         'user_id',
         'batch_id',
+        'status',
         'custom_title',
         'custom_level',
         'custom_instructions',
@@ -24,8 +26,29 @@ class Td extends Model
     ];
 
     protected $casts = [
+        'status'              => TdStatus::class,
         'correction_unlocked' => 'boolean',
     ];
+
+    public function isNotStarted(): bool
+    {
+        return $this->status === TdStatus::NotStarted;
+    }
+
+    public function isOngoing(): bool
+    {
+        return $this->status === TdStatus::Ongoing;
+    }
+
+    public function isCorrectionRequested(): bool
+    {
+        return $this->status === TdStatus::CorrectionRequested;
+    }
+
+    public function isCorrectionUnlocked(): bool
+    {
+        return $this->status === TdStatus::CorrectionUnlocked;
+    }
 
     public function teacher(): BelongsTo
     {
