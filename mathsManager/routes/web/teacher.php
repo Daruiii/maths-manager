@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Teacher\BureauController;
+use App\Http\Controllers\Teacher\TeacherCorrectionController;
 use App\Http\Controllers\Teacher\BuilderTemplateController;
 use App\Http\Controllers\Teacher\DmBuilderController;
 use App\Http\Controllers\Teacher\DSBuilderController;
@@ -86,6 +87,10 @@ Route::middleware(['auth', IsTeacher::class])
         // TD — Déblocage corrections
         Route::patch('/td/{td}/unlock', [TeacherTdUnlockController::class, 'unlock'])->name('td.unlock');
         Route::patch('/td-batches/{batch}/unlock-all', [TeacherTdUnlockController::class, 'unlockBatch'])->name('td.batch.unlock');
+
+        // Corrections DS/DM
+        Route::get('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'show'])->name('corrections.show');
+        Route::patch('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'sendCorrection'])->name('corrections.send');
     });
 
 // ─── Join via invitation (public preview / auth for accept) ───────────────────

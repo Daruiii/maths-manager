@@ -13,6 +13,7 @@ class CorrectionRequest extends Model
 
     protected $fillable = [
         'user_id',
+        'corrector_id',
         'ds_id',
         'dm_id',
         'pictures',
