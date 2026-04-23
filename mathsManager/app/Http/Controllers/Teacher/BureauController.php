@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\BuilderTemplate;
+use App\Models\DmBatch;
+use App\Models\DsBatch;
 use App\Models\PrivateExercise;
 use App\Models\StudentGroup;
+use App\Models\TdBatch;
 use App\Services\BureauActivityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +24,21 @@ class BureauController extends Controller
     {
         $teacher = Auth::user();
 
+        $dsBatches = DsBatch::where('teacher_id', $teacher->id)
+            ->with(['ds' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
+            ->orderByDesc('created_at')->take(5)->get()
+            ->map(fn($b) => $this->mapBatch($b, 'ds', 'ds'));
+
+        $tdBatches = TdBatch::where('teacher_id', $teacher->id)
+            ->with(['tds' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
+            ->orderByDesc('created_at')->take(5)->get()
+            ->map(fn($b) => $this->mapBatch($b, 'tds', 'td'));
+
+        $dmBatches = DmBatch::where('teacher_id', $teacher->id)
+            ->with(['dms' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
+            ->orderByDesc('created_at')->take(5)->get()
+            ->map(fn($b) => $this->mapBatch($b, 'dms', 'dm'));
+
         return Inertia::render('Teacher/Bureau/Index', [
             'stats' => [
                 'exercisesCount'   => PrivateExercise::forTeacher($teacher->id)->count(),
@@ -28,7 +46,37 @@ class BureauController extends Controller
                 'tdTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'td')->count(),
                 'dmTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'dm')->count(),
             ],
+            'dsBatches' => $dsBatches,
+            'tdBatches' => $tdBatches,
+            'dmBatches' => $dmBatches,
         ]);
+    }
+
+    private function mapBatch(mixed $batch, string $relation, string $type): array
+    {
+        $items = $batch->$relation;
+
+        $pendingKey = match ($type) {
+            'ds'    => 'sent',
+            'td'    => 'correction_requested',
+            'dm'    => 'finished',
+            default => '',
+        };
+
+        $statuses = $items
+            ->groupBy(fn($item) => $item->status instanceof \BackedEnum ? $item->status->value : $item->status)
+            ->map->count()
+            ->toArray();
+
+        return [
+            'id'              => $batch->id,
+            'title'           => $items->first()?->custom_title ?? strtoupper($type),
+            'due_date'        => $batch->due_date?->format('Y-m-d'),
+            'created_at'      => $batch->created_at->format('Y-m-d'),
+            'total'           => $items->count(),
+            'statuses'        => $statuses,
+            'pending_actions' => $statuses[$pendingKey] ?? 0,
+        ];
     }
 
     /**

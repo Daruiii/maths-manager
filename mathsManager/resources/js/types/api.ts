@@ -41,6 +41,20 @@ export interface BureauHistoryFilters {
   per_page: number;
 }
 
+// ─── Bureau — Batches ─────────────────────────────────────────────────────────
+
+export type BatchType = 'ds' | 'td' | 'dm';
+
+export interface BatchBrief {
+  id: number;
+  title: string;
+  due_date: string | null;
+  created_at: string;
+  total: number;
+  statuses: Record<string, number>;
+  pending_actions: number;
+}
+
 // ─── Catalogue (dropdowns classification) ─────────────────────────────────────
 
 /** Sous-ensemble allégé de Classe pour les selects/filtres */
