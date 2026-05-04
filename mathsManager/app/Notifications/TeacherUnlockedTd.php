@@ -40,7 +40,7 @@ class TeacherUnlockedTd extends Notification implements ShouldQueue
             ->subject('Correction disponible — ' . $title)
             ->greeting('Bonjour ' . $notifiable->name . ',')
             ->line('Votre professeur a débloqué la correction de "' . $title . '".')
-            ->action('Voir ma fiche', url('/'))
+            ->action('Voir ma fiche', url('/td/' . $this->td->id))
             ->line('Les solutions des exercices sont maintenant accessibles.');
     }
 }

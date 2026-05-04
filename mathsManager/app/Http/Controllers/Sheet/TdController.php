@@ -170,10 +170,8 @@ class TdController extends Controller
 
         $exercises = $this->sheetFormattingService->formatExercisesBySubchapter($td);
 
-        // Mettre à jour le statut à "opened" ssi l'utilisateur connecté est le propriétaire du TD
-        if (Auth::id() == $td->user_id) {
-            $td->status = 'opened';
-            $td->save();
+        if (Auth::id() == $td->user_id && $td->status === TdStatus::NotStarted) {
+            $td->update(['status' => TdStatus::Ongoing]);
         }
 
         // Legacy view - kept for old_blade reference

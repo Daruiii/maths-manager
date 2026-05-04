@@ -49,8 +49,12 @@ class TeacherSentCorrection extends Notification implements ShouldQueue
             $mail->line('Note obtenue : **' . $data['grade'] . '**');
         }
 
+        $path = $this->correctionRequest->dm_id
+            ? '/dm/' . $this->correctionRequest->dm_id
+            : '/ds/' . $this->correctionRequest->ds_id;
+
         return $mail
-            ->action('Voir ma correction', url('/'))
+            ->action('Voir ma correction', url($path))
             ->line('Les solutions des exercices sont maintenant accessibles.');
     }
 }

@@ -113,20 +113,7 @@ class CorrectionRequestController extends Controller
         $pictures = $correctionRequest->pictures;
         $correctedPictures = $correctionRequest->correction_pictures;
 
-        // Générer l'URL pour le PDF s'il existe
-        $pdfUrl = null;
-        if ($correctionRequest->correction_pdf) {
-            $pdfParts = explode('/', $correctionRequest->correction_pdf);
-            if (count($pdfParts) === 3) {
-                $pdfUrl = route('private.file.serve', [
-                    'context' => $pdfParts[0],
-                    'identifier' => $pdfParts[1],
-                    'filename' => $pdfParts[2]
-                ]);
-            }
-        }
-
-        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector', 'pdfUrl'));
+        return view('correctionRequest.show', compact('ds', 'correctionRequest', 'pictures', 'correctedPictures', 'corrector'));
     }
 
     // Méthode pour formulaire de correction
@@ -169,24 +156,6 @@ class CorrectionRequestController extends Controller
 
         $correctionRequest->correction_pictures = array_values($correctionImagePaths);
 
-        // Upload du PDF de correction en PRIVÉ
-        if ($request->file('correction_pdf')) {
-            // Supprimer l'ancien PDF s'il existe
-            if ($correctionRequest->correction_pdf) {
-                $this->fileUploadService->delete($correctionRequest->correction_pdf, false);
-            }
-
-            // Upload le nouveau PDF
-            $pdfPath = $this->fileUploadService->upload(
-                file: $request->file('correction_pdf'),
-                context: 'corrections',
-                identifier: 'ds-' . $ds_id,
-                type: 'pdf',
-                isPublic: false,  // PRIVÉ
-                customName: 'correction'
-            );
-            $correctionRequest->correction_pdf = $pdfPath;
-        }
         $correctionRequest->save();
 
         // set ds status to 'finished'

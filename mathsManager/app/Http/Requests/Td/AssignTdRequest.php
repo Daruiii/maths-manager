@@ -25,6 +25,7 @@ class AssignTdRequest extends FormRequest
             'custom_title'           => 'nullable|string|max:255',
             'custom_level'           => 'nullable|string|max:255',
             'custom_instructions'    => 'nullable|string',
+            'due_date'               => 'nullable|date|after_or_equal:today',
         ];
     }
 }

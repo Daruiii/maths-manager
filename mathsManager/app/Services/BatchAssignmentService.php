@@ -53,6 +53,7 @@ class BatchAssignmentService
             'group_ids'   => $groupIds->isNotEmpty() ? $groupIds->all() : null,
             'student_ids' => $studentIds->all(),
             'ds_count'    => $studentIds->count(),
+            'due_date'    => $request->input('due_date'),
         ]);
 
         foreach ($studentIds as $studentId) {
@@ -103,6 +104,7 @@ class BatchAssignmentService
             'group_ids'   => $groupIds->isNotEmpty() ? $groupIds->all() : null,
             'student_ids' => $studentIds->all(),
             'dm_count'    => $studentIds->count(),
+            'due_date'    => $request->input('due_date'),
         ]);
 
         foreach ($studentIds as $studentId) {
@@ -146,6 +148,7 @@ class BatchAssignmentService
             'group_ids'   => $groupIds->isNotEmpty() ? $groupIds->all() : null,
             'student_ids' => $studentIds->all(),
             'td_count'    => $studentIds->count(),
+            'due_date'    => $request->input('due_date'),
         ]);
 
         foreach ($studentIds as $studentId) {
