@@ -5,14 +5,15 @@ interface Props {
   accent?: 'student' | 'teacher' | 'admin' | 'tertiary';
   dotted?: boolean;
   lined?: boolean;
+  styleVariant?: 'plain' | 'line' | 'halo' | 'corner' | 'topbar';
   className?: string;
 }
 
-const ACCENT_BORDER: Record<NonNullable<Props['accent']>, string> = {
-  student: 'border-l-student-color',
-  teacher: 'border-l-teacher-color',
-  admin: 'border-l-admin-color',
-  tertiary: 'border-l-tertiary-color',
+const ACCENT_HALO: Record<NonNullable<Props['accent']>, string> = {
+  student: 'mm-card-accent-student',
+  teacher: 'mm-card-accent-teacher',
+  admin: 'mm-card-accent-admin',
+  tertiary: 'mm-card-accent-tertiary',
 };
 
 export default function TheoremCard({
@@ -20,12 +21,15 @@ export default function TheoremCard({
   accent = 'student',
   dotted = false,
   lined = false,
+  styleVariant = 'halo',
   className = '',
 }: Props) {
   const pattern = dotted ? 'card-dot-grid' : lined ? 'card-lines' : '';
 
   return (
-    <div className={`card-theorem ${ACCENT_BORDER[accent]} ${pattern} p-4 ${className}`}>
+    <div
+      className={`mm-card ${ACCENT_HALO[accent]} mm-card-style-${styleVariant} ${pattern} p-4 ${className}`}
+    >
       {children}
     </div>
   );

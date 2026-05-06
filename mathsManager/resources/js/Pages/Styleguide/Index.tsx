@@ -212,7 +212,7 @@ function TypographyTab() {
 
       <div className="space-y-3">
         <p className="text-xs text-text-gray uppercase tracking-widest font-mono">Hiérarchie</p>
-        <div className="space-y-2 card-theorem border-l-tertiary-color p-6">
+        <div className="space-y-2 card-theorem card-halo-tertiary p-6">
           <p className="text-3xl font-comfortaa-bold text-text-color">Titre H1 — 3xl bold</p>
           <p className="text-2xl font-comfortaa-bold text-text-color">Titre H2 — 2xl bold</p>
           <p className="text-xl font-comfortaa-bold text-text-color">Titre H3 — xl bold</p>
@@ -269,11 +269,42 @@ function UserCardsTab({ user }: { user: NonNullable<ReturnType<typeof useAuth>['
 
 // ─── Section: CSS Classes ─────────────────────────────────────────────────────
 function CssClassesTab() {
+  const cardRecipes = [
+    { name: 'plain', className: 'mm-card-style-plain' },
+    { name: 'line', className: 'mm-card-style-line' },
+    { name: 'halo', className: 'mm-card-style-halo' },
+    { name: 'corner', className: 'mm-card-style-corner' },
+    { name: 'topbar', className: 'mm-card-style-topbar' },
+  ];
+
   const classes = [
     {
+      name: 'mm-card recipes',
+      description:
+        'Nouvelle API card. Changer uniquement .mm-card-style-* permet de tester vite la DA sans refactor composants.',
+      combines: ['mm-card', 'mm-card-accent-*', 'mm-card-style-*'],
+      demo: (
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+          {cardRecipes.map((recipe) => (
+            <div
+              key={recipe.name}
+              className={`mm-card mm-card-accent-teacher ${recipe.className} p-4`}
+            >
+              <p className="text-sm font-comfortaa-bold text-text-color">{recipe.name}</p>
+              <p className="text-xs text-text-gray mt-1">Même card, une classe différente.</p>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
       name: 'card-theorem',
-      description: 'Encadré style "théorème" académique. Base de toutes les cards custom.',
+      description:
+        'Legacy alias. Préférer maintenant .mm-card + .mm-card-accent-* + .mm-card-style-*.',
       combines: [
+        'mm-card',
+        'mm-card-accent-student',
+        'mm-card-style-halo',
         'border-l-student-color',
         'border-l-teacher-color',
         'border-l-admin-color',
@@ -285,7 +316,7 @@ function CssClassesTab() {
           {(['student', 'teacher', 'admin'] as const).map((role) => (
             <div
               key={role}
-              className={`card-theorem border-l-${role}-color hover:bg-${role}-color/5 p-4`}
+              className={`mm-card mm-card-accent-${role} mm-card-style-halo hover:bg-${role}-color/5 p-4`}
             >
               <p className="text-sm font-comfortaa-bold text-text-color capitalize">{role}</p>
               <p className="text-xs text-text-gray mt-1">Texte de contenu</p>
@@ -297,13 +328,13 @@ function CssClassesTab() {
     {
       name: 'card-dot-grid',
       description: 'Fond à points. Toujours combiné avec .card-theorem.',
-      combines: ['card-theorem', 'border-l-*-color'],
+      combines: ['card-theorem', 'card-halo-*'],
       demo: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="card-theorem border-l-teacher-color p-4">
+          <div className="mm-card mm-card-accent-teacher mm-card-style-halo p-4">
             <p className="text-xs text-text-gray">Sans</p>
           </div>
-          <div className="card-theorem card-dot-grid border-l-teacher-color p-4">
+          <div className="mm-card mm-card-accent-teacher mm-card-style-halo card-dot-grid p-4">
             <p className="text-xs text-text-gray">Avec .card-dot-grid</p>
           </div>
         </div>
@@ -312,15 +343,34 @@ function CssClassesTab() {
     {
       name: 'card-lines',
       description: 'Fond à lignes diagonales subtiles. Toujours combiné avec .card-theorem.',
-      combines: ['card-theorem', 'border-l-*-color'],
+      combines: ['card-theorem', 'card-halo-*'],
       demo: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="card-theorem border-l-admin-color p-4">
+          <div className="mm-card mm-card-accent-admin mm-card-style-halo p-4">
             <p className="text-xs text-text-gray">Sans</p>
           </div>
-          <div className="card-theorem card-lines border-l-admin-color p-4">
+          <div className="mm-card mm-card-accent-admin mm-card-style-halo card-lines p-4">
             <p className="text-xs text-text-gray">Avec .card-lines</p>
           </div>
+        </div>
+      ),
+    },
+    {
+      name: 'academic-paper',
+      description:
+        'Feuille académique pour DS/DM : rendu sobre type PDF/LaTeX, compatible dark mode via surface-color.',
+      combines: ['font-cmu-serif', 'latex-content'],
+      demo: (
+        <div className="academic-paper p-6 font-cmu-serif">
+          <div className="text-center pb-4 border-b border-border-color">
+            <p className="font-bold uppercase">
+              D<span className="text-xs">evoir maison</span>
+            </p>
+            <p className="text-xs font-cmu-italic mt-2">Consignes du sujet.</p>
+          </div>
+          <p className="text-sm mt-6">
+            <span className="font-bold">Exercice 1.</span> Résoudre l'équation proposée.
+          </p>
         </div>
       ),
     },

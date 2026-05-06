@@ -5,13 +5,107 @@
 
 @layer components {
   /* ----------------------------------------
+     Recipes cards MathsManager
+     Objectif : tester la DA en changeant une classe.
+
+     Base:
+       .mm-card
+     Accent:
+       .mm-card-accent-student | teacher | admin | tertiary
+     Style:
+       .mm-card-style-plain | line | halo | corner | topbar
+     ---------------------------------------- */
+  .mm-card {
+    --mm-card-accent: var(--tertiary-color);
+    @apply relative bg-secondary-color border border-border-color rounded-2xl transition-colors overflow-hidden;
+  }
+
+  .mm-card-accent-student {
+    --mm-card-accent: var(--student-color);
+  }
+
+  .mm-card-accent-teacher {
+    --mm-card-accent: var(--teacher-color);
+  }
+
+  .mm-card-accent-admin {
+    --mm-card-accent: var(--admin-color);
+  }
+
+  .mm-card-accent-tertiary {
+    --mm-card-accent: var(--tertiary-color);
+  }
+
+  .mm-card-style-plain {
+    box-shadow: none;
+  }
+
+  .mm-card-style-line {
+    border-left: 3px solid rgb(var(--mm-card-accent) / 0.7);
+  }
+
+  .mm-card-style-halo {
+    box-shadow:
+      0 0 0 1px rgb(var(--mm-card-accent) / 0.13),
+      0 16px 44px rgb(var(--mm-card-accent) / 0.14);
+  }
+
+  .mm-card-style-corner::after {
+    content: '';
+    @apply absolute top-3 right-3 h-2.5 w-2.5 rounded-full;
+    background: rgb(var(--mm-card-accent) / 0.75);
+    box-shadow: 0 0 18px rgb(var(--mm-card-accent) / 0.28);
+  }
+
+  .mm-card-style-topbar::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-1;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--mm-card-accent) / 0.78),
+      rgb(var(--mm-card-accent) / 0.16)
+    );
+  }
+
+  /* ----------------------------------------
      .card-theorem
      Card style "encadré de théorème".
-     Combiner avec border-l-{role}-color.
+     Legacy alias. Préférer .mm-card + .mm-card-style-*.
+     Préférer les halos .card-halo-* ou .mm-card-style-* pour éviter l'effet "border-l partout".
+     Les border-l-{role}-color restent compatibles pour les cas très structurants.
      Variantes fond: .card-dot-grid, .card-lines
      ---------------------------------------- */
   .card-theorem {
-    @apply bg-secondary-color border border-border-color border-l-4 rounded-r-xl transition-colors;
+    @apply relative bg-secondary-color border border-border-color rounded-2xl transition-colors overflow-hidden;
+  }
+
+  .card-halo-student {
+    box-shadow:
+      0 0 0 1px rgb(var(--student-color) / 0.08),
+      0 18px 50px rgb(var(--student-color) / 0.08);
+  }
+
+  .card-halo-teacher {
+    box-shadow:
+      0 0 0 1px rgb(var(--teacher-color) / 0.08),
+      0 18px 50px rgb(var(--teacher-color) / 0.08);
+  }
+
+  .card-halo-admin {
+    box-shadow:
+      0 0 0 1px rgb(var(--admin-color) / 0.08),
+      0 18px 50px rgb(var(--admin-color) / 0.08);
+  }
+
+  .card-halo-tertiary {
+    box-shadow:
+      0 0 0 1px rgb(var(--tertiary-color) / 0.08),
+      0 18px 50px rgb(var(--tertiary-color) / 0.08);
+  }
+
+  .academic-paper {
+    @apply border border-border-color rounded-2xl shadow-sm overflow-hidden;
+    background: rgb(var(--surface-color));
   }
 
   /* Points en fond (combine avec .card-theorem) */
