@@ -12,7 +12,7 @@ class Problem extends Model
     protected $table = 'problems';
 
     protected $fillable = [
-        'header', 'multiple_chapter_id', 'difficulty', 'time', 'name', 'statement', 'latex_statement', 'image_paths', 'correction_pdf',
+        'header', 'multiple_chapter_id', 'difficulty', 'time', 'name', 'statement', 'latex_statement', 'latex_solution', 'image_paths', 'correction_pdf',
          'type', 'year', 'academy', 'date_data'
     ];
 

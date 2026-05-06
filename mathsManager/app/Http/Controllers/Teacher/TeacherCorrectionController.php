@@ -64,20 +64,23 @@ class TeacherCorrectionController extends Controller
         $this->authorizeTeacher($correctionRequest);
         abort_if($correctionRequest->isCorrected(), 409);
 
-        $session = TemporaryUploadSession::where('token', $request->validated('upload_session_token'))
-            ->where('user_id', Auth::id())
-            ->where('purpose', 'teacher_correction')
-            ->firstOrFail();
+        $finalPaths = null;
 
-        abort_if($session->isExpired(), 422, 'La session d\'upload a expiré.');
-        abort_if($session->isConsumed(), 422, 'Cette session a déjà été utilisée.');
-        abort_if($session->uploads()->count() === 0, 422, 'Veuillez ajouter au moins une photo de correction.');
+        if ($token = $request->validated('upload_session_token')) {
+            $session = TemporaryUploadSession::where('token', $token)
+                ->where('user_id', Auth::id())
+                ->where('purpose', 'teacher_correction')
+                ->firstOrFail();
 
-        $destinationKey = $correctionRequest->ds_id
-            ? "teacher-ds-{$correctionRequest->ds_id}"
-            : "teacher-dm-{$correctionRequest->dm_id}";
+            abort_if($session->isExpired(), 422, 'La session d\'upload a expiré.');
+            abort_if($session->isConsumed(), 422, 'Cette session a déjà été utilisée.');
 
-        $finalPaths = $this->uploadService->consume($session, $destinationKey);
+            $destinationKey = $correctionRequest->ds_id
+                ? "teacher-ds-{$correctionRequest->ds_id}"
+                : "teacher-dm-{$correctionRequest->dm_id}";
+
+            $finalPaths = $this->uploadService->consume($session, $destinationKey);
+        }
 
         $correctionRequest->update([
             'status'              => CorrectionRequestStatus::Corrected,

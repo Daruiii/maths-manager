@@ -14,7 +14,7 @@ class SendTeacherCorrectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'upload_session_token' => ['required', 'string', 'size:48'],
+            'upload_session_token' => ['nullable', 'string', 'size:48'],
             'correction_message'   => ['nullable', 'string', 'max:1000'],
             'grade'                => ['nullable', 'numeric', 'min:0', 'max:20'],
         ];

@@ -172,6 +172,7 @@ export interface AssignmentListItem {
   statement?: string | null;
   latex_statement?: string | null;
   image_paths?: Record<string, string> | string | null;
+  latex_solution?: string | null;
 }
 
 export type CorrectionRequestStatus = 'pending' | 'corrected' | 'refused';

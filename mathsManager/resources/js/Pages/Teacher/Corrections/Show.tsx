@@ -30,13 +30,12 @@ export default function CorrectionShow({
 
   function submitCorrection(e: React.SyntheticEvent) {
     e.preventDefault();
-    if (!sessionToken || submitting) return;
-
+    if (submitting) return;
     setSubmitting(true);
     router.patch(
       route('teacher.corrections.send', correctionRequest.id),
       {
-        upload_session_token: sessionToken,
+        ...(sessionToken ? { upload_session_token: sessionToken } : {}),
         correction_message: correctionMessage,
         grade: grade === '' ? null : Number(grade),
       },
@@ -180,7 +179,7 @@ export default function CorrectionShow({
                   variant="teacher"
                   icon={Send}
                   isLoading={submitting}
-                  disabled={!sessionToken}
+                  disabled={submitting}
                 >
                   Envoyer la correction
                 </Button>

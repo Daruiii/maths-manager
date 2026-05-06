@@ -138,6 +138,12 @@ export default function DmShow({ dm }: { dm: Dm }) {
 
         {dm.status === 'corrected' && cr && (
           <div className="space-y-4">
+            <AssignmentContentList
+              problems={dm.problems}
+              exercises={dm.exercises}
+              privateExercises={dm.private_exercises}
+              showSolutions
+            />
             {cr.grade !== null && (
               <div className="flex items-center justify-center py-6">
                 <span

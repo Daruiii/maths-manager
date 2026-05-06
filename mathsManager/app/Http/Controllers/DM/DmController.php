@@ -24,11 +24,40 @@ class DmController extends Controller
     {
         abort_unless(auth()->id() === $dm->user_id, 403);
 
-        $dm->load(['problems', 'exercises', 'privateExercises', 'teacher', 'correctionRequest']);
+        $dm->load(['problems', 'exercises', 'privateExercises', 'teacher:id,first_name,last_name', 'correctionRequest']);
+
+        $unlocked = $dm->status === DmStatus::Corrected;
 
         return Inertia::render('Student/DM/Show', [
-            'dm' => $dm,
+            'dm' => [
+                'id'                  => $dm->id,
+                'status'              => $dm->status,
+                'custom_title'        => $dm->custom_title,
+                'custom_level'        => $dm->custom_level,
+                'custom_instructions' => $dm->custom_instructions,
+                'teacher'             => $dm->teacher
+                    ? ['id' => $dm->teacher->id, 'first_name' => $dm->teacher->first_name, 'last_name' => $dm->teacher->last_name]
+                    : null,
+                'correction_request'  => $dm->correctionRequest,
+                'problems'            => $dm->problems->map(fn ($p) => $this->mapItem($p, $unlocked)),
+                'exercises'           => $dm->exercises->map(fn ($e) => $this->mapItem($e, $unlocked)),
+                'private_exercises'   => $dm->privateExercises->map(fn ($e) => $this->mapItem($e, $unlocked)),
+            ],
         ]);
+    }
+
+    private function mapItem(mixed $item, bool $unlocked): array
+    {
+        return [
+            'id'              => $item->id,
+            'name'            => $item->name ?? null,
+            'title'           => $item->title ?? null,
+            'statement'       => $item->statement ?? null,
+            'latex_statement' => $item->latex_statement ?? null,
+            'image_paths'     => $item->image_paths ?? null,
+            'difficulty'      => $item->difficulty ?? null,
+            'latex_solution'  => $unlocked ? ($item->latex_solution ?? null) : null,
+        ];
     }
 
     public function updateStatus(UpdateDmStatusRequest $request, Dm $dm): RedirectResponse

@@ -9,6 +9,7 @@ interface Props {
   exercises: AssignmentListItem[];
   privateExercises: AssignmentListItem[];
   accent?: 'student' | 'teacher';
+  showSolutions?: boolean;
 }
 
 const ACCENT: Record<NonNullable<Props['accent']>, { icon: string; border: string }> = {
@@ -57,6 +58,7 @@ export default function AssignmentContentList({
   exercises,
   privateExercises,
   accent = 'student',
+  showSolutions = false,
 }: Props) {
   const items = [
     ...problems.map((item) => ({ ...item, kind: 'Problème' })),
@@ -84,6 +86,14 @@ export default function AssignmentContentList({
             <div className="border-t border-border-color pt-3">
               <AssignmentStatement item={item} />
             </div>
+            {showSolutions && item.latex_solution && (
+              <div className="border-t border-success-color/20 pt-3">
+                <p className="text-xs font-comfortaa-bold text-success-color uppercase tracking-wide mb-2">
+                  Solution
+                </p>
+                <LatexRenderer latex={item.latex_solution} images={{}} />
+              </div>
+            )}
           </article>
         ))}
       </div>
