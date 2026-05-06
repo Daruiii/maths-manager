@@ -85,6 +85,12 @@ export default function HeaderMobileMenu({
                         )}
                       </Link>
                       <Link
+                        href={route('student.assignments.index')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Mes DM
+                      </Link>
+                      <Link
                         href={`/exercises-sheet/my/${user?.id}`}
                         className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
                       >

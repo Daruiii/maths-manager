@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\BuilderTemplate;
+use App\Models\CorrectionRequest;
 use App\Models\DmBatch;
 use App\Models\DsBatch;
 use App\Models\PrivateExercise;
@@ -39,12 +40,20 @@ class BureauController extends Controller
             ->orderByDesc('created_at')->take(5)->get()
             ->map(fn($b) => $this->mapBatch($b, 'dms', 'dm'));
 
+        $pendingCorrectionsCount = CorrectionRequest::where('status', 'pending')
+            ->where(function ($q) use ($teacher) {
+                $q->whereHas('ds', fn ($q) => $q->where('teacher_id', $teacher->id))
+                  ->orWhereHas('dm', fn ($q) => $q->where('teacher_id', $teacher->id));
+            })
+            ->count();
+
         return Inertia::render('Teacher/Bureau/Index', [
             'stats' => [
-                'exercisesCount'   => PrivateExercise::forTeacher($teacher->id)->count(),
-                'dsTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'ds')->count(),
-                'tdTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'td')->count(),
-                'dmTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'dm')->count(),
+                'exercisesCount'          => PrivateExercise::forTeacher($teacher->id)->count(),
+                'dsTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'ds')->count(),
+                'tdTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'td')->count(),
+                'dmTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'dm')->count(),
+                'pendingCorrectionsCount' => $pendingCorrectionsCount,
             ],
             'dsBatches' => $dsBatches,
             'tdBatches' => $tdBatches,

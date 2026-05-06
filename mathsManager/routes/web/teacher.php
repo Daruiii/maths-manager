@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Teacher\BureauController;
+use App\Http\Controllers\Teacher\TeacherAssignmentController;
 use App\Http\Controllers\Teacher\TeacherCorrectionController;
 use App\Http\Controllers\Teacher\BuilderTemplateController;
 use App\Http\Controllers\Teacher\DmBuilderController;
@@ -38,6 +39,11 @@ Route::middleware(['auth', IsTeacher::class])
         Route::get('/bureau', [BureauController::class, 'index'])->name('bureau.index');
         Route::get('/bureau/history', [BureauController::class, 'history'])->name('bureau.history');
         Route::get('/bureau/templates', [BureauController::class, 'templates'])->name('bureau.templates');
+
+        // Assignations DS/DM/TD
+        Route::get('/assignations/{type}/{batch}', [TeacherAssignmentController::class, 'show'])
+            ->whereIn('type', ['ds', 'dm', 'td'])
+            ->name('assignations.show');
 
         // Builder Templates
         Route::post('/templates', [BuilderTemplateController::class, 'store'])->name('templates.store');
@@ -89,6 +95,7 @@ Route::middleware(['auth', IsTeacher::class])
         Route::patch('/td-batches/{batch}/unlock-all', [TeacherTdUnlockController::class, 'unlockBatch'])->name('td.batch.unlock');
 
         // Corrections DS/DM
+        Route::get('/corrections', [TeacherCorrectionController::class, 'index'])->name('corrections.index');
         Route::get('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'show'])->name('corrections.show');
         Route::patch('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'sendCorrection'])->name('corrections.send');
     });

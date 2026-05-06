@@ -14,9 +14,8 @@ class SubmitDmCorrectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'pictures'   => ['required', 'array', 'min:1', 'max:10'],
-            'pictures.*' => ['required', 'string', 'max:5000'],
-            'message'    => ['nullable', 'string', 'max:500'],
+            'upload_session_token' => ['required', 'string', 'size:48'],
+            'message'              => ['nullable', 'string', 'max:500'],
         ];
     }
 }

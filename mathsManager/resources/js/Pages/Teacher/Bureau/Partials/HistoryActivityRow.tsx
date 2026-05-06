@@ -1,4 +1,5 @@
-import { ArrowUpDown } from 'lucide-react';
+import { Link } from '@inertiajs/react';
+import { ArrowUpDown, ChevronRight } from 'lucide-react';
 import { BureauActivity } from '@/types/api';
 import {
   HISTORY_TYPE_ICONS,
@@ -37,6 +38,14 @@ export default function HistoryActivityRow({ activity }: Props) {
         <span className="inline-flex px-2 py-1 rounded-full text-[11px] bg-secondary-color border border-border-color text-text-gray">
           {HISTORY_TYPE_LABELS[activity.type]}
         </span>
+        {activity.href && (
+          <Link
+            href={activity.href}
+            className="inline-flex items-center gap-1 text-xs font-comfortaa-bold text-teacher-color hover:underline"
+          >
+            Voir le récap <ChevronRight size={13} />
+          </Link>
+        )}
       </div>
     </article>
   );

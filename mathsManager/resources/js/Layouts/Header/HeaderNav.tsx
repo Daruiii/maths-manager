@@ -100,6 +100,12 @@ export default function HeaderNav({ user, classes, dsNotStarted, tdNotStarted }:
             )}
           </Link>
           <Link
+            href={route('student.assignments.index')}
+            className={`nav-link focus:outline-none ${isActive('/student/devoirs')}`}
+          >
+            Mes DM
+          </Link>
+          <Link
             href={`/exercises-sheet/my/${user?.id}`}
             className={`nav-link relative focus:outline-none ${isActive('/exercises-sheet/my')}`}
           >

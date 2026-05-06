@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { History, BookMarked } from 'lucide-react';
+import { ClipboardList, History, BookMarked } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import RessourceCard from '@/Components/Common/UI/RessourceCard';
@@ -14,6 +14,7 @@ interface Props {
     dsTemplatesCount: number;
     tdTemplatesCount: number;
     dmTemplatesCount: number;
+    pendingCorrectionsCount: number;
   };
 }
 
@@ -53,6 +54,14 @@ export default function BureauIndex({ stats }: Props) {
             subtitle="DS, TD et DM sauvegardés"
             count={stats.dsTemplatesCount + stats.tdTemplatesCount + stats.dmTemplatesCount}
             href={route('teacher.bureau.templates')}
+            color="teacher"
+          />
+          <RessourceCard
+            icon={ClipboardList}
+            title="Corrections"
+            subtitle="Copies élèves en attente de correction"
+            count={stats.pendingCorrectionsCount}
+            href={route('teacher.corrections.index')}
             color="teacher"
           />
         </div>
