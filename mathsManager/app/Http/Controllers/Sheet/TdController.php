@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Sheet;
 use App\Http\Controllers\Controller;
 
 use App\Enums\TdStatus;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use App\Helpers\ErrorResponseHelper;
 use App\Http\Requests\Td\StoreTdRequest;
 use App\Http\Requests\Td\UpdateTdRequest;
@@ -163,19 +165,44 @@ class TdController extends Controller
         return redirect()->route('td.index')->with('success', 'TD supprimé avec succès');
     }
 
-    // Méthode pour afficher un TD
-    public function show($id)
+    public function show(int $id): InertiaResponse
     {
-        $td = Td::with('exercises.subchapter')->find($id);
+        $td = Td::findOrFail($id);
+        abort_unless(Auth::id() === $td->user_id, 403);
 
-        $exercises = $this->sheetFormattingService->formatExercisesBySubchapter($td);
+        $td->load(['exercises', 'privateExercises', 'teacher:id,first_name,last_name']);
 
-        if (Auth::id() == $td->user_id && $td->status === TdStatus::NotStarted) {
-            $td->update(['status' => TdStatus::Ongoing]);
-        }
+        $unlocked = $td->correction_unlocked;
 
-        // Legacy view - kept for old_blade reference
-        return view('td.show', ['td' => $td, 'exercises' => $exercises]);
+        return Inertia::render('Student/TD/Show', [
+            'td' => [
+                'id'                  => $td->id,
+                'status'              => $td->status,
+                'custom_title'        => $td->custom_title,
+                'custom_level'        => $td->custom_level,
+                'custom_instructions' => $td->custom_instructions,
+                'correction_unlocked' => $unlocked,
+                'teacher'             => $td->teacher
+                    ? ['id' => $td->teacher->id, 'first_name' => $td->teacher->first_name, 'last_name' => $td->teacher->last_name]
+                    : null,
+                'exercises'         => $td->exercises->map(fn ($e) => $this->mapTdItem($e, $unlocked)),
+                'private_exercises' => $td->privateExercises->map(fn ($e) => $this->mapTdItem($e, $unlocked)),
+            ],
+        ]);
+    }
+
+    private function mapTdItem(mixed $item, bool $unlocked): array
+    {
+        return [
+            'id'              => $item->id,
+            'name'            => $item->name ?? null,
+            'title'           => $item->title ?? null,
+            'statement'       => $item->statement ?? null,
+            'latex_statement' => $item->latex_statement ?? null,
+            'image_paths'     => $item->image_paths ?? null,
+            'difficulty'      => $item->difficulty ?? null,
+            'latex_solution'  => $unlocked ? ($item->latex_solution ?? null) : null,
+        ];
     }
 
     public function updateStatus(UpdateTdStatusRequest $request, Td $td): RedirectResponse

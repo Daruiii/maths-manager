@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Teacher;
 use App\Enums\CorrectionRequestStatus;
 use App\Enums\DmStatus;
 use App\Enums\DSStatus;
+use App\Enums\TdStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teacher\SendTeacherCorrectionRequest;
 use App\Models\CorrectionRequest;
+use App\Models\Td;
 use App\Models\TemporaryUploadSession;
 use App\Notifications\TeacherSentCorrection;
 use App\Services\TemporaryUploadService;
@@ -44,6 +46,11 @@ class TeacherCorrectionController extends Controller
 
         return Inertia::render('Teacher/Corrections/Index', [
             'correctionRequests' => $query->paginate(20)->withQueryString(),
+            'tdUnlockRequests'   => Td::where('teacher_id', $teacher->id)
+                ->where('status', TdStatus::CorrectionRequested->value)
+                ->with('student:id,first_name,last_name')
+                ->orderByDesc('updated_at')
+                ->get(['id', 'status', 'custom_title', 'custom_level', 'user_id', 'updated_at']),
             'filters'            => ['status' => $status],
         ]);
     }

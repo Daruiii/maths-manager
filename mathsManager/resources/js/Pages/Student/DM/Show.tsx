@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { CheckCircle, Clock, Send } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
@@ -15,9 +15,12 @@ export default function DmShow({ dm }: { dm: Dm }) {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const { errors } = usePage().props;
 
   const title = dm.custom_title ?? 'Devoir Maison';
   const cr = dm.correction_request;
+  const uploadError =
+    typeof errors.upload_session_token === 'string' ? errors.upload_session_token : null;
 
   function startDm() {
     router.patch(route('dm.status.update', dm.id), { status: 'ongoing' });
@@ -66,6 +69,10 @@ export default function DmShow({ dm }: { dm: Dm }) {
               problems={dm.problems}
               exercises={dm.exercises}
               privateExercises={dm.private_exercises}
+              variant="academic"
+              title={title}
+              level={dm.custom_level}
+              instructions={dm.custom_instructions}
             />
             <Button variant="student" icon={CheckCircle} onClick={startDm}>
               Commencer le devoir
@@ -79,6 +86,10 @@ export default function DmShow({ dm }: { dm: Dm }) {
               problems={dm.problems}
               exercises={dm.exercises}
               privateExercises={dm.private_exercises}
+              variant="academic"
+              title={title}
+              level={dm.custom_level}
+              instructions={dm.custom_instructions}
             />
             <TheoremCard accent="student" dotted>
               <SectionLabel>Envoyer votre copie</SectionLabel>
@@ -90,6 +101,11 @@ export default function DmShow({ dm }: { dm: Dm }) {
                 />
               </div>
             </TheoremCard>
+            {uploadError && (
+              <div className="rounded-xl border border-error-color/20 bg-error-color/10 px-4 py-3 text-sm text-error-color">
+                {uploadError}
+              </div>
+            )}
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -142,6 +158,10 @@ export default function DmShow({ dm }: { dm: Dm }) {
               problems={dm.problems}
               exercises={dm.exercises}
               privateExercises={dm.private_exercises}
+              variant="academic"
+              title={title}
+              level={dm.custom_level}
+              instructions={dm.custom_instructions}
               showSolutions
             />
             {cr.grade !== null && (

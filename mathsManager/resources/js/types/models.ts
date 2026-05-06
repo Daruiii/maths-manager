@@ -205,6 +205,20 @@ export interface Dm {
   correction_request: CorrectionRequest | null;
 }
 
+export type TdStatus = 'not_started' | 'ongoing' | 'correction_requested' | 'correction_unlocked';
+
+export interface Td {
+  id: number;
+  status: TdStatus;
+  custom_title: string | null;
+  custom_level: string | null;
+  custom_instructions: string | null;
+  correction_unlocked: boolean;
+  teacher: Pick<User, 'id' | 'first_name' | 'last_name'> | null;
+  exercises: AssignmentListItem[];
+  private_exercises: AssignmentListItem[];
+}
+
 /** Item dans la preview du DS — inclut un uid unique pour le d&d */
 export interface DSPreviewItem {
   uid: string; // `${kind}-${id}-${index}` pour gérer les doublons

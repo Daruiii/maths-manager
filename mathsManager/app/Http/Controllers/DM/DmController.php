@@ -79,9 +79,17 @@ class DmController extends Controller
             ->where('purpose', 'correction_submission')
             ->firstOrFail();
 
-        abort_if($session->isExpired(), 422, 'La session d\'upload a expiré.');
-        abort_if($session->isConsumed(), 422, 'Cette session a déjà été utilisée.');
-        abort_if($session->uploads()->count() === 0, 422, 'Veuillez ajouter au moins une photo.');
+        if ($session->isExpired()) {
+            return back()->withErrors(['upload_session_token' => 'La session d\'upload a expiré.']);
+        }
+
+        if ($session->isConsumed()) {
+            return back()->withErrors(['upload_session_token' => 'Cette session a déjà été utilisée.']);
+        }
+
+        if ($session->uploads()->count() === 0) {
+            return back()->withErrors(['upload_session_token' => 'Veuillez ajouter au moins une photo.']);
+        }
 
         $finalPaths = $this->uploadService->consume($session, "student-dm-{$dm->id}");
 
