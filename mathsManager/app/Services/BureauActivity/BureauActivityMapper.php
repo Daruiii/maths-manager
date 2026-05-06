@@ -22,6 +22,7 @@ class BureauActivityMapper
             'scope' => 'assignments',
             'title' => 'DS assigné',
             'description' => $this->buildAssignmentDescription($recipientCount, $batch->group_ids ?? [], $groupNames),
+            'href' => route('teacher.assignations.show', ['type' => 'ds', 'batch' => $batch->id]),
             'occurred_at' => $batch->created_at?->toIso8601String(),
             'occurred_at_unix' => $batch->created_at?->timestamp ?? 0,
         ];
@@ -37,6 +38,7 @@ class BureauActivityMapper
             'scope' => 'assignments',
             'title' => 'TD assigné',
             'description' => $this->buildAssignmentDescription($recipientCount, $batch->group_ids ?? [], $groupNames),
+            'href' => route('teacher.assignations.show', ['type' => 'td', 'batch' => $batch->id]),
             'occurred_at' => $batch->created_at?->toIso8601String(),
             'occurred_at_unix' => $batch->created_at?->timestamp ?? 0,
         ];
@@ -52,6 +54,7 @@ class BureauActivityMapper
             'scope' => 'assignments',
             'title' => 'DM assigné',
             'description' => $this->buildAssignmentDescription($recipientCount, $batch->group_ids ?? [], $groupNames),
+            'href' => route('teacher.assignations.show', ['type' => 'dm', 'batch' => $batch->id]),
             'occurred_at' => $batch->created_at?->toIso8601String(),
             'occurred_at_unix' => $batch->created_at?->timestamp ?? 0,
         ];

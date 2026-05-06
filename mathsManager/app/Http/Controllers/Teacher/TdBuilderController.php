@@ -121,9 +121,11 @@ class TdBuilderController extends BaseBuilderController
 
     public function assign(AssignTdRequest $request)
     {
-        $count = $this->assignmentService->assignTd($request, Auth::user());
+        $batch = $this->assignmentService->assignTd($request, Auth::user());
 
-        return back()->with('success', $count . ' TD assigné(s) avec succès.');
+        return redirect()
+            ->route('teacher.assignations.show', ['type' => 'td', 'batch' => $batch->id])
+            ->with('success', $batch->td_count . ' TD assigné(s) avec succès.');
     }
 
 }

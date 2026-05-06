@@ -30,7 +30,7 @@ class BatchAssignmentService
     // DS
     // ──────────────────────────────────────────────────────────────────────────
 
-    public function assignDs(AssignDsBuilderRequest $request, User $teacher): int
+    public function assignDs(AssignDsBuilderRequest $request, User $teacher): DsBatch
     {
         $problems  = Problem::findMany($request->input('problem_ids', []));
         $exercises = Exercise::findMany($request->input('exercise_ids', []));
@@ -81,14 +81,14 @@ class BatchAssignmentService
             $this->sendMailSafe(new AssignDSMail($ds), $studentId, 'DS builder assign');
         }
 
-        return $studentIds->count();
+        return $batch;
     }
 
     // ──────────────────────────────────────────────────────────────────────────
     // DM
     // ──────────────────────────────────────────────────────────────────────────
 
-    public function assignDm(AssignDmBuilderRequest $request, User $teacher): int
+    public function assignDm(AssignDmBuilderRequest $request, User $teacher): DmBatch
     {
         $problems  = Problem::findMany($request->input('problem_ids', []));
         $exercises = Exercise::findMany($request->input('exercise_ids', []));
@@ -125,14 +125,14 @@ class BatchAssignmentService
             $this->sendMailSafe(new AssignDMMail($dm), $studentId, 'DM builder assign');
         }
 
-        return $studentIds->count();
+        return $batch;
     }
 
     // ──────────────────────────────────────────────────────────────────────────
     // TD
     // ──────────────────────────────────────────────────────────────────────────
 
-    public function assignTd(AssignTdRequest $request, User $teacher): int
+    public function assignTd(AssignTdRequest $request, User $teacher): TdBatch
     {
         $exercises = Exercise::findMany($request->input('exercise_ids', []));
         $privateExercises = $this->scopedPrivateExercises(
@@ -168,7 +168,7 @@ class BatchAssignmentService
             $this->sendMailSafe(new AssignTDMail($td), $studentId, 'TD builder assign');
         }
 
-        return $studentIds->count();
+        return $batch;
     }
 
     // ──────────────────────────────────────────────────────────────────────────

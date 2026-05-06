@@ -30,6 +30,7 @@ export interface BureauActivity {
   scope: BureauActivityScope;
   title: string;
   description: string;
+  href?: string | null;
   occurred_at: string | null;
 }
 
@@ -75,4 +76,21 @@ export interface CatalogueSubchapter {
   id: number;
   title: string;
   chapter_id: number;
+}
+
+// ─── Upload temporaire ────────────────────────────────────────────────────────
+
+export type UploadPurpose = 'correction_submission' | 'teacher_correction';
+
+export interface UploadSessionInfo {
+  session_id: number;
+  token: string;
+  expires_at: string;
+}
+
+export interface UploadedFileInfo {
+  id: number;
+  original_name: string;
+  size: number;
+  position: number;
 }

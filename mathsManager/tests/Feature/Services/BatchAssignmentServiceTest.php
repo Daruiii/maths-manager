@@ -41,9 +41,9 @@ class BatchAssignmentServiceTest extends TestCase
             studentIds: $students->pluck('id')->all(),
         );
 
-        $count = $this->service->assignTd($request, $this->teacher);
+        $batch = $this->service->assignTd($request, $this->teacher);
 
-        $this->assertSame(3, $count);
+        $this->assertSame(3, $batch->td_count);
     }
 
     public function test_assignTd_creates_one_td_per_student(): void

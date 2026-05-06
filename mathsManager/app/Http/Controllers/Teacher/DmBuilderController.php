@@ -169,8 +169,10 @@ class DmBuilderController extends BaseBuilderController
 
     public function assign(AssignDmBuilderRequest $request)
     {
-        $count = $this->assignmentService->assignDm($request, Auth::user());
+        $batch = $this->assignmentService->assignDm($request, Auth::user());
 
-        return back()->with('success', $count . ' DM assigné(s) avec succès.');
+        return redirect()
+            ->route('teacher.assignations.show', ['type' => 'dm', 'batch' => $batch->id])
+            ->with('success', $batch->dm_count . ' DM assigné(s) avec succès.');
     }
 }

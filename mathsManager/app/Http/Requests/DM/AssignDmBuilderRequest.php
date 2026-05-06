@@ -3,6 +3,7 @@
 namespace App\Http\Requests\DM;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class AssignDmBuilderRequest extends FormRequest
 {
@@ -14,11 +15,11 @@ class AssignDmBuilderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'problem_ids'            => 'required_without_all:exercise_ids,private_exercise_ids|array|min:1',
+            'problem_ids'            => 'nullable|array',
             'problem_ids.*'          => 'exists:problems,id',
-            'exercise_ids'           => 'required_without_all:problem_ids,private_exercise_ids|array|min:1',
+            'exercise_ids'           => 'nullable|array',
             'exercise_ids.*'         => 'exists:exercises,id',
-            'private_exercise_ids'   => 'required_without_all:problem_ids,exercise_ids|array|min:1',
+            'private_exercise_ids'   => 'nullable|array',
             'private_exercise_ids.*' => 'exists:private_exercises,id',
             'student_ids'            => 'required|array|min:1',
             'student_ids.*'          => 'exists:users,id',
@@ -29,5 +30,18 @@ class AssignDmBuilderRequest extends FormRequest
             'custom_instructions'    => 'nullable|string',
             'due_date'               => 'nullable|date|after_or_equal:today',
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $total = count((array) $this->input('problem_ids', []))
+                + count((array) $this->input('exercise_ids', []))
+                + count((array) $this->input('private_exercise_ids', []));
+
+            if ($total === 0) {
+                $validator->errors()->add('content', 'Sélectionnez au moins un contenu pour le DM.');
+            }
+        });
     }
 }

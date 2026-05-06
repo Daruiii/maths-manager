@@ -161,6 +161,49 @@ export interface PickablePrivateExercise {
 
 export type PickableItem = PickableProblem | PickableExercise | PickablePrivateExercise;
 
+// ─── Assignments / Corrections ───────────────────────────────────────────────
+
+export type DmStatus = 'not_started' | 'ongoing' | 'finished' | 'corrected';
+
+export interface AssignmentListItem {
+  id: number;
+  title?: string | null;
+  name?: string | null;
+  statement?: string | null;
+  latex_statement?: string | null;
+  image_paths?: Record<string, string> | string | null;
+}
+
+export type CorrectionRequestStatus = 'pending' | 'corrected' | 'refused';
+
+export interface CorrectionRequest {
+  id: number;
+  status: CorrectionRequestStatus;
+  pictures: string[];
+  correction_pictures: string[] | null;
+  correction_message: string | null;
+  grade: number | null;
+  message: string | null;
+  created_at: string;
+  updated_at: string;
+  user?: Pick<User, 'id' | 'first_name' | 'last_name'>;
+  dm?: { id: number; custom_title: string | null } | null;
+  ds?: { id: number; custom_title?: string | null } | null;
+}
+
+export interface Dm {
+  id: number;
+  status: DmStatus;
+  custom_title: string | null;
+  custom_level: string | null;
+  custom_instructions: string | null;
+  teacher: Pick<User, 'id' | 'first_name' | 'last_name'> | null;
+  problems: AssignmentListItem[];
+  exercises: AssignmentListItem[];
+  private_exercises: AssignmentListItem[];
+  correction_request: CorrectionRequest | null;
+}
+
 /** Item dans la preview du DS — inclut un uid unique pour le d&d */
 export interface DSPreviewItem {
   uid: string; // `${kind}-${id}-${index}` pour gérer les doublons

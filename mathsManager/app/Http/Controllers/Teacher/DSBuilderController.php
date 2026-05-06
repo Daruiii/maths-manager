@@ -169,9 +169,11 @@ class DSBuilderController extends BaseBuilderController
 
     public function assign(AssignDsBuilderRequest $request)
     {
-        $count = $this->assignmentService->assignDs($request, Auth::user());
+        $batch = $this->assignmentService->assignDs($request, Auth::user());
 
-        return back()->with('success', $count . ' DS assigné(s) avec succès.');
+        return redirect()
+            ->route('teacher.assignations.show', ['type' => 'ds', 'batch' => $batch->id])
+            ->with('success', $batch->ds_count . ' DS assigné(s) avec succès.');
     }
 
 }

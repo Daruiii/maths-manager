@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { Users, ChevronDown, ChevronRight } from 'lucide-react';
+import { Calendar, Users, ChevronDown, ChevronRight } from 'lucide-react';
 import { StudentGroup, User as UserType, DSPreviewItem } from '@/types/models';
 import UserAvatar from '@/Components/Common/UI/UserAvatar';
 import Button from '@/Components/Common/UI/Button';
@@ -45,17 +45,20 @@ export default function AssignStep({
   customLevel,
   customInstructions,
 }: Props) {
+  const { errors } = usePage().props;
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<number>>(new Set());
   const [selectedGroupIds, setSelectedGroupIds] = useState<Set<number>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [search, setSearch] = useState('');
+  const [dueDate, setDueDate] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
       setSelectedStudentIds(new Set());
       setSelectedGroupIds(new Set());
       setExpandedGroups(new Set());
+      setDueDate('');
       return;
     }
     if (preselectedStudentId) {
@@ -123,6 +126,9 @@ export default function AssignStep({
   const privateIds = previewItems.filter((i) => i.item.kind === 'private').map((i) => i.item.id);
   const totalItems = problemIds.length + exerciseIds.length + privateIds.length;
   const totalRecipients = selectedStudentIds.size;
+  const today = new Date().toISOString().slice(0, 10);
+  const dueDateError = typeof errors.due_date === 'string' ? errors.due_date : null;
+  const contentError = typeof errors.content === 'string' ? errors.content : null;
 
   const handleSubmit = () => {
     if (totalItems === 0 || totalRecipients === 0) return;
@@ -135,6 +141,7 @@ export default function AssignStep({
       custom_title: customTitle,
       custom_level: customLevel,
       custom_instructions: customInstructions,
+      due_date: dueDate || null,
       ...(includeProblems ? { problem_ids: problemIds } : {}),
     };
     router.post(route(assignRoute), payload, {
@@ -198,6 +205,22 @@ export default function AssignStep({
         onClear={() => setSearch('')}
         focusRingClass="focus:border-teacher-color focus:ring-teacher-color"
       />
+
+      <section className="rounded-2xl border border-border-color bg-secondary-color p-3 space-y-2">
+        <label className="flex items-center gap-2 text-xs font-comfortaa-bold text-text-gray uppercase tracking-wide">
+          <Calendar size={13} className="text-teacher-color" />
+          Échéance optionnelle
+        </label>
+        <input
+          type="date"
+          min={today}
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          className="w-full rounded-xl border border-border-color bg-surface-color px-3 py-2 text-sm text-text-color focus:outline-none focus:border-teacher-color/50"
+        />
+        {dueDateError && <p className="text-xs text-error-color">{dueDateError}</p>}
+        {contentError && <p className="text-xs text-error-color">{contentError}</p>}
+      </section>
 
       {filteredGroups.length > 0 && (
         <section>
