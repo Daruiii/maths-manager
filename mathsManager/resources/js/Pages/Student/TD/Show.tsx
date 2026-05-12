@@ -7,6 +7,7 @@ import Button from '@/Components/Common/UI/Button';
 import TheoremCard from '@/Components/Common/UI/TheoremCard';
 import SectionLabel from '@/Components/Common/UI/SectionLabel';
 import AssignmentContentList from '@/Components/Features/Assignments/AssignmentContentList';
+import AssignmentMeta from '@/Components/Features/Assignments/AssignmentMeta';
 import type { Td } from '@/types/models';
 
 export default function TdShow({ td }: { td: Td }) {
@@ -43,19 +44,7 @@ export default function TdShow({ td }: { td: Td }) {
 
         {td.status === 'not_started' && (
           <div className="space-y-4">
-            {td.teacher && (
-              <p className="text-sm text-text-gray">
-                Professeur :{' '}
-                <span className="font-comfortaa-bold text-text-color">
-                  {td.teacher.first_name} {td.teacher.last_name}
-                </span>
-              </p>
-            )}
-            {td.custom_level && (
-              <span className="inline-flex text-xs px-2.5 py-0.5 rounded-full bg-student-color/10 text-student-color font-comfortaa-bold">
-                {td.custom_level}
-              </span>
-            )}
+            <AssignmentMeta teacher={td.teacher} level={td.custom_level} />
             {td.custom_instructions && (
               <TheoremCard accent="student" lined>
                 <p className="text-sm text-text-color leading-relaxed whitespace-pre-line">

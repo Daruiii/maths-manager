@@ -10,9 +10,13 @@ class DS extends Model
 {
     use HasFactory;
     protected $table = 'ds';
+    protected $casts = [
+        'started_at' => 'datetime',
+    ];
+
     protected $fillable = [
         'type_bac', 'exercises_number', 'harder_exercises', 'time', 'timer', 'chrono', 'status', 'teacher_id',
-        'custom_title', 'custom_level', 'custom_instructions', 'batch_id',
+        'custom_title', 'custom_level', 'custom_instructions', 'batch_id', 'started_at',
     ];
 
     public function isNotStarted(): bool
@@ -35,9 +39,14 @@ class DS extends Model
         return $this->status === DSStatus::Corrected->value;
     }
 
+    public function isPaused(): bool
+    {
+        return $this->status === DSStatus::Paused->value;
+    }
+
     public function isActive(): bool
     {
-        return in_array($this->status, [DSStatus::NotStarted->value, DSStatus::Ongoing->value]);
+        return in_array($this->status, [DSStatus::NotStarted->value, DSStatus::Ongoing->value, DSStatus::Paused->value]);
     }
 
     public function getStatusEnum(): DSStatus

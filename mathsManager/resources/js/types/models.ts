@@ -205,6 +205,32 @@ export interface Dm {
   correction_request: CorrectionRequest | null;
 }
 
+export type DsStatus =
+  | 'not_started'
+  | 'ongoing'
+  | 'paused'
+  | 'finished'
+  | 'finished_late'
+  | 'sent'
+  | 'corrected';
+
+export interface Ds {
+  id: number;
+  status: DsStatus;
+  custom_title: string | null;
+  custom_level: string | null;
+  custom_instructions: string | null;
+  time_minutes: number;
+  timer_seconds: number;
+  type_bac: boolean;
+  harder_exercises: boolean;
+  teacher: Pick<User, 'id' | 'first_name' | 'last_name'> | null;
+  problems: AssignmentListItem[];
+  exercises: AssignmentListItem[];
+  private_exercises: AssignmentListItem[];
+  correction_request: CorrectionRequest | null;
+}
+
 export type TdStatus = 'not_started' | 'ongoing' | 'correction_requested' | 'correction_unlocked';
 
 export interface Td {

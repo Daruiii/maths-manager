@@ -1,27 +1,29 @@
 import { Head, Link } from '@inertiajs/react';
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronRight, GraduationCap } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import SectionLabel from '@/Components/Common/UI/SectionLabel';
 import { BATCH_STATUS_META } from '@/Constants/statuses';
-import type { DmStatus, TdStatus } from '@/types/models';
+import type { DmStatus, DsStatus, TdStatus } from '@/types/models';
 
-interface DmBrief {
+interface Brief {
   id: number;
-  status: DmStatus;
   custom_title: string | null;
   custom_level: string | null;
   teacher: { first_name: string; last_name: string } | null;
   created_at: string;
 }
 
-interface TdBrief {
-  id: number;
+interface DsBrief extends Brief {
+  status: DsStatus;
+}
+
+interface DmBrief extends Brief {
+  status: DmStatus;
+}
+
+interface TdBrief extends Brief {
   status: TdStatus;
-  custom_title: string | null;
-  custom_level: string | null;
-  teacher: { first_name: string; last_name: string } | null;
-  created_at: string;
 }
 
 function AssignmentRow({
@@ -66,8 +68,16 @@ function AssignmentRow({
   );
 }
 
-export default function StudentAssignmentsIndex({ dms, tds }: { dms: DmBrief[]; tds: TdBrief[] }) {
-  const hasAssignments = dms.length > 0 || tds.length > 0;
+export default function StudentAssignmentsIndex({
+  dss,
+  dms,
+  tds,
+}: {
+  dss: DsBrief[];
+  dms: DmBrief[];
+  tds: TdBrief[];
+}) {
+  const hasAssignments = dss.length > 0 || dms.length > 0 || tds.length > 0;
 
   return (
     <AppLayout>
@@ -82,6 +92,30 @@ export default function StudentAssignmentsIndex({ dms, tds }: { dms: DmBrief[]; 
           </div>
         ) : (
           <div className="space-y-6">
+            {dss.length > 0 && (
+              <section className="space-y-2">
+                <SectionLabel>
+                  <span className="inline-flex items-center gap-1.5">
+                    <GraduationCap size={13} />
+                    Devoirs Surveillés ({dss.length})
+                  </span>
+                </SectionLabel>
+                <ul className="space-y-2">
+                  {dss.map((ds) => (
+                    <li key={ds.id}>
+                      <AssignmentRow
+                        href={route('ds.show', ds.id)}
+                        title={ds.custom_title ?? 'Devoir Surveillé'}
+                        teacher={ds.teacher}
+                        level={ds.custom_level}
+                        status={ds.status}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
             {dms.length > 0 && (
               <section className="space-y-2">
                 <SectionLabel>Devoirs Maison ({dms.length})</SectionLabel>

@@ -80,7 +80,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');
     Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
 
-    // Play
+    // Play (Inertia)
+    Route::patch('/ds/{ds}/status', [DSController::class, 'updateStatus'])->name('ds.status.update');
+    Route::post('/ds/{ds}/correction', [DSController::class, 'submitCorrection'])->name('ds.correction.submit');
+
+    // Play (legacy — kept for backward compat)
     Route::get('/ds/{id}/start', [DSPlayController::class, 'start'])->name('ds.start');
     Route::get('/ds/{id}/pause/{timer}', [DSPlayController::class, 'pause'])->name('ds.pause');
     Route::get('/ds/{id}/finish', [DSPlayController::class, 'finish'])->name('ds.finish');

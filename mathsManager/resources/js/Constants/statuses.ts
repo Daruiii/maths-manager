@@ -11,6 +11,7 @@ export const BATCH_STATUS_META: Record<string, StatusMeta> = {
   // DS + DM
   not_started: { label: 'Non commencé', classes: 'bg-surface-color text-text-gray' },
   ongoing: { label: 'En cours', classes: 'bg-tertiary-color/10 text-tertiary-color' },
+  paused: { label: 'En pause', classes: 'bg-surface-color text-text-gray' },
   finished: { label: 'Terminé', classes: 'bg-teacher-color/10 text-teacher-color' },
   finished_late: {
     label: 'Terminé (en retard)',
