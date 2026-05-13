@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ClipboardList, History, BookMarked } from 'lucide-react';
+import { ClipboardList, History, BookMarked, Users } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import RessourceCard from '@/Components/Common/UI/RessourceCard';
@@ -62,6 +62,13 @@ export default function BureauIndex({ stats }: Props) {
             subtitle="Copies élèves en attente de correction"
             count={stats.pendingCorrectionsCount}
             href={route('teacher.corrections.index')}
+            color="teacher"
+          />
+          <RessourceCard
+            icon={Users}
+            title="Mes élèves"
+            subtitle="Gérez vos élèves et vos groupes"
+            href={route('teacher.students.index')}
             color="teacher"
           />
         </div>

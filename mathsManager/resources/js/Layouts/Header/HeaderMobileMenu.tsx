@@ -1,23 +1,15 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Transition } from '@headlessui/react';
 import { X, Menu } from 'lucide-react';
-import { Classe, User } from '@/types';
+import { Classe } from '@/types';
 import { useAuth } from '@/Hooks/Auth/useAuth';
 import { Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 
 interface HeaderMobileMenuProps {
-  user: User | null;
   classes?: Classe[];
-  dsNotStarted?: number;
-  tdNotStarted?: number;
 }
 
-export default function HeaderMobileMenu({
-  user,
-  classes,
-  dsNotStarted,
-  tdNotStarted,
-}: HeaderMobileMenuProps) {
+export default function HeaderMobileMenu({ classes }: HeaderMobileMenuProps) {
   const { isStaff, isStudent, hasNoRole } = useAuth();
 
   if (hasNoRole) return null;
@@ -47,10 +39,10 @@ export default function HeaderMobileMenu({
           >
             <DisclosurePanel className="absolute top-full left-0 right-0 bg-secondary-color shadow-xl border-t border-border-color overflow-hidden">
               <div className="px-4 pt-4 pb-6 space-y-2 max-h-[80vh] overflow-y-auto">
-                {/* Classes Section */}
+                {/* Exercices / Classes */}
                 <div className="space-y-1">
                   <p className="px-3 text-xxs font-comfortaa-bold text-text-gray uppercase tracking-widest">
-                    Classes
+                    Exercices
                   </p>
                   {(classes ?? []).length > 0 ? (
                     classes?.map((classe) => (
@@ -69,56 +61,24 @@ export default function HeaderMobileMenu({
 
                 <div className="h-px bg-border-color my-4" />
 
-                {/* Navigation Section */}
+                {/* Navigation */}
                 <div className="space-y-1">
                   {isStudent && (
-                    <>
-                      <Link
-                        href={`/ds/myDS/${user?.id}`}
-                        className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
-                      >
-                        <span>Mes devoirs</span>
-                        {(dsNotStarted ?? 0) > 0 && (
-                          <span className="bg-error-color text-white text-xxs font-bold px-2 py-0.5 rounded-full">
-                            {dsNotStarted}
-                          </span>
-                        )}
-                      </Link>
-                      <Link
-                        href={route('student.assignments.index')}
-                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
-                      >
-                        Mes DM
-                      </Link>
-                      <Link
-                        href={`/exercises-sheet/my/${user?.id}`}
-                        className="flex items-center justify-between px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
-                      >
-                        <span>Mes fiches</span>
-                        {(tdNotStarted ?? 0) > 0 && (
-                          <span className="bg-error-color text-white text-xxs font-bold px-2 py-0.5 rounded-full">
-                            {tdNotStarted}
-                          </span>
-                        )}
-                      </Link>
-                    </>
+                    <Link
+                      href="/student/ressources"
+                      className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                    >
+                      Mes Ressources
+                    </Link>
                   )}
 
                   {isStaff && (
-                    <>
-                      <Link
-                        href={route('teacher.students.index')}
-                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
-                      >
-                        Mes élèves
-                      </Link>
-                      <Link
-                        href={route('teacher.bureau.index')}
-                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
-                      >
-                        Mon Bureau
-                      </Link>
-                    </>
+                    <Link
+                      href={route('teacher.bureau.index')}
+                      className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                    >
+                      Mon Bureau
+                    </Link>
                   )}
                 </div>
               </div>

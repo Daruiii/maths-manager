@@ -8,8 +8,8 @@ import HeaderActions from '@/Layouts/Header/HeaderActions';
 import HeaderMobileMenu from '@/Layouts/Header/HeaderMobileMenu';
 
 export default function Header() {
-  const { user } = useAuth();
-  const { classes, dsNotStarted, tdNotStarted } = usePage<PageProps>().props;
+  const { user, isGuest } = useAuth();
+  const { classes } = usePage<PageProps>().props;
   const scrollDirection = useScrollDirection();
 
   return (
@@ -19,28 +19,33 @@ export default function Header() {
         ${scrollDirection === 'down' ? '-translate-y-full shadow-none' : 'translate-y-0'}
       `}
     >
-      <nav className="w-full flex flex-wrap items-center mx-auto px-4 lg:px-8">
+      <nav className="w-full flex items-center mx-auto px-4 lg:px-8 gap-8">
+        {/* Logo — toujours à gauche */}
         <div className="shrink-0 flex items-center">
           <HeaderLogo />
         </div>
 
-        <div className="flex-1 flex justify-center items-center">
-          <HeaderNav
-            user={user}
-            classes={classes}
-            dsNotStarted={dsNotStarted}
-            tdNotStarted={tdNotStarted}
-          />
-        </div>
+        {/* Authentifié : nav collée au logo */}
+        {!isGuest && (
+          <div className="hidden lg:flex items-center">
+            <HeaderNav classes={classes} />
+          </div>
+        )}
 
+        {/* Guest : classes centrées */}
+        {isGuest && (
+          <div className="hidden lg:flex flex-1 justify-center items-center">
+            <HeaderNav classes={classes} />
+          </div>
+        )}
+
+        {/* Spacer côté auth */}
+        {!isGuest && <div className="flex-1" />}
+
+        {/* Actions — toujours à droite */}
         <div className="shrink-0 flex items-center gap-2">
           <HeaderActions user={user} />
-          <HeaderMobileMenu
-            user={user}
-            classes={classes}
-            dsNotStarted={dsNotStarted}
-            tdNotStarted={tdNotStarted}
-          />
+          <HeaderMobileMenu classes={classes} />
         </div>
       </nav>
     </header>

@@ -131,11 +131,11 @@
      Ajouter .active pour afficher l'indicateur.
      ---------------------------------------- */
   .nav-link {
-    @apply relative text-sm font-semibold text-text-color hover:text-text-gray transition-colors py-2;
+    @apply relative text-sm font-comfortaa-bold text-text-color/60 hover:text-text-color transition-all px-3 py-1.5 rounded-lg hover:bg-surface-color;
   }
 
-  .nav-link.active::after {
-    @apply content-[''] absolute bottom-0 left-1/2 -translate-x-1/2 w-1/4 h-0.5 bg-tertiary-color rounded-full;
+  .nav-link.active {
+    @apply text-text-color bg-surface-color;
   }
 
   /* ----------------------------------------

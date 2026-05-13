@@ -14,40 +14,40 @@
   /* ========================================
      BACKGROUNDS
      ======================================== */
-  --primary-color: 234 226 214;    /* Beige — fond principal de l'app */
-  --secondary-color: 254 251 245;  /* Off-white — cartes, panels */
-  --surface-color: 249 250 251;    /* gray-50 — survols, zones légères */
+  --primary-color: 234 226 214; /* Beige — fond principal de l'app */
+  --secondary-color: 254 251 245; /* Off-white — cartes, panels */
+  --surface-color: 240 232 220; /* beige plus clair — zones légères */
 
   /* ========================================
      TEXT
      ======================================== */
-  --text-color: 0 0 0;             /* Texte principal */
-  --text-gray: 116 116 116;        /* Texte secondaire / muted */
+  --text-color: 0 0 0; /* Texte principal */
+  --text-gray: 116 116 116; /* Texte secondaire / muted */
 
   /* ========================================
      BORDERS
      ======================================== */
---border-color: 156 163 175;     /* gray-400 — bordures légèrement plus sombres */
+  --border-color: 156 163 175; /* gray-400 — bordures légèrement plus sombres */
 
   /* ========================================
      BRAND & INTERACTIVE
      ======================================== */
-  --tertiary-color: 40 104 178;    /* Brand Blue — boutons, liens, focus */
+  --tertiary-color: 133 94 66; /* Beige plus marqué — tirant sur le marron */
 
   /* ========================================
      STATUS
      ======================================== */
   --success-color: 46 139 87;
   --error-color: 193 39 45;
-  --warning-color: 234 88 12;      /* orange-600 */
-  --info-color: 40 104 178;        /* same as tertiary */
+  --warning-color: 234 88 12; /* orange-600 */
+  --info-color: 40 104 178; /* same as tertiary */
 
   /* ========================================
      ROLE COLORS
      ======================================== */
-  --admin-color: 251 191 36;       /* amber-400 — plus doré pour badges */
-  --teacher-color: 139 92 246;     /* violet-500 */
-  --student-color: 13 148 136;     /* teal-600 */
+  --admin-color: 251 191 36; /* amber-400 — plus doré pour badges */
+  --teacher-color: 139 92 246; /* violet-500 */
+  --student-color: 13 148 136; /* teal-600 */
 
   /* ========================================
      ROLE GRADIENTS (hex ok — pas d'opacité)
@@ -90,17 +90,17 @@
 
 .dark {
   /* Backgrounds */
-  --primary-color: 17 24 39;       /* gray-900 */
-  --secondary-color: 31 41 55;     /* gray-800 */
-  --surface-color: 55 65 81;       /* gray-700 — survols sur fond sombre */
+  --primary-color: 17 24 39; /* gray-900 */
+  --secondary-color: 31 41 55; /* gray-800 */
+  --surface-color: 55 65 81; /* gray-700 — survols sur fond sombre */
 
   /* Text */
-  --text-color: 249 250 251;       /* gray-50 */
-  --text-gray: 156 163 175;        /* gray-400 */
+  --text-color: 249 250 251; /* gray-50 */
+  --text-gray: 156 163 175; /* gray-400 */
 
   /* Borders */
-   --border-color: 75 85 99;        /* gray-600 — plus lisible sur fonds dark */
+  --border-color: 75 85 99; /* gray-600 — plus lisible sur fonds dark */
 
   /* Brand — plus clair sur fond sombre */
-  --tertiary-color: 96 165 250;    /* blue-400 */
-}
+/* Brand — plus clair sur fond sombre (version adaptée du light tertiary) */
+  --tertiary-color: 96 165 250;    /* blue-400 */}

@@ -23,7 +23,7 @@ interface TdBrief extends Brief {
   status: TdStatus;
 }
 
-export default function StudentAssignmentsIndex({
+export default function StudentRessourcesIndex({
   dss,
   dms,
   tds,
@@ -32,18 +32,22 @@ export default function StudentAssignmentsIndex({
   dms: DmBrief[];
   tds: TdBrief[];
 }) {
-  const hasAssignments = dss.length > 0 || dms.length > 0 || tds.length > 0;
+  const hasContent = dss.length > 0 || dms.length > 0 || tds.length > 0;
 
   return (
     <AppLayout>
-      <Head title="Mes devoirs" />
+      <Head title="Mes Ressources" />
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        <PageHeader title="Mes devoirs" breadcrumbs={[{ label: 'Mes devoirs' }]} />
+        <PageHeader
+          title="Mes Ressources"
+          subtitle="Tous vos devoirs, exercices favoris et récaps de cours"
+          breadcrumbs={[{ label: 'Mes Ressources' }]}
+        />
 
-        {!hasAssignments ? (
+        {!hasContent ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3 text-text-gray">
             <BookOpen size={32} className="opacity-40" />
-            <p className="text-sm">Aucun devoir assigné pour l'instant.</p>
+            <p className="text-sm">Aucune ressource pour l'instant.</p>
           </div>
         ) : (
           <div className="space-y-6">
