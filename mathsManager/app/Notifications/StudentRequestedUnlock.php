@@ -32,6 +32,7 @@ class StudentRequestedUnlock extends Notification implements ShouldQueue
             'student_name' => $student->name,
             'title'        => $title,
             'message'      => $student->name . ' demande la correction pour "' . $title . '".',
+            'link'         => '/teacher/bureau',
         ];
     }
 

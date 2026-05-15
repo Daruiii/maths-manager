@@ -48,6 +48,16 @@ class HandleInertiaRequests extends Middleware
             'classes' => Classe::where('hidden', false)->orderBy('display_order')->get(),
             'dsNotStarted' => auth()->check() ? DS::where('user_id', auth()->id())->where('status', 'not_started')->count() : 0,
             'tdNotStarted' => auth()->check() ? Td::where('user_id', auth()->id())->where('status', 'not_started')->count() : 0,
+            'notifications' => fn () => ($user = $request->user()) ? [
+                'unread_count' => $user->unreadNotifications()->count(),
+                'recent' => $user->notifications()->latest()->take(8)->get()->map(fn ($n) => [
+                    'id'         => $n->id,
+                    'type'       => $n->data['type'] ?? null,
+                    'data'       => $n->data,
+                    'read_at'    => $n->read_at?->toIso8601String(),
+                    'created_at' => $n->created_at->toIso8601String(),
+                ]),
+            ] : null,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

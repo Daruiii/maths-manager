@@ -62,7 +62,7 @@ export default function RessourceCard({
 
   const inner = (
     <div
-      className={`relative p-3 sm:p-4 bg-surface-color border border-border-color border-l-2 ${styles.border} rounded-2xl transition-transform duration-200 ${
+      className={`h-full relative p-3 sm:p-4 bg-surface-color border border-border-color border-l-2 ${styles.border} rounded-2xl transition-transform duration-200 ${
         available ? 'hover:-translate-y-0.5' : 'opacity-60'
       }`}
     >

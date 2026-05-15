@@ -30,9 +30,14 @@ class TeacherSentCorrection extends Notification implements ShouldQueue
             'type'          => 'correction_sent',
             'subject_type'  => $type,
             'correction_id' => $this->correctionRequest->id,
+            'ds_id'         => $this->correctionRequest->ds_id,
+            'dm_id'         => $this->correctionRequest->dm_id,
             'grade'         => $this->correctionRequest->grade,
             'title'         => $title,
             'message'       => 'Votre correction pour "' . $title . '" est disponible.',
+            'link'          => $type === 'ds'
+                ? '/ds/' . $this->correctionRequest->ds_id
+                : '/dm/' . $this->correctionRequest->dm_id,
         ];
     }
 

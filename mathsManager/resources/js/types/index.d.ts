@@ -10,7 +10,7 @@ export * from './models';
 export * from './ui';
 
 // Import for PageProps usage
-import type { User, Classe } from './models';
+import type { User, Classe, AppNotification } from './models';
 
 // Props passed to the Home Page directly from HomeController
 export interface HomeProps {
@@ -45,6 +45,10 @@ export interface PageProps {
   classes?: Classe[];
   dsNotStarted?: number;
   tdNotStarted?: number;
+  notifications?: {
+    unread_count: number;
+    recent: AppNotification[];
+  } | null;
   // Home Page Specific Props
   introContent?: {
     title?: string;

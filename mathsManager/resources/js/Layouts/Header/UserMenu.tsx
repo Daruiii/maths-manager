@@ -1,5 +1,5 @@
-import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
+import { Transition } from '@headlessui/react';
 import { LogOut, User as UserIcon, Settings, Crown, GraduationCap, BookOpen } from 'lucide-react';
 import { User } from '@/types';
 import { router, Link } from '@inertiajs/react';
@@ -7,12 +7,22 @@ import { useAuth } from '@/Hooks/Auth/useAuth';
 
 interface UserMenuProps {
   user: User;
+  open: boolean;
+  onToggle: (open: boolean) => void;
 }
 
-export default function UserMenu({ user: propUser }: UserMenuProps) {
+export default function UserMenu({ user: propUser, open, onToggle }: UserMenuProps) {
   const { user, isAdmin, isTeacher, isStudent } = useAuth();
-
+  const ref = useRef<HTMLDivElement>(null);
   const currentUser = user || propUser;
+
+  useEffect(() => {
+    function onDown(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onToggle(false);
+    }
+    if (open) document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [open, onToggle]);
 
   const getRoleBorderClass = () => {
     if (isAdmin)
@@ -24,117 +34,86 @@ export default function UserMenu({ user: propUser }: UserMenuProps) {
     return 'border-border-color';
   };
 
-  const renderRoleBadge = () => {
-    if (isAdmin) {
-      return (
-        <div className="absolute -top-1.5 -right-1.5 bg-secondary-color rounded-full p-0.5 shadow-sm border border-admin-color/20">
-          <Crown className="h-3 w-3 text-admin-color fill-admin-color drop-shadow-sm" />
-        </div>
-      );
-    }
-    if (isTeacher) {
-      return (
-        <div className="absolute -top-1.5 -right-1.5 bg-secondary-color rounded-full p-0.5 shadow-sm border border-teacher-color/20">
-          <GraduationCap className="h-3 w-3 text-teacher-color fill-teacher-color/10" />
-        </div>
-      );
-    }
-    if (isStudent) {
-      return (
-        <div className="absolute -top-1.5 -right-1.5 bg-secondary-color rounded-full p-0.5 shadow-sm border border-student-color/20">
-          <BookOpen className="h-3 w-3 text-student-color fill-student-color/10" />
-        </div>
-      );
-    }
+  const getRoleInfo = () => {
+    if (isAdmin) return { label: 'Administrateur', color: 'text-admin-color', Icon: Crown };
+    if (isTeacher) return { label: 'Professeur', color: 'text-teacher-color', Icon: GraduationCap };
+    if (isStudent) return { label: 'Élève', color: 'text-student-color', Icon: BookOpen };
     return null;
   };
+
+  const role = getRoleInfo();
 
   const avatarUrl = currentUser.avatar?.startsWith('http')
     ? currentUser.avatar
     : `/storage/images/${currentUser.avatar || 'default_avatar.png'}`;
 
-  const logout = () => {
-    router.post(route('logout'));
-  };
-
   return (
-    <Menu as="div" className="relative ml-2 sm:ml-3">
-      <div>
-        <MenuButton className="flex rounded-full text-sm focus:outline-none transition-all hover:brightness-90 outline-none group relative">
-          <span className="sr-only">Open user menu</span>
-          <img
-            className={`h-9 w-9 aspect-square rounded-full object-cover shrink-0 border-2 transition-all duration-300 ${getRoleBorderClass()}`}
-            src={avatarUrl}
-            alt={`${currentUser.first_name} ${currentUser.last_name}'s avatar`}
-          />
-          {renderRoleBadge()}
-        </MenuButton>
-      </div>
+    <div ref={ref} className="relative ml-1">
+      <button
+        onClick={() => onToggle(!open)}
+        className="flex rounded-full focus:outline-none outline-none relative hover:brightness-90 transition-all"
+      >
+        <span className="sr-only">Open user menu</span>
+        <img
+          className={`h-9 w-9 aspect-square rounded-full object-cover shrink-0 border-2 transition-all duration-300 ${getRoleBorderClass()}`}
+          src={avatarUrl}
+          alt={`${currentUser.first_name} ${currentUser.last_name}`}
+        />
+      </button>
+
       <Transition
         as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
+        show={open}
+        enter="transition ease-out duration-150"
+        enterFrom="opacity-0 translate-y-1 scale-95"
+        enterTo="opacity-100 translate-y-0 scale-100"
+        leave="transition ease-in duration-100"
+        leaveFrom="opacity-100 translate-y-0 scale-100"
+        leaveTo="opacity-0 translate-y-1 scale-95"
       >
-        <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-secondary-color py-1 shadow-lg ring-1 ring-text-color/10 ring-opacity-5 focus:outline-none divide-y divide-border-color">
-          <div className="px-4 py-3 flex flex-col items-start w-full">
-            <p className="text-sm text-text-color font-comfortaa-bold truncate w-full text-left">
+        <div className="absolute right-0 z-50 mt-2 w-52 origin-top-right rounded-xl bg-secondary-color border border-border-color shadow-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-border-color">
+            <p className="text-sm font-comfortaa-bold text-text-color truncate">
               {currentUser.first_name} {currentUser.last_name}
             </p>
-            <p className="text-sm text-text-gray font-comfortaa truncate w-full text-left">
-              {currentUser.email}
-            </p>
+            {role && (
+              <p className={`text-xs font-comfortaa flex items-center gap-1 mt-0.5 ${role.color}`}>
+                <role.Icon size={10} />
+                {role.label}
+              </p>
+            )}
           </div>
 
           <div className="py-1">
-            <MenuItem>
-              {({ active }) => (
-                <Link
-                  href={route('profile.show')}
-                  className={`${
-                    active ? 'bg-surface-color' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-text-color font-comfortaa transition text-left`}
-                >
-                  <UserIcon className="mr-3 h-4 w-4 shrink-0" />
-                  <span className="flex-1 text-left">Mon profil</span>
-                </Link>
-              )}
-            </MenuItem>
-            <MenuItem>
-              {({ active }) => (
-                <Link
-                  href={route('profile.edit')}
-                  className={`${
-                    active ? 'bg-surface-color' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-text-color font-comfortaa transition text-left`}
-                >
-                  <Settings className="mr-3 h-4 w-4 shrink-0" />
-                  <span className="flex-1 text-left">Paramètres</span>
-                </Link>
-              )}
-            </MenuItem>
+            <Link
+              href={route('profile.show')}
+              onClick={() => onToggle(false)}
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-text-color font-comfortaa transition-colors hover:bg-surface-color"
+            >
+              <UserIcon size={14} className="shrink-0 text-text-gray" />
+              Mon profil
+            </Link>
+            <Link
+              href={route('profile.edit')}
+              onClick={() => onToggle(false)}
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-text-color font-comfortaa transition-colors hover:bg-surface-color"
+            >
+              <Settings size={14} className="shrink-0 text-text-gray" />
+              Paramètres
+            </Link>
           </div>
 
-          <div className="py-1">
-            <MenuItem>
-              {({ active }) => (
-                <button
-                  onClick={logout}
-                  className={`${
-                    active ? 'bg-surface-color' : ''
-                  } flex w-full items-center px-4 py-2 text-sm text-error-color font-comfortaa-bold transition text-left`}
-                >
-                  <LogOut className="mr-3 h-4 w-4 shrink-0" />
-                  <span className="flex-1 text-left">Se déconnecter</span>
-                </button>
-              )}
-            </MenuItem>
+          <div className="py-1 border-t border-border-color">
+            <button
+              onClick={() => router.post(route('logout'))}
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-error-color font-comfortaa-bold transition-colors hover:bg-error-color/5"
+            >
+              <LogOut size={14} className="shrink-0" />
+              Se déconnecter
+            </button>
           </div>
-        </MenuItems>
+        </div>
       </Transition>
-    </Menu>
+    </div>
   );
 }

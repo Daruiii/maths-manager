@@ -3,6 +3,27 @@
  * Types mirroring Laravel Eloquent models
  */
 
+export interface AppNotification {
+  id: string;
+  type: string | null;
+  data: {
+    type: string;
+    subject_type: 'ds' | 'dm' | 'td';
+    message: string;
+    title: string;
+    link?: string;
+    correction_id?: number;
+    ds_id?: number | null;
+    dm_id?: number | null;
+    student_name?: string;
+    grade?: string | null;
+    td_id?: number;
+    batch_id?: number;
+  };
+  read_at: string | null;
+  created_at: string;
+}
+
 export interface User {
   id: number;
   first_name: string;

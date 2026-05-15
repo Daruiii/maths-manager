@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import UserMenu from '@/Layouts/Header/UserMenu';
 import DarkModeToggle from '@/Components/Common/UI/DarkModeToggle';
+import NotificationBell from '@/Layouts/Header/NotificationBell';
 import { User } from '@/types';
 import { Link } from '@inertiajs/react';
 
@@ -8,15 +10,26 @@ interface HeaderActionsProps {
 }
 
 export default function HeaderActions({ user }: HeaderActionsProps) {
+  const [panel, setPanel] = useState<'bell' | 'user' | null>(null);
+
   return (
-    <div className="flex items-center gap-4">
-      {/* Dark mode toggle - caché sur mobile (disponible dans le menu mobile) */}
+    <div className="flex items-center gap-2">
       <div className="hidden lg:block">
         <DarkModeToggle />
       </div>
 
       {user ? (
-        <UserMenu user={user} />
+        <>
+          <NotificationBell
+            open={panel === 'bell'}
+            onToggle={(open) => setPanel(open ? 'bell' : null)}
+          />
+          <UserMenu
+            user={user}
+            open={panel === 'user'}
+            onToggle={(open) => setPanel(open ? 'user' : null)}
+          />
+        </>
       ) : (
         <Link
           href="/login"

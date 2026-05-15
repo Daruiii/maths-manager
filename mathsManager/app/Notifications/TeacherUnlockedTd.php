@@ -29,6 +29,7 @@ class TeacherUnlockedTd extends Notification implements ShouldQueue
             'td_id'        => $this->td->id,
             'title'        => $title,
             'message'      => 'La correction de "' . $title . '" est maintenant accessible.',
+            'link'         => '/td/' . $this->td->id,
         ];
     }
 

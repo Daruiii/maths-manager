@@ -34,6 +34,7 @@ class StudentSubmittedCorrection extends Notification implements ShouldQueue
             'student_name'    => $student->name,
             'title'           => $title,
             'message'         => $student->name . ' a rendu sa copie pour "' . $title . '".',
+            'link'            => '/teacher/corrections/' . $this->correctionRequest->id,
         ];
     }
 
