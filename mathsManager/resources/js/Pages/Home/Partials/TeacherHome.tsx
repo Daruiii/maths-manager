@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ChevronRight, CheckCircle2, Bell } from 'lucide-react';
 import { useAuth } from '@/Hooks/Auth/useAuth';
 import TypeBadge from '@/Components/Common/UI/TypeBadge';
+import TeacherSidebar from '@/Pages/Home/Partials/TeacherSidebar';
 import type { HomePendingCorrectionItem, HomeUnlockRequestItem } from '@/types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -28,9 +29,9 @@ function CorrectionItem({ item }: { item: HomePendingCorrectionItem }) {
   return (
     <Link
       href={route('teacher.corrections.show', item.id)}
-      className="flex items-center gap-3 px-3 py-2.5 hover:bg-surface-color rounded-xl transition-colors group"
+      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group"
     >
-      <TypeBadge type={item.subject_type} />
+      <TypeBadge type={item.subject_type} size="md" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.student_name}</p>
         <p className="text-xs text-text-gray truncate">{item.subject_title}</p>
@@ -43,8 +44,8 @@ function CorrectionItem({ item }: { item: HomePendingCorrectionItem }) {
 
 function UnlockItem({ item }: { item: HomeUnlockRequestItem }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2.5 hover:bg-surface-color rounded-xl transition-colors">
-      <TypeBadge type="td" />
+    <div className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors">
+      <TypeBadge type="td" size="md" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.student_name}</p>
         <p className="text-xs text-text-gray truncate">{item.title}</p>
@@ -112,7 +113,9 @@ export default function TeacherHome({
           <p className="text-[11px] font-comfortaa-bold text-teacher-color uppercase tracking-widest">
             Bonjour {firstName} 👋
           </p>
-          <h1 className="text-2xl font-comfortaa-bold text-text-color">{heroMessage}</h1>
+          <h1 className="text-2xl sm:text-3xl font-comfortaa-bold text-text-color">
+            {heroMessage}
+          </h1>
           {!allClear && (
             <p className="text-sm text-text-gray">
               {corrCount > 0 && `${corrCount} copie${corrCount > 1 ? 's' : ''} à corriger`}
@@ -131,48 +134,50 @@ export default function TeacherHome({
         </div>
       </div>
 
-      {/* ── All clear ── */}
-      {allClear && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-success-color/10 border border-success-color/20 rounded-2xl">
-          <CheckCircle2 size={16} className="text-success-color shrink-0" />
-          <p className="text-sm font-comfortaa-bold text-success-color">
-            Aucune urgence en attente — beau travail.
-          </p>
-        </div>
-      )}
-
-      {/* ── À traiter ── */}
-      {!allClear && (
-        <div className="bg-secondary-color border border-border-color rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border-color">
-            <span className="text-xs font-comfortaa-bold text-text-color uppercase tracking-wider">
-              À traiter
-            </span>
-            <span className="text-xs text-text-gray bg-surface-color border border-border-color px-2 py-0.5 rounded-full">
-              {pendingTotal}
-            </span>
-          </div>
-          <div className="p-2 space-y-0.5">
-            {pendingCorrections?.items.map((item) => (
-              <CorrectionItem key={item.id} item={item} />
-            ))}
-            {unlockRequests?.items.map((item) => (
-              <UnlockItem key={item.id} item={item} />
-            ))}
-          </div>
-          {pendingTotal > 5 && (
-            <div className="px-4 py-2.5 border-t border-border-color">
-              <Link
-                href={route('teacher.corrections.index')}
-                className="text-xs font-comfortaa-bold text-teacher-color hover:underline flex items-center gap-1"
-              >
-                Voir tout ({pendingTotal})
-                <ChevronRight size={12} />
-              </Link>
+      {/* ── 2-col grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 items-start">
+        <div className="space-y-4">
+          {allClear ? (
+            <div className="flex items-center gap-3 px-4 py-3 bg-success-color/10 border border-success-color/20 rounded-2xl">
+              <CheckCircle2 size={16} className="text-success-color shrink-0" />
+              <p className="text-sm font-comfortaa-bold text-success-color">
+                Aucune urgence en attente — beau travail.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-secondary-color border border-border-color rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border-color">
+                <span className="text-xs font-comfortaa-bold text-text-color uppercase tracking-wider">
+                  À traiter
+                </span>
+                <span className="text-xs text-text-gray bg-surface-color border border-border-color px-2 py-0.5 rounded-full">
+                  {pendingTotal}
+                </span>
+              </div>
+              <div className="p-2 space-y-0.5">
+                {pendingCorrections?.items.map((item) => (
+                  <CorrectionItem key={item.id} item={item} />
+                ))}
+                {unlockRequests?.items.map((item) => (
+                  <UnlockItem key={item.id} item={item} />
+                ))}
+              </div>
+              {pendingTotal > 5 && (
+                <div className="px-4 py-2.5 border-t border-border-color">
+                  <Link
+                    href={route('teacher.corrections.index')}
+                    className="text-xs font-comfortaa-bold text-teacher-color hover:underline flex items-center gap-1"
+                  >
+                    Voir tout ({pendingTotal}) <ChevronRight size={12} />
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+
+        <TeacherSidebar corrCount={corrCount} unlockCount={unlockCount} />
+      </div>
     </div>
   );
 }

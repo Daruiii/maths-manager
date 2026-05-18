@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ChevronRight, BookOpen } from 'lucide-react';
 import { useAuth } from '@/Hooks/Auth/useAuth';
 import TypeBadge from '@/Components/Common/UI/TypeBadge';
+import StudentSidebar from '@/Pages/Home/Partials/StudentSidebar';
 import { BATCH_STATUS_META } from '@/Constants/statuses';
 import type { HomeActiveAssignment } from '@/types';
 
@@ -34,26 +35,14 @@ const STATUS_PRIORITY: Record<string, number> = {
   correction_requested: 4,
 };
 
-function Stat({ value, label, detail }: { value: number; label: string; detail?: string }) {
-  return (
-    <div className="flex items-end gap-1.5">
-      <span className="text-2xl font-comfortaa-bold text-text-color leading-none">{value}</span>
-      <div className="pb-0.5">
-        <p className="text-xs font-comfortaa-bold text-text-color leading-none">{label}</p>
-        {detail && <p className="text-[10px] text-text-gray leading-none mt-0.5">{detail}</p>}
-      </div>
-    </div>
-  );
-}
-
 function AssignmentItem({ item }: { item: FlatItem }) {
   const meta = BATCH_STATUS_META[item.status] ?? BATCH_STATUS_META.not_started;
   return (
     <Link
       href={item.href}
-      className="flex items-center gap-3 px-3 py-2.5 hover:bg-surface-color rounded-xl transition-colors group"
+      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group"
     >
-      <TypeBadge type={item.type} />
+      <TypeBadge type={item.type} size="md" />
       <p className="flex-1 min-w-0 text-sm font-comfortaa-bold text-text-color truncate">
         {item.title}
       </p>
@@ -69,7 +58,11 @@ function AssignmentItem({ item }: { item: FlatItem }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function StudentHome({ activeAssignments, correctedCount = 0 }: Props) {
+export default function StudentHome({
+  activeAssignments,
+  averageGrade,
+  correctedCount = 0,
+}: Props) {
   const { user } = useAuth();
   const firstName = user?.first_name ?? '';
 
@@ -111,7 +104,9 @@ export default function StudentHome({ activeAssignments, correctedCount = 0 }: P
             Bonjour {firstName} 👋
           </p>
           <div>
-            <h1 className="text-2xl font-comfortaa-bold text-text-color">{heroMessage}</h1>
+            <h1 className="text-2xl sm:text-3xl font-comfortaa-bold text-text-color">
+              {heroMessage}
+            </h1>
             {total > 0 && (
               <p className="text-sm text-text-gray mt-1">
                 {ds.length > 0 && `${ds.length} DS`}
@@ -122,11 +117,6 @@ export default function StudentHome({ activeAssignments, correctedCount = 0 }: P
                 {total > 0 && ' en cours.'}
               </p>
             )}
-          </div>
-          <div className="flex items-center gap-6">
-            <Stat value={total} label="à faire" detail="DS · DM · TD" />
-            {ongoing > 0 && <Stat value={ongoing} label="en cours" />}
-            {correctedCount > 0 && <Stat value={correctedCount} label="corrigés" />}
           </div>
           {total > 0 && (
             <Link
@@ -140,31 +130,37 @@ export default function StudentHome({ activeAssignments, correctedCount = 0 }: P
         </div>
       </div>
 
-      {/* ── Liste ── */}
-      {total === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-12 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-surface-color flex items-center justify-center">
-            <BookOpen size={22} className="text-text-gray opacity-60" />
-          </div>
-          <p className="text-sm text-text-gray">Aucun devoir en cours pour l&apos;instant.</p>
+      {/* ── 2-col grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 items-start">
+        <div>
+          {total === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <div className="w-12 h-12 rounded-2xl bg-surface-color flex items-center justify-center">
+                <BookOpen size={22} className="text-text-gray opacity-60" />
+              </div>
+              <p className="text-sm text-text-gray">Aucun devoir en cours pour l&apos;instant.</p>
+            </div>
+          ) : (
+            <div className="bg-secondary-color border border-border-color rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border-color">
+                <span className="text-xs font-comfortaa-bold text-text-color uppercase tracking-wider">
+                  À faire maintenant
+                </span>
+                <span className="text-xs text-text-gray bg-surface-color border border-border-color px-2 py-0.5 rounded-full">
+                  {total}
+                </span>
+              </div>
+              <div className="p-2 space-y-0.5">
+                {allItems.map((item) => (
+                  <AssignmentItem key={`${item.type}-${item.id}`} item={item} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="bg-secondary-color border border-border-color rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border-color">
-            <span className="text-xs font-comfortaa-bold text-text-color uppercase tracking-wider">
-              À faire maintenant
-            </span>
-            <span className="text-xs text-text-gray bg-surface-color border border-border-color px-2 py-0.5 rounded-full">
-              {total}
-            </span>
-          </div>
-          <div className="p-2 space-y-0.5">
-            {allItems.map((item) => (
-              <AssignmentItem key={`${item.type}-${item.id}`} item={item} />
-            ))}
-          </div>
-        </div>
-      )}
+
+        <StudentSidebar averageGrade={averageGrade} correctedCount={correctedCount} />
+      </div>
     </div>
   );
 }

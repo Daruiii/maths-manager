@@ -42,9 +42,9 @@ export default function Home(props: HomeProps) {
         />
       </Head>
 
-      <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
-        <EinsteinQuote />
+      <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10">
         {renderContent()}
+        <EinsteinQuote />
       </div>
     </AppLayout>
   );
