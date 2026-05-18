@@ -19,26 +19,11 @@ use Inertia\Response;
 class BureauController extends Controller
 {
     /**
-     * Dashboard du prof — vue d'ensemble de ses ressources.
+     * Dashboard du prof — hub de navigation vers les ressources.
      */
     public function index(): Response
     {
         $teacher = Auth::user();
-
-        $dsBatches = DsBatch::where('teacher_id', $teacher->id)
-            ->with(['ds' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
-            ->orderByDesc('created_at')->take(5)->get()
-            ->map(fn($b) => $this->mapBatch($b, 'ds', 'ds'));
-
-        $tdBatches = TdBatch::where('teacher_id', $teacher->id)
-            ->with(['tds' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
-            ->orderByDesc('created_at')->take(5)->get()
-            ->map(fn($b) => $this->mapBatch($b, 'tds', 'td'));
-
-        $dmBatches = DmBatch::where('teacher_id', $teacher->id)
-            ->with(['dms' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
-            ->orderByDesc('created_at')->take(5)->get()
-            ->map(fn($b) => $this->mapBatch($b, 'dms', 'dm'));
 
         $pendingCorrectionsCount = CorrectionRequest::where('status', 'pending')
             ->where(function ($q) use ($teacher) {
@@ -47,6 +32,10 @@ class BureauController extends Controller
             })
             ->count();
 
+        $batchesCount = DsBatch::where('teacher_id', $teacher->id)->count()
+            + TdBatch::where('teacher_id', $teacher->id)->count()
+            + DmBatch::where('teacher_id', $teacher->id)->count();
+
         return Inertia::render('Teacher/Bureau/Index', [
             'stats' => [
                 'exercisesCount'          => PrivateExercise::forTeacher($teacher->id)->count(),
@@ -54,7 +43,34 @@ class BureauController extends Controller
                 'tdTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'td')->count(),
                 'dmTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'dm')->count(),
                 'pendingCorrectionsCount' => $pendingCorrectionsCount,
+                'batchesCount'            => $batchesCount,
             ],
+        ]);
+    }
+
+    /**
+     * Tous les devoirs envoyés — DS, DM, TD organisés par type.
+     */
+    public function devoirs(): Response
+    {
+        $teacher = Auth::user();
+
+        $dsBatches = DsBatch::where('teacher_id', $teacher->id)
+            ->with(['ds' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
+            ->orderByDesc('created_at')->get()
+            ->map(fn($b) => $this->mapBatch($b, 'ds', 'ds'));
+
+        $tdBatches = TdBatch::where('teacher_id', $teacher->id)
+            ->with(['tds' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
+            ->orderByDesc('created_at')->get()
+            ->map(fn($b) => $this->mapBatch($b, 'tds', 'td'));
+
+        $dmBatches = DmBatch::where('teacher_id', $teacher->id)
+            ->with(['dms' => fn($q) => $q->select('id', 'batch_id', 'status', 'custom_title')])
+            ->orderByDesc('created_at')->get()
+            ->map(fn($b) => $this->mapBatch($b, 'dms', 'dm'));
+
+        return Inertia::render('Teacher/Bureau/Devoirs', [
             'dsBatches' => $dsBatches,
             'tdBatches' => $tdBatches,
             'dmBatches' => $dmBatches,

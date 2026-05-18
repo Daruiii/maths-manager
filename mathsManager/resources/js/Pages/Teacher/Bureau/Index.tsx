@@ -1,14 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
-import { ClipboardList, History, BookMarked, Users, LayoutDashboard } from 'lucide-react';
+import { ClipboardList, History, BookMarked, Users, Send } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import RessourceCard from '@/Components/Common/UI/RessourceCard';
 import Button from '@/Components/Common/UI/Button';
-import BatchRow from './Partials/BatchRow';
 import { CONTENT_ITEM_META } from '@/Constants/contentTypes';
-import type { BatchBrief } from '@/types/api';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Props {
   stats: {
@@ -17,48 +13,11 @@ interface Props {
     tdTemplatesCount: number;
     dmTemplatesCount: number;
     pendingCorrectionsCount: number;
+    batchesCount: number;
   };
-  dsBatches: BatchBrief[];
-  tdBatches: BatchBrief[];
-  dmBatches: BatchBrief[];
 }
 
-// ─── Composant section batches ────────────────────────────────────────────────
-
-function BatchSection({
-  title,
-  batches,
-  type,
-}: {
-  title: string;
-  batches: BatchBrief[];
-  type: 'ds' | 'td' | 'dm';
-}) {
-  if (batches.length === 0) return null;
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-comfortaa-bold text-text-gray uppercase tracking-wider">
-          {title}
-        </h3>
-        <span className="text-xs text-text-gray bg-surface-color border border-border-color px-2 py-0.5 rounded-full">
-          {batches.length} récent{batches.length > 1 ? 's' : ''}
-        </span>
-      </div>
-      <div className="space-y-2">
-        {batches.map((batch) => (
-          <BatchRow key={batch.id} batch={batch} type={type} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
-export default function BureauIndex({ stats, dsBatches, tdBatches, dmBatches }: Props) {
-  const hasBatches = dsBatches.length > 0 || tdBatches.length > 0 || dmBatches.length > 0;
-
+export default function BureauIndex({ stats }: Props) {
   return (
     <AppLayout>
       <Head title="Mon Bureau" />
@@ -77,11 +36,11 @@ export default function BureauIndex({ stats, dsBatches, tdBatches, dmBatches }: 
           }
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <RessourceCard
             icon={CONTENT_ITEM_META.private.icon}
             title="Exercices privés"
-            subtitle="Créez et gérez vos exercices personnels"
+            subtitle="Créez et gérez vos exercices"
             count={stats.exercisesCount}
             href={route('teacher.exercices.index')}
             color="teacher"
@@ -95,9 +54,17 @@ export default function BureauIndex({ stats, dsBatches, tdBatches, dmBatches }: 
             color="teacher"
           />
           <RessourceCard
+            icon={Send}
+            title="Devoirs envoyés"
+            subtitle="DS, DM et TD assignés"
+            count={stats.batchesCount}
+            href={route('teacher.bureau.devoirs')}
+            color="teacher"
+          />
+          <RessourceCard
             icon={ClipboardList}
             title="Corrections"
-            subtitle="Copies élèves en attente de correction"
+            subtitle="Copies en attente"
             count={stats.pendingCorrectionsCount}
             href={route('teacher.corrections.index')}
             color="teacher"
@@ -105,23 +72,11 @@ export default function BureauIndex({ stats, dsBatches, tdBatches, dmBatches }: 
           <RessourceCard
             icon={Users}
             title="Mes élèves"
-            subtitle="Gérez vos élèves et vos groupes"
+            subtitle="Gérez vos élèves et groupes"
             href={route('teacher.students.index')}
             color="teacher"
           />
         </div>
-
-        {hasBatches && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <LayoutDashboard size={16} className="text-teacher-color" />
-              <h2 className="text-sm font-comfortaa-bold text-text-color">Devoirs récents</h2>
-            </div>
-            <BatchSection title="DS" batches={dsBatches} type="ds" />
-            <BatchSection title="DM" batches={dmBatches} type="dm" />
-            <BatchSection title="TD" batches={tdBatches} type="td" />
-          </div>
-        )}
       </div>
     </AppLayout>
   );
