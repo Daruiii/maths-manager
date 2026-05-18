@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ClipboardCheck, CheckCircle2, Unlock, ChevronRight, BookOpen } from 'lucide-react';
+import { ClipboardCheck, CheckCircle2, Unlock, ChevronRight, BookOpen, Bell } from 'lucide-react';
 import type { HomePendingCorrectionItem, HomeUnlockRequestItem } from '@/types';
 
 function timeAgo(dateStr: string): string {
@@ -15,6 +15,7 @@ function timeAgo(dateStr: string): string {
 interface Props {
   pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
   unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
+  pendingTeachersCount?: number;
 }
 
 function UrgenceCard({
@@ -105,13 +106,32 @@ function UnlockRow({ item }: { item: HomeUnlockRequestItem }) {
   );
 }
 
-export default function TeacherHome({ pendingCorrections, unlockRequests }: Props) {
+export default function TeacherHome({
+  pendingCorrections,
+  unlockRequests,
+  pendingTeachersCount,
+}: Props) {
   const corrCount = pendingCorrections?.count ?? 0;
   const unlockCount = unlockRequests?.count ?? 0;
   const allClear = corrCount === 0 && unlockCount === 0;
 
   return (
     <div className="space-y-6">
+      {!!pendingTeachersCount && pendingTeachersCount > 0 && (
+        <Link
+          href={route('admin.applications.index')}
+          className="flex items-center justify-between gap-4 px-4 py-3 bg-admin-color/10 border border-admin-color/20 rounded-2xl hover:bg-admin-color/15 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <Bell size={16} className="text-admin-color shrink-0" />
+            <p className="text-sm font-comfortaa-bold text-admin-color">
+              {pendingTeachersCount} candidature{pendingTeachersCount > 1 ? 's' : ''} professeur
+              {pendingTeachersCount > 1 ? 's' : ''} en attente
+            </p>
+          </div>
+          <ChevronRight size={14} className="text-admin-color shrink-0" />
+        </Link>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <UrgenceCard
           icon={ClipboardCheck}

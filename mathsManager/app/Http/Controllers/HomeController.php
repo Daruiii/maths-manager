@@ -35,34 +35,8 @@ class HomeController extends Controller
         try {
             $user = auth()->user();
 
-            // Admin view
-            if ($user->role == 'admin') {
-                $status = $request->get('status', 'pending');
-                $correctionRequests = CorrectionRequest::where('status', $status)
-                    ->with('user')
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(3)->withQueryString();
-
-                $ds = DS::join('users', 'users.id', '=', 'ds.user_id')
-                    ->whereIn('ds.status', ['not_started', 'ongoing', 'finished'])
-                    ->select('ds.*', 'users.first_name', 'users.last_name')
-                    ->orderBy('users.last_name', 'asc')
-                    ->orderBy('users.first_name', 'asc')
-                    ->get();
-
-                $pendingTeachersCount = User::where('role', 'teacher')
-                    ->where('status', 'pending_approval')
-                    ->count();
-
-                return inertia('Home/Home', [
-                    'correctionRequests' => $correctionRequests,
-                    'ds' => $ds,
-                    'pendingTeachersCount' => $pendingTeachersCount,
-                ]);
-            }
-
-            // Teacher view
-            if ($user->isTeacher()) {
+            // Teacher / Admin view (admin acts as teacher + sees admin alerts)
+            if ($user->canActAsTeacher()) {
                 $pendingCorrections = CorrectionRequest::query()
                     ->where('status', CorrectionRequestStatus::Pending->value)
                     ->where(function ($q) use ($user) {
@@ -99,6 +73,9 @@ class HomeController extends Controller
                             'updated_at'   => $td->updated_at->toIso8601String(),
                         ])->values(),
                     ],
+                    'pendingTeachersCount' => $user->isAdmin()
+                        ? User::where('role', 'teacher')->where('status', 'pending_approval')->count()
+                        : 0,
                 ]);
             }
 

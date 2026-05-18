@@ -1,7 +1,6 @@
 import { Head } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { useAuth } from '@/Hooks/Auth/useAuth';
-import AdminHome from './Partials/AdminHome';
 import TeacherHome from './Partials/TeacherHome';
 import StudentHome from './Partials/StudentHome';
 import GuestHome from './Partials/GuestHome';
@@ -10,16 +9,16 @@ import EinsteinQuote from '@/Components/Features/Home/EinsteinQuote';
 import { HomeProps } from '@/types';
 
 export default function Home(props: HomeProps) {
-  const { user, isAdmin, isTeacher, isStudent } = useAuth();
+  const { user, canActAsTeacher, isStudent } = useAuth();
 
   const renderContent = () => {
     if (!user) return <GuestHome />;
-    if (isAdmin) return <AdminHome pendingTeachersCount={props.pendingTeachersCount} />;
-    if (isTeacher)
+    if (canActAsTeacher)
       return (
         <TeacherHome
           pendingCorrections={props.pendingCorrections}
           unlockRequests={props.unlockRequests}
+          pendingTeachersCount={props.pendingTeachersCount}
         />
       );
     if (isStudent)
@@ -29,7 +28,7 @@ export default function Home(props: HomeProps) {
           averageGrade={props.averageGrade}
         />
       );
-    return <GuestHome />; // Fallback
+    return <GuestHome />;
   };
 
   return (
