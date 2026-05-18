@@ -15,9 +15,11 @@ interface Brief {
 
 interface DsBrief extends Brief {
   status: DsStatus;
+  grade?: number | null;
 }
 interface DmBrief extends Brief {
   status: DmStatus;
+  grade?: number | null;
 }
 interface TdBrief extends Brief {
   status: TdStatus;
@@ -40,7 +42,7 @@ export default function StudentRessourcesIndex({
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         <PageHeader
           title="Mes Ressources"
-          subtitle="Tous vos devoirs, exercices favoris et récaps de cours"
+          subtitle="Tous vos devoirs et leur état de correction"
           breadcrumbs={[{ label: 'Mes Ressources' }]}
         />
 
@@ -68,6 +70,7 @@ export default function StudentRessourcesIndex({
                         teacher={ds.teacher}
                         level={ds.custom_level}
                         status={ds.status}
+                        grade={ds.grade}
                       />
                     </li>
                   ))}
@@ -87,6 +90,7 @@ export default function StudentRessourcesIndex({
                         teacher={dm.teacher}
                         level={dm.custom_level}
                         status={dm.status}
+                        grade={dm.grade}
                       />
                     </li>
                   ))}

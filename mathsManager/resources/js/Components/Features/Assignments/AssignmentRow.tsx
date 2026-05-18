@@ -16,12 +16,14 @@ export default function AssignmentRow({
   teacher,
   level,
   status,
+  grade,
 }: {
   href: string;
   title: string;
   teacher: { first_name: string; last_name: string } | null;
   level: string | null;
   status: string;
+  grade?: number | null;
 }) {
   const meta = BATCH_STATUS_META[status] ?? BATCH_STATUS_META.not_started;
 
@@ -39,6 +41,9 @@ export default function AssignmentRow({
           </p>
         )}
       </div>
+      {grade != null && (
+        <span className="text-sm font-comfortaa-bold text-success-color shrink-0">{grade}/20</span>
+      )}
       <span
         className={`text-xs px-2 py-0.5 rounded-full font-comfortaa-bold shrink-0 ${meta.classes}`}
       >

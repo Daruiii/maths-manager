@@ -65,7 +65,7 @@ export default function HeaderMobileMenu({ classes }: HeaderMobileMenuProps) {
                 <div className="space-y-1">
                   {isStudent && (
                     <Link
-                      href="/student/ressources"
+                      href={route('student.ressources')}
                       className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
                     >
                       Mes Ressources

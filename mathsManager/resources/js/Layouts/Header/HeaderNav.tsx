@@ -84,7 +84,7 @@ export default function HeaderNav({ classes }: HeaderNavProps) {
       {/* Student: Mes Ressources */}
       {isStudent && (
         <Link
-          href="/student/ressources"
+          href={route('student.ressources')}
           className={`nav-link focus:outline-none ${isActive('/student/ressources')}`}
         >
           Mes Ressources
