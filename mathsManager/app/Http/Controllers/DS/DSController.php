@@ -95,9 +95,13 @@ class DSController extends Controller
         $ds = DS::findOrFail($id);
         abort_unless(Auth::id() === $ds->user_id, 403);
 
-        $ds->load(['problems', 'exercises', 'privateExercises', 'teacher:id,first_name,last_name', 'correctionRequest']);
+        $notStarted = $ds->status === DSStatus::NotStarted->value;
+        $unlocked   = $ds->status === DSStatus::Corrected->value;
 
-        $unlocked = $ds->status === DSStatus::Corrected->value;
+        $ds->load(['teacher:id,first_name,last_name', 'correctionRequest']);
+        if (! $notStarted) {
+            $ds->load(['problems', 'exercises', 'privateExercises']);
+        }
 
         // Server-side remaining time: prevents client from cheating by reloading
         $timerSeconds = $ds->timer;
@@ -108,22 +112,22 @@ class DSController extends Controller
 
         return Inertia::render('Student/DS/Show', [
             'ds' => [
-                'id'                 => $ds->id,
-                'status'             => $ds->status,
-                'custom_title'       => $ds->custom_title,
-                'custom_level'       => $ds->custom_level,
+                'id'                  => $ds->id,
+                'status'              => $ds->status,
+                'custom_title'        => $ds->custom_title,
+                'custom_level'        => $ds->custom_level,
                 'custom_instructions' => $ds->custom_instructions,
-                'time_minutes'       => $ds->time,
-                'timer_seconds'      => $timerSeconds,
-                'type_bac'           => (bool) $ds->type_bac,
-                'harder_exercises'   => (bool) $ds->harder_exercises,
-                'teacher'            => $ds->teacher
+                'time_minutes'        => $ds->time,
+                'timer_seconds'       => $timerSeconds,
+                'type_bac'            => (bool) $ds->type_bac,
+                'harder_exercises'    => (bool) $ds->harder_exercises,
+                'teacher'             => $ds->teacher
                     ? ['id' => $ds->teacher->id, 'first_name' => $ds->teacher->first_name, 'last_name' => $ds->teacher->last_name]
                     : null,
-                'correction_request' => $ds->correctionRequest,
-                'problems'           => $ds->problems->map(fn($p) => $this->mapDsItem($p, $unlocked)),
-                'exercises'          => $ds->exercises->map(fn($e) => $this->mapDsItem($e, $unlocked)),
-                'private_exercises'  => $ds->privateExercises->map(fn($e) => $this->mapDsItem($e, $unlocked)),
+                'correction_request'  => $ds->correctionRequest,
+                'problems'            => $notStarted ? [] : $ds->problems->map(fn ($p) => $this->mapDsItem($p, $unlocked)),
+                'exercises'           => $notStarted ? [] : $ds->exercises->map(fn ($e) => $this->mapDsItem($e, $unlocked)),
+                'private_exercises'   => $notStarted ? [] : $ds->privateExercises->map(fn ($e) => $this->mapDsItem($e, $unlocked)),
             ],
         ]);
     }

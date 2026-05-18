@@ -15,8 +15,20 @@ export default function Home(props: HomeProps) {
   const renderContent = () => {
     if (!user) return <GuestHome />;
     if (isAdmin) return <AdminHome pendingTeachersCount={props.pendingTeachersCount} />;
-    if (isTeacher) return <TeacherHome />;
-    if (isStudent) return <StudentHome />;
+    if (isTeacher)
+      return (
+        <TeacherHome
+          pendingCorrections={props.pendingCorrections}
+          unlockRequests={props.unlockRequests}
+        />
+      );
+    if (isStudent)
+      return (
+        <StudentHome
+          activeAssignments={props.activeAssignments}
+          averageGrade={props.averageGrade}
+        />
+      );
     return <GuestHome />; // Fallback
   };
 

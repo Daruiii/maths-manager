@@ -99,10 +99,7 @@ export default function DsShow({ ds }: { ds: Ds }) {
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         <PageHeader
           title={title}
-          breadcrumbs={[
-            { label: 'Mes devoirs', href: route('student.assignments.index') },
-            { label: title },
-          ]}
+          breadcrumbs={[{ label: 'Mes devoirs', href: route('home') }, { label: title }]}
         />
 
         {ds.status === 'not_started' && (
@@ -116,7 +113,16 @@ export default function DsShow({ ds }: { ds: Ds }) {
                 </p>
               </div>
             </TheoremCard>
-            {contentList}
+            <TheoremCard accent="student" dotted>
+              <div className="flex items-start gap-2">
+                <EyeOff size={15} className="text-text-gray mt-0.5 shrink-0" />
+                <p className="text-sm text-text-gray leading-relaxed">
+                  Le sujet sera révélé uniquement après avoir cliqué sur{' '}
+                  <span className="font-comfortaa-bold text-text-color">« Commencer le DS »</span>.
+                  Assurez-vous d&apos;être prêt — le chronomètre démarre immédiatement.
+                </p>
+              </div>
+            </TheoremCard>
             <Button variant="student" icon={CheckCircle} onClick={startDs}>
               Commencer le DS
             </Button>
@@ -178,7 +184,7 @@ export default function DsShow({ ds }: { ds: Ds }) {
               </div>
             </TheoremCard>
             <Link
-              href={route('student.assignments.index')}
+              href={route('home')}
               className="inline-flex items-center gap-1.5 text-sm text-text-gray hover:text-student-color transition-colors"
             >
               <ChevronLeft size={14} />

@@ -36,10 +36,7 @@ export default function TdShow({ td }: { td: Td }) {
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         <PageHeader
           title={title}
-          breadcrumbs={[
-            { label: 'Mes devoirs', href: route('student.assignments.index') },
-            { label: title },
-          ]}
+          breadcrumbs={[{ label: 'Mes devoirs', href: route('home') }, { label: title }]}
         />
 
         {td.status === 'not_started' && (

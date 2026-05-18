@@ -12,22 +12,44 @@ export * from './ui';
 // Import for PageProps usage
 import type { User, Classe, AppNotification } from './models';
 
+export interface HomePendingCorrectionItem {
+  id: number;
+  student_name: string;
+  subject_title: string;
+  subject_type: 'ds' | 'dm';
+  created_at: string;
+}
+
+export interface HomeUnlockRequestItem {
+  id: number;
+  student_name: string;
+  title: string;
+  updated_at: string;
+}
+
+export interface HomeActiveAssignment {
+  id: number;
+  title: string;
+  status: string;
+}
+
 // Props passed to the Home Page directly from HomeController
 export interface HomeProps {
+  // Guest
   introContent?: Record<string, unknown>;
   whoamiContent?: Record<string, unknown>;
-  correctionRequests?: Record<string, unknown>[];
-  ds?: Record<string, unknown>[];
+  // Admin
   pendingTeachersCount?: number;
-  averageGrade?: number | string;
-  totalDS?: number;
-  notStartedDS?: number;
-  inProgressDS?: number;
-  sentDS?: number;
-  correctedDS?: number;
-  goodAnswers?: number;
-  badAnswers?: number;
-  scores?: number | string;
+  // Teacher
+  pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
+  unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
+  // Student
+  activeAssignments?: {
+    ds: HomeActiveAssignment[];
+    dm: HomeActiveAssignment[];
+    td: HomeActiveAssignment[];
+  };
+  averageGrade?: number | null;
 }
 
 export interface PageProps {
@@ -49,38 +71,5 @@ export interface PageProps {
     unread_count: number;
     recent: AppNotification[];
   } | null;
-  // Home Page Specific Props
-  introContent?: {
-    title?: string;
-    content?: string;
-    image?: string;
-  };
-  whoamiContent?: {
-    title?: string;
-    content?: string;
-    image?: string;
-  };
-  averageGrade?: string | number;
-  totalDS?: number;
-  notStartedDS?: number;
-  inProgressDS?: number;
-  sentDS?: number;
-  correctedDS?: number;
-  goodAnswers?: number;
-  badAnswers?: number;
-  scores?: string | number;
-  correctionRequests?: {
-    total: number;
-    data: Array<{
-      id: number;
-      user?: { name: string };
-      created_at: string;
-    }>;
-  };
-  ds?: Array<{
-    id: number;
-    name: string;
-    status: string;
-  }>;
   [key: string]: unknown;
 }

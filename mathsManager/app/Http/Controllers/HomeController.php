@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use App\Models\User;
-use App\Models\Chapter;
-use App\Models\Classe;
+use App\Enums\CorrectionRequestStatus;
+use App\Enums\DmStatus;
+use App\Enums\DSStatus;
+use App\Enums\TdStatus;
 use App\Models\CorrectionRequest;
+use App\Models\Dm;
 use App\Models\DS;
-use App\Models\Quizze;
 use App\Models\Content;
+use App\Models\Td;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -58,46 +61,98 @@ class HomeController extends Controller
                 ]);
             }
 
-            // Student/Teacher common logic (Quizzes)
-            $quizzes = Quizze::where('student_id', $user->id)
-                ->with('details')
-                ->latest()
-                ->take(10)
-                ->get();
+            // Teacher view
+            if ($user->isTeacher()) {
+                $pendingCorrections = CorrectionRequest::query()
+                    ->where('status', CorrectionRequestStatus::Pending->value)
+                    ->where(function ($q) use ($user) {
+                        $q->whereHas('ds', fn ($q) => $q->where('teacher_id', $user->id))
+                          ->orWhereHas('dm', fn ($q) => $q->where('teacher_id', $user->id));
+                    })
+                    ->with(['user:id,first_name,last_name', 'ds:id,custom_title', 'dm:id,custom_title'])
+                    ->latest()
+                    ->get();
 
-            $goodAnswers = $quizzes->sum('score');
-            $totalQuestions = $quizzes->sum(function ($quiz) {
-                return $quiz->details->count();
-            });
+                $unlockRequests = Td::where('teacher_id', $user->id)
+                    ->where('status', TdStatus::CorrectionRequested->value)
+                    ->with('student:id,first_name,last_name')
+                    ->latest('updated_at')
+                    ->get(['id', 'custom_title', 'user_id', 'updated_at']);
 
-            $badAnswers = $totalQuestions - $goodAnswers;
-            if ($totalQuestions == 0) {
-                $goodAnswers = 100;
-                $badAnswers = 0;
+                return inertia('Home/Home', [
+                    'pendingCorrections' => [
+                        'count' => $pendingCorrections->count(),
+                        'items' => $pendingCorrections->take(5)->map(fn ($cr) => [
+                            'id'            => $cr->id,
+                            'student_name'  => $cr->user?->name ?? 'Élève',
+                            'subject_title' => $cr->ds?->custom_title ?? $cr->dm?->custom_title ?? 'Devoir',
+                            'subject_type'  => $cr->ds_id ? 'ds' : 'dm',
+                            'created_at'    => $cr->created_at->toIso8601String(),
+                        ])->values(),
+                    ],
+                    'unlockRequests' => [
+                        'count' => $unlockRequests->count(),
+                        'items' => $unlockRequests->take(5)->map(fn ($td) => [
+                            'id'           => $td->id,
+                            'student_name' => $td->student?->name ?? 'Élève',
+                            'title'        => $td->custom_title ?? 'TD',
+                            'updated_at'   => $td->updated_at->toIso8601String(),
+                        ])->values(),
+                    ],
+                ]);
             }
 
-            $scores = $quizzes->count() > 0 ? round($goodAnswers / $quizzes->count(), 1) : "N/A";
+            // Student view
+            $activeDs = DS::where('user_id', $user->id)
+                ->whereIn('status', [
+                    DSStatus::NotStarted->value,
+                    DSStatus::Ongoing->value,
+                    DSStatus::Paused->value,
+                    DSStatus::Sent->value,
+                ])
+                ->latest()
+                ->get(['id', 'custom_title', 'status']);
 
-            // DS Stats
-            $dsCounts = DS::where('user_id', $user->id)
-                ->selectRaw('status, COUNT(*) as count')
-                ->groupBy('status')
-                ->pluck('count', 'status');
+            $activeDm = Dm::where('user_id', $user->id)
+                ->whereIn('status', [
+                    DmStatus::NotStarted->value,
+                    DmStatus::Ongoing->value,
+                ])
+                ->latest()
+                ->get(['id', 'custom_title', 'status']);
+
+            $activeTd = Td::where('user_id', $user->id)
+                ->whereIn('status', [
+                    TdStatus::NotStarted->value,
+                    TdStatus::Ongoing->value,
+                    TdStatus::CorrectionRequested->value,
+                ])
+                ->latest()
+                ->get(['id', 'custom_title', 'status']);
 
             $averageGrade = CorrectionRequest::where('user_id', $user->id)
-                ->where('status', 'corrected')
+                ->where('status', CorrectionRequestStatus::Corrected->value)
                 ->avg('grade');
 
             return inertia('Home/Home', [
-                'averageGrade' => $averageGrade ? round($averageGrade, 1) : "N/A",
-                'totalDS' => $dsCounts->sum(),
-                'notStartedDS' => $dsCounts->get('not_started', 0),
-                'inProgressDS' => $dsCounts->get('ongoing', 0),
-                'sentDS' => $dsCounts->get('sent', 0),
-                'correctedDS' => $dsCounts->get('corrected', 0),
-                'goodAnswers' => (int)$goodAnswers,
-                'badAnswers' => (int)$badAnswers,
-                'scores' => $scores,
+                'activeAssignments' => [
+                    'ds' => $activeDs->map(fn ($ds) => [
+                        'id'     => $ds->id,
+                        'title'  => $ds->custom_title ?? 'DS',
+                        'status' => $ds->status,
+                    ])->values(),
+                    'dm' => $activeDm->map(fn ($dm) => [
+                        'id'     => $dm->id,
+                        'title'  => $dm->custom_title ?? 'DM',
+                        'status' => $dm->status->value,
+                    ])->values(),
+                    'td' => $activeTd->map(fn ($td) => [
+                        'id'     => $td->id,
+                        'title'  => $td->custom_title ?? 'TD',
+                        'status' => $td->status->value,
+                    ])->values(),
+                ],
+                'averageGrade' => $averageGrade ? round((float)$averageGrade, 1) : null,
             ]);
         } catch (\Exception $e) {
             if (auth()->check()) {
