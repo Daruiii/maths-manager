@@ -21,13 +21,13 @@
   /* ========================================
      TEXT
      ======================================== */
-  --text-color: 0 0 0; /* Texte principal */
-  --text-gray: 116 116 116; /* Texte secondaire / muted */
+  --text-color: 26 22 18; /* Warm near-black (stone-950) */
+  --text-gray: 130 118 104; /* Warm muted — sous-titres, labels */
 
   /* ========================================
      BORDERS
      ======================================== */
-  --border-color: 156 163 175; /* gray-400 — bordures légèrement plus sombres */
+  --border-color: 214 203 188; /* Beige chaud — bordures subtiles */
 
   /* ========================================
      BRAND & INTERACTIVE
