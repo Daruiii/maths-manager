@@ -1,10 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
-import { ClipboardList, History, BookMarked, Users } from 'lucide-react';
+import { ClipboardList, History, BookMarked, Users, LayoutDashboard } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import RessourceCard from '@/Components/Common/UI/RessourceCard';
 import Button from '@/Components/Common/UI/Button';
+import BatchRow from './Partials/BatchRow';
 import { CONTENT_ITEM_META } from '@/Constants/contentTypes';
+import type { BatchBrief } from '@/types/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -16,11 +18,47 @@ interface Props {
     dmTemplatesCount: number;
     pendingCorrectionsCount: number;
   };
+  dsBatches: BatchBrief[];
+  tdBatches: BatchBrief[];
+  dmBatches: BatchBrief[];
+}
+
+// ─── Composant section batches ────────────────────────────────────────────────
+
+function BatchSection({
+  title,
+  batches,
+  type,
+}: {
+  title: string;
+  batches: BatchBrief[];
+  type: 'ds' | 'td' | 'dm';
+}) {
+  if (batches.length === 0) return null;
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xs font-comfortaa-bold text-text-gray uppercase tracking-wider">
+          {title}
+        </h3>
+        <span className="text-xs text-text-gray bg-surface-color border border-border-color px-2 py-0.5 rounded-full">
+          {batches.length} récent{batches.length > 1 ? 's' : ''}
+        </span>
+      </div>
+      <div className="space-y-2">
+        {batches.map((batch) => (
+          <BatchRow key={batch.id} batch={batch} type={type} />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function BureauIndex({ stats }: Props) {
+export default function BureauIndex({ stats, dsBatches, tdBatches, dmBatches }: Props) {
+  const hasBatches = dsBatches.length > 0 || tdBatches.length > 0 || dmBatches.length > 0;
+
   return (
     <AppLayout>
       <Head title="Mon Bureau" />
@@ -72,6 +110,18 @@ export default function BureauIndex({ stats }: Props) {
             color="teacher"
           />
         </div>
+
+        {hasBatches && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <LayoutDashboard size={16} className="text-teacher-color" />
+              <h2 className="text-sm font-comfortaa-bold text-text-color">Devoirs récents</h2>
+            </div>
+            <BatchSection title="DS" batches={dsBatches} type="ds" />
+            <BatchSection title="DM" batches={dmBatches} type="dm" />
+            <BatchSection title="TD" batches={tdBatches} type="td" />
+          </div>
+        )}
       </div>
     </AppLayout>
   );
