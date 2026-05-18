@@ -26,7 +26,7 @@ interface UseDraggableReturn {
 function getDefaultPosition(margin: number): Position {
   return {
     x: window.innerWidth - ELEMENT_SIZE - margin,
-    y: window.innerHeight - ELEMENT_SIZE - margin,
+    y: Math.round(window.innerHeight * 0.5 - ELEMENT_SIZE / 2),
   };
 }
 

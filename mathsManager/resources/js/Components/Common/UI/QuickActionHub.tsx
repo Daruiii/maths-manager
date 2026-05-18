@@ -13,7 +13,7 @@ export default function QuickActionHub() {
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { position, isDragging, hasMoved, handleMouseDown, handleTouchStart } = useDraggable({
-    storageKey: 'quick-action-hub-position',
+    storageKey: 'quick-action-hub-position-v2',
     topMargin: 80,
     onDragStart: () => setIsOpen(false),
   });
