@@ -50,6 +50,7 @@ export interface HomeProps {
     td: HomeActiveAssignment[];
   };
   averageGrade?: number | null;
+  correctedCount?: number;
 }
 
 export interface PageProps {

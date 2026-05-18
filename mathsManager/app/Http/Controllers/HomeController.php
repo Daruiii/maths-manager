@@ -111,6 +111,10 @@ class HomeController extends Controller
                 ->where('status', CorrectionRequestStatus::Corrected->value)
                 ->avg('grade');
 
+            $correctedCount = CorrectionRequest::where('user_id', $user->id)
+                ->where('status', CorrectionRequestStatus::Corrected->value)
+                ->count();
+
             return inertia('Home/Home', [
                 'activeAssignments' => [
                     'ds' => $activeDs->map(fn ($ds) => [
@@ -130,6 +134,7 @@ class HomeController extends Controller
                     ])->values(),
                 ],
                 'averageGrade' => $averageGrade ? round((float)$averageGrade, 1) : null,
+                'correctedCount' => $correctedCount,
             ]);
         } catch (\Exception $e) {
             if (auth()->check()) {

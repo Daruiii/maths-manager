@@ -51,3 +51,23 @@ export const CONTENT_ITEM_META = {
 } as const;
 
 export type ContentItemKey = keyof typeof CONTENT_ITEM_META;
+
+// ─── Type badge styles — utilisés pour les badges DS/DM/TD dans les listes ───
+// Couleurs par type de contenu (pas par rôle)
+
+export const CONTENT_TYPE_STYLES = {
+  ds: {
+    badge: 'bg-tertiary-color/15 text-tertiary-color',
+    dot: 'bg-tertiary-color',
+  },
+  dm: {
+    badge: 'bg-admin-color/15 text-admin-color',
+    dot: 'bg-admin-color',
+  },
+  td: {
+    badge: 'bg-info-color/15 text-info-color',
+    dot: 'bg-info-color',
+  },
+} as const;
+
+export type ContentTypeKey3 = keyof typeof CONTENT_TYPE_STYLES;

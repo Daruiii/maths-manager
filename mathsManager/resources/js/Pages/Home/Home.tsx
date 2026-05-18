@@ -26,6 +26,7 @@ export default function Home(props: HomeProps) {
         <StudentHome
           activeAssignments={props.activeAssignments}
           averageGrade={props.averageGrade}
+          correctedCount={props.correctedCount}
         />
       );
     return <GuestHome />;
