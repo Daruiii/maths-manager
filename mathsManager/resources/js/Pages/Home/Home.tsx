@@ -19,6 +19,7 @@ export default function Home(props: HomeProps) {
           pendingCorrections={props.pendingCorrections}
           unlockRequests={props.unlockRequests}
           pendingTeachersCount={props.pendingTeachersCount}
+          assignedThisMonth={props.assignedThisMonth}
         />
       );
     if (isStudent)

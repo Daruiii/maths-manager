@@ -1,73 +1,44 @@
 import { Link } from '@inertiajs/react';
 import { ChevronRight, CheckCircle2, Bell } from 'lucide-react';
 import { useAuth } from '@/Hooks/Auth/useAuth';
-import TypeBadge from '@/Components/Common/UI/TypeBadge';
 import TeacherSidebar from '@/Pages/Home/Partials/TeacherSidebar';
+import {
+  BatchCorrectionItem,
+  UnlockItem,
+  type BatchGroup,
+} from '@/Pages/Home/Partials/PendingFeedItems';
 import type { HomePendingCorrectionItem, HomeUnlockRequestItem } from '@/types';
+
+function groupByBatch(items: HomePendingCorrectionItem[]): BatchGroup[] {
+  const map = new Map<string, BatchGroup>();
+  for (const item of items) {
+    const key = item.batch_id ? `${item.subject_type}::${item.batch_id}` : `correction::${item.id}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        title: item.subject_title,
+        type: item.subject_type,
+        href: item.batch_url ?? route('teacher.corrections.show', item.id),
+        items: [],
+      });
+    }
+    map.get(key)!.items.push(item);
+  }
+  return Array.from(map.values());
+}
 
 interface Props {
   pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
   unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
   pendingTeachersCount?: number;
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'maintenant';
-  if (mins < 60) return `il y a ${mins} min`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `il y a ${hrs}h`;
-  return `il y a ${Math.floor(hrs / 24)}j`;
-}
-
-function CorrectionItem({ item, index }: { item: HomePendingCorrectionItem; index: number }) {
-  return (
-    <Link
-      href={route('teacher.corrections.show', item.id)}
-      style={{ animationDelay: `${index * 40}ms` }}
-      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group animate-fadeInUp"
-    >
-      <TypeBadge type={item.subject_type} size="md" />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.student_name}</p>
-        <p className="text-xs text-text-gray truncate">{item.subject_title}</p>
-      </div>
-      <span className="text-[10px] text-text-gray/60 shrink-0">{timeAgo(item.created_at)}</span>
-      <ChevronRight
-        size={14}
-        className="text-text-gray group-hover:text-text-color transition-colors shrink-0"
-      />
-    </Link>
-  );
-}
-
-function UnlockItem({ item, index }: { item: HomeUnlockRequestItem; index: number }) {
-  return (
-    <div
-      style={{ animationDelay: `${index * 40}ms` }}
-      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors animate-fadeInUp"
-    >
-      <TypeBadge type="td" size="md" />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.student_name}</p>
-        <p className="text-xs text-text-gray truncate">{item.title}</p>
-      </div>
-      <span className="text-[10px] text-text-gray/60 shrink-0">{timeAgo(item.updated_at)}</span>
-      <Link
-        href={route('teacher.corrections.index')}
-        className="text-xs font-comfortaa-bold text-info-color hover:underline shrink-0"
-      >
-        Examiner
-      </Link>
-    </div>
-  );
+  assignedThisMonth?: number;
 }
 
 export default function TeacherHome({
   pendingCorrections,
   unlockRequests,
   pendingTeachersCount,
+  assignedThisMonth,
 }: Props) {
   const { user } = useAuth();
   const firstName = user?.first_name ?? '';
@@ -77,7 +48,16 @@ export default function TeacherHome({
   const allClear = pendingTotal === 0;
   const heroMessage = allClear
     ? 'Tout est à jour.'
-    : `${pendingTotal} action${pendingTotal > 1 ? 's' : ''} en attente.`;
+    : corrCount === 1 && unlockCount === 0
+      ? 'Une copie attend ta correction.'
+      : corrCount > 1 && unlockCount === 0
+        ? `${corrCount} copies attendent ta correction.`
+        : unlockCount > 0 && corrCount === 0
+          ? `${unlockCount} déblocage${unlockCount > 1 ? 's' : ''} en attente.`
+          : `${corrCount} copies · ${unlockCount} déblocage${unlockCount > 1 ? 's' : ''}.`;
+
+  const batches = groupByBatch(pendingCorrections?.items ?? []);
+  const displayTotal = batches.length + unlockCount;
 
   return (
     <div className="space-y-6">
@@ -99,39 +79,66 @@ export default function TeacherHome({
       )}
 
       {/* ── Hero ── */}
-      <div className="relative mm-card mm-card-style-halo mm-card-accent-teacher rounded-3xl px-6 py-8 overflow-hidden animate-fadeIn">
+      <div className="relative mm-card mm-card-style-halo mm-card-accent-teacher rounded-3xl px-8 py-6 overflow-hidden animate-fadeIn">
         <div
-          className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+          className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none select-none"
           aria-hidden
         >
-          <span className="text-[96px] font-cmu-serif text-text-color opacity-[0.04] leading-none">
-            π
-          </span>
+          <div className="absolute inset-0 flex items-end justify-end pr-7">
+            <span className="text-[140px] font-cmu-serif text-text-color opacity-[0.04] leading-none">
+              π
+            </span>
+          </div>
         </div>
-        <div className="relative space-y-4 max-w-lg">
-          <p className="text-[11px] font-comfortaa-bold text-teacher-color uppercase tracking-widest">
-            Bonjour {firstName} 👋
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-comfortaa-bold text-text-color">
-            {heroMessage}
-          </h1>
-          {!allClear && (
-            <p className="text-sm text-text-gray">
-              {corrCount > 0 && `${corrCount} copie${corrCount > 1 ? 's' : ''} à corriger`}
-              {corrCount > 0 && unlockCount > 0 && ' · '}
-              {unlockCount > 0 &&
-                `${unlockCount} déblocage${unlockCount > 1 ? 's' : ''} demandé${unlockCount > 1 ? 's' : ''}`}
+        <div className="relative flex items-center gap-8">
+          <div className="flex-1 min-w-0 space-y-3">
+            <p className="text-[11px] font-comfortaa-bold text-teacher-color uppercase tracking-widest">
+              Bonjour {firstName} 👋
             </p>
-          )}
-          {!allClear && (
-            <Link
-              href={route('teacher.corrections.index')}
-              className="inline-flex items-center gap-1.5 text-sm font-comfortaa-bold text-teacher-color hover:underline"
-            >
-              Voir les corrections
-              <ChevronRight size={14} />
-            </Link>
-          )}
+            <h1 className="text-2xl sm:text-3xl font-comfortaa-bold text-text-color">
+              {heroMessage}
+            </h1>
+            {!allClear && (
+              <Link
+                href={route('teacher.corrections.index')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-teacher-color text-white text-sm font-comfortaa-bold shadow-warm-xs hover:opacity-90 transition-opacity"
+              >
+                Traiter les corrections <ChevronRight size={14} />
+              </Link>
+            )}
+          </div>
+          <div className="hidden sm:flex flex-col items-end gap-3 shrink-0 pr-5">
+            {corrCount > 0 && (
+              <div className="text-right">
+                <p className="text-2xl font-cmu-serif text-text-color leading-none">{corrCount}</p>
+                <p className="text-[10px] font-comfortaa-bold text-text-gray uppercase tracking-widest mt-0.5">
+                  copie{corrCount > 1 ? 's' : ''}
+                </p>
+              </div>
+            )}
+            {unlockCount > 0 && (
+              <div className="text-right">
+                <p className="text-2xl font-cmu-serif text-text-color leading-none">
+                  {unlockCount}
+                </p>
+                <p className="text-[10px] font-comfortaa-bold text-text-gray uppercase tracking-widest mt-0.5">
+                  déblocage{unlockCount > 1 ? 's' : ''}
+                </p>
+              </div>
+            )}
+            {(assignedThisMonth ?? 0) > 0 && (
+              <div
+                className={`text-right ${!allClear ? 'pt-2 border-t border-border-color/30 w-full' : ''}`}
+              >
+                <p className="text-2xl font-cmu-serif text-text-color leading-none">
+                  {assignedThisMonth}
+                </p>
+                <p className="text-[10px] font-comfortaa-bold text-text-gray uppercase tracking-widest mt-0.5">
+                  ce mois
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -139,11 +146,20 @@ export default function TeacherHome({
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 items-start">
         <div className="space-y-4">
           {allClear ? (
-            <div className="flex items-center gap-3 px-4 py-3 bg-success-color/10 border border-success-color/20 rounded-2xl animate-fadeInUp">
-              <CheckCircle2 size={16} className="text-success-color shrink-0" />
-              <p className="text-sm font-comfortaa-bold text-success-color">
-                Aucune urgence en attente — beau travail.
-              </p>
+            <div className="flex flex-col items-center gap-4 py-10 text-center bg-secondary-color border border-border-color rounded-2xl animate-fadeInUp">
+              <div className="w-14 h-14 rounded-2xl bg-success-color/10 border border-success-color/20 flex items-center justify-center">
+                <CheckCircle2 size={24} className="text-success-color" />
+              </div>
+              <div>
+                <p className="text-sm font-comfortaa-bold text-text-color">Tout est traité</p>
+                <p className="text-xs text-text-gray mt-1">Prochaine étape dans ton bureau.</p>
+              </div>
+              <Link
+                href={route('teacher.bureau.index')}
+                className="inline-flex items-center gap-1.5 text-xs font-comfortaa-bold text-teacher-color border border-teacher-color/30 bg-teacher-color/5 hover:bg-teacher-color/10 rounded-xl px-3 py-1.5 transition-colors"
+              >
+                Aller au bureau <ChevronRight size={12} />
+              </Link>
             </div>
           ) : (
             <div className="bg-secondary-color border border-border-color rounded-2xl overflow-hidden">
@@ -152,28 +168,24 @@ export default function TeacherHome({
                   À traiter
                 </span>
                 <span className="text-xs text-text-gray bg-surface-color border border-border-color px-2 py-0.5 rounded-full">
-                  {pendingTotal}
+                  {displayTotal}
                 </span>
               </div>
               <div className="p-2 space-y-0.5">
-                {pendingCorrections?.items.map((item, i) => (
-                  <CorrectionItem key={item.id} item={item} index={i} />
+                {batches.map((batch, i) => (
+                  <BatchCorrectionItem key={batch.key} batch={batch} index={i} />
                 ))}
                 {unlockRequests?.items.map((item, i) => (
-                  <UnlockItem
-                    key={item.id}
-                    item={item}
-                    index={(pendingCorrections?.items.length ?? 0) + i}
-                  />
+                  <UnlockItem key={item.id} item={item} index={batches.length + i} />
                 ))}
               </div>
-              {pendingTotal > 5 && (
+              {displayTotal > 5 && (
                 <div className="px-4 py-2.5 border-t border-border-color">
                   <Link
                     href={route('teacher.corrections.index')}
                     className="text-xs font-comfortaa-bold text-teacher-color hover:underline flex items-center gap-1"
                   >
-                    Voir tout ({pendingTotal}) <ChevronRight size={12} />
+                    Voir tout ({displayTotal}) <ChevronRight size={12} />
                   </Link>
                 </div>
               )}
@@ -181,7 +193,7 @@ export default function TeacherHome({
           )}
         </div>
 
-        <TeacherSidebar corrCount={corrCount} unlockCount={unlockCount} />
+        <TeacherSidebar assignedThisMonth={assignedThisMonth} />
       </div>
     </div>
   );
