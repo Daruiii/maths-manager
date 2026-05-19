@@ -17,6 +17,8 @@ export interface HomePendingCorrectionItem {
   student_name: string;
   subject_title: string;
   subject_type: 'ds' | 'dm';
+  batch_id?: number | null;
+  batch_url?: string | null;
   created_at: string;
 }
 
@@ -44,6 +46,7 @@ export interface HomeProps {
   // Teacher
   pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
   unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
+  assignedThisMonth?: number;
   // Student
   activeAssignments?: {
     ds: HomeActiveAssignment[];

@@ -12,6 +12,7 @@ export interface AppNotification {
     message: string;
     title: string;
     link?: string;
+    subject_id?: number;
     correction_id?: number;
     ds_id?: number | null;
     dm_id?: number | null;

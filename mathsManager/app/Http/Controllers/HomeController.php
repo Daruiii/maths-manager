@@ -11,9 +11,12 @@ use App\Enums\DSStatus;
 use App\Enums\TdStatus;
 use App\Models\CorrectionRequest;
 use App\Models\Dm;
+use App\Models\DmBatch;
 use App\Models\DS;
+use App\Models\DsBatch;
 use App\Models\Content;
 use App\Models\Td;
+use App\Models\TdBatch;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -43,7 +46,11 @@ class HomeController extends Controller
                         $q->whereHas('ds', fn ($q) => $q->where('teacher_id', $user->id))
                           ->orWhereHas('dm', fn ($q) => $q->where('teacher_id', $user->id));
                     })
-                    ->with(['user:id,first_name,last_name', 'ds:id,custom_title', 'dm:id,custom_title'])
+                    ->with([
+                        'user:id,first_name,last_name',
+                        'ds:id,batch_id,custom_title',
+                        'dm:id,batch_id,custom_title',
+                    ])
                     ->latest()
                     ->get();
 
@@ -53,6 +60,16 @@ class HomeController extends Controller
                     ->latest('updated_at')
                     ->get(['id', 'custom_title', 'user_id', 'updated_at']);
 
+                $assignedThisMonth = DsBatch::where('teacher_id', $user->id)
+                    ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                    ->count()
+                    + DmBatch::where('teacher_id', $user->id)
+                        ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                        ->count()
+                    + TdBatch::where('teacher_id', $user->id)
+                        ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                        ->count();
+
                 return inertia('Home/Home', [
                     'pendingCorrections' => [
                         'count' => $pendingCorrections->count(),
@@ -61,6 +78,8 @@ class HomeController extends Controller
                             'student_name'  => $cr->user?->name ?? 'Élève',
                             'subject_title' => $cr->ds?->custom_title ?? $cr->dm?->custom_title ?? 'Devoir',
                             'subject_type'  => $cr->ds_id ? 'ds' : 'dm',
+                            'batch_id'      => $cr->ds?->batch_id ?? $cr->dm?->batch_id,
+                            'batch_url'     => $this->teacherAssignmentUrl($cr),
                             'created_at'    => $cr->created_at->toIso8601String(),
                         ])->values(),
                     ],
@@ -76,6 +95,7 @@ class HomeController extends Controller
                     'pendingTeachersCount' => $user->isAdmin()
                         ? User::where('role', 'teacher')->where('status', 'pending_approval')->count()
                         : 0,
+                    'assignedThisMonth' => $assignedThisMonth,
                 ]);
             }
 
@@ -154,5 +174,15 @@ class HomeController extends Controller
     public function admin(): View
     {
         return view('admin');
+    }
+
+    private function teacherAssignmentUrl(CorrectionRequest $correctionRequest): ?string
+    {
+        $type = $correctionRequest->ds_id ? 'ds' : 'dm';
+        $batchId = $correctionRequest->ds?->batch_id ?? $correctionRequest->dm?->batch_id;
+
+        return $batchId
+            ? route('teacher.assignations.show', ['type' => $type, 'batch' => $batchId])
+            : null;
     }
 }

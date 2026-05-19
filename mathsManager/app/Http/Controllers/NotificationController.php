@@ -15,10 +15,6 @@ class NotificationController extends Controller
 
         $data = $notification->data;
 
-        if (!empty($data['link'])) {
-            return redirect($data['link']);
-        }
-
         $type = $data['type'] ?? null;
 
         if ($type === 'correction_sent' && !empty($data['correction_id'])) {
@@ -40,7 +36,15 @@ class NotificationController extends Controller
         }
 
         if ($type === 'unlock_requested') {
-            return redirect(route('teacher.bureau.index'));
+            return redirect(route('teacher.corrections.index'));
+        }
+
+        if ($type === 'work_assigned' && !empty($data['link'])) {
+            return redirect($data['link']);
+        }
+
+        if (!empty($data['link'])) {
+            return redirect($data['link']);
         }
 
         return redirect('/');

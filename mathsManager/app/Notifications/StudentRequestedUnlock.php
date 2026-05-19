@@ -32,7 +32,7 @@ class StudentRequestedUnlock extends Notification implements ShouldQueue
             'student_name' => $student->name,
             'title'        => $title,
             'message'      => $student->name . ' demande la correction pour "' . $title . '".',
-            'link'         => '/teacher/bureau',
+            'link'         => '/teacher/corrections',
         ];
     }
 
@@ -44,7 +44,7 @@ class StudentRequestedUnlock extends Notification implements ShouldQueue
             ->subject('Demande de correction — ' . $data['title'])
             ->greeting('Bonjour,')
             ->line($data['student_name'] . ' demande à accéder à la correction de "' . $data['title'] . '".')
-            ->action('Gérer les corrections', url('/teacher/bureau'))
+            ->action('Gérer les corrections', url('/teacher/corrections'))
             ->line('Vous pouvez débloquer la correction pour cet élève ou pour tout le groupe.');
     }
 }

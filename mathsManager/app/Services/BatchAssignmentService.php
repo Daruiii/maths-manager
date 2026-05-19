@@ -19,7 +19,9 @@ use App\Models\Problem;
 use App\Models\Td;
 use App\Models\TdBatch;
 use App\Models\User;
+use App\Notifications\TeacherAssignedWork;
 use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class BatchAssignmentService
@@ -79,6 +81,7 @@ class BatchAssignmentService
             if ($privateExercises->isNotEmpty()) $ds->privateExercises()->attach($privateExercises->pluck('id'));
 
             $this->sendMailSafe(new AssignDSMail($ds), $studentId, 'DS builder assign');
+            $this->notifyAssignedWorkSafe($studentId, 'ds', $ds->id, $ds->custom_title ?? 'DS');
         }
 
         return $batch;
@@ -123,6 +126,7 @@ class BatchAssignmentService
             if ($privateExercises->isNotEmpty()) $dm->privateExercises()->attach($privateExercises->pluck('id'));
 
             $this->sendMailSafe(new AssignDMMail($dm), $studentId, 'DM builder assign');
+            $this->notifyAssignedWorkSafe($studentId, 'dm', $dm->id, $dm->custom_title ?? 'DM');
         }
 
         return $batch;
@@ -166,6 +170,7 @@ class BatchAssignmentService
             if ($privateExercises->isNotEmpty()) $td->privateExercises()->attach($privateExercises->pluck('id'));
 
             $this->sendMailSafe(new AssignTDMail($td), $studentId, 'TD builder assign');
+            $this->notifyAssignedWorkSafe($studentId, 'td', $td->id, $td->custom_title ?? 'TD');
         }
 
         return $batch;
@@ -203,6 +208,23 @@ class BatchAssignmentService
             Mail::to($student->email)->send($mail);
         } catch (\Exception $e) {
             ErrorResponseHelper::mailError($e, $context);
+        }
+    }
+
+    private function notifyAssignedWorkSafe(int $studentId, string $type, int $id, string $title): void
+    {
+        $student = User::find($studentId);
+        if (!$student) return;
+
+        try {
+            $student->notify(new TeacherAssignedWork($type, $id, $title));
+        } catch (\Exception $e) {
+            Log::error('Assignment notification error: ' . $e->getMessage(), [
+                'exception' => get_class($e),
+                'student_id' => $studentId,
+                'subject_type' => $type,
+                'subject_id' => $id,
+            ]);
         }
     }
 }
