@@ -10,7 +10,7 @@ interface HeaderMobileMenuProps {
 }
 
 export default function HeaderMobileMenu({ classes }: HeaderMobileMenuProps) {
-  const { isStaff, isStudent, hasNoRole } = useAuth();
+  const { isGuest, isStaff, isStudent, hasNoRole } = useAuth();
 
   if (hasNoRole) return null;
 
@@ -63,24 +63,97 @@ export default function HeaderMobileMenu({ classes }: HeaderMobileMenuProps) {
 
                 {/* Navigation */}
                 <div className="space-y-1">
+                  <Link
+                    href={route('home')}
+                    className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                  >
+                    Accueil
+                  </Link>
+
                   {isStudent && (
-                    <Link
-                      href={route('student.ressources')}
-                      className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
-                    >
-                      Mes Ressources
-                    </Link>
+                    <>
+                      <Link
+                        href={route('student.assignments.index')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Mes travaux
+                      </Link>
+                      <Link
+                        href={route('student.ressources')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Mes Ressources
+                      </Link>
+                    </>
                   )}
 
                   {isStaff && (
+                    <>
+                      <Link
+                        href={route('teacher.bureau.index')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Mon Bureau
+                      </Link>
+                      <Link
+                        href={route('teacher.students.index')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Mes élèves
+                      </Link>
+                      <Link
+                        href={route('teacher.corrections.index')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Corrections
+                      </Link>
+                      <Link
+                        href={route('teacher.bureau.templates')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Modèles
+                      </Link>
+                    </>
+                  )}
+
+                  {isGuest && (
                     <Link
-                      href={route('teacher.bureau.index')}
+                      href={route('login')}
                       className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
                     >
-                      Mon Bureau
+                      Connexion
                     </Link>
                   )}
                 </div>
+
+                {isStaff && (
+                  <>
+                    <div className="h-px bg-border-color my-4" />
+                    <div className="space-y-1">
+                      <p className="px-3 text-xxs font-comfortaa-bold text-text-gray uppercase tracking-widest">
+                        Créer
+                      </p>
+                      <Link
+                        href={route('teacher.ds.create')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Nouveau DS
+                      </Link>
+                      <Link
+                        href={route('teacher.dm.create')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Nouveau DM
+                      </Link>
+                      <Link
+                        href={route('teacher.td.create')}
+                        className="block px-3 py-3 text-base font-comfortaa text-text-color hover:bg-surface-color rounded-xl transition-colors"
+                      >
+                        Nouveau TD
+                      </Link>
+                    </div>
+                  </>
+                )}
               </div>
             </DisclosurePanel>
           </Transition>

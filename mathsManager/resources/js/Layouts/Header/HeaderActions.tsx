@@ -13,7 +13,7 @@ export default function HeaderActions({ user }: HeaderActionsProps) {
   const [panel, setPanel] = useState<'bell' | 'user' | null>(null);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-2">
       <div className="hidden lg:block">
         <DarkModeToggle />
       </div>

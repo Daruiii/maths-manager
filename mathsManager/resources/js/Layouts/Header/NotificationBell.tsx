@@ -16,6 +16,8 @@ function timeAgo(dateStr: string): string {
 
 function NotifIcon({ type }: { type: string | null }) {
   switch (type) {
+    case 'work_assigned':
+      return <BookOpen size={13} className="text-student-color shrink-0" />;
     case 'correction_submitted':
       return <FileUp size={13} className="text-teacher-color shrink-0" />;
     case 'correction_sent':

@@ -19,9 +19,9 @@ export default function Header() {
         ${scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'}
       `}
     >
-      <nav className="w-full flex items-center mx-auto px-4 lg:px-8 gap-8">
+      <nav className="w-full flex items-center mx-auto px-3 sm:px-4 lg:px-8 gap-2 lg:gap-8">
         {/* Logo — toujours à gauche */}
-        <div className="shrink-0 flex items-center">
+        <div className="min-w-0 flex items-center">
           <HeaderLogo />
         </div>
 
@@ -43,7 +43,7 @@ export default function Header() {
         {!isGuest && <div className="flex-1" />}
 
         {/* Actions — toujours à droite */}
-        <div className="shrink-0 flex items-center gap-2">
+        <div className="shrink-0 flex items-center gap-1.5 sm:gap-2">
           <HeaderActions user={user} />
           <HeaderMobileMenu classes={classes} />
         </div>
