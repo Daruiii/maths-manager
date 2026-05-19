@@ -21,7 +21,7 @@ export default function StudentSidebar({ averageGrade, correctedCount }: Props) 
               </span>
               <span className="text-xl font-cmu-serif text-text-gray">/20</span>
             </div>
-            <p className="text-xs text-text-gray mt-0.5">moyenne générale</p>
+            <p className="mm-stat-label">moyenne générale</p>
           </div>
         ) : (
           <p className="text-sm text-text-gray italic">Pas encore de note</p>
@@ -31,7 +31,7 @@ export default function StudentSidebar({ averageGrade, correctedCount }: Props) 
             <span className="text-2xl font-cmu-serif text-text-color leading-none">
               {correctedCount}
             </span>
-            <p className="text-xs text-text-gray mt-0.5">
+            <p className="mm-stat-label">
               copie{correctedCount > 1 ? 's' : ''} corrigée{correctedCount > 1 ? 's' : ''}
             </p>
           </div>

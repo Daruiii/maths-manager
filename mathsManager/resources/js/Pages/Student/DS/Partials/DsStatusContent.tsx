@@ -152,7 +152,7 @@ export default function DsStatusContent({
           </div>
         </TheoremCard>
         <Link
-          href={route('home')}
+          href={route('student.assignments.index')}
           className="inline-flex items-center gap-1.5 text-sm text-text-gray hover:text-student-color transition-colors"
         >
           <ChevronLeft size={14} />

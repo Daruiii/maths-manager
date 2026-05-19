@@ -106,7 +106,7 @@ class DSController extends Controller
         // Server-side remaining time: prevents client from cheating by reloading
         $timerSeconds = $ds->timer;
         if ($ds->status === DSStatus::Ongoing->value && $ds->started_at) {
-            $elapsed = (int) now()->diffInSeconds($ds->started_at);
+            $elapsed = (int) $ds->started_at->diffInSeconds(now());
             $timerSeconds = max(0, $ds->timer - $elapsed);
         }
 
@@ -171,7 +171,7 @@ class DSController extends Controller
         } elseif (in_array($status, ['paused', 'finished', 'finished_late'])) {
             // Compute true remaining before clearing started_at
             if ($ds->started_at) {
-                $elapsed = (int) now()->diffInSeconds($ds->started_at);
+                $elapsed = (int) $ds->started_at->diffInSeconds(now());
                 $updates['timer'] = max(0, $ds->timer - $elapsed);
             }
             $updates['started_at'] = null;

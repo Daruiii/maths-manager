@@ -55,7 +55,13 @@ export default function DmShow({ dm }: { dm: Dm }) {
     <AppLayout>
       <Head title={title} />
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        <PageHeader title={title} breadcrumbs={[{ label: title }]} />
+        <PageHeader
+          title={title}
+          breadcrumbs={[
+            { label: 'Mes devoirs', href: route('student.assignments.index') },
+            { label: title },
+          ]}
+        />
 
         {dm.status === 'not_started' && (
           <div className="space-y-4">

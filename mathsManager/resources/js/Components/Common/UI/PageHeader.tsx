@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Home, ChevronRight } from 'lucide-react';
+import { Home } from 'lucide-react';
 
 interface Breadcrumb {
   label: string;
@@ -27,25 +27,28 @@ export default function PageHeader({
     >
       <div className="flex flex-col">
         {/* Breadcrumbs */}
-        <nav className="flex items-center text-sm text-text-gray mb-2 font-comfortaa">
+        <nav className="flex items-center gap-1 text-xs text-text-gray mb-2.5 font-comfortaa">
           <Link
             href={route('home')}
-            className="hover:text-tertiary-color transition-colors flex items-center gap-1"
+            className="hover:text-tertiary-color transition-colors flex items-center gap-1 mm-focus-ring rounded"
           >
-            <Home className="w-3.5 h-3.5" />
+            <Home className="w-3 h-3" />
             <span className="hidden sm:inline">Accueil</span>
           </Link>
 
           {breadcrumbs.length > 0 &&
             breadcrumbs.map((crumb, index) => (
-              <div key={index} className="flex items-center">
-                <ChevronRight className="w-4 h-4 mx-1 text-text-gray" />
+              <div key={index} className="flex items-center gap-1">
+                <span className="text-border-color/80 select-none">/</span>
                 {crumb.href ? (
-                  <Link href={crumb.href} className="hover:text-tertiary-color transition-colors">
+                  <Link
+                    href={crumb.href}
+                    className="hover:text-tertiary-color transition-colors mm-focus-ring rounded"
+                  >
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className="text-text-color font-comfortaa-bold">{crumb.label}</span>
+                  <span className="text-text-color/70 font-comfortaa-bold">{crumb.label}</span>
                 )}
               </div>
             ))}
@@ -53,12 +56,16 @@ export default function PageHeader({
 
         {/* Title & Subtitle */}
         <div className="flex items-start">
-          {/* Decorative bar - smaller */}
-          <div className="hidden sm:block w-1 h-6 bg-tertiary-color rounded-full mr-3 mt-1.5 opacity-80 shadow-sm"></div>
+          {/* Gradient decorative bar */}
+          <div className="hidden sm:block w-0.5 h-8 mr-3 mt-0.5 shrink-0 rounded-full bg-gradient-to-b from-tertiary-color via-tertiary-color/50 to-transparent" />
 
           <div>
-            <h1 className="text-xl font-comfortaa-bold text-text-color leading-tight">{title}</h1>
-            {subtitle && <p className="mt-0.5 text-text-gray font-comfortaa text-sm">{subtitle}</p>}
+            <h1 className="text-xl font-comfortaa-bold text-text-color leading-tight tracking-tight">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="mt-1 text-text-gray font-comfortaa text-sm leading-snug">{subtitle}</p>
+            )}
           </div>
         </div>
       </div>

@@ -1,12 +1,9 @@
 import { Link } from '@inertiajs/react';
-import { ChevronRight, BookOpen } from 'lucide-react';
+import { BookOpen, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/Hooks/Auth/useAuth';
-import TypeBadge from '@/Components/Common/UI/TypeBadge';
 import StudentSidebar from '@/Pages/Home/Partials/StudentSidebar';
-import { BATCH_STATUS_META } from '@/Constants/statuses';
+import AssignmentItem, { FlatItem } from '@/Pages/Home/Partials/AssignmentItem';
 import type { HomeActiveAssignment } from '@/types';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Props {
   activeAssignments?: {
@@ -18,15 +15,6 @@ interface Props {
   correctedCount?: number;
 }
 
-type ItemType = 'ds' | 'dm' | 'td';
-
-interface FlatItem extends HomeActiveAssignment {
-  type: ItemType;
-  href: string;
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const STATUS_PRIORITY: Record<string, number> = {
   ongoing: 0,
   paused: 1,
@@ -35,28 +23,27 @@ const STATUS_PRIORITY: Record<string, number> = {
   correction_requested: 4,
 };
 
-function AssignmentItem({ item }: { item: FlatItem }) {
-  const meta = BATCH_STATUS_META[item.status] ?? BATCH_STATUS_META.not_started;
-  return (
-    <Link
-      href={item.href}
-      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group"
-    >
-      <TypeBadge type={item.type} size="md" />
-      <p className="flex-1 min-w-0 text-sm font-comfortaa-bold text-text-color truncate">
-        {item.title}
-      </p>
-      <span
-        className={`text-[10px] font-comfortaa-bold px-2 py-0.5 rounded-full shrink-0 ${meta.classes}`}
-      >
-        {meta.label}
-      </span>
-      <ChevronRight size={14} className="text-text-gray group-hover:text-text-color shrink-0" />
-    </Link>
-  );
+function buildSortedItems(
+  ds: HomeActiveAssignment[],
+  dm: HomeActiveAssignment[],
+  td: HomeActiveAssignment[]
+): FlatItem[] {
+  return [
+    ...ds.map((i) => ({ ...i, type: 'ds' as const, href: route('ds.show', i.id) })),
+    ...dm.map((i) => ({ ...i, type: 'dm' as const, href: route('dm.show', i.id) })),
+    ...td.map((i) => ({ ...i, type: 'td' as const, href: route('td.show', i.id) })),
+  ].sort((a, b) => {
+    const statusDiff = (STATUS_PRIORITY[a.status] ?? 9) - (STATUS_PRIORITY[b.status] ?? 9);
+    if (statusDiff !== 0) return statusDiff;
+    if (a.due_date && b.due_date)
+      return (
+        new Date(`${a.due_date}T00:00:00`).getTime() - new Date(`${b.due_date}T00:00:00`).getTime()
+      );
+    if (a.due_date) return -1;
+    if (b.due_date) return 1;
+    return 0;
+  });
 }
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function StudentHome({
   activeAssignments,
@@ -69,15 +56,10 @@ export default function StudentHome({
   const ds = activeAssignments?.ds ?? [];
   const dm = activeAssignments?.dm ?? [];
   const td = activeAssignments?.td ?? [];
-
-  const allItems: FlatItem[] = [
-    ...ds.map((i) => ({ ...i, type: 'ds' as ItemType, href: route('ds.show', i.id) })),
-    ...dm.map((i) => ({ ...i, type: 'dm' as ItemType, href: route('dm.show', i.id) })),
-    ...td.map((i) => ({ ...i, type: 'td' as ItemType, href: route('td.show', i.id) })),
-  ].sort((a, b) => (STATUS_PRIORITY[a.status] ?? 9) - (STATUS_PRIORITY[b.status] ?? 9));
-
+  const allItems = buildSortedItems(ds, dm, td);
   const total = allItems.length;
   const ongoing = allItems.filter((i) => i.status === 'ongoing' || i.status === 'paused').length;
+  const nextDue = allItems.find((i) => i.due_date);
 
   const heroMessage =
     total === 0
@@ -89,10 +71,9 @@ export default function StudentHome({
   return (
     <div className="space-y-6">
       {/* ── Hero ── */}
-      <div className="relative bg-secondary-color border border-border-color rounded-3xl px-6 py-8 overflow-hidden">
-        <div className="absolute inset-0 bg-student-color opacity-[0.03] rounded-3xl pointer-events-none" />
+      <div className="relative mm-card mm-card-style-halo mm-card-accent-student rounded-3xl px-6 py-8 overflow-hidden animate-fadeIn">
         <div
-          className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+          className="absolute right-7 top-1/2 -translate-y-1/2 pointer-events-none select-none"
           aria-hidden
         >
           <span className="text-[96px] font-cmu-serif text-text-color opacity-[0.04] leading-none">
@@ -120,10 +101,10 @@ export default function StudentHome({
           </div>
           {total > 0 && (
             <Link
-              href={route('student.ressources')}
-              className="inline-flex items-center gap-1.5 text-sm font-comfortaa-bold text-student-color hover:underline"
+              href={nextDue?.href ?? route('student.ressources')}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-student-color text-white text-sm font-comfortaa-bold shadow-warm-xs hover:opacity-90 transition-opacity"
             >
-              Voir tous mes travaux
+              Continuer mon travail
               <ChevronRight size={14} />
             </Link>
           )}
@@ -134,15 +115,15 @@ export default function StudentHome({
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 items-start">
         <div>
           {total === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-surface-color flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3 py-12 text-center animate-fadeInUp">
+              <div className="w-12 h-12 rounded-2xl bg-surface-color flex items-center justify-center shadow-warm-xs">
                 <BookOpen size={22} className="text-text-gray opacity-60" />
               </div>
               <p className="text-sm text-text-gray">Aucun devoir en cours pour l&apos;instant.</p>
             </div>
           ) : (
-            <div className="bg-secondary-color border border-border-color rounded-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-border-color">
+            <div className="mm-card mm-card-style-plain overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border-color">
                 <span className="text-xs font-comfortaa-bold text-text-color uppercase tracking-wider">
                   À faire maintenant
                 </span>
@@ -150,9 +131,9 @@ export default function StudentHome({
                   {total}
                 </span>
               </div>
-              <div className="p-2 space-y-0.5">
-                {allItems.map((item) => (
-                  <AssignmentItem key={`${item.type}-${item.id}`} item={item} />
+              <div className="p-3 space-y-2">
+                {allItems.map((item, i) => (
+                  <AssignmentItem key={`${item.type}-${item.id}`} item={item} index={i} />
                 ))}
               </div>
             </div>

@@ -36,6 +36,7 @@ export default function Group({ group, students, groups }: Props) {
             title={group.name}
             subtitle={`${students.length} élève${students.length > 1 ? 's' : ''} dans ce groupe.`}
             breadcrumbs={[
+              { label: 'Mon Bureau', href: route('teacher.bureau.index') },
               { label: 'Mes Élèves', href: route('teacher.students.index') },
               { label: group.name },
             ]}

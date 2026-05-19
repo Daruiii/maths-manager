@@ -40,7 +40,7 @@
   --success-color: 46 139 87;
   --error-color: 193 39 45;
   --warning-color: 234 88 12; /* orange-600 */
-  --info-color: 40 104 178; /* same as tertiary */
+  --info-color: 40 104 178;
 
   /* ========================================
      ROLE COLORS
@@ -58,6 +58,20 @@
   --gradient-teacher-to: #6366f1;
   --gradient-student-from: #34d399;
   --gradient-student-to: #14b8a6;
+
+  /* ========================================
+     SHADOWS (warm-tinted — utilisent --text-color)
+     ======================================== */
+  --shadow-xs: 0 1px 3px rgb(var(--text-color) / 0.05), 0 1px 2px rgb(var(--text-color) / 0.04);
+  --shadow-sm: 0 2px 8px rgb(var(--text-color) / 0.07), 0 1px 3px rgb(var(--text-color) / 0.04);
+  --shadow: 0 4px 16px rgb(var(--text-color) / 0.08), 0 2px 6px rgb(var(--text-color) / 0.05);
+  --shadow-md: 0 8px 24px rgb(var(--text-color) / 0.1), 0 4px 8px rgb(var(--text-color) / 0.06);
+  --shadow-lg: 0 16px 48px rgb(var(--text-color) / 0.12), 0 8px 16px rgb(var(--text-color) / 0.06);
+
+  /* ========================================
+     FOCUS RING
+     ======================================== */
+  --focus-ring: 0 0 0 3px rgb(var(--tertiary-color) / 0.28);
 
   /* ========================================
      FONT SIZES
@@ -85,22 +99,23 @@
 
 /* ========================================
    DARK MODE
+   "Papier académique sombre" — chaud, pas générique.
    Activé par useDarkMode → document.documentElement.classList.add('dark')
    ======================================== */
 
 .dark {
-  /* Backgrounds */
-  --primary-color: 17 24 39; /* gray-900 */
-  --secondary-color: 31 41 55; /* gray-800 */
-  --surface-color: 55 65 81; /* gray-700 — survols sur fond sombre */
+  /* Backgrounds — warm dark paper, pas du gray-* générique */
+  --primary-color: 18 15 12; /* #120f0c — near-black warm brun */
+  --secondary-color: 26 22 18; /* #1a1612 — papier sombre */
+  --surface-color: 38 33 28; /* #26211c — survols sur fond sombre */
 
   /* Text */
-  --text-color: 249 250 251; /* gray-50 */
-  --text-gray: 156 163 175; /* gray-400 */
+  --text-color: 240 234 224; /* #f0eae0 — warm off-white (contraste 16.9:1 AAA) */
+  --text-gray: 168 152 134; /* #a89886 — warm muted (contraste 7.2:1 AAA) */
 
   /* Borders */
-  --border-color: 75 85 99; /* gray-600 — plus lisible sur fonds dark */
+  --border-color: 54 46 38; /* #362e26 — warm border discrète */
 
-  /* Brand — plus clair sur fond sombre */
-/* Brand — plus clair sur fond sombre (version adaptée du light tertiary) */
-  --tertiary-color: 96 165 250;    /* blue-400 */}
+  /* Brand — or chaud sur fond sombre */
+  --tertiary-color: 182 142 100; /* #b68e64 — warm gold, inverse lumineux du marron clair */
+}

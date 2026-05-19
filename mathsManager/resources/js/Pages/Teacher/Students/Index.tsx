@@ -49,7 +49,10 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
                 ? `${totalCount} élève${totalCount > 1 ? 's' : ''} · ${groups.length} groupe${groups.length > 1 ? 's' : ''}`
                 : "Gérez vos élèves et partagez votre lien d'invitation."
             }
-            breadcrumbs={[{ label: 'Mes Élèves' }]}
+            breadcrumbs={[
+              { label: 'Mon Bureau', href: route('teacher.bureau.index') },
+              { label: 'Mes Élèves' },
+            ]}
             action={
               <div className="flex items-center gap-2">
                 <InvitationLinkCompact

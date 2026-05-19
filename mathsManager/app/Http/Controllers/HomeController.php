@@ -87,16 +87,18 @@ class HomeController extends Controller
                     DSStatus::Paused->value,
                     DSStatus::Sent->value,
                 ])
+                ->with('batch:id,due_date')
                 ->latest()
-                ->get(['id', 'custom_title', 'status']);
+                ->get(['id', 'custom_title', 'status', 'batch_id']);
 
             $activeDm = Dm::where('user_id', $user->id)
                 ->whereIn('status', [
                     DmStatus::NotStarted->value,
                     DmStatus::Ongoing->value,
                 ])
+                ->with('batch:id,due_date')
                 ->latest()
-                ->get(['id', 'custom_title', 'status']);
+                ->get(['id', 'custom_title', 'status', 'batch_id']);
 
             $activeTd = Td::where('user_id', $user->id)
                 ->whereIn('status', [
@@ -104,8 +106,9 @@ class HomeController extends Controller
                     TdStatus::Ongoing->value,
                     TdStatus::CorrectionRequested->value,
                 ])
+                ->with('batch:id,due_date')
                 ->latest()
-                ->get(['id', 'custom_title', 'status']);
+                ->get(['id', 'custom_title', 'status', 'batch_id']);
 
             $averageGrade = CorrectionRequest::where('user_id', $user->id)
                 ->where('status', CorrectionRequestStatus::Corrected->value)
@@ -121,16 +124,19 @@ class HomeController extends Controller
                         'id'     => $ds->id,
                         'title'  => $ds->custom_title ?? 'DS',
                         'status' => $ds->status,
+                        'due_date' => $ds->batch?->due_date?->toDateString(),
                     ])->values(),
                     'dm' => $activeDm->map(fn ($dm) => [
                         'id'     => $dm->id,
                         'title'  => $dm->custom_title ?? 'DM',
                         'status' => $dm->status->value,
+                        'due_date' => $dm->batch?->due_date?->toDateString(),
                     ])->values(),
                     'td' => $activeTd->map(fn ($td) => [
                         'id'     => $td->id,
                         'title'  => $td->custom_title ?? 'TD',
                         'status' => $td->status->value,
+                        'due_date' => $td->batch?->due_date?->toDateString(),
                     ])->values(),
                 ],
                 'averageGrade' => $averageGrade ? round((float)$averageGrade, 1) : null,

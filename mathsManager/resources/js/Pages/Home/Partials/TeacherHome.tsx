@@ -5,15 +5,11 @@ import TypeBadge from '@/Components/Common/UI/TypeBadge';
 import TeacherSidebar from '@/Pages/Home/Partials/TeacherSidebar';
 import type { HomePendingCorrectionItem, HomeUnlockRequestItem } from '@/types';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface Props {
   pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
   unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
   pendingTeachersCount?: number;
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -25,11 +21,12 @@ function timeAgo(dateStr: string): string {
   return `il y a ${Math.floor(hrs / 24)}j`;
 }
 
-function CorrectionItem({ item }: { item: HomePendingCorrectionItem }) {
+function CorrectionItem({ item, index }: { item: HomePendingCorrectionItem; index: number }) {
   return (
     <Link
       href={route('teacher.corrections.show', item.id)}
-      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group"
+      style={{ animationDelay: `${index * 40}ms` }}
+      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group animate-fadeInUp"
     >
       <TypeBadge type={item.subject_type} size="md" />
       <div className="flex-1 min-w-0">
@@ -37,14 +34,20 @@ function CorrectionItem({ item }: { item: HomePendingCorrectionItem }) {
         <p className="text-xs text-text-gray truncate">{item.subject_title}</p>
       </div>
       <span className="text-[10px] text-text-gray/60 shrink-0">{timeAgo(item.created_at)}</span>
-      <ChevronRight size={14} className="text-text-gray group-hover:text-text-color shrink-0" />
+      <ChevronRight
+        size={14}
+        className="text-text-gray group-hover:text-text-color transition-colors shrink-0"
+      />
     </Link>
   );
 }
 
-function UnlockItem({ item }: { item: HomeUnlockRequestItem }) {
+function UnlockItem({ item, index }: { item: HomeUnlockRequestItem; index: number }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors">
+    <div
+      style={{ animationDelay: `${index * 40}ms` }}
+      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors animate-fadeInUp"
+    >
       <TypeBadge type="td" size="md" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.student_name}</p>
@@ -61,8 +64,6 @@ function UnlockItem({ item }: { item: HomeUnlockRequestItem }) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function TeacherHome({
   pendingCorrections,
   unlockRequests,
@@ -74,7 +75,6 @@ export default function TeacherHome({
   const unlockCount = unlockRequests?.count ?? 0;
   const pendingTotal = corrCount + unlockCount;
   const allClear = pendingTotal === 0;
-
   const heroMessage = allClear
     ? 'Tout est à jour.'
     : `${pendingTotal} action${pendingTotal > 1 ? 's' : ''} en attente.`;
@@ -85,7 +85,7 @@ export default function TeacherHome({
       {!!pendingTeachersCount && pendingTeachersCount > 0 && (
         <Link
           href={route('admin.applications.index')}
-          className="flex items-center justify-between gap-4 px-4 py-3 bg-admin-color/10 border border-admin-color/20 rounded-2xl hover:bg-admin-color/15 transition-colors"
+          className="flex items-center justify-between gap-4 px-4 py-3 bg-admin-color/10 border border-admin-color/20 rounded-2xl hover:bg-admin-color/15 transition-colors animate-fadeInUp"
         >
           <div className="flex items-center gap-3">
             <Bell size={16} className="text-admin-color shrink-0" />
@@ -99,8 +99,7 @@ export default function TeacherHome({
       )}
 
       {/* ── Hero ── */}
-      <div className="relative bg-secondary-color border border-border-color rounded-3xl px-6 py-8 overflow-hidden">
-        <div className="absolute inset-0 bg-teacher-color opacity-[0.03] rounded-3xl pointer-events-none" />
+      <div className="relative mm-card mm-card-style-halo mm-card-accent-teacher rounded-3xl px-6 py-8 overflow-hidden animate-fadeIn">
         <div
           className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none"
           aria-hidden
@@ -124,13 +123,15 @@ export default function TeacherHome({
                 `${unlockCount} déblocage${unlockCount > 1 ? 's' : ''} demandé${unlockCount > 1 ? 's' : ''}`}
             </p>
           )}
-          <Link
-            href={route('teacher.corrections.index')}
-            className="inline-flex items-center gap-1.5 text-sm font-comfortaa-bold text-teacher-color hover:underline"
-          >
-            Voir les corrections
-            <ChevronRight size={14} />
-          </Link>
+          {!allClear && (
+            <Link
+              href={route('teacher.corrections.index')}
+              className="inline-flex items-center gap-1.5 text-sm font-comfortaa-bold text-teacher-color hover:underline"
+            >
+              Voir les corrections
+              <ChevronRight size={14} />
+            </Link>
+          )}
         </div>
       </div>
 
@@ -138,7 +139,7 @@ export default function TeacherHome({
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 items-start">
         <div className="space-y-4">
           {allClear ? (
-            <div className="flex items-center gap-3 px-4 py-3 bg-success-color/10 border border-success-color/20 rounded-2xl">
+            <div className="flex items-center gap-3 px-4 py-3 bg-success-color/10 border border-success-color/20 rounded-2xl animate-fadeInUp">
               <CheckCircle2 size={16} className="text-success-color shrink-0" />
               <p className="text-sm font-comfortaa-bold text-success-color">
                 Aucune urgence en attente — beau travail.
@@ -155,11 +156,15 @@ export default function TeacherHome({
                 </span>
               </div>
               <div className="p-2 space-y-0.5">
-                {pendingCorrections?.items.map((item) => (
-                  <CorrectionItem key={item.id} item={item} />
+                {pendingCorrections?.items.map((item, i) => (
+                  <CorrectionItem key={item.id} item={item} index={i} />
                 ))}
-                {unlockRequests?.items.map((item) => (
-                  <UnlockItem key={item.id} item={item} />
+                {unlockRequests?.items.map((item, i) => (
+                  <UnlockItem
+                    key={item.id}
+                    item={item}
+                    index={(pendingCorrections?.items.length ?? 0) + i}
+                  />
                 ))}
               </div>
               {pendingTotal > 5 && (

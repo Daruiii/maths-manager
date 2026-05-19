@@ -61,22 +61,63 @@ export default {
       },
       fontSize: {
         xxxs: ['0.5rem', { lineHeight: '0.75rem' }], // 8px — très petits badges
-        xxs: ['0.625rem', { lineHeight: '0.875rem' }], // 10px — badges, labels (text-xxs)
-        xs: ['0.75rem', { lineHeight: '1rem' }], // 12px — texte secondaire, légendes
-        sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14px — texte de base (text-sm)
-        base: ['1rem', { lineHeight: '1.5rem' }], // 16px — texte de base
+        xxs: ['0.625rem', { lineHeight: '0.875rem' }], // 10px — badges, labels
+        xs: ['0.75rem', { lineHeight: '1rem' }], // 12px — texte secondaire
+        sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14px — texte de base
+        base: ['1rem', { lineHeight: '1.5rem' }], // 16px
         lg: ['1.125rem', { lineHeight: '1.75rem' }], // 18px — titres de section
         xl: ['1.25rem', { lineHeight: '1.75rem' }], // 20px — titres principaux
-        '2xl': ['1.5rem', { lineHeight: '2rem' }], // 24px — titres principaux
+        '2xl': ['1.5rem', { lineHeight: '2rem' }], // 24px
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }], // 30px — grands titres
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }], // 36px — hero titres
+        '5xl': ['3rem', { lineHeight: '1.1' }], // 48px — display
+      },
+      boxShadow: {
+        'warm-xs':
+          '0 1px 3px rgb(var(--text-color) / 0.05), 0 1px 2px rgb(var(--text-color) / 0.04)',
+        'warm-sm':
+          '0 2px 8px rgb(var(--text-color) / 0.07), 0 1px 3px rgb(var(--text-color) / 0.04)',
+        warm: '0 4px 16px rgb(var(--text-color) / 0.08), 0 2px 6px rgb(var(--text-color) / 0.05)',
+        'warm-md':
+          '0 8px 24px rgb(var(--text-color) / 0.10), 0 4px 8px rgb(var(--text-color) / 0.06)',
+        'warm-lg':
+          '0 16px 48px rgb(var(--text-color) / 0.12), 0 8px 16px rgb(var(--text-color) / 0.06)',
+        focus: '0 0 0 3px rgb(var(--tertiary-color) / 0.28)',
+      },
+      transitionDuration: {
+        50: '50ms',
+        75: '75ms',
+        400: '400ms',
+        600: '600ms',
       },
       keyframes: {
         slideInRight: {
           '0%': { opacity: '0', transform: 'translateX(12px) scale(0.95)' },
           '100%': { opacity: '1', transform: 'translateX(0) scale(1)' },
         },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
       },
       animation: {
         slideInRight: 'slideInRight 0.18s ease both',
+        fadeIn: 'fadeIn 0.2s ease-out both',
+        fadeInUp: 'fadeInUp 0.25s ease-out both',
+        scaleIn: 'scaleIn 0.15s ease-out both',
+        shimmer: 'shimmer 1.5s linear infinite',
       },
     },
   },

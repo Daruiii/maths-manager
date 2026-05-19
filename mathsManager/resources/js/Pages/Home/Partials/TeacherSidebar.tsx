@@ -18,16 +18,14 @@ export default function TeacherSidebar({ corrCount, unlockCount }: Props) {
             <span className="text-4xl font-cmu-serif text-text-color leading-none">
               {corrCount}
             </span>
-            <p className="text-xs text-text-gray mt-0.5">
-              copie{corrCount > 1 ? 's' : ''} à corriger
-            </p>
+            <p className="mm-stat-label">copie{corrCount > 1 ? 's' : ''} à corriger</p>
           </div>
           {unlockCount > 0 && (
             <div>
               <span className="text-4xl font-cmu-serif text-text-color leading-none">
                 {unlockCount}
               </span>
-              <p className="text-xs text-text-gray mt-0.5">déblocage{unlockCount > 1 ? 's' : ''}</p>
+              <p className="mm-stat-label">déblocage{unlockCount > 1 ? 's' : ''}</p>
             </div>
           )}
         </div>
@@ -38,6 +36,7 @@ export default function TeacherSidebar({ corrCount, unlockCount }: Props) {
           Voir les corrections <ChevronRight size={12} />
         </Link>
       </div>
+
       <div className="bg-secondary-color border border-border-color rounded-2xl p-4">
         <Link
           href={route('teacher.bureau.index')}
@@ -45,7 +44,7 @@ export default function TeacherSidebar({ corrCount, unlockCount }: Props) {
         >
           <div>
             <p className="text-sm font-comfortaa-bold text-text-color">Mon Bureau</p>
-            <p className="text-xs text-text-gray mt-0.5">Devoirs, modèles, élèves</p>
+            <p className="mm-stat-label mt-0.5">Devoirs, modèles, élèves</p>
           </div>
           <ChevronRight
             size={14}

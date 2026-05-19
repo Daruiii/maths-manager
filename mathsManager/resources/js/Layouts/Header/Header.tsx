@@ -15,8 +15,8 @@ export default function Header() {
   return (
     <header
       className={`
-        bg-secondary-color shadow-sm fixed top-0 left-0 right-0 z-50 min-h-[72px] flex items-center transition-transform duration-300 ease-in-out
-        ${scrollDirection === 'down' ? '-translate-y-full shadow-none' : 'translate-y-0'}
+        bg-secondary-color border-b border-border-color/50 shadow-warm-xs fixed top-0 left-0 right-0 z-50 min-h-[72px] flex items-center transition-transform duration-300 ease-in-out
+        ${scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'}
       `}
     >
       <nav className="w-full flex items-center mx-auto px-4 lg:px-8 gap-8">

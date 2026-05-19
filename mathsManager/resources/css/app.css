@@ -18,7 +18,26 @@
   }
 
   /* Reset link structure to avoid 'circular' bug */
-  a, button {
+  a,
+  button {
     @apply inline-flex items-center justify-center transition-all duration-200;
+  }
+
+  /* Sélection de texte — warm brand */
+  ::selection {
+    background: rgb(var(--tertiary-color) / 0.2);
+    color: rgb(var(--text-color));
+  }
+
+  /* Placeholder — muted warm, pas trop visible */
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--text-gray) / 0.55);
+  }
+
+  /* Scrollbar globale — cohérente avec custom-scrollbar */
+  html {
+    scrollbar-color: rgb(var(--tertiary-color) / 0.22) transparent;
+    scrollbar-width: thin;
   }
 }

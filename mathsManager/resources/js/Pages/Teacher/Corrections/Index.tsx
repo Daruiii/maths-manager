@@ -1,8 +1,9 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ClipboardList, ChevronRight, LockOpen } from 'lucide-react';
+import { ClipboardList, ChevronRight, LockOpen, Clock } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import SectionLabel from '@/Components/Common/UI/SectionLabel';
+import TypeBadge from '@/Components/Common/UI/TypeBadge';
 import Button from '@/Components/Common/UI/Button';
 import type { PaginatedResponse } from '@/types/api';
 import type { CorrectionRequestStatus, TdStatus } from '@/types/models';
@@ -17,12 +18,6 @@ interface CorrectionBrief {
   dm: { id: number; custom_title: string | null } | null;
 }
 
-interface Props {
-  correctionRequests: PaginatedResponse<CorrectionBrief>;
-  tdUnlockRequests: TdUnlockBrief[];
-  filters: { status: string };
-}
-
 interface TdUnlockBrief {
   id: number;
   status: TdStatus;
@@ -32,11 +27,21 @@ interface TdUnlockBrief {
   student: { first_name: string; last_name: string } | null;
 }
 
+interface Props {
+  correctionRequests: PaginatedResponse<CorrectionBrief>;
+  tdUnlockRequests: TdUnlockBrief[];
+  filters: { status: string };
+}
+
 const STATUS_TABS = [
   { value: 'pending', label: 'À corriger' },
   { value: 'corrected', label: 'Corrigés' },
   { value: 'all', label: 'Tous' },
 ] as const;
+
+function formatDate(iso: string) {
+  return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(new Date(iso));
+}
 
 export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests, filters }: Props) {
   const items = correctionRequests.data;
@@ -87,6 +92,7 @@ export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests,
                   key={td.id}
                   className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-secondary-color border border-warning-color/20"
                 >
+                  <TypeBadge type="td" size="md" />
                   <div className="flex-1 min-w-0">
                     <p className="font-comfortaa-bold text-text-color truncate">
                       {td.custom_title ?? "Fiche d'exercices"}
@@ -121,23 +127,26 @@ export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests,
             <p className="text-sm">Aucune correction à traiter.</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            <SectionLabel>
-              {items.length} correction{items.length > 1 ? 's' : ''}
-            </SectionLabel>
-            <ul className="space-y-2">
+          <div className="mm-card mm-card-style-plain overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border-color">
+              <SectionLabel>
+                {items.length} correction{items.length > 1 ? 's' : ''}
+              </SectionLabel>
+            </div>
+            <ul className="divide-y divide-border-color">
               {items.map((cr) => {
                 const subject = cr.ds ?? cr.dm;
-                const subjectLabel = cr.ds ? 'DS' : 'DM';
+                const type = cr.ds ? 'ds' : 'dm';
                 return (
                   <li key={cr.id}>
                     <Link
                       href={route('teacher.corrections.show', cr.id)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-secondary-color border border-border-color hover:border-teacher-color/40 transition-colors group"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-primary-color/40 transition-colors group"
                     >
+                      <TypeBadge type={type} size="md" />
                       <div className="flex-1 min-w-0">
                         <p className="font-comfortaa-bold text-text-color truncate">
-                          {subject?.custom_title ?? subjectLabel}
+                          {subject?.custom_title ?? type.toUpperCase()}
                         </p>
                         {cr.user && (
                           <p className="text-xs text-text-gray mt-0.5">
@@ -145,19 +154,25 @@ export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests,
                           </p>
                         )}
                       </div>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-comfortaa-bold shrink-0 ${
-                          cr.status === 'pending'
-                            ? 'bg-warning-color/10 text-warning-color'
-                            : 'bg-success-color/10 text-success-color'
-                        }`}
-                      >
-                        {cr.status === 'pending' ? 'À corriger' : 'Corrigé'}
-                      </span>
-                      <ChevronRight
-                        size={16}
-                        className="text-text-gray shrink-0 group-hover:text-teacher-color transition-colors"
-                      />
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="flex items-center gap-1 text-[11px] text-text-gray">
+                          <Clock size={11} />
+                          {formatDate(cr.created_at)}
+                        </span>
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-comfortaa-bold ${
+                            cr.status === 'pending'
+                              ? 'bg-warning-color/10 text-warning-color'
+                              : 'bg-success-color/10 text-success-color'
+                          }`}
+                        >
+                          {cr.status === 'pending' ? 'À corriger' : 'Corrigé'}
+                        </span>
+                        <ChevronRight
+                          size={14}
+                          className="text-text-gray group-hover:text-teacher-color transition-colors"
+                        />
+                      </div>
                     </Link>
                   </li>
                 );

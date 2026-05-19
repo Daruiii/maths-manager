@@ -71,9 +71,6 @@
      .card-theorem
      Card style "encadré de théorème".
      Legacy alias. Préférer .mm-card + .mm-card-style-*.
-     Préférer les halos .card-halo-* ou .mm-card-style-* pour éviter l'effet "border-l partout".
-     Les border-l-{role}-color restent compatibles pour les cas très structurants.
-     Variantes fond: .card-dot-grid, .card-lines
      ---------------------------------------- */
   .card-theorem {
     @apply relative bg-secondary-color border border-border-color rounded-2xl transition-colors overflow-hidden;
@@ -154,5 +151,92 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-tertiary-color/40;
+  }
+
+  /* ----------------------------------------
+     .mm-focus-ring
+     Anneau de focus cohérent avec le design system.
+     Appliquer sur n'importe quel élément interactif.
+     ---------------------------------------- */
+  .mm-focus-ring:focus-visible {
+    @apply outline-none ring-2 ring-tertiary-color/50 ring-offset-2 ring-offset-primary-color;
+  }
+
+  /* ----------------------------------------
+     .mm-section-header
+     En-tête de section standard.
+     Alternative à SectionLabel pour CSS pur.
+     ---------------------------------------- */
+  .mm-section-header {
+    @apply text-xs font-comfortaa-bold text-text-gray uppercase tracking-widest;
+  }
+
+  /* ----------------------------------------
+     .mm-divider
+     Séparateur horizontal subtil.
+     ---------------------------------------- */
+  .mm-divider {
+    @apply border-t border-border-color/60 my-4;
+  }
+
+  /* ----------------------------------------
+     .mm-badge
+     Badge inline compact — pill arrondi.
+     Se combine avec .mm-badge-{variant}.
+     ---------------------------------------- */
+  .mm-badge {
+    @apply inline-flex items-center gap-1 text-xs font-comfortaa-bold px-2.5 py-0.5 rounded-full shrink-0;
+  }
+
+  .mm-badge-success {
+    @apply bg-success-color/10 text-success-color;
+  }
+
+  .mm-badge-error {
+    @apply bg-error-color/10 text-error-color;
+  }
+
+  .mm-badge-warning {
+    @apply bg-warning-color/10 text-warning-color;
+  }
+
+  .mm-badge-info {
+    @apply bg-info-color/10 text-info-color;
+  }
+
+  .mm-badge-teacher {
+    @apply bg-teacher-color/10 text-teacher-color;
+  }
+
+  .mm-badge-student {
+    @apply bg-student-color/10 text-student-color;
+  }
+
+  .mm-badge-admin {
+    @apply bg-admin-color/10 text-admin-color;
+  }
+
+  .mm-badge-neutral {
+    @apply bg-surface-color text-text-gray border border-border-color;
+  }
+
+  /* ----------------------------------------
+     .mm-interactive
+     Surface cliquable — hover + active cohérents.
+     ---------------------------------------- */
+  .mm-interactive {
+    @apply cursor-pointer hover:bg-surface-color active:bg-surface-color/80 transition-colors duration-150 rounded-xl;
+  }
+
+  /* ----------------------------------------
+     .mm-stat
+     Affichage stat chiffre + label.
+     ---------------------------------------- */
+  .mm-stat-value {
+    @apply text-2xl font-comfortaa-bold text-text-color leading-none;
+  }
+
+  .mm-stat-label {
+    @apply text-xs font-comfortaa text-text-gray mt-0.5;
   }
 }

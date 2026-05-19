@@ -21,55 +21,66 @@ Route::middleware(['auth', IsTeacher::class])
     ->prefix('teacher')
     ->name('teacher.')
     ->group(function () {
-        // Students
-        Route::get('/students', [TeacherStudentController::class, 'index'])->name('students.index');
-        Route::get('/students/groups/{group}', [TeacherStudentController::class, 'showGroup'])->name('students.group');
-        Route::delete('/students/{student}', [TeacherStudentController::class, 'removeStudent'])->name('students.remove');
-        Route::patch('/students/{student}/group', [TeacherStudentController::class, 'updateGroup'])->name('students.updateGroup');
 
-        // Groups CRUD
-        Route::post('/groups', [TeacherGroupController::class, 'store'])->name('groups.store');
-        Route::patch('/groups/{group}', [TeacherGroupController::class, 'update'])->name('groups.update');
-        Route::delete('/groups/{group}', [TeacherGroupController::class, 'destroy'])->name('groups.destroy');
+        // ── Bureau — workspace personnel du prof ──────────────────────────────
+        Route::prefix('bureau')->group(function () {
 
-        // Invitation
-        Route::post('/invitation', [TeacherInvitationController::class, 'configure'])->name('invitation.configure');
+            // Dashboard hub
+            Route::get('/', [BureauController::class, 'index'])->name('bureau.index');
+            Route::get('/devoirs', [BureauController::class, 'devoirs'])->name('bureau.devoirs');
+            Route::get('/history', [BureauController::class, 'history'])->name('bureau.history');
+            Route::get('/templates', [BureauController::class, 'templates'])->name('bureau.templates');
 
-        // Mon Bureau (dashboard)
-        Route::get('/bureau', [BureauController::class, 'index'])->name('bureau.index');
-        Route::get('/bureau/devoirs', [BureauController::class, 'devoirs'])->name('bureau.devoirs');
-        Route::get('/bureau/history', [BureauController::class, 'history'])->name('bureau.history');
-        Route::get('/bureau/templates', [BureauController::class, 'templates'])->name('bureau.templates');
+            // Builder Templates (mutations — même URL base que la liste, méthodes différentes)
+            Route::post('/templates', [BuilderTemplateController::class, 'store'])->name('templates.store');
+            Route::patch('/templates/{template}', [BuilderTemplateController::class, 'update'])->name('templates.update');
+            Route::delete('/templates/{template}', [BuilderTemplateController::class, 'destroy'])->name('templates.destroy');
 
-        // Assignations DS/DM/TD
-        Route::get('/assignations/{type}/{batch}', [TeacherAssignmentController::class, 'show'])
-            ->whereIn('type', ['ds', 'dm', 'td'])
-            ->name('assignations.show');
+            // Students
+            Route::get('/students', [TeacherStudentController::class, 'index'])->name('students.index');
+            Route::get('/students/groups/{group}', [TeacherStudentController::class, 'showGroup'])->name('students.group');
+            Route::delete('/students/{student}', [TeacherStudentController::class, 'removeStudent'])->name('students.remove');
+            Route::patch('/students/{student}/group', [TeacherStudentController::class, 'updateGroup'])->name('students.updateGroup');
 
-        // Builder Templates
-        Route::post('/templates', [BuilderTemplateController::class, 'store'])->name('templates.store');
-        Route::patch('/templates/{template}', [BuilderTemplateController::class, 'update'])->name('templates.update');
-        Route::delete('/templates/{template}', [BuilderTemplateController::class, 'destroy'])->name('templates.destroy');
+            // Groups CRUD
+            Route::post('/groups', [TeacherGroupController::class, 'store'])->name('groups.store');
+            Route::patch('/groups/{group}', [TeacherGroupController::class, 'update'])->name('groups.update');
+            Route::delete('/groups/{group}', [TeacherGroupController::class, 'destroy'])->name('groups.destroy');
 
-        // Exercices privés
-        Route::get('/exercices', [PrivateExerciseController::class, 'index'])->name('exercices.index');
-        Route::get('/exercices/create', [PrivateExerciseController::class, 'create'])->name('exercices.create');
-        Route::post('/exercices', [PrivateExerciseController::class, 'store'])->name('exercices.store');
-        Route::get('/exercices/{exercise}/edit', [PrivateExerciseController::class, 'edit'])->name('exercices.edit');
-        Route::put('/exercices/{exercise}', [PrivateExerciseController::class, 'update'])->name('exercices.update');
-        Route::delete('/exercices/{exercise}', [PrivateExerciseController::class, 'destroy'])->name('exercices.destroy');
-        Route::post('/exercices/{exercise}/images', [PrivateExerciseController::class, 'uploadImage'])->name('exercices.images.upload');
-        Route::delete('/exercices/{exercise}/images/{imageName}', [PrivateExerciseController::class, 'deleteImage'])->name('exercices.images.delete');
-        // Tags
-        Route::post('/tags', [TeacherTagController::class, 'store'])->name('tags.store');
-        Route::patch('/tags/{tag}', [TeacherTagController::class, 'update'])->name('tags.update');
-        Route::delete('/tags/{tag}', [TeacherTagController::class, 'destroy'])->name('tags.destroy');
+            // Invitation
+            Route::post('/invitation', [TeacherInvitationController::class, 'configure'])->name('invitation.configure');
+
+            // Exercices privés
+            Route::get('/exercices', [PrivateExerciseController::class, 'index'])->name('exercices.index');
+            Route::get('/exercices/create', [PrivateExerciseController::class, 'create'])->name('exercices.create');
+            Route::post('/exercices', [PrivateExerciseController::class, 'store'])->name('exercices.store');
+            Route::get('/exercices/{exercise}/edit', [PrivateExerciseController::class, 'edit'])->name('exercices.edit');
+            Route::put('/exercices/{exercise}', [PrivateExerciseController::class, 'update'])->name('exercices.update');
+            Route::delete('/exercices/{exercise}', [PrivateExerciseController::class, 'destroy'])->name('exercices.destroy');
+            Route::post('/exercices/{exercise}/images', [PrivateExerciseController::class, 'uploadImage'])->name('exercices.images.upload');
+            Route::delete('/exercices/{exercise}/images/{imageName}', [PrivateExerciseController::class, 'deleteImage'])->name('exercices.images.delete');
+
+            // Tags (liés aux exercices privés)
+            Route::post('/tags', [TeacherTagController::class, 'store'])->name('tags.store');
+            Route::patch('/tags/{tag}', [TeacherTagController::class, 'update'])->name('tags.update');
+            Route::delete('/tags/{tag}', [TeacherTagController::class, 'destroy'])->name('tags.destroy');
+
+            // TD — Déblocage corrections
+            Route::patch('/td/{td}/unlock', [TeacherTdUnlockController::class, 'unlock'])->name('td.unlock');
+            Route::patch('/td-batches/{batch}/unlock-all', [TeacherTdUnlockController::class, 'unlockBatch'])->name('td.batch.unlock');
+
+            // Corrections
+            Route::get('/corrections', [TeacherCorrectionController::class, 'index'])->name('corrections.index');
+            Route::get('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'show'])->name('corrections.show');
+            Route::patch('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'sendCorrection'])->name('corrections.send');
+        });
+
+        // ── Builders DS/DM/TD — actions globales, hors bureau ────────────────
+        // Accessible depuis le Bureau, le QuickActionHub, les templates, etc.
 
         // DS Builder
         Route::get('/ds/create', [DSBuilderController::class, 'create'])->name('ds.create');
         Route::post('/ds/assign', [DSBuilderController::class, 'assign'])->name('ds.assign');
-
-        // DS Builder — API search (JSON)
         Route::get('/ds/builder/problems', [DSBuilderController::class, 'searchProblems'])->name('ds.builder.problems');
         Route::get('/ds/builder/exercises', [DSBuilderController::class, 'searchExercises'])->name('ds.builder.exercises');
         Route::get('/ds/builder/private', [DSBuilderController::class, 'searchPrivate'])->name('ds.builder.private');
@@ -77,8 +88,6 @@ Route::middleware(['auth', IsTeacher::class])
         // DM Builder
         Route::get('/dm/create', [DmBuilderController::class, 'create'])->name('dm.create');
         Route::post('/dm/assign', [DmBuilderController::class, 'assign'])->name('dm.assign');
-
-        // DM Builder — API search (JSON)
         Route::get('/dm/builder/problems', [DmBuilderController::class, 'searchProblems'])->name('dm.builder.problems');
         Route::get('/dm/builder/exercises', [DmBuilderController::class, 'searchExercises'])->name('dm.builder.exercises');
         Route::get('/dm/builder/private', [DmBuilderController::class, 'searchPrivate'])->name('dm.builder.private');
@@ -86,21 +95,15 @@ Route::middleware(['auth', IsTeacher::class])
         // TD Builder
         Route::get('/td/create', [TdBuilderController::class, 'create'])->name('td.create');
         Route::post('/td/assign', [TdBuilderController::class, 'assign'])->name('td.assign');
-
-        // TD Builder — API search (JSON)
         Route::get('/td/builder/exercises', [TdBuilderController::class, 'searchExercises'])->name('td.builder.exercises');
         Route::get('/td/builder/private', [TdBuilderController::class, 'searchPrivate'])->name('td.builder.private');
 
-        // TD — Déblocage corrections
-        Route::patch('/td/{td}/unlock', [TeacherTdUnlockController::class, 'unlock'])->name('td.unlock');
-        Route::patch('/td-batches/{batch}/unlock-all', [TeacherTdUnlockController::class, 'unlockBatch'])->name('td.batch.unlock');
-
-        // Corrections DS/DM
-        Route::get('/corrections', [TeacherCorrectionController::class, 'index'])->name('corrections.index');
-        Route::get('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'show'])->name('corrections.show');
-        Route::patch('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'sendCorrection'])->name('corrections.send');
+        // ── Assignations (vue détail batch — hors bureau, accès direct) ───────
+        Route::get('/assignations/{type}/{batch}', [TeacherAssignmentController::class, 'show'])
+            ->whereIn('type', ['ds', 'dm', 'td'])
+            ->name('assignations.show');
     });
 
-// ─── Join via invitation (public preview / auth for accept) ───────────────────
+// ─── Join via invitation (public — sans auth obligatoire) ─────────────────────
 Route::get('/join/{code}', [TeacherInvitationController::class, 'join'])->name('invitation.join');
 Route::post('/join/{code}', [TeacherInvitationController::class, 'accept'])->middleware('auth')->name('invitation.accept');

@@ -31,6 +31,7 @@ export interface HomeActiveAssignment {
   id: number;
   title: string;
   status: string;
+  due_date?: string | null;
 }
 
 // Props passed to the Home Page directly from HomeController
