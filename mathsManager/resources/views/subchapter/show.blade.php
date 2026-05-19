@@ -76,7 +76,7 @@
 
                                 <div class="exercise-content text-sm px-4 cmu-serif">
                                     <h2 class="truncate font-bold text-sm exercise-title">
-                                        Exercice {{ $ex->order }}.
+                                        Exercice {{ $ex->id }}.
                                         @if (stripos($ex->name, 'Bac') !== false || stripos($ex->name, 'bac') !== false)
                                             <span class="bg-[#E67C7C] text-white px-2 py-1 rounded-full">{{ $ex->name }}</span>
                                         @else
@@ -120,7 +120,7 @@
                                 @endauth
                                 <div class="exercise-content text-sm px-4 cmu-serif">
                                     <span class="truncate font-bold text-sm exercise-title">Exercice
-                                        {{ $ex->order }}.</span> {!! $ex->statement !!}
+                                        {{ $ex->id }}.</span> {!! $ex->statement !!}
                                 </div>
                             @endif
                         </div>
@@ -173,12 +173,12 @@
                                                                     ⏳ En cours
                                                                 </span>
                                                             @elseif ($ex->hasRejectedWhitelistRequest(Auth::id()))
-                                                                <button onclick="openRequestModal({{ $ex->id }}, '{{ $ex->name }}', {{ $ex->order }})"
+                                                                <button onclick="openRequestModal({{ $ex->id }}, '{{ $ex->name }}', {{ $ex->id }})"
                                                                     class="text-xs bg-orange-600 hover:bg-orange-700 text-white px-2 py-1 rounded transition-colors whitespace-nowrap">
                                                                     🔄 Demander
                                                                 </button>
                                                             @else
-                                                                <button onclick="openRequestModal({{ $ex->id }}, '{{ $ex->name }}', {{ $ex->order }})"
+                                                                <button onclick="openRequestModal({{ $ex->id }}, '{{ $ex->name }}', {{ $ex->id }})"
                                                                     class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded transition-colors whitespace-nowrap">
                                                                     Demander
                                                                 </button>
