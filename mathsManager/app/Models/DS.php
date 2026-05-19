@@ -9,9 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 class DS extends Model
 {
     use HasFactory;
-    protected $table = 'DS';
+    protected $table = 'ds';
+    protected $casts = [
+        'started_at' => 'datetime',
+    ];
+
     protected $fillable = [
-        'type_bac', 'exercises_number', 'harder_exercises', 'time', 'timer', 'chrono', 'status'
+        'type_bac', 'exercises_number', 'harder_exercises', 'time', 'timer', 'chrono', 'status', 'teacher_id',
+        'custom_title', 'custom_level', 'custom_instructions', 'batch_id', 'started_at',
     ];
 
     public function isNotStarted(): bool
@@ -34,9 +39,14 @@ class DS extends Model
         return $this->status === DSStatus::Corrected->value;
     }
 
+    public function isPaused(): bool
+    {
+        return $this->status === DSStatus::Paused->value;
+    }
+
     public function isActive(): bool
     {
-        return in_array($this->status, [DSStatus::NotStarted->value, DSStatus::Ongoing->value]);
+        return in_array($this->status, [DSStatus::NotStarted->value, DSStatus::Ongoing->value, DSStatus::Paused->value]);
     }
 
     public function getStatusEnum(): DSStatus
@@ -54,14 +64,34 @@ class DS extends Model
         return $this->belongsToMany(MultipleChapter::class, 'ds_multiple_chapters', 'ds_id', 'multiple_chapter_id');
     }
 
-    public function exercisesDS()
+    public function problems()
     {
-        return $this->belongsToMany(DsExercise::class, 'ds_exercises_ds', 'ds_id', 'ds_exercise_id');
+        return $this->belongsToMany(Problem::class, 'ds_problem', 'ds_id', 'problem_id');
+    }
+
+    public function exercises()
+    {
+        return $this->belongsToMany(Exercise::class, 'ds_exercises', 'ds_id', 'exercise_id');
+    }
+
+    public function privateExercises()
+    {
+        return $this->belongsToMany(PrivateExercise::class, 'ds_private_exercises', 'ds_id', 'private_exercise_id');
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(DsBatch::class, 'batch_id');
     }
 
     public function correctionRequest()

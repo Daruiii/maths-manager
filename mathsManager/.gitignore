@@ -20,6 +20,9 @@ yarn-error.log
 # Vite temporary files
 *.timestamp-*.mjs
 
+# Ziggy route file (generated per environment, must not be shared)
+/resources/js/ziggy.js
+
 # Database exports (keep compressed sample only)
 *.sql
 !mathsmanager-sample.sql.gz

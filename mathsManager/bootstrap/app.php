@@ -3,9 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
+use App\Http\Middleware\CheckOnboarding;
 use App\Http\Middleware\PreprodAuth;
+use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use App\Http\Middleware\HandleInertiaRequests;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,19 +18,18 @@ return Application::configure(basePath: dirname(__DIR__))
         // }
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(
-            IsAdmin::class
-        );
-    })
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(
-            IsVerified::class
-        );
-    })
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(
-            PreprodAuth::class
-        );
+        $middleware->web(append: [
+            HandleInertiaRequests::class,
+            AddLinkHeadersForPreloadedAssets::class,
+            CheckOnboarding::class,
+        ]);
+
+        $middleware->append(PreprodAuth::class);
+
+        $middleware->alias([
+            'isTeacher' => \App\Http\Middleware\IsTeacher::class,
+            'isAdmin'   => \App\Http\Middleware\IsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Models\DS;
-use App\Models\DsExercise;
+use App\Models\Problem;
 use App\Models\MultipleChapter;
 use App\Models\User;
 use App\Mail\AssignDSMail;
@@ -52,7 +52,7 @@ class DSManagementController extends Controller
 
         // Copier les relations many-to-many
         $newDs->multipleChapters()->attach($ds->multipleChapters->pluck('id'));
-        $newDs->exercisesDS()->attach($ds->exercisesDS->pluck('id'));
+        $newDs->problems()->attach($ds->problems->pluck('id'));
 
         $student = User::find($request->user_id);
         try {
@@ -86,7 +86,7 @@ class DSManagementController extends Controller
     public function assignForm(Request $request)
     {
         // Récupérez tous les exercices et tous les utilisateurs
-        $exercises = DsExercise::with('multipleChapter')->get();
+        $exercises = Problem::with('multipleChapter')->get();
         $users = User::all();
         $student = $request->input('student_id');
 
@@ -98,12 +98,12 @@ class DSManagementController extends Controller
     public function assign(AssignDSRequest $request)
     {
         // Récupérez les IDs des exercices sélectionnés
-        $exercisesDSIds = $request->input('exercisesDS');
+        $problemsIds = $request->input('problems');
 
-        $number_exercises = count($exercisesDSIds);
+        $number_exercises = count($problemsIds);
 
         // Récupérez les exercices correspondants de la base de données
-        $exercises = DsExercise::findMany($exercisesDSIds);
+        $exercises = Problem::findMany($problemsIds);
 
         // récupérez les multiple_chapters_id des exercices sélectionnés
         $multiple_chapters = array_unique(array_column($exercises->toArray(), 'multiple_chapter_id'));
@@ -112,6 +112,7 @@ class DSManagementController extends Controller
 
         $ds = new DS;
         $ds->user_id = $request->input('user_id');
+        $ds->teacher_id = Auth::id();
         $ds->type_bac = false;
         $ds->exercises_number = $number_exercises;
         $ds->harder_exercises = false;
@@ -122,7 +123,7 @@ class DSManagementController extends Controller
         $ds->save();
 
         $ds->multipleChapters()->attach($multiple_chapters);
-        $ds->exercisesDS()->attach($exercisesDSIds);
+        $ds->problems()->attach($problemsIds);
 
         $student = User::find($request->input('user_id'));
         try {

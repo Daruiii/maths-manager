@@ -18,8 +18,8 @@ class DSPolicy
             return true;
         }
 
-        // Les étudiants peuvent voir la liste (filtrée dans le controller)
-        return $user->role === User::ROLE_STUDENT && $user->verified;
+        // Les étudiants peuvent voir la liste uniquement s'ils ont un prof assigné
+        return $user->role === User::ROLE_STUDENT && $user->teacher_id !== null;
     }
 
     /**
@@ -41,8 +41,8 @@ class DSPolicy
      */
     public function create(User $user): bool
     {
-        // Les étudiants vérifiés et les admins/teachers peuvent créer des DS
-        return $user->verified || in_array($user->role, [User::ROLE_ADMIN, User::ROLE_TEACHER]);
+        // Seuls les admins et teachers peuvent créer/assigner des DS
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_TEACHER]);
     }
 
     /**
@@ -55,7 +55,12 @@ class DSPolicy
             return true;
         }
 
-        // Le propriétaire peut modifier son propre DS
+        // Un teacher peut modifier les DS qu'il a créés
+        if ($user->role === User::ROLE_TEACHER) {
+            return $dS->teacher_id === $user->id;
+        }
+
+        // Un élève peut modifier son propre DS (timer, status)
         return $dS->user_id === $user->id;
     }
 
@@ -69,8 +74,12 @@ class DSPolicy
             return true;
         }
 
-        // Le propriétaire peut supprimer son propre DS
-        return $dS->user_id === $user->id;
+        // Un teacher peut supprimer les DS qu'il a créés
+        if ($user->role === User::ROLE_TEACHER) {
+            return $dS->teacher_id === $user->id;
+        }
+
+        return false;
     }
 
     /**
@@ -105,8 +114,8 @@ class DSPolicy
      */
     public function assign(User $user): bool
     {
-        // Seuls les admins peuvent assigner des DS à d'autres utilisateurs
-        return $user->role === User::ROLE_ADMIN;
+        // Admins et teachers peuvent assigner des DS
+        return $user->canActAsTeacher();
     }
 
     /**

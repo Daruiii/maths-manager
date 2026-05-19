@@ -12,8 +12,13 @@ use Illuminate\Support\Facades\Auth;
 
 class ProviderController extends Controller
 {
-    public function redirect(string $provider): SymfonyRedirectResponse
+    public function redirect(Request $request, string $provider): SymfonyRedirectResponse
     {
+        // Stocker le redirect pour après le callback OAuth (clé explicite pour survivre au flow OAuth)
+        if ($request->query('redirect')) {
+            session(['oauth_redirect' => $request->query('redirect')]);
+        }
+
         return Socialite::driver($provider)
                     ->with(['prompt' => 'select_account'])
                     ->redirect();
@@ -44,8 +49,16 @@ class ProviderController extends Controller
                 } else {
                     $avatar = $SocialUser->avatar;
                 }
+
+                // Split name safely
+                $fullName = $SocialUser->getName() ?? $SocialUser->getNickname() ?? 'Unknown User';
+                $nameParts = explode(' ', $fullName, 2);
+                $firstName = $nameParts[0];
+                $lastName = $nameParts[1] ?? '';
+
                 $user = User::create([
-                    'name' => $SocialUser->getName(),
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
                     'email' => $SocialUser->getEmail(),
                     'avatar' => $avatar,
                     'provider' => $provider,
@@ -58,9 +71,14 @@ class ProviderController extends Controller
 
         // Connectez l'utilisateur
         Auth::login($user);
-        return redirect('/home');
+
+        // Récupérer le redirect stocké avant le flow OAuth
+        $redirectUrl = session()->pull('oauth_redirect', '/home');
+
+        return redirect($redirectUrl);
     } catch (\Exception $e) {
-        return redirect('/login');
+        \Illuminate\Support\Facades\Log::error('Socialite Login Error: ' . $e->getMessage());
+        return redirect('/login')->withErrors(['email' => 'Authentication failed. Please try again.']); // Give feedback
     }
 }
 }

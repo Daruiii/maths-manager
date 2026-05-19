@@ -17,11 +17,11 @@ class AssignSheetMail extends Mailable
     /**
      * Create a new message instance.
      */
-    protected $exercisesSheet;
+    protected $td;
 
-    public function __construct($exercisesSheet)
+    public function __construct($td)
     {
-        $this->exercisesSheet = $exercisesSheet;
+        $this->td = $td;
     }
 
     /**
@@ -29,7 +29,7 @@ class AssignSheetMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $userName = User::find($this->exercisesSheet->user_id)->name;
+        $userName = User::find($this->td->user_id)->name;
         return new Envelope(
             subject: "Une fiche d'exercices vous a été assigné",
         );
@@ -40,10 +40,10 @@ class AssignSheetMail extends Mailable
      */
     public function content(): Content
     {
-        $userName = User::find($this->exercisesSheet->user_id)->name;
+        $userName = User::find($this->td->user_id)->name;
         return (new Content(
             view: 'vendor.notifications.sheet_assigned',
-        ))->with('ds', $this->exercisesSheet)->with('userName', $userName);
+        ))->with('ds', $this->td)->with('userName', $userName);
     }
 
     /**

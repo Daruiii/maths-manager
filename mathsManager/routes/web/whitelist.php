@@ -3,7 +3,6 @@
 use App\Http\Controllers\Whitelist\WhitelistRequestController;
 use App\Http\Controllers\Whitelist\ExerciseWhitelistController;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
 use Illuminate\Support\Facades\Route;
 
 // ============================================
@@ -27,10 +26,8 @@ Route::middleware('auth')->group(function () {
     });
     
     // Student routes - submit and view own requests
-    Route::middleware([IsVerified::class])->group(function () {
-        Route::post('/exercise/{exerciseId}/request-whitelist', [WhitelistRequestController::class, 'store'])
-            ->middleware('throttle:5,1') // 5 whitelist requests per minute max
-            ->name('whitelist-request.store');
-        Route::get('/my-whitelist-requests', [WhitelistRequestController::class, 'myRequests'])->name('whitelist-requests.my');
-    });
+    Route::post('/exercise/{exerciseId}/request-whitelist', [WhitelistRequestController::class, 'store'])
+        ->middleware('throttle:5,1') // 5 whitelist requests per minute max
+        ->name('whitelist-request.store');
+    Route::get('/my-whitelist-requests', [WhitelistRequestController::class, 'myRequests'])->name('whitelist-requests.my');
 });

@@ -21,9 +21,9 @@ class Chapter extends Model
         return $this->hasMany(Subchapter::class);
     }
 
-    public function dsExercises()
+    public function problems()
     {
-        return $this->belongsToMany(DsExercise::class, 'chapters_exercises_ds', 'chapter_id', 'exercise_ds_id');
+        return $this->belongsToMany(Problem::class, 'chapter_problem', 'chapter_id', 'problem_id');
     }
 
     public function recaps()
@@ -36,8 +36,8 @@ class Chapter extends Model
         return $this->hasMany(QuizzQuestion::class);
     }
 
-    public function exercisesSheets()
+    public function tds()
     {
-        return $this->hasMany(ExercisesSheet::class);
+        return $this->hasMany(Td::class);
     }
 }

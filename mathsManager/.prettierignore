@@ -1,0 +1,11 @@
+node_modules
+public/build
+public/storage
+vendor
+.env
+*.sql.gz
+bootstrap/cache
+storage/framework
+
+resources/js/ziggy.js
+resources/js/ziggy.d.ts

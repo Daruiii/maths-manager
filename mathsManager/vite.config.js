@@ -1,19 +1,21 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
-    plugins: [
-        laravel({
-            input: [
-                'resources/css/app.css',
-                'resources/scss/app.scss',
-                'resources/js/app.js',
-                'resources/js/form.js',
-                'resources/js/katex.js',
-            ],
-            refresh: true,
-            //for set manifest true 
-            manifest: true,
-        }),
-    ],
+  plugins: [
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.tsx'],
+      refresh: true,
+      //for set manifest true
+      manifest: true,
+    }),
+    react(), // React plugin
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'resources/js'), // Alias for imports
+    },
+  },
 });

@@ -75,16 +75,19 @@ class PrivateFileController extends Controller
             return true;
         }
 
-        // Pour les corrections, vérifier que c'est bien la correction de l'élève
+        // Pour les corrections, vérifier que le fichier appartient bien à l'élève
         if ($context === 'corrections') {
-            // Extraire le DS ID de l'identifier (ex: "ds-123" ou "123")
-            $dsId = (int) preg_replace('/[^0-9]/', '', $identifier);
-
-            // Vérifier que le DS appartient à l'utilisateur
-            $ds = \App\Models\DS::find($dsId);
-            if ($ds && $ds->user_id === $user->id) {
-                return true;
+            // Copie élève ou correction prof d'un DM
+            if (str_starts_with($identifier, 'student-dm-') || str_starts_with($identifier, 'teacher-dm-')) {
+                $dmId = (int) substr($identifier, strrpos($identifier, '-') + 1);
+                $dm = \App\Models\Dm::find($dmId);
+                return $dm && $dm->user_id === $user->id;
             }
+
+            // Correction prof d'un DS (teacher-ds-{id}) ou ancien chemin ds-{id}
+            $dsId = (int) preg_replace('/[^0-9]/', '', $identifier);
+            $ds = \App\Models\DS::find($dsId);
+            return $ds && $ds->user_id === $user->id;
         }
 
         // Par défaut, refuser l'accès

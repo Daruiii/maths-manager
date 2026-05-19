@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class DsBatch extends Model
+{
+    protected $fillable = [
+        'teacher_id',
+        'group_ids',
+        'student_ids',
+        'ds_count',
+        'due_date',
+    ];
+
+    protected $casts = [
+        'group_ids'   => 'array',
+        'student_ids' => 'array',
+        'due_date'    => 'date',
+    ];
+
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function ds(): HasMany
+    {
+        return $this->hasMany(DS::class, 'batch_id');
+    }
+}

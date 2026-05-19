@@ -49,11 +49,13 @@ npm install
 #### Option A : Configuration avec Docker (Recommandée)
 
 1. **Créer le fichier `.env`** :
+
 ```bash
 cp .env.example .env
 ```
 
 2. **Lancer la base de données avec Docker** :
+
 ```bash
 docker run -d \
   --name mathsmanager-db \
@@ -64,11 +66,13 @@ docker run -d \
 ```
 
 3. **Vérifier que le conteneur fonctionne** :
+
 ```bash
 docker ps
 ```
 
 4. **Configurer le `.env`** :
+
 ```env
 DB_CONNECTION=mariadb
 DB_HOST=127.0.0.1
@@ -82,11 +86,13 @@ DB_PASSWORD=root
 
 1. **Installer XAMPP** et démarrer Apache + MySQL
 2. **Créer le fichier `.env`** :
+
 ```bash
 cp .env.example .env
 ```
 
 3. **Configurer le `.env`** :
+
 ```env
 DB_CONNECTION=mariadb
 DB_HOST=127.0.0.1
@@ -99,11 +105,13 @@ DB_PASSWORD=
 ### 4. Finaliser la configuration
 
 1. **Générer la clé d'application** :
+
 ```bash
 php artisan key:generate
 ```
 
 2. **Créer la base de données** (si elle n'existe pas) :
+
 ```bash
 # Pour Docker
 docker exec -it mathsmanager-db mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS mathsManager;"
@@ -113,11 +121,13 @@ mysql -u root -e "CREATE DATABASE IF NOT EXISTS mathsManager;"
 ```
 
 3. **Exécuter les migrations** :
+
 ```bash
 php artisan migrate
 ```
 
 **OU** utiliser la base de données sample avec des données d'exemple :
+
 ```bash
 # Au lieu des migrations, importer la base sample compressée
 gunzip -c mathsmanager-sample.sql.gz | mysql -u root -p mathsManager
@@ -126,11 +136,13 @@ gunzip -c mathsmanager-sample.sql.gz | docker exec -i mathsmanager-db mysql -u r
 ```
 
 4. **Créer les liens symboliques** :
+
 ```bash
 php artisan storage:link
 ```
 
 5. **Compiler les assets** :
+
 ```bash
 npm run dev
 ```
@@ -150,12 +162,14 @@ L'application sera accessible sur `http://localhost:8000`
 **Problème** : L'application ne peut pas se connecter à la base de données.
 
 **Solutions** :
+
 1. Vérifier que la base de données est démarrée :
+
    ```bash
    # Pour Docker
    docker ps
    docker start mathsmanager-db
-   
+
    # Pour XAMPP
    sudo /opt/lampp/lampp start
    ```
@@ -163,10 +177,11 @@ L'application sera accessible sur `http://localhost:8000`
 2. Vérifier les paramètres de connexion dans `.env`
 
 3. Tester la connexion manuellement :
+
    ```bash
    # Pour Docker (port 3307)
    mysql -h 127.0.0.1 -P 3307 -u root -proot
-   
+
    # Pour XAMPP (port 3306)
    mysql -h 127.0.0.1 -P 3306 -u root -p
    ```
@@ -176,6 +191,7 @@ L'application sera accessible sur `http://localhost:8000`
 **Problème** : Le port 3306 est déjà utilisé.
 
 **Solutions** :
+
 1. Utiliser Docker avec le port 3307 (recommandé)
 2. Arrêter le service qui utilise le port 3306 :
    ```bash
@@ -186,6 +202,7 @@ L'application sera accessible sur `http://localhost:8000`
 ### Erreur "No application encryption key"
 
 **Solution** :
+
 ```bash
 php artisan key:generate
 ```
@@ -193,6 +210,7 @@ php artisan key:generate
 ### Erreur "Class 'ZipArchive' not found"
 
 **Solution** :
+
 ```bash
 sudo apt-get install php-zip
 ```
@@ -200,6 +218,7 @@ sudo apt-get install php-zip
 ### Erreur "proc_open(): fork failed"
 
 **Solution** :
+
 ```bash
 sudo sysctl -w vm.max_map_count=262144
 ```
@@ -207,6 +226,7 @@ sudo sysctl -w vm.max_map_count=262144
 ### Erreur de permissions sur les fichiers
 
 **Solution** :
+
 ```bash
 chmod -R 775 storage bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
@@ -341,6 +361,7 @@ SERVER_USER=votre-utilisateur SERVER_HOST=votre.serveur.com:/path/vers/app make 
 ```
 
 Ou créez un fichier `.env.deploy` :
+
 ```env
 SERVER_USER=votre-utilisateur
 SERVER_HOST=votre.serveur.com:/path/vers/app
@@ -357,6 +378,7 @@ SERVER_HOST=votre.serveur.com:/path/vers/app
 ## 🐛 Signaler un bug
 
 Si vous rencontrez un problème :
+
 1. Vérifiez les logs dans `storage/logs/laravel.log`
 2. Consultez la section "Problèmes courants" ci-dessus
 3. Ouvrez une issue avec les détails du problème

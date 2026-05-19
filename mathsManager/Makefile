@@ -26,6 +26,7 @@ help:
 	@echo "  sync-images  - Synchroniser les images vers la production"
 	@echo "  fetch-images - Récupérer les images depuis la production"
 	@echo "  export-prod-to-sample - Exporter la base prod → sample local"
+	@echo "  export-preprod-to-sample - Exporter la base preprod → sample local"
 	@echo "  import-sample-local - Importer le sample → base locale"
 	@echo "  deploy-sample-to-preprod - Déployer le sample → preprod"
 	@echo "  clean        - Nettoyer les caches"
@@ -44,7 +45,7 @@ prod-optimize:
 	@echo "🚀 Optimisation pour la production..."
 	$(PHP_BINARY) artisan config:cache
 	$(PHP_BINARY) artisan route:cache
-	$(PHP_BINARY) artisan view:cache
+	$(PHP_BINARY) artisan view:clear
 	$(NPM_BINARY) run build
 	@echo "✅ Optimisations terminées"
 
@@ -59,7 +60,7 @@ deploy: prod-optimize
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot  # Supprime le fichier Vite hot pour forcer l'usage des assets compilés
 	# Rsync 1/2 : Sync tout le code SAUF public/storage (symlink) et .env (spécifique serveur)
-	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(SERVER_HOST)/
+	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' --exclude='resources/js/ziggy.js' . $(SERVER_USER):$(SERVER_HOST)/
 	@if [ -d "storage/app/public/images" ]; then \
 		rsync -avz storage/app/public/images/ $(SERVER_USER):$(SERVER_HOST)/public/storage/images/; \
 	else \
@@ -75,7 +76,7 @@ deploy-preprod: prod-optimize
 	@mkdir -p storage/app/public/images
 	@rm -f public/hot
 	# Rsync 1/2 : Sync tout le code SAUF public/storage (symlink) et .env (spécifique serveur)
-	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' . $(SERVER_USER):$(PREPROD_HOST)/
+	rsync -avz --exclude='node_modules' --exclude='.git' --exclude='.env' --exclude='storage/logs/*' --exclude='bootstrap/cache/*' --exclude='public/storage' --exclude='resources/js/ziggy.js' . $(SERVER_USER):$(PREPROD_HOST)/
 	@if [ -d "storage/app/public/images" ]; then \
 		rsync -avz storage/app/public/images/ $(SERVER_USER):$(PREPROD_HOST)/public/storage/images/; \
 	else \
@@ -213,6 +214,17 @@ export-prod-to-sample:
 	ssh $(SERVER_USER) 'cd $(SERVER_HOST) && rm -f temp-dump.sql.gz'
 	@echo "✅ Base de données exportée dans mathsmanager-sample.sql.gz"
 
+# Exporter la base de données de preprod vers le fichier sample local
+export-preprod-to-sample:
+	@echo "📥 Export de la base de données preprod..."
+	@echo "🗄️  Dump de la base preprod sur le serveur (saisissez le mot de passe MySQL de preprod)..."
+	ssh -t $(SERVER_USER) 'cd $(PREPROD_HOST) && mysqldump -h dm2blc.myd.infomaniak.com -u dm2blc_david -p dm2blc_mathsManager_preprod > temp-dump-preprod.sql && gzip -f temp-dump-preprod.sql'
+	@echo "📥 Téléchargement du dump..."
+	rsync -avz $(SERVER_USER):$(PREPROD_HOST)/temp-dump-preprod.sql.gz mathsmanager-sample.sql.gz
+	@echo "🧹 Nettoyage du serveur..."
+	ssh $(SERVER_USER) 'cd $(PREPROD_HOST) && rm -f temp-dump-preprod.sql.gz'
+	@echo "✅ Base de données preprod exportée dans mathsmanager-sample.sql.gz"
+
 # Importer les données sample en local
 # Utilité : Remplir la base de données locale avec les données sample (données de prod)
 # Supporte Docker (mathsmanager-db) et MySQL natif
@@ -221,10 +233,14 @@ import-sample-local:
 	@echo "⚠️  Cette opération va écraser toutes les données locales !"
 	@if docker ps 2>/dev/null | grep -q mathsmanager-db; then \
 		echo "🐳 Détecté : Docker container (mathsmanager-db)"; \
+		echo "🗄️  Réinitialisation de la base..."; \
+		docker exec mathsmanager-db mysql -u root -proot -e "DROP DATABASE IF EXISTS mathsManager; CREATE DATABASE mathsManager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; \
 		echo "🗄️  Import via Docker..."; \
 		gunzip -c mathsmanager-sample.sql.gz | docker exec -i mathsmanager-db mysql -u root -proot mathsManager; \
 	elif command -v mysql >/dev/null 2>&1; then \
 		echo "💻 Détecté : MySQL natif"; \
+		echo "🗄️  Réinitialisation de la base (saisissez votre mot de passe)..."; \
+		mysql -u root -p -e "DROP DATABASE IF EXISTS mathsmanager; CREATE DATABASE mathsmanager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"; \
 		echo "🗄️  Import en base locale (saisissez votre mot de passe)..."; \
 		gunzip -c mathsmanager-sample.sql.gz | mysql -u root -p mathsmanager; \
 	else \

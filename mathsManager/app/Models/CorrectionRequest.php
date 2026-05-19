@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\CorrectionRequestStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CorrectionRequest extends Model
 {
@@ -12,14 +13,15 @@ class CorrectionRequest extends Model
 
     protected $fillable = [
         'user_id',
+        'corrector_id',
         'ds_id',
+        'dm_id',
         'pictures',
         'correction_pictures',
         'correction_message',
         'grade',
         'status',
         'message',
-        'correction_pdf',
     ];
 
     protected $casts = [
@@ -47,13 +49,18 @@ class CorrectionRequest extends Model
         return CorrectionRequestStatus::from($this->status);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function ds()
+    public function ds(): BelongsTo
     {
         return $this->belongsTo(DS::class);
+    }
+
+    public function dm(): BelongsTo
+    {
+        return $this->belongsTo(Dm::class);
     }
 }

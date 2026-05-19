@@ -4,10 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DS\DSController;
 use App\Http\Controllers\DS\DSPlayController;
 use App\Http\Controllers\DS\DSManagementController;
-use App\Http\Controllers\DS\DsExerciseController;
+use App\Http\Controllers\DS\ProblemController;
 use App\Http\Controllers\DS\MultipleChapterController;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,16 +46,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/ds/reAssign/{id}', [DSManagementController::class, 'reAssignForm'])->name('ds.reAssignForm');
         Route::post('/ds/reAssign', [DSManagementController::class, 'reAssign'])->name('ds.reAssign');
         
-        // DS Exercises CRUD (admin only)
-        Route::get('/ds_exercise/create', [DsExerciseController::class, 'create'])->name('ds_exercise.create');
-        Route::post('/ds_exercise', [DsExerciseController::class, 'store'])
-            ->middleware('throttle:30,1') // 30 DS exercise creations per minute max (file uploads)
-            ->name('ds_exercise.store');
-        Route::get('/ds_exercises', [DsExerciseController::class, 'index'])->name('ds_exercises.index');
-        Route::get('/ds_exercise/{id}/edit/{filter}', [DsExerciseController::class, 'edit'])->name('ds_exercise.edit');
-        Route::get('/ds_exercise/{id}/filter/{filter}', [DsExerciseController::class, 'show'])->name('ds_exercise.show');
-        Route::patch('/ds_exercise/{id}', [DsExerciseController::class, 'update'])->name('ds_exercise.update');
-        Route::delete('/ds_exercise/{id}', [DsExerciseController::class, 'destroy'])->name('ds_exercise.destroy');
+        // Problems CRUD (admin only)
+        Route::get('/problems/create', [ProblemController::class, 'create'])->name('problems.create');
+        Route::post('/problems', [ProblemController::class, 'store'])
+            ->middleware('throttle:30,1') // 30 problem creations per minute max (file uploads)
+            ->name('problems.store');
+        Route::get('/problems', [ProblemController::class, 'index'])->name('problems.index');
+        Route::get('/problems/{id}/edit/{filter}', [ProblemController::class, 'edit'])->name('problems.edit');
+        Route::get('/problems/{id}/filter/{filter}', [ProblemController::class, 'show'])->name('problems.show');
+        Route::patch('/problems/{id}', [ProblemController::class, 'update'])->name('problems.update');
+        Route::delete('/problems/{id}', [ProblemController::class, 'destroy'])->name('problems.destroy');
         
         // Multiple Chapters CRUD (admin only - used for DS creation)
         Route::get('/multiple_chapters/create', [MultipleChapterController::class, 'create'])->name('multiple_chapter.create');
@@ -71,20 +70,22 @@ Route::middleware('auth')->group(function () {
     // ============================================
     // STUDENT - DS Creation, Play & View
     // ============================================
-    Route::middleware([IsVerified::class])->group(function () {
-        // Create (students can create 1 DS per day)
-        Route::get('/ds/create', [DSManagementController::class, 'create'])->name('ds.create');
-        Route::post('/ds', [DSManagementController::class, 'store'])
-            ->middleware('throttle:10,1') // 10 DS creation attempts per minute max
-            ->name('ds.store');
-        
-        // View
-        Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');
-        Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
-        
-        // Play
-        Route::get('/ds/{id}/start', [DSPlayController::class, 'start'])->name('ds.start');
-        Route::get('/ds/{id}/pause/{timer}', [DSPlayController::class, 'pause'])->name('ds.pause');
-        Route::get('/ds/{id}/finish', [DSPlayController::class, 'finish'])->name('ds.finish');
-    });
+    // Create
+    Route::get('/ds/create', [DSManagementController::class, 'create'])->name('ds.create');
+    Route::post('/ds', [DSManagementController::class, 'store'])
+        ->middleware('throttle:10,1') // 10 DS creation attempts per minute max
+        ->name('ds.store');
+
+    // View
+    Route::get('/ds/myDS/{id}', [DSController::class, 'indexUser'])->name('ds.myDS');
+    Route::get('/ds/{id}', [DSController::class, 'show'])->name('ds.show');
+
+    // Play (Inertia)
+    Route::patch('/ds/{ds}/status', [DSController::class, 'updateStatus'])->name('ds.status.update');
+    Route::post('/ds/{ds}/correction', [DSController::class, 'submitCorrection'])->name('ds.correction.submit');
+
+    // Play (legacy — kept for backward compat)
+    Route::get('/ds/{id}/start', [DSPlayController::class, 'start'])->name('ds.start');
+    Route::get('/ds/{id}/pause/{timer}', [DSPlayController::class, 'pause'])->name('ds.pause');
+    Route::get('/ds/{id}/finish', [DSPlayController::class, 'finish'])->name('ds.finish');
 });

@@ -10,9 +10,9 @@ class MultipleChapter extends Model
     use HasFactory;
     protected $fillable = ['title', 'description', 'theme', 'classe_id'];
 
-    public function dsExercises()
+    public function problems()
     {
-        return $this->hasMany(DsExercise::class);
+        return $this->hasMany(Problem::class);
     }
 
     public function ds()

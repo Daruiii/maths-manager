@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CorrectionRequestController;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\IsVerified;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,13 +29,11 @@ Route::middleware('auth')->group(function () {
     // ============================================
     // STUDENT - Correction Requests
     // ============================================
-    Route::middleware([IsVerified::class])->group(function () {
-        Route::get('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequestForm'])->name('correctionRequest.showCorrectionRequestForm');
-        Route::post('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'sendCorrectionRequest'])
-            ->middleware('throttle:10,1')
-            ->name('correctionRequest.sendCorrectionRequest');
-        Route::get('/correctionRequest/show/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequest'])->name('correctionRequest.show');
-        Route::get('/correctionRequest/edit/{ds_id}', [CorrectionRequestController::class, 'edit'])->name('correctionRequest.edit');
-        Route::put('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'update'])->name('correctionRequest.update');
-    });
+    Route::get('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequestForm'])->name('correctionRequest.showCorrectionRequestForm');
+    Route::post('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'sendCorrectionRequest'])
+        ->middleware('throttle:10,1')
+        ->name('correctionRequest.sendCorrectionRequest');
+    Route::get('/correctionRequest/show/{ds_id}', [CorrectionRequestController::class, 'showCorrectionRequest'])->name('correctionRequest.show');
+    Route::get('/correctionRequest/edit/{ds_id}', [CorrectionRequestController::class, 'edit'])->name('correctionRequest.edit');
+    Route::put('/correctionRequest/{ds_id}', [CorrectionRequestController::class, 'update'])->name('correctionRequest.update');
 });

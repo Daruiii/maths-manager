@@ -29,9 +29,14 @@ class Exercise extends Model
         return $this->belongsTo(Subchapter::class);
     }
 
-    public function exercisesSheets()
+    public function tds()
     {
-        return $this->belongsToMany(ExercisesSheet::class, 'exercises_sheet_exercises');
+        return $this->belongsToMany(Td::class, 'td_exercise', 'exercise_id', 'td_id');
+    }
+
+    public function ds()
+    {
+        return $this->belongsToMany(DS::class, 'ds_exercises', 'exercise_id', 'ds_id');
     }
     
     public function whitelist()

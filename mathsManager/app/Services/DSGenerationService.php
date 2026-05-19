@@ -35,38 +35,38 @@ class DSGenerationService
         // Détacher les relations existantes si on update
         if ($ds !== null) {
             $ds->multipleChapters()->detach();
-            $ds->exercisesDS()->detach();
+            $ds->problems()->detach();
         }
 
         // Sélectionner tous les exercices des chapitres sélectionnés avec eager loading
-        $multipleChapters = MultipleChapter::with('dsExercises')
+        $multipleChapters = MultipleChapter::with('problems')
             ->whereIn('id', $request->multiple_chapters)
             ->get();
 
-        $exercisesDS = $this->collectExercises($multipleChapters, (bool) $request->harder_exercises);
+        $problemsDS = $this->collectExercises($multipleChapters, (bool) $request->harder_exercises);
 
         // Appliquer les règles de sélection selon le type
         if ($request->type_bac) {
-            $exercisesDS = $this->applyBacRules($exercisesDS);
+            $problemsDS = $this->applyBacRules($problemsDS);
         } else {
-            $exercisesDS = $this->applyStandardRules($exercisesDS, $request->exercises_number);
+            $problemsDS = $this->applyStandardRules($problemsDS, $request->exercises_number);
         }
 
         // Limiter au nombre d'exercices demandé
-        $exercisesDS = array_slice($exercisesDS, 0, min(count($exercisesDS), $request->exercises_number));
+        $problemsDS = array_slice($problemsDS, 0, min(count($problemsDS), $request->exercises_number));
 
         // Calculer le temps total
-        $totalTime = array_sum(array_column($exercisesDS, 'time'));
+        $totalTime = array_sum(array_column($problemsDS, 'time'));
 
         // Extraire les IDs des chapitres et exercices
-        $multipleChapterIds = array_unique(array_column($exercisesDS, 'multiple_chapter_id'));
-        $exerciseIds = array_column($exercisesDS, 'id');
+        $multipleChapterIds = array_unique(array_column($problemsDS, 'multiple_chapter_id'));
+        $exerciseIds = array_column($problemsDS, 'id');
 
         // Créer ou mettre à jour le DS
         if ($ds === null) {
-            $this->checkDailyLimit($user);
             $ds = new DS();
             $ds->user_id = $user->id;
+            $ds->teacher_id = $user->canActAsTeacher() ? $user->id : null;
         }
 
         $ds->type_bac = $request->has('type_bac');
@@ -80,11 +80,7 @@ class DSGenerationService
 
         // Attacher les chapitres et exercices
         $ds->multipleChapters()->attach($multipleChapterIds);
-        $ds->exercisesDS()->attach($exerciseIds);
-
-        // Mettre à jour last_ds_generated_at (sauf pour admin/teacher)
-        $user->last_ds_generated_at = ($user->role == 'admin' || $user->role == 'teacher') ? null : now();
-        $user->save();
+        $ds->problems()->attach($exerciseIds);
 
         return $ds;
     }
@@ -98,22 +94,22 @@ class DSGenerationService
      */
     private function collectExercises($multipleChapters, bool $harderExercises): array
     {
-        $exercisesDS = [];
+        $problemsDS = [];
 
         foreach ($multipleChapters as $multipleChapter) {
-            $exercises = $multipleChapter->dsExercises;
+            $exercises = $multipleChapter->problems;
             $exercises = $harderExercises
                 ? $exercises->where('harder_exercise', 1)
                 : $exercises->where('harder_exercise', 0);
 
-            $exercisesDS = array_merge($exercisesDS, $exercises->toArray());
+            $problemsDS = array_merge($problemsDS, $exercises->toArray());
         }
 
         // Mélanger et supprimer les doublons
-        shuffle($exercisesDS);
-        $exercisesDS = array_unique($exercisesDS, SORT_REGULAR);
+        shuffle($problemsDS);
+        $problemsDS = array_unique($problemsDS, SORT_REGULAR);
 
-        return $exercisesDS;
+        return $problemsDS;
     }
 
     /**
@@ -121,39 +117,39 @@ class DSGenerationService
      * - Exclut certains chapitres (maths expertes, prépa)
      * - Supprime les doublons basés sur le même theme
      *
-     * @param array $exercisesDS
+     * @param array $problemsDS
      * @return array
      */
-    private function applyBacRules(array $exercisesDS): array
+    private function applyBacRules(array $problemsDS): array
     {
         // Charger tous les multipleChapters en une requête
-        $multipleChapterIds = array_unique(array_column($exercisesDS, 'multiple_chapter_id'));
+        $multipleChapterIds = array_unique(array_column($problemsDS, 'multiple_chapter_id'));
         $multipleChaptersMap = MultipleChapter::whereIn('id', $multipleChapterIds)->get()->keyBy('id');
 
         // Attacher le multipleChapter à chaque exercice
-        foreach ($exercisesDS as $key => $exercise) {
-            $exercisesDS[$key]['multipleChapter'] = $multipleChaptersMap[$exercise['multiple_chapter_id']];
+        foreach ($problemsDS as $key => $exercise) {
+            $problemsDS[$key]['multipleChapter'] = $multipleChaptersMap[$exercise['multiple_chapter_id']];
         }
 
         // Exclure les chapitres spécifiques
-        foreach ($exercisesDS as $key => $exercise) {
+        foreach ($problemsDS as $key => $exercise) {
             if (in_array($exercise['multipleChapter']['title'], self::EXCLUDED_BAC_CHAPTERS)) {
-                unset($exercisesDS[$key]);
+                unset($problemsDS[$key]);
             }
         }
 
         // Supprimer les doublons basés sur le même theme (pour diversité)
         $seenThemes = [];
-        foreach ($exercisesDS as $key => $exercise) {
+        foreach ($problemsDS as $key => $exercise) {
             $theme = $exercise['multipleChapter']['theme'];
             if (in_array($theme, $seenThemes)) {
-                unset($exercisesDS[$key]);
+                unset($problemsDS[$key]);
             } else {
                 $seenThemes[] = $theme;
             }
         }
 
-        return $exercisesDS;
+        return $problemsDS;
     }
 
     /**
@@ -161,29 +157,29 @@ class DSGenerationService
      * - Sélectionne d'abord un exercice par chapitre (diversité)
      * - Complète jusqu'au nombre d'exercices demandé
      *
-     * @param array $exercisesDS
+     * @param array $problemsDS
      * @param int $exercisesNumber
      * @return array
      * @throws \Exception
      */
-    private function applyStandardRules(array $exercisesDS, int $exercisesNumber): array
+    private function applyStandardRules(array $problemsDS, int $exercisesNumber): array
     {
         $selectedChapters = [];
         $selectedExercises = [];
 
         // Optimisation : récupérer seulement les chapitres nécessaires
-        $multipleChapterIds = array_unique(array_column($exercisesDS, 'multiple_chapter_id'));
+        $multipleChapterIds = array_unique(array_column($problemsDS, 'multiple_chapter_id'));
         $allChapters = MultipleChapter::whereIn('id', $multipleChapterIds)->get();
 
         // Sélectionner un exercice par chapitre d'abord
-        foreach ($exercisesDS as $key => $exercise) {
+        foreach ($problemsDS as $key => $exercise) {
             $multipleChapter = $allChapters->firstWhere('id', $exercise['multiple_chapter_id']);
 
             if ($multipleChapter) {
                 if (!in_array($multipleChapter->id, $selectedChapters)) {
                     $selectedChapters[] = $multipleChapter->id;
                     $selectedExercises[] = $exercise;
-                    unset($exercisesDS[$key]);
+                    unset($problemsDS[$key]);
                 }
             } else {
                 throw new \Exception("Le chapitre de l'exercice n'a pas été trouvé");
@@ -191,29 +187,12 @@ class DSGenerationService
         }
 
         // Compléter avec des exercices supplémentaires si nécessaire
-        while (count($selectedExercises) < $exercisesNumber && count($exercisesDS) > 0) {
-            $selectedExercises[] = array_shift($exercisesDS);
+        while (count($selectedExercises) < $exercisesNumber && count($problemsDS) > 0) {
+            $selectedExercises[] = array_shift($problemsDS);
         }
 
         return $selectedExercises;
     }
 
-    /**
-     * Vérifie que l'utilisateur n'a pas déjà généré un DS aujourd'hui
-     *
-     * @param User $user
-     * @return void
-     * @throws \Illuminate\Http\RedirectResponse
-     */
-    private function checkDailyLimit(User $user): void
-    {
-        if ($user->last_ds_generated_at !== null) {
-            $lastGenerated = new \DateTime($user->last_ds_generated_at);
-            $today = new \DateTime();
-
-            if ($lastGenerated->format('Y-m-d') === $today->format('Y-m-d')) {
-                throw new \DomainException('Vous avez déjà généré un DS aujourd\'hui');
-            }
-        }
-    }
 }
+

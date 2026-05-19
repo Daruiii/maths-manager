@@ -2,23 +2,23 @@
 
 namespace App\Services;
 
-use App\Models\ExercisesSheet;
+use App\Models\Td;
 
 class SheetFormattingService
 {
     /**
-     * Formate les exercices d'une fiche en les groupant par sous-chapitre
+     * Formate les exercices d'un TD en les groupant par sous-chapitre
      * avec indices globaux et tri par ordre des sous-chapitres
      *
-     * @param ExercisesSheet $exercisesSheet
+     * @param Td $td
      * @return \Illuminate\Support\Collection
      */
-    public function formatExercisesBySubchapter(ExercisesSheet $exercisesSheet)
+    public function formatExercisesBySubchapter(Td $td)
     {
         $globalIndex = 0;
         $subChapterIndex = 0;
 
-        return $exercisesSheet->exercises
+        return $td->exercises
             ->groupBy('subchapter_id')
             ->map(function ($group) use (&$globalIndex, &$subChapterIndex) {
                 $group->each(function ($item) use (&$globalIndex) {

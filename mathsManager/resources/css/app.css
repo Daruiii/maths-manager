@@ -1,3 +1,43 @@
-/* @tailwind base;
+/* Main Application Stylesheet */
+
+/* Import design system variables */
+@import './design-system.css';
+@import './fonts.css';
+@import './mathsmanager.css';
+@import './katex.css';
+
+/* Tailwind CSS directives */
+@tailwind base;
 @tailwind components;
-@tailwind utilities; */
+@tailwind utilities;
+
+/* Custom Base Styles */
+@layer base {
+  body {
+    @apply font-comfortaa text-text-color bg-primary-color overflow-x-hidden;
+  }
+
+  /* Reset link structure to avoid 'circular' bug */
+  a,
+  button {
+    @apply inline-flex items-center justify-center transition-all duration-200;
+  }
+
+  /* Sélection de texte — warm brand */
+  ::selection {
+    background: rgb(var(--tertiary-color) / 0.2);
+    color: rgb(var(--text-color));
+  }
+
+  /* Placeholder — muted warm, pas trop visible */
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--text-gray) / 0.55);
+  }
+
+  /* Scrollbar globale — cohérente avec custom-scrollbar */
+  html {
+    scrollbar-color: rgb(var(--tertiary-color) / 0.22) transparent;
+    scrollbar-width: thin;
+  }
+}

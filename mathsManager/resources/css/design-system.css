@@ -1,0 +1,121 @@
+/**
+ * CSS Custom Properties - Design System
+ *
+ * DARK MODE : Le hook `useDarkMode` ajoute la classe `dark` sur <html>.
+ * → Aligné avec tailwind.config.js → darkMode: 'class'
+ * → Les tokens s'adaptent automatiquement au dark mode.
+ *
+ * FORMAT : Toutes les couleurs sont en "raw RGB" (sans rgb()).
+ * → Permet les modificateurs d'opacité Tailwind : bg-primary-color/50
+ * → tailwind.config.js doit wrapper avec rgb(var(--x) / <alpha-value>)
+ */
+
+:root {
+  /* ========================================
+     BACKGROUNDS
+     ======================================== */
+  --primary-color: 234 226 214; /* Beige — fond principal de l'app */
+  --secondary-color: 254 251 245; /* Off-white — cartes, panels */
+  --surface-color: 240 232 220; /* beige plus clair — zones légères */
+
+  /* ========================================
+     TEXT
+     ======================================== */
+  --text-color: 26 22 18; /* Warm near-black (stone-950) */
+  --text-gray: 130 118 104; /* Warm muted — sous-titres, labels */
+
+  /* ========================================
+     BORDERS
+     ======================================== */
+  --border-color: 214 203 188; /* Beige chaud — bordures subtiles */
+
+  /* ========================================
+     BRAND & INTERACTIVE
+     ======================================== */
+  --tertiary-color: 133 94 66; /* Beige plus marqué — tirant sur le marron */
+
+  /* ========================================
+     STATUS
+     ======================================== */
+  --success-color: 46 139 87;
+  --error-color: 193 39 45;
+  --warning-color: 234 88 12; /* orange-600 */
+  --info-color: 40 104 178;
+
+  /* ========================================
+     ROLE COLORS
+     ======================================== */
+  --admin-color: 251 191 36; /* amber-400 — plus doré pour badges */
+  --teacher-color: 139 92 246; /* violet-500 */
+  --student-color: 13 148 136; /* teal-600 */
+
+  /* ========================================
+     ROLE GRADIENTS (hex ok — pas d'opacité)
+     ======================================== */
+  --gradient-admin-from: #fbbf24;
+  --gradient-admin-to: #f97316;
+  --gradient-teacher-from: #60a5fa;
+  --gradient-teacher-to: #6366f1;
+  --gradient-student-from: #34d399;
+  --gradient-student-to: #14b8a6;
+
+  /* ========================================
+     SHADOWS (warm-tinted — utilisent --text-color)
+     ======================================== */
+  --shadow-xs: 0 1px 3px rgb(var(--text-color) / 0.05), 0 1px 2px rgb(var(--text-color) / 0.04);
+  --shadow-sm: 0 2px 8px rgb(var(--text-color) / 0.07), 0 1px 3px rgb(var(--text-color) / 0.04);
+  --shadow: 0 4px 16px rgb(var(--text-color) / 0.08), 0 2px 6px rgb(var(--text-color) / 0.05);
+  --shadow-md: 0 8px 24px rgb(var(--text-color) / 0.1), 0 4px 8px rgb(var(--text-color) / 0.06);
+  --shadow-lg: 0 16px 48px rgb(var(--text-color) / 0.12), 0 8px 16px rgb(var(--text-color) / 0.06);
+
+  /* ========================================
+     FOCUS RING
+     ======================================== */
+  --focus-ring: 0 0 0 3px rgb(var(--tertiary-color) / 0.28);
+
+  /* ========================================
+     FONT SIZES
+     ======================================== */
+  --font-xxsmall: 0.5rem;
+  --font-xsmall: 0.75rem;
+  --font-small: 1rem;
+  --font-sm: 1.25rem;
+  --font-medium: 1.5rem;
+  --font-large: 2rem;
+  --font-xlarge: 3rem;
+  --font-xxlarge: 4rem;
+
+  /* ========================================
+     FONT FAMILIES
+     ======================================== */
+  --font-comfortaa: 'Comfortaa', sans-serif;
+  --font-comfortaa-bold: 'Comfortaa Bold', sans-serif;
+  --font-comfortaa-light: 'Comfortaa Light', sans-serif;
+  --font-cmu-serif: 'CMU Serif', serif;
+  --font-cmu-bold: 'CMU Exercise Bold', serif;
+  --font-cmu-italic: 'CMU TI', serif;
+  --font-cmu-tt: 'CMU TT', monospace;
+}
+
+/* ========================================
+   DARK MODE
+   "Papier académique sombre" — chaud, pas générique.
+   Activé par useDarkMode → document.documentElement.classList.add('dark')
+   ======================================== */
+
+.dark {
+  /* Backgrounds — warm dark paper, pas du gray-* générique */
+  --primary-color: 18 15 12; /* #120f0c — near-black warm brun */
+  --secondary-color: 26 22 18; /* #1a1612 — papier sombre */
+  --surface-color: 38 33 28; /* #26211c — survols sur fond sombre */
+
+  /* Text */
+  --text-color: 240 234 224; /* #f0eae0 — warm off-white (contraste 16.9:1 AAA) */
+  --text-gray: 168 152 134; /* #a89886 — warm muted (contraste 7.2:1 AAA) */
+
+  /* Borders */
+  --border-color: 54 46 38; /* #362e26 — warm border discrète */
+
+  /* Brand — or chaud sur fond sombre */
+  --tertiary-color: 182 142 100; /* #b68e64 — warm gold, inverse lumineux du marron clair */
+}

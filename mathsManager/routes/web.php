@@ -32,10 +32,10 @@ Route::get('/robots.txt', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/admin', [HomeController::class, 'admin'])->name('admin')->middleware(IsAdmin::class);
+    Route::get('/admin/styleguide', fn() => inertia('Styleguide/Index'))->name('styleguide')->middleware(IsAdmin::class);
 });
 
-// errors
-Route::get('/isntValid', [HomeController::class, 'isntValid'])->name('isntValid');
+
 
 // Content routes
 Route::middleware('auth')->prefix('admin')->group(function () {
@@ -70,13 +70,20 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 require __DIR__.'/web/classes.php';
 require __DIR__.'/web/chapters.php';
 require __DIR__.'/web/exercises.php';
-require __DIR__.'/web/sheets.php';
+require __DIR__.'/web/td.php';
 require __DIR__.'/web/ds.php';
+require __DIR__.'/web/dm.php';
 require __DIR__.'/web/whitelist.php';
 require __DIR__.'/web/recap.php';
 require __DIR__.'/web/corrections.php';
 require __DIR__.'/web/quizz.php';
 require __DIR__.'/web/users.php';
+require __DIR__.'/web/admin.php';
+require __DIR__.'/web/teacher.php';
+require __DIR__.'/web/student.php';
+require __DIR__.'/web/notifications.php';
+require __DIR__.'/web/uploads.php';
+
 
 // Socialite routes (connection with google)
 Route::get('auth/{provider}/redirect', [ProviderController::class, 'redirect']);
@@ -90,3 +97,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/web/onboarding.php';

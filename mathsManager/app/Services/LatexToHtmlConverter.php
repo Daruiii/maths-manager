@@ -6,7 +6,7 @@ class LatexToHtmlConverter
 {
     const VARIANT_QUIZ = 'quiz';
     const VARIANT_EXERCISE = 'exercise';
-    const VARIANT_DS_EXERCISE = 'ds_exercise';
+    const VARIANT_PROBLEM = 'problem';
     const VARIANT_RECAP = 'recap';
 
     /**
@@ -30,10 +30,10 @@ class LatexToHtmlConverter
             $cleanedContent = preg_replace($pattern, $replacement, $cleanedContent);
         }
 
-        // Gestion des images (seulement pour les variantes exercise et ds_exercise)
-        if (in_array($variant, [self::VARIANT_EXERCISE, self::VARIANT_DS_EXERCISE]) && count($images) > 0) {
+        // Gestion des images (seulement pour les variantes exercise et problem)
+        if (in_array($variant, [self::VARIANT_EXERCISE, self::VARIANT_PROBLEM]) && count($images) > 0) {
             $cleanedContent = $this->processImages($cleanedContent, $images);
-        } elseif (in_array($variant, [self::VARIANT_EXERCISE, self::VARIANT_DS_EXERCISE])) {
+        } elseif (in_array($variant, [self::VARIANT_EXERCISE, self::VARIANT_PROBLEM])) {
             // Placeholder pour les images manquantes
             $cleanedContent = preg_replace_callback(
                 "/\\\\graph\\{([0-9]+)\\}\\{(.*?)\\}/",
@@ -101,7 +101,7 @@ class LatexToHtmlConverter
                 $basePatterns["/\\{\\\\linewidth\\}\\{(.+?)\\}/"] = "<style='width:'$1';'> </style>";
                 break;
                 
-            case self::VARIANT_DS_EXERCISE:
+            case self::VARIANT_PROBLEM:
                 $basePatterns["/\\\\begin\\{center\\}/"] = "<div class='latex latex-center'>";
                 $basePatterns["/\\\\end\\{center\\}/"] = "</div>";
                 $basePatterns["/\\\\begin\\{tabularx\\}\\{(.+?)\\}/"] = "<table class='latex-tabularx' style='width: $1%;'>";
@@ -148,7 +148,7 @@ class LatexToHtmlConverter
 
                 if (!$imagePath) {
                     // Image non trouvée, placeholder
-                    $imagePath = 'ds_exercises/img_placeholder.png';
+                    $imagePath = 'problems/img_placeholder.png';
                 }
 
                 $percent = $width * 100;
@@ -169,7 +169,7 @@ class LatexToHtmlConverter
                 $description = $matches[2];
 
                 // Utilise l'index comme avant (pour backward compatibility)
-                $imagePath = $imagesIndexed[$imageIndex] ?? 'ds_exercises/img_placeholder.png';
+                $imagePath = $imagesIndexed[$imageIndex] ?? 'problems/img_placeholder.png';
                 $imageIndex++;
 
                 $percent = $width * 100;
@@ -236,9 +236,9 @@ class LatexToHtmlConverter
         return app(self::class)->convert($latexContent, $images, self::VARIANT_EXERCISE);
     }
 
-    public static function convertForDsExercise(string $latexContent, array $images = []): string
+    public static function convertForProblem(string $latexContent, array $images = []): string
     {
-        return app(self::class)->convert($latexContent, $images, self::VARIANT_DS_EXERCISE);
+        return app(self::class)->convert($latexContent, $images, self::VARIANT_PROBLEM);
     }
 
     public static function convertForRecap(string $latexContent): string

@@ -40,7 +40,7 @@ class FileUploadService
      * Upload un fichier dans le système de storage Laravel
      *
      * @param UploadedFile $file Le fichier uploadé
-     * @param string $context Le contexte (exercises, corrections, ds_exercises, etc.)
+     * @param string $context Le contexte (exercises, corrections, problems, etc.)
      * @param string $identifier Un identifiant unique (ex: exercise_123)
      * @param string $type Type de fichier (image, pdf, document)
      * @param bool $isPublic Si true, fichier accessible publiquement. Si false, protégé par auth

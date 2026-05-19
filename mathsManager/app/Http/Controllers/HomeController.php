@@ -5,131 +5,184 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use App\Models\Chapter;
-use App\Models\Classe;
+use App\Enums\CorrectionRequestStatus;
+use App\Enums\DmStatus;
+use App\Enums\DSStatus;
+use App\Enums\TdStatus;
 use App\Models\CorrectionRequest;
+use App\Models\Dm;
+use App\Models\DmBatch;
 use App\Models\DS;
-use App\Models\Quizze;
+use App\Models\DsBatch;
 use App\Models\Content;
+use App\Models\Td;
+use App\Models\TdBatch;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function index(Request $request): View|RedirectResponse
+    public function index(Request $request)
     {
-        // si on est pas co
+        // Guest view
         if (!auth()->check()) {
             $introContent = Content::where('section', 'home_guest_intro')->first();
             $whoamiContent = Content::where('section', 'home_guest_whoami')->first();
-            // dd($introContent, $whoamiContent);
-            return view('home', compact('introContent', 'whoamiContent'));
+            
+            return inertia('Home/Home', [
+                'introContent' => $introContent,
+                'whoamiContent' => $whoamiContent,
+            ]);
         }
 
         try {
             $user = auth()->user();
 
-            if ($user->role == 'admin') {
-                $search = $request->get('search');
-                $status = $request->get('status', 'pending'); // Par défaut, le statut est 'pending'
-
-                $correctionRequests = CorrectionRequest::where('status', $status)
-                    ->when($search, function ($query, $search) {
-                        $query->whereHas('user', function ($query) use ($search) {
-                            $query->where('name', 'LIKE', "%{$search}%");
-                        });
+            // Teacher / Admin view (admin acts as teacher + sees admin alerts)
+            if ($user->canActAsTeacher()) {
+                $pendingCorrections = CorrectionRequest::query()
+                    ->where('status', CorrectionRequestStatus::Pending->value)
+                    ->where(function ($q) use ($user) {
+                        $q->whereHas('ds', fn ($q) => $q->where('teacher_id', $user->id))
+                          ->orWhereHas('dm', fn ($q) => $q->where('teacher_id', $user->id));
                     })
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(3)->withQueryString();
-
-                // get all ds not_started and ongoing
-                $ds = DS::join('users', 'users.id', '=', 'DS.user_id')
-                    ->where('status', 'not_started')
-                    ->orWhere('status', 'ongoing')
-                    ->orwhere('status', 'finished')
-                    ->select('DS.*', 'users.name')
-                    ->orderBy('users.name', 'asc')
-                    ->orderBy('status', 'asc')
+                    ->with([
+                        'user:id,first_name,last_name',
+                        'ds:id,batch_id,custom_title',
+                        'dm:id,batch_id,custom_title',
+                    ])
+                    ->latest()
                     ->get();
 
-                session(['correctionRequests' => $correctionRequests]);
-                session(['ds' => $ds]);
-                return view('home', compact('correctionRequests', 'ds'));
+                $unlockRequests = Td::where('teacher_id', $user->id)
+                    ->where('status', TdStatus::CorrectionRequested->value)
+                    ->with('student:id,first_name,last_name')
+                    ->latest('updated_at')
+                    ->get(['id', 'custom_title', 'user_id', 'updated_at']);
+
+                $assignedThisMonth = DsBatch::where('teacher_id', $user->id)
+                    ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                    ->count()
+                    + DmBatch::where('teacher_id', $user->id)
+                        ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                        ->count()
+                    + TdBatch::where('teacher_id', $user->id)
+                        ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                        ->count();
+
+                return inertia('Home/Home', [
+                    'pendingCorrections' => [
+                        'count' => $pendingCorrections->count(),
+                        'items' => $pendingCorrections->take(5)->map(fn ($cr) => [
+                            'id'            => $cr->id,
+                            'student_name'  => $cr->user?->name ?? 'Élève',
+                            'subject_title' => $cr->ds?->custom_title ?? $cr->dm?->custom_title ?? 'Devoir',
+                            'subject_type'  => $cr->ds_id ? 'ds' : 'dm',
+                            'batch_id'      => $cr->ds?->batch_id ?? $cr->dm?->batch_id,
+                            'batch_url'     => $this->teacherAssignmentUrl($cr),
+                            'created_at'    => $cr->created_at->toIso8601String(),
+                        ])->values(),
+                    ],
+                    'unlockRequests' => [
+                        'count' => $unlockRequests->count(),
+                        'items' => $unlockRequests->take(5)->map(fn ($td) => [
+                            'id'           => $td->id,
+                            'student_name' => $td->student?->name ?? 'Élève',
+                            'title'        => $td->custom_title ?? 'TD',
+                            'updated_at'   => $td->updated_at->toIso8601String(),
+                        ])->values(),
+                    ],
+                    'pendingTeachersCount' => $user->isAdmin()
+                        ? User::where('role', 'teacher')->where('status', 'pending_approval')->count()
+                        : 0,
+                    'assignedThisMonth' => $assignedThisMonth,
+                ]);
             }
 
-            // Get the last 10 quizzes with eager loading
-            $quizzes = Quizze::where('student_id', $user->id)
-                ->with('details')
+            // Student view
+            $activeDs = DS::where('user_id', $user->id)
+                ->whereIn('status', [
+                    DSStatus::NotStarted->value,
+                    DSStatus::Ongoing->value,
+                    DSStatus::Paused->value,
+                    DSStatus::Sent->value,
+                ])
+                ->with('batch:id,due_date')
                 ->latest()
-                ->take(10)
-                ->get();
+                ->get(['id', 'custom_title', 'status', 'batch_id']);
 
-            // Calculate the number of correct and incorrect answers
-            // goodAnswers = la somme de tous les scores 
-            $goodAnswers = $quizzes->sum('score');
-            $totalQUestions =  $quizzes->sum(function ($quiz) {
-                return $quiz->details->count();
-            });
+            $activeDm = Dm::where('user_id', $user->id)
+                ->whereIn('status', [
+                    DmStatus::NotStarted->value,
+                    DmStatus::Ongoing->value,
+                ])
+                ->with('batch:id,due_date')
+                ->latest()
+                ->get(['id', 'custom_title', 'status', 'batch_id']);
 
-            $badAnswers = $totalQUestions - $goodAnswers;
-            if ($totalQUestions == 0) {
-                $goodAnswers = 100;
-                $badAnswers = 0;
-            }
-
-            // dd($goodAnswers, $badAnswers, $totalQUestions);
-
-            // Get moyenne des 10 derniers scores 
-            if ($quizzes->count() > 0) {
-                $scores = round($goodAnswers / $quizzes->count(), 1);
-            } else {
-                $scores = "N/A";
-            }
-
-            // Single query with groupBy instead of 5 separate count() queries
-            $dsCounts = DS::where('user_id', $user->id)
-                ->selectRaw('status, COUNT(*) as count')
-                ->groupBy('status')
-                ->pluck('count', 'status');
-
-            $totalDS = $dsCounts->sum();
-            $notStartedDS = $dsCounts->get('not_started', 0);
-            $inProgressDS = $dsCounts->get('ongoing', 0);
-            $sentDS = $dsCounts->get('sent', 0);
-            $correctedDS = $dsCounts->get('corrected', 0);
+            $activeTd = Td::where('user_id', $user->id)
+                ->whereIn('status', [
+                    TdStatus::NotStarted->value,
+                    TdStatus::Ongoing->value,
+                    TdStatus::CorrectionRequested->value,
+                ])
+                ->with('batch:id,due_date')
+                ->latest()
+                ->get(['id', 'custom_title', 'status', 'batch_id']);
 
             $averageGrade = CorrectionRequest::where('user_id', $user->id)
-                ->where('status', 'corrected')
+                ->where('status', CorrectionRequestStatus::Corrected->value)
                 ->avg('grade');
 
-            if ($averageGrade == null) {
-                $averageGrade = "N/A";
-            } else {
-                $averageGrade = round($averageGrade, 1);
-            }
+            $correctedCount = CorrectionRequest::where('user_id', $user->id)
+                ->where('status', CorrectionRequestStatus::Corrected->value)
+                ->count();
 
-            return view('home', compact(
-                'averageGrade',
-                'totalDS',
-                'notStartedDS',
-                'inProgressDS',
-                'sentDS',
-                'correctedDS',
-                'goodAnswers',
-                'badAnswers',
-                'scores'
-            ));
+            return inertia('Home/Home', [
+                'activeAssignments' => [
+                    'ds' => $activeDs->map(fn ($ds) => [
+                        'id'     => $ds->id,
+                        'title'  => $ds->custom_title ?? 'DS',
+                        'status' => $ds->status,
+                        'due_date' => $ds->batch?->due_date?->toDateString(),
+                    ])->values(),
+                    'dm' => $activeDm->map(fn ($dm) => [
+                        'id'     => $dm->id,
+                        'title'  => $dm->custom_title ?? 'DM',
+                        'status' => $dm->status->value,
+                        'due_date' => $dm->batch?->due_date?->toDateString(),
+                    ])->values(),
+                    'td' => $activeTd->map(fn ($td) => [
+                        'id'     => $td->id,
+                        'title'  => $td->custom_title ?? 'TD',
+                        'status' => $td->status->value,
+                        'due_date' => $td->batch?->due_date?->toDateString(),
+                    ])->values(),
+                ],
+                'averageGrade' => $averageGrade ? round((float)$averageGrade, 1) : null,
+                'correctedCount' => $correctedCount,
+            ]);
         } catch (\Exception $e) {
+            if (auth()->check()) {
+                abort(500, 'An error occurred while loading your dashboard. Please contact support.');
+            }
+            
             return redirect()->route('login');
         }
-    }
-
-    public function isntValid(): View
-    {
-        return view('errors/isntValid');
     }
 
     public function admin(): View
     {
         return view('admin');
+    }
+
+    private function teacherAssignmentUrl(CorrectionRequest $correctionRequest): ?string
+    {
+        $type = $correctionRequest->ds_id ? 'ds' : 'dm';
+        $batchId = $correctionRequest->ds?->batch_id ?? $correctionRequest->dm?->batch_id;
+
+        return $batchId
+            ? route('teacher.assignations.show', ['type' => $type, 'batch' => $batchId])
+            : null;
     }
 }

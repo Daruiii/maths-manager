@@ -1,0 +1,57 @@
+@import '../css/design-system.css';
+@import 'header';
+@import 'variables';
+@import 'home';
+@import 'auth';
+@import 'classe/show';
+@import 'button/google';
+@import 'form';
+@import 'footer';
+@import 'loader';
+@import 'fonts';
+@import 'katex';
+@import 'timer';
+@import 'correction';
+@import 'ds';
+@import 'errors';
+@import 'transitions';
+@import 'quizz';
+@import 'correctionCard';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    background-color: $primary-color;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Comfortaa Bold', sans-serif;
+}
+
+p, a, label, input, select, textarea, button {
+    font-family: 'Comfortaa Light', sans-serif;
+
+}
+
+nav {
+    font-family: 'Comfortaa Light', sans-serif;
+
+
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: $text-color;
+}
+
+.pdf-container {
+    width: 100%;
+}
