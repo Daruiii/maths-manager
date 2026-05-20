@@ -50,7 +50,7 @@ class TeacherCorrectionController extends Controller
                 ->where('status', TdStatus::CorrectionRequested->value)
                 ->with('student:id,first_name,last_name')
                 ->orderByDesc('updated_at')
-                ->get(['id', 'status', 'custom_title', 'custom_level', 'user_id', 'updated_at']),
+                ->get(['id', 'status', 'custom_title', 'custom_level', 'user_id', 'batch_id', 'updated_at']),
             'filters'            => ['status' => $status],
         ]);
     }
@@ -64,6 +64,45 @@ class TeacherCorrectionController extends Controller
         return Inertia::render('Teacher/Corrections/Show', [
             'correctionRequest' => $correctionRequest,
         ]);
+    }
+
+    public function updateCorrection(Request $request, CorrectionRequest $correctionRequest): RedirectResponse
+    {
+        $this->authorizeTeacher($correctionRequest);
+        abort_unless($correctionRequest->isCorrected(), 422);
+
+        $data = $request->validate([
+            'upload_session_token' => ['nullable', 'string'],
+            'correction_message'   => ['nullable', 'string', 'max:2000'],
+            'grade'                => ['nullable', 'numeric', 'min:0', 'max:20'],
+        ]);
+
+        $updatePayload = [
+            'correction_message' => $data['correction_message'] ?? null,
+            'grade'              => isset($data['grade']) ? (float) $data['grade'] : null,
+        ];
+
+        if ($token = $data['upload_session_token'] ?? null) {
+            $session = TemporaryUploadSession::where('token', $token)
+                ->where('user_id', Auth::id())
+                ->where('purpose', 'teacher_correction')
+                ->firstOrFail();
+
+            abort_if($session->isExpired(), 422, 'La session d\'upload a expiré.');
+            abort_if($session->isConsumed(), 422, 'Cette session a déjà été utilisée.');
+
+            $destinationKey = $correctionRequest->ds_id
+                ? "teacher-ds-{$correctionRequest->ds_id}"
+                : "teacher-dm-{$correctionRequest->dm_id}";
+
+            $newPaths = $this->uploadService->consume($session, $destinationKey);
+            $existing = $correctionRequest->correction_pictures ?? [];
+            $updatePayload['correction_pictures'] = array_merge($existing, $newPaths);
+        }
+
+        $correctionRequest->update($updatePayload);
+
+        return back()->with('success', 'Correction mise à jour.');
     }
 
     public function sendCorrection(SendTeacherCorrectionRequest $request, CorrectionRequest $correctionRequest): RedirectResponse
