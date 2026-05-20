@@ -1,14 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
-import { router, usePage } from '@inertiajs/react';
-import { route } from 'ziggy-js';
-import { Calendar, Users, ChevronDown, ChevronRight } from 'lucide-react';
-import { StudentGroup, User as UserType, DSPreviewItem } from '@/types/models';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import { Calendar, Users } from 'lucide-react';
+import type { StudentGroup, User as UserType, DSPreviewItem } from '@/types/models';
 import Button from '@/Components/Common/UI/Button';
 import SearchBar from '@/Components/Common/UI/SearchBar';
 import SlidePanel from '@/Components/Common/UI/SlidePanel';
 import CheckboxCard, { CheckboxIndicator } from '@/Components/Common/UI/CheckboxCard';
 import EmptyState from '@/Components/Common/UI/EmptyState';
+import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import AssignGroupRow from '@/Components/Features/Builder/AssignGroupRow';
+import { useAssignStep } from '@/Hooks/Builder/useAssignStep';
 
 interface Props {
   isOpen: boolean;
@@ -45,136 +44,41 @@ export default function AssignStep({
   customLevel,
   customInstructions,
 }: Props) {
-  const { errors } = usePage().props;
-  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<number>>(new Set());
-  const [selectedGroupIds, setSelectedGroupIds] = useState<Set<number>>(new Set());
-  const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [search, setSearch] = useState('');
-  const [dueDate, setDueDate] = useState('');
-
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedStudentIds(new Set());
-      setSelectedGroupIds(new Set());
-      setExpandedGroups(new Set());
-      setDueDate('');
-      return;
-    }
-    if (preselectedStudentId) {
-      setSelectedStudentIds(new Set([preselectedStudentId]));
-      setSelectedGroupIds(new Set());
-    }
-    if (preselectedGroupId) {
-      const groupStudentIds = students
-        .filter((s) => s.group_id === preselectedGroupId)
-        .map((s) => s.id);
-      setSelectedStudentIds(new Set(groupStudentIds));
-      setSelectedGroupIds(new Set([preselectedGroupId]));
-      setExpandedGroups(new Set([preselectedGroupId]));
-    }
-  }, [isOpen, preselectedStudentId, preselectedGroupId, students]);
-
-  const toggleStudent = (id: number) => {
-    setSelectedStudentIds((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  const toggleGroup = (groupId: number) => {
-    const groupStudentIds = students.filter((s) => s.group_id === groupId).map((s) => s.id);
-    const allSelected = groupStudentIds.every((id) => selectedStudentIds.has(id));
-    setSelectedStudentIds((prev) => {
-      const next = new Set(prev);
-      if (allSelected) {
-        groupStudentIds.forEach((id) => next.delete(id));
-      } else {
-        groupStudentIds.forEach((id) => next.add(id));
-      }
-      return next;
-    });
-    setSelectedGroupIds((prev) => {
-      const next = new Set(prev);
-      allSelected ? next.delete(groupId) : next.add(groupId);
-      return next;
-    });
-  };
-
-  const toggleExpanded = (groupId: number) => {
-    setExpandedGroups((prev) => {
-      const next = new Set(prev);
-      next.has(groupId) ? next.delete(groupId) : next.add(groupId);
-      return next;
-    });
-  };
-
-  const groupSelectionState = (groupId: number): 'all' | 'some' | 'none' => {
-    const groupStudentIds = students.filter((s) => s.group_id === groupId).map((s) => s.id);
-    if (groupStudentIds.length === 0) return 'none';
-    const selectedCount = groupStudentIds.filter((id) => selectedStudentIds.has(id)).length;
-    if (selectedCount === groupStudentIds.length) return 'all';
-    if (selectedCount > 0) return 'some';
-    return 'none';
-  };
-
-  const problemIds = includeProblems
-    ? previewItems.filter((i) => i.item.kind === 'problem').map((i) => i.item.id)
-    : [];
-  const exerciseIds = previewItems.filter((i) => i.item.kind === 'exercise').map((i) => i.item.id);
-  const privateIds = previewItems.filter((i) => i.item.kind === 'private').map((i) => i.item.id);
-  const totalItems = problemIds.length + exerciseIds.length + privateIds.length;
-  const totalRecipients = selectedStudentIds.size;
-  const today = new Date().toISOString().slice(0, 10);
-  const dueDateError = typeof errors.due_date === 'string' ? errors.due_date : null;
-  const contentError = typeof errors.content === 'string' ? errors.content : null;
-
-  const handleSubmit = () => {
-    if (totalItems === 0 || totalRecipients === 0) return;
-    setIsSubmitting(true);
-    const payload = {
-      exercise_ids: exerciseIds,
-      private_exercise_ids: privateIds,
-      student_ids: Array.from(selectedStudentIds),
-      group_ids: Array.from(selectedGroupIds),
-      custom_title: customTitle,
-      custom_level: customLevel,
-      custom_instructions: customInstructions,
-      due_date: dueDate || null,
-      ...(includeProblems ? { problem_ids: problemIds } : {}),
-    };
-    router.post(route(assignRoute), payload, {
-      onSuccess: () => {
-        setIsSubmitting(false);
-        onSuccess?.();
-        onClose();
-      },
-      onError: () => setIsSubmitting(false),
-    });
-  };
-
-  const q = search.toLowerCase().trim();
-  const matchesName = (s: UserType, query: string) => {
-    const full = `${s.first_name} ${s.last_name}`.toLowerCase();
-    const reversed = `${s.last_name} ${s.first_name}`.toLowerCase();
-    return full.includes(query) || reversed.includes(query);
-  };
-
-  const filteredGroups = useMemo(() => {
-    if (!q) return groups;
-    return groups.filter(
-      (g) =>
-        g.name.toLowerCase().includes(q) ||
-        students.some((s) => s.group_id === g.id && matchesName(s, q))
-    );
-  }, [groups, students, q]);
-
-  const filteredUngrouped = useMemo(() => {
-    const ungrouped = students.filter((s) => !s.group_id);
-    if (!q) return ungrouped;
-    return ungrouped.filter((s) => matchesName(s, q));
-  }, [students, q]);
+  const {
+    search,
+    setSearch,
+    dueDate,
+    setDueDate,
+    isSubmitting,
+    selectedStudentIds,
+    expandedGroups,
+    toggleStudent,
+    toggleGroup,
+    toggleExpanded,
+    groupSelectionState,
+    handleSubmit,
+    filteredGroups,
+    filteredUngrouped,
+    totalItems,
+    totalRecipients,
+    today,
+    dueDateError,
+    contentError,
+  } = useAssignStep({
+    isOpen,
+    students,
+    groups,
+    preselectedStudentId,
+    preselectedGroupId,
+    previewItems,
+    assignRoute,
+    includeProblems,
+    customTitle,
+    customLevel,
+    customInstructions,
+    onSuccess,
+    onClose,
+  });
 
   return (
     <SlidePanel
@@ -226,67 +130,19 @@ export default function AssignStep({
         <section>
           <p className="text-xs font-medium text-text-gray uppercase tracking-wide mb-2">Groupes</p>
           <div className="space-y-1.5">
-            {filteredGroups.map((group) => {
-              const state = groupSelectionState(group.id);
-              const isExpanded = expandedGroups.has(group.id);
-              const groupStudents = students.filter((s) => s.group_id === group.id);
-
-              return (
-                <CheckboxCard
-                  key={group.id}
-                  isSelected={state === 'all' || state === 'some'}
-                  onToggle={() => {}}
-                  as="div"
-                  className="overflow-hidden"
-                >
-                  <div className="flex items-center gap-2 p-2.5">
-                    <CheckboxIndicator
-                      isSelected={state === 'all'}
-                      indeterminate={state === 'some'}
-                      onToggle={() => toggleGroup(group.id)}
-                    />
-                    <Users size={14} className="text-teacher-color flex-shrink-0" />
-                    <span className="flex-1 min-w-0 text-sm text-text-color font-medium truncate">
-                      {group.name}
-                    </span>
-                    <span className="text-xs text-text-gray shrink-0">
-                      {group.students_count} élève{(group.students_count ?? 0) > 1 ? 's' : ''}
-                    </span>
-                    {groupStudents.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => toggleExpanded(group.id)}
-                        className="p-0.5 text-text-gray hover:text-text-color"
-                      >
-                        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                      </button>
-                    )}
-                  </div>
-
-                  {isExpanded && groupStudents.length > 0 && (
-                    <div className="border-t border-border-color bg-secondary-color/50 px-3 py-2 space-y-1.5">
-                      {groupStudents.map((s) => {
-                        const isSelected = selectedStudentIds.has(s.id);
-                        return (
-                          <CheckboxCard
-                            key={s.id}
-                            isSelected={isSelected}
-                            onToggle={() => toggleStudent(s.id)}
-                            className="flex items-center gap-2 p-2"
-                          >
-                            <CheckboxIndicator isSelected={isSelected} />
-                            <UserAvatar user={s} size="sm" />
-                            <span className="text-xs text-text-color flex-1 min-w-0 truncate">
-                              {s.first_name} {s.last_name}
-                            </span>
-                          </CheckboxCard>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CheckboxCard>
-              );
-            })}
+            {filteredGroups.map((group) => (
+              <AssignGroupRow
+                key={group.id}
+                group={group}
+                groupStudents={students.filter((s) => s.group_id === group.id)}
+                state={groupSelectionState(group.id)}
+                isExpanded={expandedGroups.has(group.id)}
+                selectedStudentIds={selectedStudentIds}
+                onToggleGroup={() => toggleGroup(group.id)}
+                onToggleExpand={() => toggleExpanded(group.id)}
+                onToggleStudent={toggleStudent}
+              />
+            ))}
           </div>
         </section>
       )}
@@ -322,7 +178,7 @@ export default function AssignStep({
         <EmptyState
           icon={Users}
           description={
-            q
+            search.trim()
               ? 'Aucun résultat pour cette recherche.'
               : 'Aucun élève dans votre classe pour le moment.'
           }
