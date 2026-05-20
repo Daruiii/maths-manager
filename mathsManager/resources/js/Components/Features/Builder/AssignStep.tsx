@@ -1,4 +1,4 @@
-import { Calendar, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import type { StudentGroup, User as UserType, DSPreviewItem } from '@/types/models';
 import Button from '@/Components/Common/UI/Button';
 import SearchBar from '@/Components/Common/UI/SearchBar';
@@ -25,6 +25,7 @@ interface Props {
   customTitle?: string;
   customLevel?: string;
   customInstructions?: string;
+  dueDate?: string;
 }
 
 export default function AssignStep({
@@ -43,12 +44,11 @@ export default function AssignStep({
   customTitle,
   customLevel,
   customInstructions,
+  dueDate = '',
 }: Props) {
   const {
     search,
     setSearch,
-    dueDate,
-    setDueDate,
     isSubmitting,
     selectedStudentIds,
     expandedGroups,
@@ -61,7 +61,6 @@ export default function AssignStep({
     filteredUngrouped,
     totalItems,
     totalRecipients,
-    today,
     dueDateError,
     contentError,
   } = useAssignStep({
@@ -76,6 +75,7 @@ export default function AssignStep({
     customTitle,
     customLevel,
     customInstructions,
+    dueDate,
     onSuccess,
     onClose,
   });
@@ -110,21 +110,12 @@ export default function AssignStep({
         focusRingClass="focus:border-teacher-color focus:ring-teacher-color"
       />
 
-      <section className="rounded-2xl border border-border-color bg-secondary-color p-3 space-y-2">
-        <label className="flex items-center gap-2 text-xs font-comfortaa-bold text-text-gray uppercase tracking-wide">
-          <Calendar size={13} className="text-teacher-color" />
-          Échéance optionnelle
-        </label>
-        <input
-          type="date"
-          min={today}
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          className="w-full rounded-xl border border-border-color bg-surface-color px-3 py-2 text-sm text-text-color focus:outline-none focus:border-teacher-color/50"
-        />
-        {dueDateError && <p className="text-xs text-error-color">{dueDateError}</p>}
-        {contentError && <p className="text-xs text-error-color">{contentError}</p>}
-      </section>
+      {(dueDateError || contentError) && (
+        <div className="space-y-1">
+          {dueDateError && <p className="text-xs text-error-color">{dueDateError}</p>}
+          {contentError && <p className="text-xs text-error-color">{contentError}</p>}
+        </div>
+      )}
 
       {filteredGroups.length > 0 && (
         <section>

@@ -53,6 +53,7 @@ export default function Create({
 
   const [isAssignOpen, setIsAssignOpen] = useState(false);
   const [isSaveOpen, setIsSaveOpen] = useState(false);
+  const [dueDate, setDueDate] = useState('');
 
   const { mobileTab, setMobileTab, handleToggle, handleRemove, handleReorder } =
     useBuilderHandlers(setPreviewItems);
@@ -101,6 +102,8 @@ export default function Create({
             onAssign={() => setIsAssignOpen(true)}
             onSave={() => setIsSaveOpen(true)}
             entityLabel="TD"
+            dueDate={dueDate}
+            onDueDateChange={setDueDate}
           />
         }
       />
@@ -134,6 +137,7 @@ export default function Create({
         customTitle={tdTitle}
         customLevel={tdLevel}
         customInstructions={tdInstructions}
+        dueDate={dueDate}
       />
     </AppLayout>
   );

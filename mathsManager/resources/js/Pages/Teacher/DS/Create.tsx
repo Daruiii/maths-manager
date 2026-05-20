@@ -64,6 +64,7 @@ export default function Create({
 
   const [isAssignOpen, setIsAssignOpen] = useState(false);
   const [isSaveOpen, setIsSaveOpen] = useState(false);
+  const [dueDate, setDueDate] = useState('');
 
   const { mobileTab, setMobileTab, handleToggle, handleRemove, handleReorder } =
     useBuilderHandlers(setPreviewItems);
@@ -117,6 +118,8 @@ export default function Create({
             onSave={() => setIsSaveOpen(true)}
             entityLabel="DS"
             showTime
+            dueDate={dueDate}
+            onDueDateChange={setDueDate}
           />
         }
       />
@@ -151,6 +154,7 @@ export default function Create({
         customTitle={dsTitle}
         customLevel={dsLevel}
         customInstructions={dsInstructions}
+        dueDate={dueDate}
       />
     </AppLayout>
   );

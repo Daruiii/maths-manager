@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -14,7 +15,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
-import { Clock, BookOpen, Users, Save } from 'lucide-react';
+import { Calendar, ChevronDown, Clock, BookOpen, Users, Save, X } from 'lucide-react';
 import { DSPreviewItem as DSPreviewItemType, DEFAULT_EXERCISE_MINUTES } from '@/types/models';
 import PreviewItem from '@/Components/Features/Builder/PreviewItem';
 import Button from '@/Components/Common/UI/Button';
@@ -28,6 +29,8 @@ interface Props {
   onSave?: () => void;
   entityLabel: string;
   showTime?: boolean;
+  dueDate?: string;
+  onDueDateChange?: (date: string) => void;
 }
 
 function formatTime(totalMinutes: number): string {
@@ -47,7 +50,18 @@ export default function PreviewPanel({
   onSave,
   entityLabel,
   showTime = false,
+  dueDate = '',
+  onDueDateChange,
 }: Props) {
+  const [showPicker, setShowPicker] = useState(false);
+
+  const formattedDueDate = dueDate
+    ? new Date(dueDate + 'T00:00:00').toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+      })
+    : null;
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -121,6 +135,53 @@ export default function PreviewPanel({
       </div>
 
       <div className="p-2.5 border-t border-border-color flex-shrink-0 space-y-1.5">
+        {onDueDateChange && (
+          <div className="pb-0.5">
+            {dueDate && !showPicker ? (
+              <div className="flex items-center justify-between rounded-xl border border-teacher-color/30 bg-teacher-color/5 px-3 py-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowPicker(true)}
+                  className="flex items-center gap-1.5 text-xs text-teacher-color font-comfortaa-bold"
+                >
+                  <Calendar size={11} />
+                  Échéance : {formattedDueDate}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDueDateChange('')}
+                  className="text-text-gray hover:text-text-color transition-colors"
+                  aria-label="Supprimer la date"
+                >
+                  <X size={11} />
+                </button>
+              </div>
+            ) : showPicker ? (
+              <input
+                type="date"
+                autoFocus
+                min={new Date().toISOString().slice(0, 10)}
+                value={dueDate}
+                onChange={(e) => {
+                  onDueDateChange(e.target.value);
+                  setShowPicker(false);
+                }}
+                onBlur={() => setShowPicker(false)}
+                className="w-full rounded-xl border border-teacher-color/50 bg-surface-color px-3 py-1.5 text-sm text-text-color focus:outline-none focus:border-teacher-color"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowPicker(true)}
+                className="flex w-full items-center gap-1.5 rounded-xl border border-dashed border-border-color px-3 py-1.5 text-xs text-text-gray hover:border-teacher-color/40 hover:text-teacher-color transition-colors"
+              >
+                <Calendar size={11} />
+                <span className="flex-1 text-left">Ajouter une date limite</span>
+                <ChevronDown size={11} />
+              </button>
+            )}
+          </div>
+        )}
         <Button
           onClick={onAssign}
           disabled={items.length === 0}

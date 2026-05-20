@@ -15,6 +15,7 @@ interface UseAssignStepOptions {
   customTitle?: string;
   customLevel?: string;
   customInstructions?: string;
+  dueDate?: string;
   onSuccess?: () => void;
   onClose: () => void;
 }
@@ -31,6 +32,7 @@ export function useAssignStep({
   customTitle,
   customLevel,
   customInstructions,
+  dueDate = '',
   onSuccess,
   onClose,
 }: UseAssignStepOptions) {
@@ -40,14 +42,12 @@ export function useAssignStep({
   const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [search, setSearch] = useState('');
-  const [dueDate, setDueDate] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
       setSelectedStudentIds(new Set());
       setSelectedGroupIds(new Set());
       setExpandedGroups(new Set());
-      setDueDate('');
       return;
     }
     if (preselectedStudentId) {
@@ -113,7 +113,6 @@ export function useAssignStep({
   const privateIds = previewItems.filter((i) => i.item.kind === 'private').map((i) => i.item.id);
   const totalItems = problemIds.length + exerciseIds.length + privateIds.length;
   const totalRecipients = selectedStudentIds.size;
-  const today = new Date().toISOString().slice(0, 10);
   const dueDateError = typeof errors.due_date === 'string' ? errors.due_date : null;
   const contentError = typeof errors.content === 'string' ? errors.content : null;
 
@@ -169,8 +168,6 @@ export function useAssignStep({
   return {
     search,
     setSearch,
-    dueDate,
-    setDueDate,
     isSubmitting,
     selectedStudentIds,
     expandedGroups,
@@ -183,7 +180,6 @@ export function useAssignStep({
     filteredUngrouped,
     totalItems,
     totalRecipients,
-    today,
     dueDateError,
     contentError,
   };
