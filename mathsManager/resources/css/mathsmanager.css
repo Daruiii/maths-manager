@@ -162,6 +162,15 @@
     @apply outline-none ring-2 ring-tertiary-color/50 ring-offset-2 ring-offset-primary-color;
   }
 
+  /* Surface sombre contrôlée pour cropper/media preview. */
+  .mm-cropper-surface {
+    background: rgb(var(--text-color) / 0.88);
+  }
+
+  .mm-cropper-surface-muted {
+    background: rgb(var(--text-color) / 0.5);
+  }
+
   /* ----------------------------------------
      .mm-section-header
      En-tête de section standard.

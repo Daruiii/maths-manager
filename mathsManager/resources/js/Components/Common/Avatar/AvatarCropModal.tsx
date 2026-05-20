@@ -53,9 +53,9 @@ export default function AvatarCropModal({ imageSrc, onClose, onSave }: AvatarCro
           </button>
         </div>
 
-        <div className="relative flex-1 bg-gray-900">
+        <div className="relative flex-1 mm-cropper-surface">
           {isImageLoading && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-900/50 backdrop-blur-sm">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center mm-cropper-surface-muted backdrop-blur-sm">
               <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin mb-3"></div>
               <p className="text-white text-sm font-comfortaa">Chargement de l'image...</p>
             </div>

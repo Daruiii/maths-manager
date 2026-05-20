@@ -5,15 +5,16 @@ import { TeacherTag } from '@/types/models';
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
+const DEFAULT_TAG_COLOR = 'rgb(var(--text-gray))';
 const PRESET_COLORS = [
-  '#6366f1',
-  '#8b5cf6',
-  '#ec4899',
-  '#ef4444',
-  '#f59e0b',
-  '#10b981',
-  '#3b82f6',
-  '#14b8a6',
+  'rgb(var(--teacher-color))',
+  'rgb(var(--student-color))',
+  'rgb(var(--admin-color))',
+  'rgb(var(--tertiary-color))',
+  'rgb(var(--success-color))',
+  'rgb(var(--warning-color))',
+  'rgb(var(--error-color))',
+  'rgb(var(--info-color))',
 ];
 
 // ─── Sous-composants ──────────────────────────────────────────────────────────
@@ -27,7 +28,7 @@ function TagPill({
   selected: boolean;
   onClick: () => void;
 }) {
-  const bg = tag.color ?? '#6b7280';
+  const bg = tag.color ?? DEFAULT_TAG_COLOR;
   return (
     <button
       type="button"
@@ -217,7 +218,7 @@ export default function TagSelector({
             <span
               key={tag.id}
               className="flex items-center gap-1 px-2 py-0.5 rounded-sm text-white text-xxs font-medium"
-              style={{ backgroundColor: tag.color ?? '#6b7280' }}
+              style={{ backgroundColor: tag.color ?? DEFAULT_TAG_COLOR }}
             >
               {tag.name}
               <X
