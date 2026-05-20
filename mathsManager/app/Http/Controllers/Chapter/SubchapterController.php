@@ -34,7 +34,7 @@ class SubchapterController extends Controller
             $query->visible();
         }
 
-        $exercises = $query->orderBy('order', 'asc')->get();
+        $exercises = $query->orderBy('difficulty', 'asc')->orderBy('order', 'asc')->get();
 
         $chapter_id = $subchapter->chapter_id;
         $classe_id = Chapter::findOrFail($chapter_id)->class_id;

@@ -4,7 +4,7 @@ import { useAuth } from '@/Hooks/Auth/useAuth';
 import TeacherSidebar from '@/Pages/Home/Partials/TeacherSidebar';
 import {
   BatchCorrectionItem,
-  UnlockItem,
+  BatchUnlockItem,
   type BatchGroup,
 } from '@/Pages/Home/Partials/PendingFeedItems';
 import type { HomePendingCorrectionItem, HomeUnlockRequestItem } from '@/types';
@@ -59,7 +59,8 @@ export default function TeacherHome({
           : `${corrCount} copies · ${unlockCount} déblocage${unlockCount > 1 ? 's' : ''}.`;
 
   const batches = groupByBatch(pendingCorrections?.items ?? []);
-  const displayTotal = batches.length + unlockCount;
+  const unlockBatchItems = unlockRequests?.items ?? [];
+  const displayTotal = batches.length + unlockBatchItems.length;
   const heroStats = [
     {
       value: activeStudentsCount ?? 0,
@@ -169,8 +170,12 @@ export default function TeacherHome({
                 {batches.map((batch, i) => (
                   <BatchCorrectionItem key={batch.key} batch={batch} index={i} />
                 ))}
-                {unlockRequests?.items.map((item, i) => (
-                  <UnlockItem key={item.id} item={item} index={batches.length + i} />
+                {unlockBatchItems.map((item, i) => (
+                  <BatchUnlockItem
+                    key={item.batch_id ?? i}
+                    item={item}
+                    index={batches.length + i}
+                  />
                 ))}
               </div>
               {displayTotal > 5 && (

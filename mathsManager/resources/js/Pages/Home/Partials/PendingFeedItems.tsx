@@ -49,24 +49,27 @@ export function BatchCorrectionItem({ batch, index }: { batch: BatchGroup; index
   );
 }
 
-export function UnlockItem({ item, index }: { item: HomeUnlockRequestItem; index: number }) {
+export function BatchUnlockItem({ item, index }: { item: HomeUnlockRequestItem; index: number }) {
+  const n = item.count;
   return (
-    <div
+    <Link
+      href={item.batch_url ?? route('teacher.bureau.devoirs')}
       style={{ animationDelay: `${index * 40}ms` }}
-      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors animate-fadeInUp"
+      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group animate-fadeInUp"
     >
       <TypeBadge type="td" size="md" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.student_name}</p>
-        <p className="text-xs text-text-gray truncate">{item.title}</p>
+        <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.title}</p>
+        <p className="text-xs text-text-gray">
+          <span className="font-comfortaa-bold text-text-color">{n}</span> déblocage
+          {n > 1 ? 's' : ''} demandé{n > 1 ? 's' : ''}
+        </p>
       </div>
       <span className="text-[10px] text-text-gray/60 shrink-0">{timeAgo(item.updated_at)}</span>
-      <Link
-        href={route('teacher.corrections.index')}
-        className="text-xs font-comfortaa-bold text-info-color hover:underline shrink-0"
-      >
-        Examiner
-      </Link>
-    </div>
+      <ChevronRight
+        size={14}
+        className="text-text-gray group-hover:text-text-color transition-colors shrink-0"
+      />
+    </Link>
   );
 }
