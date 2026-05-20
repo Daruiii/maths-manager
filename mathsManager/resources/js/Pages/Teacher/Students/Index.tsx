@@ -36,7 +36,11 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
   } = useStudentsFilter(ungroupedStudents, groups);
 
   const isEmpty = groups.length === 0 && ungroupedStudents.length === 0;
-  const totalCount = groups.length + ungroupedStudents.length;
+  const groupedStudentsCount = groups.reduce(
+    (total, group) => total + (group.students_count ?? 0),
+    0
+  );
+  const totalStudentsCount = groupedStudentsCount + ungroupedStudents.length;
 
   return (
     <AppLayout title="Mes Élèves">
@@ -45,8 +49,8 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
           <PageHeader
             title="Mes Élèves"
             subtitle={
-              totalCount > 0
-                ? `${totalCount} élève${totalCount > 1 ? 's' : ''} · ${groups.length} groupe${groups.length > 1 ? 's' : ''}`
+              totalStudentsCount > 0
+                ? `${totalStudentsCount} élève${totalStudentsCount > 1 ? 's' : ''} · ${groups.length} groupe${groups.length > 1 ? 's' : ''}`
                 : "Gérez vos élèves et partagez votre lien d'invitation."
             }
             breadcrumbs={[

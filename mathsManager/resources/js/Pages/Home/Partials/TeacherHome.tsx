@@ -31,6 +31,7 @@ interface Props {
   pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
   unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
   pendingTeachersCount?: number;
+  activeStudentsCount?: number;
   assignedThisMonth?: number;
 }
 
@@ -38,6 +39,7 @@ export default function TeacherHome({
   pendingCorrections,
   unlockRequests,
   pendingTeachersCount,
+  activeStudentsCount,
   assignedThisMonth,
 }: Props) {
   const { user } = useAuth();
@@ -58,6 +60,20 @@ export default function TeacherHome({
 
   const batches = groupByBatch(pendingCorrections?.items ?? []);
   const displayTotal = batches.length + unlockCount;
+  const heroStats = [
+    {
+      value: activeStudentsCount ?? 0,
+      label: 'élèves',
+    },
+    {
+      value: corrCount,
+      label: 'corrections',
+    },
+    {
+      value: assignedThisMonth ?? 0,
+      label: 'ce mois',
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -108,36 +124,14 @@ export default function TeacherHome({
             )}
           </div>
           <div className="hidden sm:flex flex-col items-end gap-3 shrink-0 pr-5">
-            {corrCount > 0 && (
-              <div className="text-right">
-                <p className="text-2xl font-cmu-serif text-text-color leading-none">{corrCount}</p>
+            {heroStats.map((stat) => (
+              <div key={stat.label} className="text-right">
+                <p className="text-2xl font-cmu-serif text-text-color leading-none">{stat.value}</p>
                 <p className="text-[10px] font-comfortaa-bold text-text-gray uppercase tracking-widest mt-0.5">
-                  copie{corrCount > 1 ? 's' : ''}
+                  {stat.label}
                 </p>
               </div>
-            )}
-            {unlockCount > 0 && (
-              <div className="text-right">
-                <p className="text-2xl font-cmu-serif text-text-color leading-none">
-                  {unlockCount}
-                </p>
-                <p className="text-[10px] font-comfortaa-bold text-text-gray uppercase tracking-widest mt-0.5">
-                  déblocage{unlockCount > 1 ? 's' : ''}
-                </p>
-              </div>
-            )}
-            {(assignedThisMonth ?? 0) > 0 && (
-              <div
-                className={`text-right ${!allClear ? 'pt-2 border-t border-border-color/30 w-full' : ''}`}
-              >
-                <p className="text-2xl font-cmu-serif text-text-color leading-none">
-                  {assignedThisMonth}
-                </p>
-                <p className="text-[10px] font-comfortaa-bold text-text-gray uppercase tracking-widest mt-0.5">
-                  ce mois
-                </p>
-              </div>
-            )}
+            ))}
           </div>
         </div>
       </div>

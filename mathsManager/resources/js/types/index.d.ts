@@ -46,6 +46,7 @@ export interface HomeProps {
   // Teacher
   pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
   unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
+  activeStudentsCount?: number;
   assignedThisMonth?: number;
   // Student
   activeAssignments?: {

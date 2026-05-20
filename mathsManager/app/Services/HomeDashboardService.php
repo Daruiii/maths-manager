@@ -64,6 +64,7 @@ class HomeDashboardService
             'pendingTeachersCount' => $user->isAdmin()
                 ? User::where('role', 'teacher')->where('status', 'pending_approval')->count()
                 : 0,
+            'activeStudentsCount' => $user->students()->where('status', 'active')->count(),
             'assignedThisMonth' => $this->assignedThisMonth($user),
         ];
     }
@@ -153,4 +154,3 @@ class HomeDashboardService
             : null;
     }
 }
-
