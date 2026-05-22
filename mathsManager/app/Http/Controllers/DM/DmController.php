@@ -22,11 +22,12 @@ class DmController extends Controller
 
     public function show(Dm $dm): Response
     {
-        abort_unless(auth()->id() === $dm->user_id, 403);
+        $isTeacher = auth()->id() === $dm->teacher_id;
+        abort_unless(auth()->id() === $dm->user_id || $isTeacher, 403);
 
         $dm->load(['problems', 'exercises', 'privateExercises', 'teacher:id,first_name,last_name', 'correctionRequest']);
 
-        $unlocked = $dm->status === DmStatus::Corrected;
+        $unlocked = $isTeacher || $dm->status === DmStatus::Corrected;
 
         return Inertia::render('Student/DM/Show', [
             'dm' => [
@@ -35,6 +36,7 @@ class DmController extends Controller
                 'custom_title'        => $dm->custom_title,
                 'custom_level'        => $dm->custom_level,
                 'custom_instructions' => $dm->custom_instructions,
+                'is_teacher_preview'  => $isTeacher,
                 'teacher'             => $dm->teacher
                     ? ['id' => $dm->teacher->id, 'first_name' => $dm->teacher->first_name, 'last_name' => $dm->teacher->last_name]
                     : null,

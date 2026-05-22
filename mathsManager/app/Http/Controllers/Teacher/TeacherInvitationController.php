@@ -15,7 +15,7 @@ use Inertia\Response;
 class TeacherInvitationController extends Controller
 {
     /**
-     * Créer ou régénérer le lien d'invitation du professeur.
+     * Créer un lien d'invitation sans invalider les liens actifs existants.
      */
     public function configure(ConfigureInvitationRequest $request)
     {
@@ -28,15 +28,10 @@ class TeacherInvitationController extends Controller
             abort_unless($group->teacher_id === $teacher->id, 403);
         }
 
-        // Désactiver l'ancien lien
-        TeacherInvitation::where('teacher_id', $teacher->id)
-            ->where('is_active', true)
-            ->update(['is_active' => false]);
-
-        // Créer le nouveau
         TeacherInvitation::create([
             'teacher_id'   => $teacher->id,
             'group_id'     => $validated['group_id'] ?? null,
+            'label'        => $validated['label'] ?? null,
             'code'         => Str::upper(Str::random(8)),
             'max_uses'     => $validated['max_uses'],
             'current_uses' => 0,
@@ -45,6 +40,18 @@ class TeacherInvitationController extends Controller
         ]);
 
         return back()->with('success', 'Lien d\'invitation généré.');
+    }
+
+    /**
+     * Désactiver un lien d'invitation précis.
+     */
+    public function disable(TeacherInvitation $invitation)
+    {
+        abort_unless($invitation->teacher_id === Auth::id(), 403);
+
+        $invitation->update(['is_active' => false]);
+
+        return back()->with('success', 'Lien d\'invitation désactivé.');
     }
 
     /**

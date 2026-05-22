@@ -29,6 +29,17 @@ class TeacherAssignmentController extends Controller
             ->map->count()
             ->toArray();
 
+        $groups = $items
+            ->filter(fn ($i) => $i['student']['group'] ?? null)
+            ->groupBy(fn ($i) => $i['student']['group']['id'])
+            ->map(fn ($g) => [
+                'id' => $g->first()['student']['group']['id'],
+                'name' => $g->first()['student']['group']['name'],
+                'count' => $g->count(),
+            ])
+            ->values()
+            ->toArray();
+
         return Inertia::render('Teacher/Assignments/Show', [
             'type' => $type,
             'batch' => [
@@ -38,6 +49,7 @@ class TeacherAssignmentController extends Controller
                 'created_at' => $batchModel->created_at->format('Y-m-d'),
                 'total' => $items->count(),
                 'statuses' => $statuses,
+                'groups' => $groups,
             ],
             'items' => $items->values(),
         ]);
@@ -45,8 +57,11 @@ class TeacherAssignmentController extends Controller
 
     private function loadDsBatch(int $batchId): array
     {
-        $batch = DsBatch::with(['ds.user:id,first_name,last_name,avatar', 'ds.correctionRequest:id,ds_id,status'])
-            ->findOrFail($batchId);
+        $batch = DsBatch::with([
+            'ds.user:id,first_name,last_name,avatar,group_id',
+            'ds.user.group:id,name',
+            'ds.correctionRequest:id,ds_id,status',
+        ])->findOrFail($batchId);
 
         return [$batch, $batch->ds->map(fn ($ds) => [
             'id' => $ds->id,
@@ -55,13 +70,17 @@ class TeacherAssignmentController extends Controller
             'student' => $this->studentPayload($ds->user),
             'show_url' => route('ds.show', $ds->id),
             'correction_request_id' => $ds->correctionRequest?->id,
+            'correction_status' => $ds->correctionRequest ? $this->statusValue($ds->correctionRequest->status) : null,
         ])];
     }
 
     private function loadDmBatch(int $batchId): array
     {
-        $batch = DmBatch::with(['dms.user:id,first_name,last_name,avatar', 'dms.correctionRequest:id,dm_id,status'])
-            ->findOrFail($batchId);
+        $batch = DmBatch::with([
+            'dms.user:id,first_name,last_name,avatar,group_id',
+            'dms.user.group:id,name',
+            'dms.correctionRequest:id,dm_id,status',
+        ])->findOrFail($batchId);
 
         return [$batch, $batch->dms->map(fn ($dm) => [
             'id' => $dm->id,
@@ -70,12 +89,16 @@ class TeacherAssignmentController extends Controller
             'student' => $this->studentPayload($dm->user),
             'show_url' => route('dm.show', $dm->id),
             'correction_request_id' => $dm->correctionRequest?->id,
+            'correction_status' => $dm->correctionRequest ? $this->statusValue($dm->correctionRequest->status) : null,
         ])];
     }
 
     private function loadTdBatch(int $batchId): array
     {
-        $batch = TdBatch::with('tds.student:id,first_name,last_name,avatar')->findOrFail($batchId);
+        $batch = TdBatch::with([
+            'tds.student:id,first_name,last_name,avatar,group_id',
+            'tds.student.group:id,name',
+        ])->findOrFail($batchId);
 
         return [$batch, $batch->tds->map(fn ($td) => [
             'id' => $td->id,
@@ -101,6 +124,9 @@ class TeacherAssignmentController extends Controller
             'first_name' => $student->first_name,
             'last_name' => $student->last_name,
             'avatar' => $student->avatar,
+            'group' => $student->group
+                ? ['id' => $student->group->id, 'name' => $student->group->name]
+                : null,
         ];
     }
 }

@@ -155,14 +155,12 @@ export function useAssignStep({
         g.name.toLowerCase().includes(q) ||
         students.some((s) => s.group_id === g.id && matchesName(s, q))
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groups, students, q]);
 
   const filteredUngrouped = useMemo(() => {
     const ungrouped = students.filter((s) => !s.group_id);
     if (!q) return ungrouped;
     return ungrouped.filter((s) => matchesName(s, q));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [students, q]);
 
   return {

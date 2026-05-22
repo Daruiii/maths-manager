@@ -16,13 +16,14 @@ export default function UserAvatar({
   size = 'md',
 }: UserAvatarProps) {
   // Determine avatar URL source
-  const avatarUrl =
-    src ||
-    (user?.avatar
-      ? user.avatar.startsWith('http')
-        ? user.avatar
-        : `/storage/images/${user.avatar}`
-      : '/storage/images/default.jpg');
+  const resolveAvatar = (path: string) =>
+    path.startsWith('http') || path.startsWith('/') ? path : `/storage/images/${path}`;
+
+  const avatarUrl = src
+    ? resolveAvatar(src)
+    : user?.avatar
+      ? resolveAvatar(user.avatar)
+      : '/storage/images/default.jpg';
 
   // Determine alt text
   const altText = alt || (user ? `${user.first_name} ${user.last_name}` : 'Avatar');

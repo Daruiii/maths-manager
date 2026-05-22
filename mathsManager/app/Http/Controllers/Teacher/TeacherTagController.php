@@ -16,7 +16,7 @@ class TeacherTagController extends Controller
 
         $validated = $request->validate([
             'name'  => 'required|string|max:50',
-            'color' => 'nullable|string|regex:/^#[0-9a-fA-F]{6}$/',
+            'color' => 'nullable|string|max:100',
         ]);
 
         $tag = Auth::user()->teacherTags()->firstOrCreate(
@@ -32,7 +32,7 @@ class TeacherTagController extends Controller
         $this->authorize('update', $tag);
 
         $validated = $request->validate([
-            'color' => 'nullable|string|regex:/^#[0-9a-fA-F]{6}$/',
+            'color' => 'nullable|string|max:100',
         ]);
 
         $tag->update(['color' => $validated['color'] ?? null]);

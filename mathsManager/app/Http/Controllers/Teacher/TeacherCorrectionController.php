@@ -73,13 +73,20 @@ class TeacherCorrectionController extends Controller
 
         $data = $request->validate([
             'upload_session_token' => ['nullable', 'string'],
+            'existing_pictures'    => ['nullable', 'array'],
+            'existing_pictures.*'  => ['string'],
             'correction_message'   => ['nullable', 'string', 'max:2000'],
             'grade'                => ['nullable', 'numeric', 'min:0', 'max:20'],
         ]);
 
+        $base = array_key_exists('existing_pictures', $data)
+            ? ($data['existing_pictures'] ?? [])
+            : ($correctionRequest->correction_pictures ?? []);
+
         $updatePayload = [
             'correction_message' => $data['correction_message'] ?? null,
             'grade'              => isset($data['grade']) ? (float) $data['grade'] : null,
+            'correction_pictures' => $base,
         ];
 
         if ($token = $data['upload_session_token'] ?? null) {
@@ -96,8 +103,7 @@ class TeacherCorrectionController extends Controller
                 : "teacher-dm-{$correctionRequest->dm_id}";
 
             $newPaths = $this->uploadService->consume($session, $destinationKey);
-            $existing = $correctionRequest->correction_pictures ?? [];
-            $updatePayload['correction_pictures'] = array_merge($existing, $newPaths);
+            $updatePayload['correction_pictures'] = array_merge($base, $newPaths);
         }
 
         $correctionRequest->update($updatePayload);
@@ -144,7 +150,31 @@ class TeacherCorrectionController extends Controller
 
         $correctionRequest->user->notify(new TeacherSentCorrection($correctionRequest));
 
+        $isLastCorrection = $this->isBatchComplete($correctionRequest);
+
+        if ($isLastCorrection) {
+            session()->flash('confetti', true);
+            return back()->with('success', 'Toutes les copies corrigées ! Ce devoir est maintenant archivé.');
+        }
+
         return back()->with('success', 'Correction envoyée à ' . $correctionRequest->user->name . '.');
+    }
+
+    private function isBatchComplete(CorrectionRequest $correctionRequest): bool
+    {
+        if ($correctionRequest->ds_id) {
+            $batch = $correctionRequest->ds->batch;
+            if (! $batch) return false;
+            $total     = $batch->ds()->count();
+            $corrected = $batch->ds()->where('status', DSStatus::Corrected->value)->count();
+            return $total > 0 && $corrected >= $total;
+        }
+
+        $batch = $correctionRequest->dm->batch;
+        if (! $batch) return false;
+        $total     = $batch->dms()->count();
+        $corrected = $batch->dms()->where('status', DmStatus::Corrected->value)->count();
+        return $total > 0 && $corrected >= $total;
     }
 
     private function authorizeTeacher(CorrectionRequest $correctionRequest): void

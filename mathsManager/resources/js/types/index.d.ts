@@ -23,9 +23,10 @@ export interface HomePendingCorrectionItem {
 }
 
 export interface HomeUnlockRequestItem {
-  id: number;
-  student_name: string;
+  batch_id: number | null;
   title: string;
+  count: number;
+  batch_url: string | null;
   updated_at: string;
 }
 
@@ -67,6 +68,7 @@ export interface PageProps {
     error?: string;
     warning?: string;
     info?: string;
+    confetti?: boolean;
   };
   appName?: string;
   appEnv?: string;

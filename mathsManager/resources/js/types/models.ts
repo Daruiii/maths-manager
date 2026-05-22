@@ -66,6 +66,8 @@ export interface TeacherInvitation {
   id: number;
   teacher_id: number;
   group_id?: number | null;
+  group?: StudentGroup | null;
+  label?: string | null;
   code: string;
   max_uses: number;
   current_uses: number;
@@ -220,6 +222,7 @@ export interface Dm {
   custom_title: string | null;
   custom_level: string | null;
   custom_instructions: string | null;
+  is_teacher_preview?: boolean;
   teacher: Pick<User, 'id' | 'first_name' | 'last_name'> | null;
   problems: AssignmentListItem[];
   exercises: AssignmentListItem[];
@@ -246,6 +249,7 @@ export interface Ds {
   timer_seconds: number;
   type_bac: boolean;
   harder_exercises: boolean;
+  is_teacher_preview?: boolean;
   teacher: Pick<User, 'id' | 'first_name' | 'last_name'> | null;
   problems: AssignmentListItem[];
   exercises: AssignmentListItem[];
@@ -258,6 +262,7 @@ export type TdStatus = 'not_started' | 'ongoing' | 'correction_requested' | 'cor
 export interface Td {
   id: number;
   status: TdStatus;
+  is_teacher: boolean;
   custom_title: string | null;
   custom_level: string | null;
   custom_instructions: string | null;

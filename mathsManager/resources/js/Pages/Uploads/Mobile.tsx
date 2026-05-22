@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { Camera, Check, CheckCircle, Loader2, X } from 'lucide-react';
+import { Camera, CheckCircle, Loader2, X } from 'lucide-react';
 import type { UploadedFileInfo, UploadPurpose } from '@/types/api';
 
 interface Props {
@@ -10,18 +10,29 @@ interface Props {
   expiresAt: string;
 }
 
+interface UploadedEntry {
+  info: UploadedFileInfo;
+  previewUrl: string;
+}
+
 const PURPOSE_LABEL: Record<UploadPurpose, string> = {
   correction_submission: 'Envoi de copie',
   teacher_correction: 'Envoi de correction',
 };
 
 export default function MobileUpload({ token, purpose, expiresAt }: Props) {
-  const [uploaded, setUploaded] = useState<UploadedFileInfo[]>([]);
+  const [uploaded, setUploaded] = useState<UploadedEntry[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isExpired = new Date(expiresAt) < new Date();
+
+  useEffect(() => {
+    return () => {
+      uploaded.forEach((e) => URL.revokeObjectURL(e.previewUrl));
+    };
+  }, []);
 
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -32,6 +43,7 @@ export default function MobileUpload({ token, purpose, expiresAt }: Props) {
     setError(null);
 
     for (const file of files) {
+      const previewUrl = URL.createObjectURL(file);
       const formData = new FormData();
       formData.append('file', file);
       try {
@@ -40,8 +52,9 @@ export default function MobileUpload({ token, purpose, expiresAt }: Props) {
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
-        setUploaded((prev) => [...prev, res.data]);
+        setUploaded((prev) => [...prev, { info: res.data, previewUrl }]);
       } catch {
+        URL.revokeObjectURL(previewUrl);
         setError("Un fichier n'a pas pu être envoyé. Vérifiez sa taille (max 5 Mo).");
       }
     }
@@ -72,19 +85,30 @@ export default function MobileUpload({ token, purpose, expiresAt }: Props) {
         ) : (
           <div className="w-full max-w-sm space-y-4">
             {uploaded.length > 0 && (
-              <div className="bg-secondary-color rounded-2xl border border-border-color p-4 space-y-2">
+              <div className="bg-secondary-color rounded-2xl border border-border-color p-4 space-y-3">
                 <p className="text-xs font-comfortaa-bold text-text-gray uppercase tracking-wide">
                   {uploaded.length} photo{uploaded.length > 1 ? 's' : ''} envoyée
                   {uploaded.length > 1 ? 's' : ''}
                 </p>
-                <ul className="space-y-1">
-                  {uploaded.map((f) => (
-                    <li key={f.id} className="flex items-center gap-2 text-sm text-text-color">
-                      <Check size={14} className="text-success-color shrink-0" />
-                      <span className="truncate">{f.original_name}</span>
-                    </li>
+                <div className="grid grid-cols-3 gap-2">
+                  {uploaded.map((entry) => (
+                    <div
+                      key={entry.info.id}
+                      className="relative aspect-[3/4] rounded-lg overflow-hidden border border-border-color"
+                    >
+                      <img
+                        src={entry.previewUrl}
+                        alt={entry.info.original_name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-success-color/10" />
+                      <CheckCircle
+                        size={16}
+                        className="absolute bottom-1.5 right-1.5 text-success-color drop-shadow"
+                      />
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 
@@ -98,6 +122,7 @@ export default function MobileUpload({ token, purpose, expiresAt }: Props) {
               ref={inputRef}
               type="file"
               accept="image/*"
+              capture="environment"
               multiple
               className="hidden"
               onChange={handleFiles}

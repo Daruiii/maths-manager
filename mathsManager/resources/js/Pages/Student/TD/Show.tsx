@@ -36,10 +36,18 @@ export default function TdShow({ td }: { td: Td }) {
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         <PageHeader
           title={title}
-          breadcrumbs={[
-            { label: 'Mes devoirs', href: route('student.assignments.index') },
-            { label: title },
-          ]}
+          breadcrumbs={
+            td.is_teacher
+              ? [
+                  { label: 'Mon Bureau', href: route('teacher.bureau.index') },
+                  { label: 'Devoirs envoyés', href: route('teacher.bureau.devoirs') },
+                  { label: title },
+                ]
+              : [
+                  { label: 'Mes devoirs', href: route('student.assignments.index') },
+                  { label: title },
+                ]
+          }
         />
 
         {td.status === 'not_started' && (
@@ -56,10 +64,13 @@ export default function TdShow({ td }: { td: Td }) {
               problems={[]}
               exercises={td.exercises}
               privateExercises={td.private_exercises}
+              showSolutions={td.correction_unlocked}
             />
-            <Button variant="student" icon={CheckCircle} onClick={startTd}>
-              Commencer la fiche
-            </Button>
+            {!td.is_teacher && (
+              <Button variant="student" icon={CheckCircle} onClick={startTd}>
+                Commencer la fiche
+              </Button>
+            )}
           </div>
         )}
 
@@ -69,40 +80,46 @@ export default function TdShow({ td }: { td: Td }) {
               problems={[]}
               exercises={td.exercises}
               privateExercises={td.private_exercises}
+              showSolutions={td.correction_unlocked}
             />
-            <TheoremCard accent="student" dotted>
-              <SectionLabel>Correction</SectionLabel>
-              <p className="mt-2 text-sm text-text-gray leading-relaxed">
-                Quand tu as terminé, demande à ton professeur de débloquer la correction.
-              </p>
-              <div className="mt-4">
-                <Button
-                  variant="student"
-                  icon={Send}
-                  isLoading={requesting}
-                  onClick={requestUnlock}
-                >
-                  Demander la correction
-                </Button>
-              </div>
-            </TheoremCard>
+            {!td.is_teacher && (
+              <TheoremCard accent="student" dotted>
+                <SectionLabel>Correction</SectionLabel>
+                <p className="mt-2 text-sm text-text-gray leading-relaxed">
+                  Quand tu as terminé, demande à ton professeur de débloquer la correction.
+                </p>
+                <div className="mt-4">
+                  <Button
+                    variant="student"
+                    icon={Send}
+                    isLoading={requesting}
+                    onClick={requestUnlock}
+                  >
+                    Demander la correction
+                  </Button>
+                </div>
+              </TheoremCard>
+            )}
           </div>
         )}
 
         {td.status === 'correction_requested' && (
           <div className="space-y-4">
-            <TheoremCard accent="teacher">
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-teacher-color" />
-                <p className="text-sm font-comfortaa-bold text-teacher-color">
-                  Correction demandée — en attente de votre professeur
-                </p>
-              </div>
-            </TheoremCard>
+            {!td.is_teacher && (
+              <TheoremCard accent="teacher">
+                <div className="flex items-center gap-2">
+                  <Clock size={16} className="text-teacher-color" />
+                  <p className="text-sm font-comfortaa-bold text-teacher-color">
+                    Correction demandée — en attente de votre professeur
+                  </p>
+                </div>
+              </TheoremCard>
+            )}
             <AssignmentContentList
               problems={[]}
               exercises={td.exercises}
               privateExercises={td.private_exercises}
+              showSolutions={td.correction_unlocked}
             />
           </div>
         )}

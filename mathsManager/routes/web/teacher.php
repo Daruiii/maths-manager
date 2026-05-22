@@ -28,6 +28,7 @@ Route::middleware(['auth', IsTeacher::class])
             // Dashboard hub
             Route::get('/', [BureauController::class, 'index'])->name('bureau.index');
             Route::get('/devoirs', [BureauController::class, 'devoirs'])->name('bureau.devoirs');
+            Route::patch('/devoirs/{type}/{id}/archive', [BureauController::class, 'toggleArchive'])->name('bureau.batch.archive');
             Route::get('/history', [BureauController::class, 'history'])->name('bureau.history');
             Route::get('/templates', [BureauController::class, 'templates'])->name('bureau.templates');
 
@@ -49,6 +50,8 @@ Route::middleware(['auth', IsTeacher::class])
 
             // Invitation
             Route::post('/invitation', [TeacherInvitationController::class, 'configure'])->name('invitation.configure');
+            Route::patch('/invitation/{invitation}/disable', [TeacherInvitationController::class, 'disable'])
+                ->name('invitation.disable');
 
             // Exercices privés
             Route::get('/exercices', [PrivateExerciseController::class, 'index'])->name('exercices.index');
@@ -73,6 +76,7 @@ Route::middleware(['auth', IsTeacher::class])
             Route::get('/corrections', [TeacherCorrectionController::class, 'index'])->name('corrections.index');
             Route::get('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'show'])->name('corrections.show');
             Route::patch('/corrections/{correctionRequest}', [TeacherCorrectionController::class, 'sendCorrection'])->name('corrections.send');
+            Route::patch('/corrections/{correctionRequest}/update', [TeacherCorrectionController::class, 'updateCorrection'])->name('corrections.update');
         });
 
         // ── Builders DS/DM/TD — actions globales, hors bureau ────────────────

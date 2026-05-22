@@ -10,6 +10,7 @@ class TeacherInvitation extends Model
     protected $fillable = [
         'teacher_id',
         'group_id',
+        'label',
         'code',
         'expires_at',
         'max_uses',
@@ -28,6 +29,11 @@ class TeacherInvitation extends Model
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(StudentGroup::class, 'group_id');
     }
 
     /**

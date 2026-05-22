@@ -23,6 +23,11 @@ class TeacherTdUnlockController extends Controller
 
         $td->student->notify(new TeacherUnlockedTd($td));
 
+        if ($td->batch_id && $this->isBatchAllUnlocked($td->batch_id)) {
+            session()->flash('confetti', true);
+            return back()->with('success', 'Toutes les corrections débloquées ! Ce TD est maintenant archivé.');
+        }
+
         return back()->with('success', 'Correction débloquée pour ' . $td->student->name . '.');
     }
 
@@ -30,7 +35,12 @@ class TeacherTdUnlockController extends Controller
     {
         abort_unless($batch->teacher_id === Auth::id(), 403);
 
-        $batch->tds()->with('student')->get()->each(function (Td $td) {
+        $toUnlock = $batch->tds()
+            ->where('status', TdStatus::CorrectionRequested)
+            ->with('student')
+            ->get();
+
+        $toUnlock->each(function (Td $td) {
             $td->update([
                 'correction_unlocked' => true,
                 'status'              => TdStatus::CorrectionUnlocked,
@@ -39,6 +49,22 @@ class TeacherTdUnlockController extends Controller
             $td->student->notify(new TeacherUnlockedTd($td));
         });
 
-        return back()->with('success', 'Correction débloquée pour tous les élèves du groupe.');
+        if ($this->isBatchAllUnlocked($batch->id)) {
+            session()->flash('confetti', true);
+            return back()->with('success', 'Toutes les corrections débloquées ! Ce TD est maintenant archivé.');
+        }
+
+        return back()->with('success', 'Correction débloquée pour ' . $toUnlock->count() . ' élève(s).');
+    }
+
+    private function isBatchAllUnlocked(int $batchId): bool
+    {
+        $batch = TdBatch::find($batchId);
+        if (! $batch) return false;
+
+        $total    = $batch->tds()->count();
+        $unlocked = $batch->tds()->where('status', TdStatus::CorrectionUnlocked)->count();
+
+        return $total > 0 && $unlocked >= $total;
     }
 }

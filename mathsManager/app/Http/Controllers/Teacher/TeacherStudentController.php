@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teacher\UpdateStudentGroupAssignmentRequest;
 use App\Models\StudentGroup;
+use App\Models\TeacherInvitation;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -32,12 +33,17 @@ class TeacherStudentController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        $invitation = $teacher->activeInvitation();
+        $activeInvitations = TeacherInvitation::where('teacher_id', $teacher->id)
+            ->where('is_active', true)
+            ->with('group:id,name')
+            ->latest()
+            ->get();
 
         return Inertia::render('Teacher/Students/Index', [
-            'groups'            => $groups,
-            'ungroupedStudents' => $ungroupedStudents,
-            'invitation'        => $invitation,
+            'groups'             => $groups,
+            'ungroupedStudents'  => $ungroupedStudents,
+            'invitation'         => $activeInvitations->first(),
+            'activeInvitations'  => $activeInvitations,
         ]);
     }
 

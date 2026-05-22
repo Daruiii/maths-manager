@@ -23,8 +23,15 @@ interface TdUnlockBrief {
   status: TdStatus;
   custom_title: string | null;
   custom_level: string | null;
+  batch_id: number | null;
   updated_at: string;
   student: { first_name: string; last_name: string } | null;
+}
+
+interface TdBatchGroup {
+  batchId: number | null;
+  title: string;
+  items: TdUnlockBrief[];
 }
 
 interface Props {
@@ -43,9 +50,22 @@ function formatDate(iso: string) {
   return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(new Date(iso));
 }
 
+function groupTdByBatch(items: TdUnlockBrief[]): TdBatchGroup[] {
+  const map = new Map<string, TdBatchGroup>();
+  for (const item of items) {
+    const key = item.batch_id != null ? `batch::${item.batch_id}` : `solo::${item.id}`;
+    if (!map.has(key)) {
+      map.set(key, { batchId: item.batch_id ?? null, title: item.custom_title ?? 'TD', items: [] });
+    }
+    map.get(key)!.items.push(item);
+  }
+  return Array.from(map.values());
+}
+
 export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests, filters }: Props) {
   const items = correctionRequests.data;
   const showTdUnlocks = filters.status === 'pending' || filters.status === 'all';
+  const tdBatchGroups = groupTdByBatch(tdUnlockRequests);
 
   function setStatus(status: string) {
     router.get(
@@ -83,50 +103,69 @@ export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests,
           ))}
         </div>
 
-        {showTdUnlocks && tdUnlockRequests.length > 0 && (
-          <div className="space-y-2">
+        {/* ── TD unlock requests grouped by batch ── */}
+        {showTdUnlocks && tdBatchGroups.length > 0 && (
+          <div className="space-y-4">
             <SectionLabel>TD à débloquer ({tdUnlockRequests.length})</SectionLabel>
-            <ul className="space-y-2">
-              {tdUnlockRequests.map((td) => (
-                <li
-                  key={td.id}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-secondary-color border border-warning-color/20"
-                >
-                  <TypeBadge type="td" size="md" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-comfortaa-bold text-text-color truncate">
-                      {td.custom_title ?? "Fiche d'exercices"}
-                    </p>
-                    {td.student && (
-                      <p className="text-xs text-text-gray mt-0.5">
-                        {td.student.first_name} {td.student.last_name}
-                        {td.custom_level && (
-                          <span className="ml-2 text-student-color">{td.custom_level}</span>
+            {tdBatchGroups.map((group) => (
+              <div key={group.batchId ?? `solo-${group.items[0].id}`} className="space-y-1.5">
+                {/* Batch header */}
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-xs font-comfortaa-bold text-text-color">{group.title}</span>
+                  {group.batchId && (
+                    <Link
+                      href={route('teacher.assignations.show', {
+                        type: 'td',
+                        batch: group.batchId,
+                      })}
+                      className="flex items-center gap-1 text-[11px] font-comfortaa-bold text-teacher-color hover:underline"
+                    >
+                      Voir le batch <ChevronRight size={11} />
+                    </Link>
+                  )}
+                </div>
+                {/* Per-student rows */}
+                <ul className="space-y-1.5">
+                  {group.items.map((td) => (
+                    <li
+                      key={td.id}
+                      className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-secondary-color border border-warning-color/20"
+                    >
+                      <TypeBadge type="td" size="md" />
+                      <div className="flex-1 min-w-0">
+                        {td.student && (
+                          <p className="font-comfortaa-bold text-text-color text-sm truncate">
+                            {td.student.first_name} {td.student.last_name}
+                          </p>
                         )}
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="teacher"
-                    size="sm"
-                    icon={LockOpen}
-                    onClick={() => router.patch(route('teacher.td.unlock', td.id))}
-                  >
-                    Débloquer
-                  </Button>
-                </li>
-              ))}
-            </ul>
+                        {td.custom_level && (
+                          <p className="text-xs text-student-color mt-0.5">{td.custom_level}</p>
+                        )}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="teacher"
+                        size="sm"
+                        icon={LockOpen}
+                        onClick={() => router.patch(route('teacher.td.unlock', td.id))}
+                      >
+                        Débloquer
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         )}
 
-        {items.length === 0 && (!showTdUnlocks || tdUnlockRequests.length === 0) ? (
+        {/* ── DS/DM correction requests ── */}
+        {items.length === 0 && (!showTdUnlocks || tdBatchGroups.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3 text-text-gray">
             <ClipboardList size={32} className="opacity-40" />
             <p className="text-sm">Aucune correction à traiter.</p>
           </div>
-        ) : (
+        ) : items.length > 0 ? (
           <div className="mm-card mm-card-style-plain overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-border-color">
               <SectionLabel>
@@ -179,7 +218,7 @@ export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests,
               })}
             </ul>
           </div>
-        )}
+        ) : null}
       </div>
     </AppLayout>
   );

@@ -1,8 +1,11 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { Eye } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
+import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
 import DsStatusContent from '@/Pages/Student/DS/Partials/DsStatusContent';
+import AssignmentContentList from '@/Components/Features/Assignments/AssignmentContentList';
 import { useDsTimer } from '@/Hooks/DS/useDsTimer';
 import type { Ds } from '@/types/models';
 
@@ -24,15 +27,52 @@ function defaultInstructions(ds: Ds): string {
 }
 
 export default function DsShow({ ds }: { ds: Ds }) {
-  const { remaining } = useDsTimer(ds.id, ds.timer_seconds, ds.status === 'ongoing');
+  const isTeacherPreview = ds.is_teacher_preview ?? false;
+  const { remaining } = useDsTimer(
+    ds.id,
+    ds.timer_seconds,
+    !isTeacherPreview && ds.status === 'ongoing'
+  );
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false);
   const { errors } = usePage().props;
 
   const title = ds.custom_title ?? 'Devoir Surveillé';
   const uploadError =
     typeof errors.upload_session_token === 'string' ? errors.upload_session_token : null;
+
+  if (isTeacherPreview) {
+    return (
+      <AppLayout>
+        <Head title={title} />
+        <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+          <PageHeader
+            title={title}
+            breadcrumbs={[
+              { label: 'Devoirs envoyés', href: route('teacher.bureau.devoirs') },
+              { label: title },
+            ]}
+          />
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-teacher-color/[0.06] border border-teacher-color/20 text-teacher-color text-xs font-comfortaa-bold">
+            <Eye size={13} />
+            Prévisualisation — vue enseignant (avec corrigés)
+          </div>
+          <AssignmentContentList
+            problems={ds.problems}
+            exercises={ds.exercises}
+            privateExercises={ds.private_exercises}
+            variant="academic"
+            title={title}
+            level={ds.custom_level}
+            instructions={defaultInstructions(ds)}
+            showSolutions
+          />
+        </div>
+      </AppLayout>
+    );
+  }
 
   function startDs() {
     router.patch(route('ds.status.update', ds.id), { status: 'ongoing' });
@@ -47,7 +87,11 @@ export default function DsShow({ ds }: { ds: Ds }) {
   }
 
   function finishDs() {
-    if (!window.confirm('Terminer le DS ? Cette action est irréversible.')) return;
+    setShowFinishConfirm(true);
+  }
+
+  function confirmFinishDs() {
+    setShowFinishConfirm(false);
     router.patch(route('ds.status.update', ds.id), { status: 'finished' });
   }
 
@@ -91,6 +135,15 @@ export default function DsShow({ ds }: { ds: Ds }) {
           onMessageChange={setMessage}
         />
       </div>
+      <ConfirmationModal
+        isOpen={showFinishConfirm}
+        onClose={() => setShowFinishConfirm(false)}
+        onConfirm={confirmFinishDs}
+        title="Terminer le DS ?"
+        description="Le DS sera marqué comme terminé. Tu ne pourras plus le reprendre."
+        type="danger"
+        confirmText="Terminer"
+      />
     </AppLayout>
   );
 }

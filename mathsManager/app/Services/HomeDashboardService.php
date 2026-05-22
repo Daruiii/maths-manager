@@ -35,9 +35,24 @@ class HomeDashboardService
 
         $unlockRequests = Td::where('teacher_id', $user->id)
             ->where('status', TdStatus::CorrectionRequested->value)
-            ->with('student:id,first_name,last_name')
             ->latest('updated_at')
-            ->get(['id', 'custom_title', 'user_id', 'updated_at']);
+            ->get(['id', 'custom_title', 'user_id', 'batch_id', 'updated_at']);
+
+        $unlockBatches = $unlockRequests
+            ->groupBy('batch_id')
+            ->map(function ($items, $batchId) {
+                $batchId = $batchId ?: null;
+                return [
+                    'batch_id'   => $batchId,
+                    'title'      => $items->first()->custom_title ?? 'TD',
+                    'count'      => $items->count(),
+                    'batch_url'  => $batchId
+                        ? route('teacher.assignations.show', ['type' => 'td', 'batch' => $batchId])
+                        : null,
+                    'updated_at' => $items->sortByDesc('updated_at')->first()->updated_at->toIso8601String(),
+                ];
+            })
+            ->values();
 
         return [
             'pendingCorrections' => [
@@ -54,12 +69,7 @@ class HomeDashboardService
             ],
             'unlockRequests' => [
                 'count' => $unlockRequests->count(),
-                'items' => $unlockRequests->take(5)->map(fn ($td) => [
-                    'id'           => $td->id,
-                    'student_name' => $td->student?->name ?? 'Élève',
-                    'title'        => $td->custom_title ?? 'TD',
-                    'updated_at'   => $td->updated_at->toIso8601String(),
-                ])->values(),
+                'items' => $unlockBatches->take(5)->values(),
             ],
             'pendingTeachersCount' => $user->isAdmin()
                 ? User::where('role', 'teacher')->where('status', 'pending_approval')->count()

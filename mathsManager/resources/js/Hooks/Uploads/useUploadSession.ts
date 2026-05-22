@@ -11,6 +11,7 @@ interface UseUploadSessionResult {
   sessionToken: string | null;
   mobileUrl: string | null;
   files: UploadedFileInfo[];
+  previews: Record<number, string>;
   isReady: boolean;
   isUploading: boolean;
   error: string | null;
@@ -25,6 +26,7 @@ export function useUploadSession({
 }: UseUploadSessionOptions): UseUploadSessionResult {
   const [session, setSession] = useState<UploadSessionInfo | null>(null);
   const [files, setFiles] = useState<UploadedFileInfo[]>([]);
+  const [previews, setPreviews] = useState<Record<number, string>>({});
   const [isReady, setIsReady] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +62,7 @@ export function useUploadSession({
     async (file: File) => {
       if (!session) return;
 
+      const objectUrl = URL.createObjectURL(file);
       setIsUploading(true);
       const formData = new FormData();
       formData.append('file', file);
@@ -71,7 +74,9 @@ export function useUploadSession({
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
         setFiles((prev) => [...prev, res.data]);
+        setPreviews((prev) => ({ ...prev, [res.data.id]: objectUrl }));
       } catch {
+        URL.revokeObjectURL(objectUrl);
         setError("Échec de l'upload. Vérifiez la taille (max 5 Mo).");
       } finally {
         setIsUploading(false);
@@ -87,6 +92,12 @@ export function useUploadSession({
       try {
         await axios.delete(route('uploads.files.delete', { token: session.token, upload: fileId }));
         setFiles((prev) => prev.filter((f) => f.id !== fileId));
+        setPreviews((prev) => {
+          const next = { ...prev };
+          if (next[fileId]) URL.revokeObjectURL(next[fileId]);
+          delete next[fileId];
+          return next;
+        });
       } catch {
         setError('Impossible de supprimer le fichier.');
       }
@@ -101,6 +112,7 @@ export function useUploadSession({
     sessionToken: session?.token ?? null,
     mobileUrl,
     files,
+    previews,
     isReady,
     isUploading,
     error,

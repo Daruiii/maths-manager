@@ -16,12 +16,14 @@ import { useStudentsFilter } from '@/Hooks/Students/useStudentsFilter';
 interface Props {
   groups: StudentGroup[];
   ungroupedStudents: User[];
-  invitation: TeacherInvitation | null;
+  invitation?: TeacherInvitation | null;
+  activeInvitations?: TeacherInvitation[];
 }
 
-export default function Index({ groups, ungroupedStudents, invitation }: Props) {
+export default function Index({ groups, ungroupedStudents, invitation, activeInvitations }: Props) {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isGroupOpen, setIsGroupOpen] = useState(false);
+  const invitations = activeInvitations ?? (invitation ? [invitation] : []);
 
   const {
     search,
@@ -60,7 +62,7 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
             action={
               <div className="flex items-center gap-2">
                 <InvitationLinkCompact
-                  invitation={invitation}
+                  invitations={invitations}
                   onConfigure={() => setIsInviteOpen(true)}
                 />
               </div>
@@ -122,7 +124,7 @@ export default function Index({ groups, ungroupedStudents, invitation }: Props) 
         isOpen={isInviteOpen}
         onClose={() => setIsInviteOpen(false)}
         groups={groups}
-        hasActiveLink={!!invitation}
+        invitations={invitations}
       />
 
       <GroupFormModal isOpen={isGroupOpen} onClose={() => setIsGroupOpen(false)} />

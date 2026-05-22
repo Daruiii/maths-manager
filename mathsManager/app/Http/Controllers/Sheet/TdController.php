@@ -168,16 +168,18 @@ class TdController extends Controller
     public function show(int $id): InertiaResponse
     {
         $td = Td::findOrFail($id);
-        abort_unless(Auth::id() === $td->user_id, 403);
+        $isTeacher = Auth::id() === $td->teacher_id;
+        abort_unless(Auth::id() === $td->user_id || $isTeacher, 403);
 
         $td->load(['exercises', 'privateExercises', 'teacher:id,first_name,last_name']);
 
-        $unlocked = $td->correction_unlocked;
+        $unlocked = $td->correction_unlocked || $isTeacher;
 
         return Inertia::render('Student/TD/Show', [
             'td' => [
                 'id'                  => $td->id,
                 'status'              => $td->status,
+                'is_teacher'          => $isTeacher,
                 'custom_title'        => $td->custom_title,
                 'custom_level'        => $td->custom_level,
                 'custom_instructions' => $td->custom_instructions,

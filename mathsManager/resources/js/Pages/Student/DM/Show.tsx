@@ -1,6 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { CheckCircle, Clock, BookOpenCheck } from 'lucide-react';
+import { CheckCircle, Clock, BookOpenCheck, Eye } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import Button from '@/Components/Common/UI/Button';
@@ -14,6 +14,7 @@ import CorrectionResultBlock from '@/Components/Features/Assignments/CorrectionR
 import type { Dm } from '@/types/models';
 
 export default function DmShow({ dm }: { dm: Dm }) {
+  const isTeacherPreview = dm.is_teacher_preview ?? false;
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -23,6 +24,37 @@ export default function DmShow({ dm }: { dm: Dm }) {
   const cr = dm.correction_request;
   const uploadError =
     typeof errors.upload_session_token === 'string' ? errors.upload_session_token : null;
+
+  if (isTeacherPreview) {
+    return (
+      <AppLayout>
+        <Head title={title} />
+        <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+          <PageHeader
+            title={title}
+            breadcrumbs={[
+              { label: 'Devoirs envoyés', href: route('teacher.bureau.devoirs') },
+              { label: title },
+            ]}
+          />
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-teacher-color/[0.06] border border-teacher-color/20 text-teacher-color text-xs font-comfortaa-bold">
+            <Eye size={13} />
+            Prévisualisation — vue enseignant (avec corrigés)
+          </div>
+          <AssignmentContentList
+            problems={dm.problems}
+            exercises={dm.exercises}
+            privateExercises={dm.private_exercises}
+            variant="academic"
+            title={title}
+            level={dm.custom_level}
+            instructions={dm.custom_instructions}
+            showSolutions
+          />
+        </div>
+      </AppLayout>
+    );
+  }
 
   function startDm() {
     router.patch(route('dm.status.update', dm.id), { status: 'ongoing' });

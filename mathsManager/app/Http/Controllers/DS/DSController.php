@@ -93,10 +93,11 @@ class DSController extends Controller
     public function show(int $id): InertiaResponse
     {
         $ds = DS::findOrFail($id);
-        abort_unless(Auth::id() === $ds->user_id, 403);
+        $isTeacher = Auth::id() === $ds->teacher_id;
+        abort_unless(Auth::id() === $ds->user_id || $isTeacher, 403);
 
-        $notStarted = $ds->status === DSStatus::NotStarted->value;
-        $unlocked   = $ds->status === DSStatus::Corrected->value;
+        $notStarted = ! $isTeacher && $ds->status === DSStatus::NotStarted->value;
+        $unlocked   = $isTeacher || $ds->status === DSStatus::Corrected->value;
 
         $ds->load(['teacher:id,first_name,last_name', 'correctionRequest']);
         if (! $notStarted) {
@@ -105,7 +106,7 @@ class DSController extends Controller
 
         // Server-side remaining time: prevents client from cheating by reloading
         $timerSeconds = $ds->timer;
-        if ($ds->status === DSStatus::Ongoing->value && $ds->started_at) {
+        if (! $isTeacher && $ds->status === DSStatus::Ongoing->value && $ds->started_at) {
             $elapsed = (int) $ds->started_at->diffInSeconds(now());
             $timerSeconds = max(0, $ds->timer - $elapsed);
         }
@@ -121,6 +122,7 @@ class DSController extends Controller
                 'timer_seconds'       => $timerSeconds,
                 'type_bac'            => (bool) $ds->type_bac,
                 'harder_exercises'    => (bool) $ds->harder_exercises,
+                'is_teacher_preview'  => $isTeacher,
                 'teacher'             => $ds->teacher
                     ? ['id' => $ds->teacher->id, 'first_name' => $ds->teacher->first_name, 'last_name' => $ds->teacher->last_name]
                     : null,

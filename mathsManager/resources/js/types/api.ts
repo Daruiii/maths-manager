@@ -54,6 +54,8 @@ export interface BatchBrief {
   total: number;
   statuses: Record<string, number>;
   pending_actions: number;
+  is_archived: boolean;
+  group_ids: number[];
 }
 
 // ─── Catalogue (dropdowns classification) ─────────────────────────────────────

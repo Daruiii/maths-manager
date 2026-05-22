@@ -32,11 +32,14 @@ class NotificationController extends Controller
         }
 
         if ($type === 'correction_submitted' && !empty($data['correction_id'])) {
-            return redirect('/teacher/corrections/' . $data['correction_id']);
+            return redirect(route('teacher.corrections.show', $data['correction_id']));
         }
 
         if ($type === 'unlock_requested') {
-            return redirect(route('teacher.corrections.index'));
+            if (!empty($data['batch_id'])) {
+                return redirect(route('teacher.assignations.show', ['type' => 'td', 'batch' => $data['batch_id']]));
+            }
+            return redirect(route('teacher.bureau.devoirs'));
         }
 
         if ($type === 'work_assigned' && !empty($data['link'])) {

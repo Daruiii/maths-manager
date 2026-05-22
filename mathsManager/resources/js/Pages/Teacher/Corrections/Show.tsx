@@ -34,6 +34,9 @@ export default function CorrectionShow({
   );
   const [editMessage, setEditMessage] = useState(correctionRequest.correction_message ?? '');
   const [editSessionToken, setEditSessionToken] = useState<string | null>(null);
+  const [editPictures, setEditPictures] = useState<string[]>(
+    correctionRequest.correction_pictures ?? []
+  );
   const [updating, setUpdating] = useState(false);
 
   const isCorrected = correctionRequest.status === 'corrected';
@@ -55,6 +58,16 @@ export default function CorrectionShow({
     );
   }
 
+  function openEdit() {
+    setEditPictures(correctionRequest.correction_pictures ?? []);
+    setIsEditing(true);
+  }
+
+  function cancelEdit() {
+    setEditPictures(correctionRequest.correction_pictures ?? []);
+    setIsEditing(false);
+  }
+
   function updateCorrection(e: React.SyntheticEvent) {
     e.preventDefault();
     if (updating) return;
@@ -63,6 +76,7 @@ export default function CorrectionShow({
       route('teacher.corrections.update', correctionRequest.id),
       {
         ...(editSessionToken ? { upload_session_token: editSessionToken } : {}),
+        existing_pictures: editPictures,
         correction_message: editMessage || null,
         grade: editGrade === '' ? null : Number(editGrade),
       },
@@ -143,12 +157,7 @@ export default function CorrectionShow({
                       <p className="font-comfortaa-bold text-text-color">Correction envoyée</p>
                     </div>
                     {!isEditing && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={Pencil}
-                        onClick={() => setIsEditing(true)}
-                      >
+                      <Button variant="ghost" size="sm" icon={Pencil} onClick={openEdit}>
                         Modifier
                       </Button>
                     )}
@@ -172,12 +181,16 @@ export default function CorrectionShow({
                 {isEditing ? (
                   <form onSubmit={updateCorrection} className="space-y-4">
                     <TheoremCard accent="teacher" dotted>
-                      <SectionLabel>Ajouter des fichiers</SectionLabel>
+                      <SectionLabel>Fichiers de correction</SectionLabel>
                       <div className="mt-3">
                         <UploadSessionWidget
                           purpose="teacher_correction"
                           accentColor="teacher"
                           onTokenChange={setEditSessionToken}
+                          existingPictures={editPictures}
+                          onRemoveExisting={(path) =>
+                            setEditPictures((prev) => prev.filter((p) => p !== path))
+                          }
                         />
                       </div>
                     </TheoremCard>
@@ -224,7 +237,7 @@ export default function CorrectionShow({
                         type="button"
                         variant="ghost"
                         icon={X}
-                        onClick={() => setIsEditing(false)}
+                        onClick={cancelEdit}
                         disabled={updating}
                       >
                         Annuler

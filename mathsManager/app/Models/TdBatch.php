@@ -14,12 +14,14 @@ class TdBatch extends Model
         'student_ids',
         'td_count',
         'due_date',
+        'is_archived',
     ];
 
     protected $casts = [
         'group_ids'   => 'array',
         'student_ids' => 'array',
         'due_date'    => 'date',
+        'is_archived' => 'boolean',
     ];
 
     public function teacher(): BelongsTo

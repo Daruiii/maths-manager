@@ -121,9 +121,15 @@ export default function NotificationBell({ open, onToggle }: NotificationBellPro
               Notifications
             </span>
             {unread_count > 0 && (
-              <span className="text-[10px] font-comfortaa-bold text-student-color bg-student-color/10 px-1.5 py-0.5 rounded-full">
-                {unread_count} non lue{unread_count > 1 ? 's' : ''}
-              </span>
+              <button
+                onClick={() => {
+                  router.post(route('notifications.readAll'));
+                  onToggle(false);
+                }}
+                className="text-[10px] font-comfortaa-bold text-student-color hover:underline"
+              >
+                Tout marquer lu
+              </button>
             )}
           </div>
           <div className="max-h-80 overflow-y-auto divide-y divide-border-color">

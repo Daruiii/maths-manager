@@ -1,20 +1,22 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Camera, Check, Copy, Loader2, Smartphone, Trash2, Upload, X } from 'lucide-react';
+import { Camera, Copy, Loader2, Smartphone, Upload, X } from 'lucide-react';
 import { useUploadSession } from '@/Hooks/Uploads/useUploadSession';
 import Button from '@/Components/Common/UI/Button';
+import ImageLightbox from '@/Components/Common/UI/ImageLightbox';
 import type { UploadPurpose } from '@/types/api';
 
 interface Props {
   purpose: UploadPurpose;
   accentColor?: 'student' | 'teacher';
   onTokenChange: (token: string | null) => void;
+  existingPictures?: string[];
+  onRemoveExisting?: (path: string) => void;
 }
 
-function formatBytes(bytes: number): string {
-  return bytes < 1024 * 1024
-    ? `${Math.round(bytes / 1024)} Ko`
-    : `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+function privateUrl(path: string): string {
+  const [context, identifier, ...rest] = path.split('/');
+  return route('private.file.serve', { context, identifier, filename: rest.join('/') });
 }
 
 const ACCENT: Record<'student' | 'teacher', { text: string; hoverBorder: string }> = {
@@ -26,12 +28,15 @@ export default function UploadSessionWidget({
   purpose,
   accentColor = 'student',
   onTokenChange,
+  existingPictures = [],
+  onRemoveExisting,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     sessionToken,
     mobileUrl,
     files,
+    previews,
     isReady,
     isUploading,
     error,
@@ -55,6 +60,13 @@ export default function UploadSessionWidget({
   function copyLink() {
     if (mobileUrl) navigator.clipboard.writeText(mobileUrl);
   }
+
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const totalCount = existingPictures.length + files.length;
+  const galleryUrls = [
+    ...existingPictures.map(privateUrl),
+    ...files.map((f) => previews[f.id] ?? ''),
+  ];
 
   if (!isReady) {
     return (
@@ -105,7 +117,7 @@ export default function UploadSessionWidget({
       <div className="border-t border-border-color pt-4 space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-xs font-comfortaa-bold text-text-gray uppercase tracking-wide">
-            Fichiers ({files.length})
+            Fichiers ({totalCount})
           </p>
           <div>
             <input
@@ -129,33 +141,83 @@ export default function UploadSessionWidget({
           </div>
         </div>
 
-        {files.length === 0 ? (
+        {totalCount === 0 ? (
           <div className="flex items-center justify-center gap-2 py-6 text-sm text-text-gray border-2 border-dashed border-border-color rounded-xl">
             <Camera size={16} />
             Aucune photo encore — utilisez le QR ou le bouton ci-dessus
           </div>
         ) : (
-          <ul className="space-y-1.5">
-            {files.map((f) => (
-              <li
-                key={f.id}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-color border border-border-color"
-              >
-                <Check size={14} className="text-success-color shrink-0" />
-                <span className="flex-1 text-sm text-text-color truncate">{f.original_name}</span>
-                <span className="text-xs text-text-gray shrink-0">{formatBytes(f.size)}</span>
-                <button
-                  type="button"
-                  onClick={() => removeFile(f.id)}
-                  className="shrink-0 text-text-gray hover:text-error-color transition-colors"
-                >
-                  <Trash2 size={13} />
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div
+            className="grid gap-2"
+            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(64px, 1fr))' }}
+          >
+            {existingPictures.map((path, i) => {
+              const url = privateUrl(path);
+              return (
+                <div key={path} className="relative aspect-square group">
+                  <button
+                    type="button"
+                    onClick={() => setLightboxIndex(i)}
+                    className="block w-full h-full rounded-xl overflow-hidden border border-border-color hover:opacity-80 transition-opacity"
+                  >
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                  {onRemoveExisting && (
+                    <button
+                      type="button"
+                      onClick={() => onRemoveExisting(path)}
+                      className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 rounded-full bg-black/60 hover:bg-error-color text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Supprimer"
+                    >
+                      <X size={10} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+            {files.map((f, i) => {
+              const previewUrl = previews[f.id];
+              const galleryIndex = existingPictures.length + i;
+              return (
+                <div key={f.id} className="relative aspect-square group">
+                  {previewUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => setLightboxIndex(galleryIndex)}
+                      className="block w-full h-full rounded-xl overflow-hidden border border-border-color hover:opacity-80 transition-opacity"
+                    >
+                      <img
+                        src={previewUrl}
+                        alt={f.original_name}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ) : (
+                    <div className="w-full h-full rounded-xl border border-border-color bg-surface-color flex items-center justify-center">
+                      <Camera size={16} className="text-text-gray" />
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeFile(f.id)}
+                    className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 rounded-full bg-black/60 hover:bg-error-color text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Supprimer"
+                  >
+                    <X size={10} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
+
+      <ImageLightbox
+        images={galleryUrls}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndexChange={setLightboxIndex}
+      />
     </div>
   );
 }

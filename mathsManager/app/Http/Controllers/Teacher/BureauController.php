@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\BuilderTemplate;
-use App\Models\CorrectionRequest;
 use App\Models\DmBatch;
 use App\Models\DsBatch;
 use App\Models\PrivateExercise;
 use App\Models\StudentGroup;
 use App\Models\TdBatch;
+use App\Enums\DSStatus;
+use App\Enums\DmStatus;
+use App\Enums\TdStatus;
 use App\Services\BureauActivityService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -25,25 +28,20 @@ class BureauController extends Controller
     {
         $teacher = Auth::user();
 
-        $pendingCorrectionsCount = CorrectionRequest::where('status', 'pending')
-            ->where(function ($q) use ($teacher) {
-                $q->whereHas('ds', fn ($q) => $q->where('teacher_id', $teacher->id))
-                  ->orWhereHas('dm', fn ($q) => $q->where('teacher_id', $teacher->id));
-            })
-            ->count();
-
         $batchesCount = DsBatch::where('teacher_id', $teacher->id)->count()
             + TdBatch::where('teacher_id', $teacher->id)->count()
             + DmBatch::where('teacher_id', $teacher->id)->count();
 
+        $studentsCount = $teacher->students()->where('status', 'active')->count();
+
         return Inertia::render('Teacher/Bureau/Index', [
             'stats' => [
-                'exercisesCount'          => PrivateExercise::forTeacher($teacher->id)->count(),
-                'dsTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'ds')->count(),
-                'tdTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'td')->count(),
-                'dmTemplatesCount'        => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'dm')->count(),
-                'pendingCorrectionsCount' => $pendingCorrectionsCount,
-                'batchesCount'            => $batchesCount,
+                'exercisesCount'   => PrivateExercise::forTeacher($teacher->id)->count(),
+                'dsTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'ds')->count(),
+                'tdTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'td')->count(),
+                'dmTemplatesCount' => BuilderTemplate::where('teacher_id', $teacher->id)->where('type', 'dm')->count(),
+                'batchesCount'     => $batchesCount,
+                'studentsCount'    => $studentsCount,
             ],
         ]);
     }
@@ -70,11 +68,31 @@ class BureauController extends Controller
             ->orderByDesc('created_at')->get()
             ->map(fn($b) => $this->mapBatch($b, 'dms', 'dm'));
 
+        $groups = StudentGroup::where('teacher_id', $teacher->id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return Inertia::render('Teacher/Bureau/Devoirs', [
             'dsBatches' => $dsBatches,
             'tdBatches' => $tdBatches,
             'dmBatches' => $dmBatches,
+            'groups'    => $groups,
         ]);
+    }
+
+    public function toggleArchive(string $type, int $id): RedirectResponse
+    {
+        $modelClass = match ($type) {
+            'ds' => DsBatch::class,
+            'dm' => DmBatch::class,
+            'td' => TdBatch::class,
+            default => abort(404),
+        };
+
+        $batch = $modelClass::where('teacher_id', Auth::id())->findOrFail($id);
+        $batch->update(['is_archived' => !$batch->is_archived]);
+
+        return back();
     }
 
     private function mapBatch(mixed $batch, string $relation, string $type): array
@@ -88,19 +106,32 @@ class BureauController extends Controller
             default => '',
         };
 
+        $completedKey = match ($type) {
+            'ds' => DSStatus::Corrected->value,
+            'dm' => DmStatus::Corrected->value,
+            'td' => TdStatus::CorrectionUnlocked->value,
+            default => '',
+        };
+
         $statuses = $items
             ->groupBy(fn($item) => $item->status instanceof \BackedEnum ? $item->status->value : $item->status)
             ->map->count()
             ->toArray();
+
+        $total        = $items->count();
+        $pendingCount = $statuses[$pendingKey] ?? 0;
+        $isComplete   = $total > 0 && ($statuses[$completedKey] ?? 0) >= $total;
 
         return [
             'id'              => $batch->id,
             'title'           => $items->first()?->custom_title ?? strtoupper($type),
             'due_date'        => $batch->due_date?->format('Y-m-d'),
             'created_at'      => $batch->created_at->format('Y-m-d'),
-            'total'           => $items->count(),
+            'total'           => $total,
             'statuses'        => $statuses,
-            'pending_actions' => $statuses[$pendingKey] ?? 0,
+            'pending_actions' => $pendingCount,
+            'is_archived'     => $batch->is_archived || $isComplete,
+            'group_ids'       => $batch->group_ids ?? [],
         ];
     }
 
