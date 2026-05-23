@@ -49,6 +49,7 @@ export interface HomeProps {
   unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
   activeStudentsCount?: number;
   assignedThisMonth?: number;
+  activeBatches?: { ds: number; dm: number; td: number };
   // Student
   activeAssignments?: {
     ds: HomeActiveAssignment[];

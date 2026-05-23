@@ -8,6 +8,7 @@ export default {
     './storage/framework/views/*.php',
     './resources/views/**/*.blade.php',
     './resources/js/**/*.tsx',
+    './resources/js/**/*.ts',
   ],
 
   darkMode: 'class',
@@ -40,6 +41,11 @@ export default {
         'admin-color': 'rgb(var(--admin-color) / <alpha-value>)',
         'teacher-color': 'rgb(var(--teacher-color) / <alpha-value>)',
         'student-color': 'rgb(var(--student-color) / <alpha-value>)',
+
+        // ── Content types (DS / DM / TD) — not role colors ────────────────
+        'ds-color': 'rgb(var(--ds-color) / <alpha-value>)',
+        'dm-color': 'rgb(var(--dm-color) / <alpha-value>)',
+        'td-color': 'rgb(var(--td-color) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Comfortaa', ...defaultTheme.fontFamily.sans],

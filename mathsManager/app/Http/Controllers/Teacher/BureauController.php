@@ -101,8 +101,8 @@ class BureauController extends Controller
 
         $pendingKey = match ($type) {
             'ds'    => 'sent',
-            'td'    => 'correction_requested',
             'dm'    => 'finished',
+            'td'    => 'correction_requested',
             default => '',
         };
 

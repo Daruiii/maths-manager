@@ -36,7 +36,7 @@ class TeacherTdUnlockController extends Controller
         abort_unless($batch->teacher_id === Auth::id(), 403);
 
         $toUnlock = $batch->tds()
-            ->where('status', TdStatus::CorrectionRequested)
+            ->where('status', '!=', TdStatus::CorrectionUnlocked)
             ->with('student')
             ->get();
 

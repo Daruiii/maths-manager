@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ChevronRight, CheckCircle2, Bell } from 'lucide-react';
 import { useAuth } from '@/Hooks/Auth/useAuth';
+import TypeBadge from '@/Components/Common/UI/TypeBadge';
 import TeacherSidebar from '@/Pages/Home/Partials/TeacherSidebar';
 import {
   BatchCorrectionItem,
@@ -8,6 +9,7 @@ import {
   type BatchGroup,
 } from '@/Pages/Home/Partials/PendingFeedItems';
 import type { HomePendingCorrectionItem, HomeUnlockRequestItem } from '@/types';
+import type { BatchType } from '@/types/api';
 
 function groupByBatch(items: HomePendingCorrectionItem[]): BatchGroup[] {
   const map = new Map<string, BatchGroup>();
@@ -33,7 +35,14 @@ interface Props {
   pendingTeachersCount?: number;
   activeStudentsCount?: number;
   assignedThisMonth?: number;
+  activeBatches?: { ds: number; dm: number; td: number };
 }
+
+const BATCH_SHORTCUTS: { type: BatchType; label: string }[] = [
+  { type: 'ds', label: 'DS' },
+  { type: 'dm', label: 'DM' },
+  { type: 'td', label: 'TD' },
+];
 
 export default function TeacherHome({
   pendingCorrections,
@@ -41,6 +50,7 @@ export default function TeacherHome({
   pendingTeachersCount,
   activeStudentsCount,
   assignedThisMonth,
+  activeBatches,
 }: Props) {
   const { user } = useAuth();
   const firstName = user?.first_name ?? '';
@@ -190,6 +200,33 @@ export default function TeacherHome({
               )}
             </div>
           )}
+
+          {/* Raccourcis devoirs */}
+          <Link
+            href={route('teacher.bureau.devoirs')}
+            className="block bg-secondary-color border border-border-color rounded-2xl overflow-hidden hover:shadow-warm-sm transition-all animate-fadeInUp group"
+            style={{ animationDelay: '80ms' }}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border-color">
+              <span className="text-xs font-comfortaa-bold text-text-color uppercase tracking-wider">
+                Devoirs envoyés
+              </span>
+              <ChevronRight
+                size={13}
+                className="text-text-gray group-hover:text-teacher-color transition-colors"
+              />
+            </div>
+            <div className="grid grid-cols-3 divide-x divide-border-color">
+              {BATCH_SHORTCUTS.map(({ type }) => (
+                <div key={type} className="flex flex-col items-center gap-1.5 py-3">
+                  <TypeBadge type={type} size="sm" />
+                  <span className="font-cmu-serif text-xl text-text-color leading-none">
+                    {activeBatches?.[type] ?? 0}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Link>
         </div>
 
         <TeacherSidebar assignedThisMonth={assignedThisMonth} />

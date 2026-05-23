@@ -21,6 +21,7 @@ export default function Home(props: HomeProps) {
           pendingTeachersCount={props.pendingTeachersCount}
           activeStudentsCount={props.activeStudentsCount}
           assignedThisMonth={props.assignedThisMonth}
+          activeBatches={props.activeBatches}
         />
       );
     if (isStudent)

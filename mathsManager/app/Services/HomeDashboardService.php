@@ -75,7 +75,12 @@ class HomeDashboardService
                 ? User::where('role', 'teacher')->where('status', 'pending_approval')->count()
                 : 0,
             'activeStudentsCount' => $user->students()->where('status', 'active')->count(),
-            'assignedThisMonth' => $this->assignedThisMonth($user),
+            'assignedThisMonth'   => $this->assignedThisMonth($user),
+            'activeBatches'       => [
+                'ds' => DsBatch::where('teacher_id', $user->id)->where('is_archived', false)->count(),
+                'dm' => DmBatch::where('teacher_id', $user->id)->where('is_archived', false)->count(),
+                'td' => TdBatch::where('teacher_id', $user->id)->where('is_archived', false)->count(),
+            ],
         ];
     }
 

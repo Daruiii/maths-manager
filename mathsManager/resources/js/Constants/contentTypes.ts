@@ -57,16 +57,16 @@ export type ContentItemKey = keyof typeof CONTENT_ITEM_META;
 
 export const CONTENT_TYPE_STYLES = {
   ds: {
-    badge: 'bg-tertiary-color/15 text-tertiary-color',
-    dot: 'bg-tertiary-color',
+    badge: 'bg-ds-color/15 text-ds-color',
+    dot: 'bg-ds-color',
   },
   dm: {
-    badge: 'bg-admin-color/15 text-admin-color',
-    dot: 'bg-admin-color',
+    badge: 'bg-dm-color/15 text-dm-color',
+    dot: 'bg-dm-color',
   },
   td: {
-    badge: 'bg-info-color/15 text-info-color',
-    dot: 'bg-info-color',
+    badge: 'bg-td-color/15 text-td-color',
+    dot: 'bg-td-color',
   },
 } as const;
 

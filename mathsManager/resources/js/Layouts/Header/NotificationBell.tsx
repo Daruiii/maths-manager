@@ -99,7 +99,7 @@ export default function NotificationBell({ open, onToggle }: NotificationBellPro
       >
         <Bell size={18} />
         {unread_count > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-student-color text-white text-[10px] font-comfortaa-bold rounded-full flex items-center justify-center leading-none">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-error-color text-white text-[10px] font-comfortaa-bold rounded-full flex items-center justify-center leading-none">
             {unread_count > 9 ? '9+' : unread_count}
           </span>
         )}

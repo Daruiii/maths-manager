@@ -12,6 +12,7 @@ use App\Models\CorrectionRequest;
 use App\Models\Td;
 use App\Models\TemporaryUploadSession;
 use App\Notifications\TeacherSentCorrection;
+use App\Notifications\TeacherUpdatedCorrection;
 use App\Services\TemporaryUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -79,11 +80,14 @@ class TeacherCorrectionController extends Controller
             'grade'                => ['nullable', 'numeric', 'min:0', 'max:20'],
         ]);
 
-        $base = array_key_exists('existing_pictures', $data)
-            ? ($data['existing_pictures'] ?? [])
-            : ($correctionRequest->correction_pictures ?? []);
+        $currentPictures = $correctionRequest->correction_pictures ?? [];
+        $requestedPictures = $data['existing_pictures'] ?? null;
+        $base = is_array($requestedPictures)
+            ? array_values(array_intersect($requestedPictures, $currentPictures))
+            : $currentPictures;
 
         $updatePayload = [
+            'corrector_id'        => Auth::id(),
             'correction_message' => $data['correction_message'] ?? null,
             'grade'              => isset($data['grade']) ? (float) $data['grade'] : null,
             'correction_pictures' => $base,
@@ -107,6 +111,8 @@ class TeacherCorrectionController extends Controller
         }
 
         $correctionRequest->update($updatePayload);
+        $correctionRequest->refresh();
+        $correctionRequest->user->notify(new TeacherUpdatedCorrection($correctionRequest));
 
         return back()->with('success', 'Correction mise à jour.');
     }

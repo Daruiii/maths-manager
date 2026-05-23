@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Archive, BookOpen, ChevronLeft, Search, X } from 'lucide-react';
+import { Archive, BookOpen, ChevronLeft } from 'lucide-react';
+import SearchInput from '@/Components/Common/Form/SearchInput';
 import AppLayout from '@/Layouts/AppLayout';
 import BatchRow from './Partials/BatchRow';
 import BatchTypeTabBar from './Partials/BatchTypeTabBar';
@@ -213,27 +214,12 @@ export default function BureauDevoirs({ dsBatches, tdBatches, dmBatches, groups 
                 />
               )}
             </div>
-            <div className="relative">
-              <Search
-                size={12}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-text-gray pointer-events-none"
-              />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un devoir…"
-                className="w-40 sm:w-52 pl-8 pr-8 py-1.5 text-xs border border-border-color bg-secondary-color rounded-xl text-text-color placeholder:text-text-gray focus:outline-none focus:border-teacher-color/50 transition-colors"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-gray hover:text-text-color"
-                >
-                  <X size={11} />
-                </button>
-              )}
-            </div>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder="Rechercher un devoir…"
+              className="w-40 sm:w-52"
+            />
           </div>
         </div>
 

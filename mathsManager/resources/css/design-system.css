@@ -43,6 +43,16 @@
   --info-color: 40 104 178;
 
   /* ========================================
+     CONTENT TYPES (DS / DM / TD)
+     Intentionally NOT role colors — usage
+     reserved to type badges and type-specific
+     UI only, never for role affiliation.
+     ======================================== */
+  --ds-color: 2 132 199;   /* sky-700  — test formel */
+  --dm-color: 219 39 119;  /* pink-600 — devoir maison */
+  --td-color: 77 124 15;   /* lime-800 — travaux dirigés */
+
+  /* ========================================
      ROLE COLORS
      ======================================== */
   --admin-color: 251 191 36; /* amber-400 — plus doré pour badges */

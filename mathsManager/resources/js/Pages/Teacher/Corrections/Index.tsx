@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { ClipboardList, ChevronRight, LockOpen, Clock } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
@@ -65,7 +66,7 @@ function groupTdByBatch(items: TdUnlockBrief[]): TdBatchGroup[] {
 export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests, filters }: Props) {
   const items = correctionRequests.data;
   const showTdUnlocks = filters.status === 'pending' || filters.status === 'all';
-  const tdBatchGroups = groupTdByBatch(tdUnlockRequests);
+  const tdBatchGroups = useMemo(() => groupTdByBatch(tdUnlockRequests), [tdUnlockRequests]);
 
   function setStatus(status: string) {
     router.get(
@@ -147,7 +148,13 @@ export default function CorrectionsIndex({ correctionRequests, tdUnlockRequests,
                         variant="teacher"
                         size="sm"
                         icon={LockOpen}
-                        onClick={() => router.patch(route('teacher.td.unlock', td.id))}
+                        onClick={() =>
+                          router.patch(
+                            route('teacher.td.unlock', td.id),
+                            {},
+                            { preserveState: true, preserveScroll: true }
+                          )
+                        }
                       >
                         Débloquer
                       </Button>

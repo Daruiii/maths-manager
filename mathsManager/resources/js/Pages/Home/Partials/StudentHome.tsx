@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useAuth } from '@/Hooks/Auth/useAuth';
 import StudentSidebar from '@/Pages/Home/Partials/StudentSidebar';
 import { formatDueDate } from '@/Pages/Home/Partials/AssignmentItem';
@@ -31,12 +32,23 @@ export default function StudentHome({
   const ds = activeAssignments?.ds ?? [];
   const dm = activeAssignments?.dm ?? [];
   const td = activeAssignments?.td ?? [];
-  const allItems = buildSortedItems(ds, dm, td);
-  const total = allItems.length;
-  const ongoingCount = allItems.filter((i) => isOngoingStatus(i.status)).length;
-  const toDoCount = allItems.filter((i) => isActionableStatus(i.status)).length;
 
-  const dropdownItems = allItems.filter((i) => isActionableStatus(i.status)).slice(0, 5);
+  const allItems = useMemo(() => buildSortedItems(ds, dm, td), [ds, dm, td]);
+  const actionableItems = useMemo(
+    () => allItems.filter((i) => isActionableStatus(i.status)),
+    [allItems]
+  );
+
+  const total = allItems.length;
+  const ongoingCount = useMemo(
+    () => allItems.filter((i) => isOngoingStatus(i.status)).length,
+    [allItems]
+  );
+  const toDoCount = actionableItems.length;
+  const dropdownItems = useMemo(() => actionableItems.slice(0, 5), [actionableItems]);
+  const displayItems = useMemo(() => allItems.slice(0, 4), [allItems]);
+  const remainingCount = Math.max(0, total - 4);
+
   const firstAction = dropdownItems[0];
   const ctaHref = firstAction?.href ?? route('student.assignments.index');
   const ctaLabel = !firstAction
@@ -45,21 +57,19 @@ export default function StudentHome({
       ? 'Reprendre'
       : 'Commencer';
 
-  const displayItems = allItems.slice(0, 4);
-  const remainingCount = Math.max(0, total - 4);
-
-  const nextDueItem = allItems.find((i) => i.due_date && isActionableStatus(i.status));
-  const dueFmt = nextDueItem ? formatDueDate(nextDueItem.due_date) : null;
-  const nextDue =
-    nextDueItem && dueFmt
-      ? {
-          label: dueFmt.label,
-          title: nextDueItem.title,
-          type: nextDueItem.type,
-          href: nextDueItem.href,
-          urgent: dueFmt.urgent,
-        }
-      : null;
+  const nextDue = useMemo(() => {
+    const item = actionableItems.find((i) => i.due_date);
+    if (!item) return null;
+    const fmt = formatDueDate(item.due_date);
+    if (!fmt) return null;
+    return {
+      label: fmt.label,
+      title: item.title,
+      type: item.type,
+      href: item.href,
+      urgent: fmt.urgent,
+    };
+  }, [actionableItems]);
 
   const heroMessage =
     total === 0

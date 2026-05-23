@@ -2,7 +2,11 @@ import { Link, router } from '@inertiajs/react';
 import { Archive, ArchiveRestore, Calendar, ChevronRight, LockOpen, Users } from 'lucide-react';
 import Button from '@/Components/Common/UI/Button';
 import TypeBadge from '@/Components/Common/UI/TypeBadge';
-import { BATCH_STATUS_META } from '@/Constants/statuses';
+import {
+  BATCH_STATUS_META,
+  getTeacherStatusLabel,
+  STATUS_DISPLAY_PRIORITY,
+} from '@/Constants/statuses';
 import type { BatchBrief, BatchType } from '@/types/api';
 
 interface Props {
@@ -21,13 +25,21 @@ export default function BatchRow({ batch, type }: Props) {
   const isOverdue = !isComplete && batch.due_date !== null && new Date(batch.due_date) < new Date();
 
   function unlockAll() {
-    router.patch(route('teacher.td.batch.unlock', batch.id));
+    router.patch(
+      route('teacher.td.batch.unlock', batch.id),
+      {},
+      { preserveState: true, preserveScroll: true }
+    );
   }
 
   function toggleArchive(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    router.patch(route('teacher.bureau.batch.archive', { type, id: batch.id }));
+    router.patch(
+      route('teacher.bureau.batch.archive', { type, id: batch.id }),
+      {},
+      { preserveState: true, preserveScroll: true }
+    );
   }
 
   return (
@@ -103,11 +115,12 @@ export default function BatchRow({ batch, type }: Props) {
         </div>
 
         {Object.keys(batch.statuses).length > 0 && (
-          <div className="relative mt-2 pt-2 border-t border-border-color/50">
-            <div className="flex gap-1 overflow-x-hidden">
-              {Object.entries(batch.statuses).map(([status, count]) => {
+          <div className="mt-2 pt-2 border-t border-border-color/50 flex gap-1 flex-wrap">
+            {STATUS_DISPLAY_PRIORITY.filter((s) => s in batch.statuses)
+              .slice(0, 4)
+              .map((status) => {
+                const count = batch.statuses[status];
                 const meta = BATCH_STATUS_META[status] ?? {
-                  label: status,
                   classes: 'bg-surface-color text-text-gray',
                 };
                 return (
@@ -116,12 +129,10 @@ export default function BatchRow({ batch, type }: Props) {
                     className={`inline-flex shrink-0 items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] ${meta.classes}`}
                   >
                     <span className="font-comfortaa-bold">{count}</span>
-                    <span className="opacity-80">{meta.label}</span>
+                    <span className="opacity-80">{getTeacherStatusLabel(status, type)}</span>
                   </span>
                 );
               })}
-            </div>
-            <div className="absolute right-0 top-2 bottom-0 w-4 bg-gradient-to-l from-surface-color pointer-events-none" />
           </div>
         )}
       </Link>
@@ -129,7 +140,7 @@ export default function BatchRow({ batch, type }: Props) {
       {type === 'td' && hasPending && (
         <div className="px-3 pb-3 pt-0">
           <Button variant="teacher" size="sm" icon={LockOpen} onClick={unlockAll}>
-            Débloquer ({batch.pending_actions})
+            Débloquer demandes ({batch.pending_actions})
           </Button>
         </div>
       )}
