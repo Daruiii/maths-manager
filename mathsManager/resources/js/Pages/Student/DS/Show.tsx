@@ -1,11 +1,10 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Eye } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
 import DsStatusContent from '@/Pages/Student/DS/Partials/DsStatusContent';
-import AssignmentContentList from '@/Components/Features/Assignments/AssignmentContentList';
+import TeacherPreviewView from '@/Components/Features/Assignments/TeacherPreviewView';
 import { useDsTimer } from '@/Hooks/DS/useDsTimer';
 import type { Ds } from '@/types/models';
 
@@ -45,32 +44,14 @@ export default function DsShow({ ds }: { ds: Ds }) {
 
   if (isTeacherPreview) {
     return (
-      <AppLayout>
-        <Head title={title} />
-        <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-          <PageHeader
-            title={title}
-            breadcrumbs={[
-              { label: 'Devoirs envoyés', href: route('teacher.bureau.devoirs') },
-              { label: title },
-            ]}
-          />
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-teacher-color/[0.06] border border-teacher-color/20 text-teacher-color text-xs font-comfortaa-bold">
-            <Eye size={13} />
-            Prévisualisation — vue enseignant (avec corrigés)
-          </div>
-          <AssignmentContentList
-            problems={ds.problems}
-            exercises={ds.exercises}
-            privateExercises={ds.private_exercises}
-            variant="academic"
-            title={title}
-            level={ds.custom_level}
-            instructions={defaultInstructions(ds)}
-            showSolutions
-          />
-        </div>
-      </AppLayout>
+      <TeacherPreviewView
+        title={title}
+        level={ds.custom_level}
+        instructions={defaultInstructions(ds)}
+        problems={ds.problems}
+        exercises={ds.exercises}
+        privateExercises={ds.private_exercises}
+      />
     );
   }
 

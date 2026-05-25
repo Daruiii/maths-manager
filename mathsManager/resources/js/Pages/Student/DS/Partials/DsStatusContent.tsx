@@ -8,33 +8,15 @@ import {
   Pause,
   Play,
   ChevronLeft,
-  EyeOff,
 } from 'lucide-react';
 import Button from '@/Components/Common/UI/Button';
 import TheoremCard from '@/Components/Common/UI/TheoremCard';
-import AssignmentContentList from '@/Components/Features/Assignments/AssignmentContentList';
 import AssignmentMeta from '@/Components/Features/Assignments/AssignmentMeta';
 import CopySubmitSection from '@/Components/Features/Assignments/CopySubmitSection';
 import CorrectionResultBlock from '@/Components/Features/Assignments/CorrectionResultBlock';
-import type { Ds } from '@/types/models';
-
-interface Props {
-  ds: Ds;
-  remainingFormatted: string;
-  instructions: string;
-  urgent: boolean;
-  sessionToken: string | null;
-  message: string;
-  submitting: boolean;
-  uploadError: string | null;
-  onStart: () => void;
-  onPause: () => void;
-  onResume: () => void;
-  onFinish: () => void;
-  onSubmitCopy: (e: React.SyntheticEvent) => void;
-  onTokenChange: (token: string | null) => void;
-  onMessageChange: (msg: string) => void;
-}
+import DsContentList from '@/Pages/Student/DS/Partials/DsContentList';
+import DsHiddenSubjectNotice from '@/Pages/Student/DS/Partials/DsHiddenSubjectNotice';
+import type { DsStatusContentProps } from '@/Pages/Student/DS/Partials/dsStatusContentTypes';
 
 export default function DsStatusContent({
   ds,
@@ -52,20 +34,11 @@ export default function DsStatusContent({
   onSubmitCopy,
   onTokenChange,
   onMessageChange,
-}: Props) {
+}: DsStatusContentProps) {
   const cr = ds.correction_request;
 
   const contentList = (
-    <AssignmentContentList
-      problems={ds.problems}
-      exercises={ds.exercises}
-      privateExercises={ds.private_exercises}
-      variant="academic"
-      title={ds.custom_title ?? 'Devoir Surveillé'}
-      level={ds.custom_level}
-      instructions={instructions}
-      showSolutions={ds.status === 'corrected'}
-    />
+    <DsContentList ds={ds} instructions={instructions} showSolutions={ds.status === 'corrected'} />
   );
 
   if (ds.status === 'not_started') {
@@ -80,16 +53,11 @@ export default function DsStatusContent({
             </p>
           </div>
         </TheoremCard>
-        <TheoremCard accent="student" dotted>
-          <div className="flex items-start gap-2">
-            <EyeOff size={15} className="text-text-gray mt-0.5 shrink-0" />
-            <p className="text-sm text-text-gray leading-relaxed">
-              Le sujet sera révélé uniquement après avoir cliqué sur{' '}
-              <span className="font-comfortaa-bold text-text-color">« Commencer le DS »</span>.
-              Assurez-vous d&apos;être prêt — le chronomètre démarre immédiatement.
-            </p>
-          </div>
-        </TheoremCard>
+        <DsHiddenSubjectNotice>
+          Le sujet sera révélé uniquement après avoir cliqué sur{' '}
+          <span className="font-comfortaa-bold text-text-color">« Commencer le DS »</span>.
+          Assurez-vous d&apos;être prêt — le chronomètre démarre immédiatement.
+        </DsHiddenSubjectNotice>
         <Button variant="student" icon={CheckCircle} onClick={onStart}>
           Commencer le DS
         </Button>
@@ -142,15 +110,10 @@ export default function DsStatusContent({
             </Button>
           </div>
         </TheoremCard>
-        <TheoremCard accent="student" dotted>
-          <div className="flex items-start gap-2">
-            <EyeOff size={15} className="text-text-gray mt-0.5 shrink-0" />
-            <p className="text-sm text-text-gray leading-relaxed">
-              Le sujet est masqué pendant la pause pour préserver l&apos;intégrité du devoir.
-              Reprends le DS pour y accéder.
-            </p>
-          </div>
-        </TheoremCard>
+        <DsHiddenSubjectNotice>
+          Le sujet est masqué pendant la pause pour préserver l&apos;intégrité du devoir. Reprends
+          le DS pour y accéder.
+        </DsHiddenSubjectNotice>
         <Link
           href={route('student.assignments.index')}
           className="inline-flex items-center gap-1.5 text-sm text-text-gray hover:text-student-color transition-colors"

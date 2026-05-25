@@ -1,6 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { CheckCircle, Clock, BookOpenCheck, Eye } from 'lucide-react';
+import { CheckCircle, Clock, BookOpenCheck } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import Button from '@/Components/Common/UI/Button';
@@ -11,6 +11,7 @@ import AssignmentContentList from '@/Components/Features/Assignments/AssignmentC
 import AssignmentMeta from '@/Components/Features/Assignments/AssignmentMeta';
 import CopySubmitSection from '@/Components/Features/Assignments/CopySubmitSection';
 import CorrectionResultBlock from '@/Components/Features/Assignments/CorrectionResultBlock';
+import TeacherPreviewView from '@/Components/Features/Assignments/TeacherPreviewView';
 import type { Dm } from '@/types/models';
 
 export default function DmShow({ dm }: { dm: Dm }) {
@@ -27,32 +28,14 @@ export default function DmShow({ dm }: { dm: Dm }) {
 
   if (isTeacherPreview) {
     return (
-      <AppLayout>
-        <Head title={title} />
-        <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-          <PageHeader
-            title={title}
-            breadcrumbs={[
-              { label: 'Devoirs envoyés', href: route('teacher.bureau.devoirs') },
-              { label: title },
-            ]}
-          />
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-teacher-color/[0.06] border border-teacher-color/20 text-teacher-color text-xs font-comfortaa-bold">
-            <Eye size={13} />
-            Prévisualisation — vue enseignant (avec corrigés)
-          </div>
-          <AssignmentContentList
-            problems={dm.problems}
-            exercises={dm.exercises}
-            privateExercises={dm.private_exercises}
-            variant="academic"
-            title={title}
-            level={dm.custom_level}
-            instructions={dm.custom_instructions}
-            showSolutions
-          />
-        </div>
-      </AppLayout>
+      <TeacherPreviewView
+        title={title}
+        level={dm.custom_level}
+        instructions={dm.custom_instructions}
+        problems={dm.problems}
+        exercises={dm.exercises}
+        privateExercises={dm.private_exercises}
+      />
     );
   }
 
