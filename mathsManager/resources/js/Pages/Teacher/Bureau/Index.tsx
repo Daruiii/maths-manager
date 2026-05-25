@@ -23,16 +23,25 @@ interface NavLinkProps {
   subtitle: string;
   href: string;
   count?: number;
+  featured?: boolean;
 }
 
-function NavLink({ icon: Icon, title, subtitle, href, count }: NavLinkProps) {
+function NavLink({ icon: Icon, title, subtitle, href, count, featured = false }: NavLinkProps) {
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 px-4 py-3 bg-secondary-color border border-border-color rounded-2xl hover:bg-surface-color hover:shadow-warm-sm transition-all duration-200"
+      className={`group flex items-center gap-3 px-4 py-3 bg-secondary-color border rounded-2xl hover:bg-surface-color hover:shadow-warm-sm transition-all duration-200 ${
+        featured ? 'border-teacher-color/25' : 'border-border-color'
+      }`}
     >
-      <div className="p-2 bg-surface-color border border-border-color rounded-xl shrink-0">
-        <Icon size={15} className="text-text-gray" />
+      <div
+        className={`p-2 border rounded-xl shrink-0 ${
+          featured
+            ? 'bg-teacher-color/10 border-teacher-color/20'
+            : 'bg-surface-color border-border-color'
+        }`}
+      >
+        <Icon size={15} className={featured ? 'text-teacher-color' : 'text-text-gray'} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-comfortaa-bold text-text-color">{title}</p>
@@ -75,19 +84,21 @@ export default function BureauIndex({ stats }: Props) {
         {/* ── Travaux ── */}
         <section className="space-y-3">
           <p className="mm-section-header">Travaux</p>
-          <div className="space-y-2">
+          <div className="grid sm:grid-cols-2 gap-2">
             <NavLink
               icon={Send}
               title="Devoirs envoyés"
               subtitle="DS, DM et TD — vue par batch et par élève"
               href={route('teacher.bureau.devoirs')}
               count={stats.batchesCount}
+              featured
             />
             <NavLink
               icon={ClipboardList}
               title="Corrections"
               subtitle="Copies reçues, notes et retours"
               href={route('teacher.corrections.index')}
+              featured
             />
           </div>
         </section>
@@ -116,7 +127,8 @@ export default function BureauIndex({ stats }: Props) {
         </section>
 
         {/* ── Mes élèves ── */}
-        <section>
+        <section className="space-y-3">
+          <p className="mm-section-header">Classe</p>
           <NavLink
             icon={Users}
             title="Mes élèves"
