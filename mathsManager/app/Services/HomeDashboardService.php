@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
 use App\Enums\CorrectionRequestStatus;
 use App\Enums\DmStatus;
 use App\Enums\DSStatus;
@@ -86,22 +87,46 @@ class HomeDashboardService
 
     public function studentPayload(User $user): array
     {
+        $correctionRequests = $this->studentFeedbackRequests($user);
+        $correctedCount = $this->correctedFeedbackCount($correctionRequests);
+
+        return [
+            'activeAssignments' => $this->studentActiveAssignments($user),
+            'averageGrade' => $this->averageFeedbackGrade($correctionRequests),
+            'correctedCount' => $correctedCount,
+            'feedbackSummary' => [
+                'corrected' => $correctedCount,
+                'pending'   => $this->pendingFeedbackCount($correctionRequests),
+            ],
+            'recentFeedbackItems' => $this->recentFeedbackItems($correctionRequests),
+        ];
+    }
+
+    private function studentActiveAssignments(User $user): array
+    {
         $activeDs = DS::where('user_id', $user->id)
             ->whereIn('status', [
                 DSStatus::NotStarted->value,
                 DSStatus::Ongoing->value,
                 DSStatus::Paused->value,
-                DSStatus::Sent->value,
+                DSStatus::Finished->value,
+                DSStatus::FinishedLate->value,
             ])
             ->with('batch:id,due_date')
             ->latest()
             ->get(['id', 'custom_title', 'status', 'batch_id']);
 
         $activeDm = Dm::where('user_id', $user->id)
-            ->whereIn('status', [
-                DmStatus::NotStarted->value,
-                DmStatus::Ongoing->value,
-            ])
+            ->where(function ($query) {
+                $query->whereIn('status', [
+                    DmStatus::NotStarted->value,
+                    DmStatus::Ongoing->value,
+                ])
+                    ->orWhere(function ($query) {
+                        $query->where('status', DmStatus::Finished->value)
+                            ->whereDoesntHave('correctionRequest');
+                    });
+            })
             ->with('batch:id,due_date')
             ->latest()
             ->get(['id', 'custom_title', 'status', 'batch_id']);
@@ -116,38 +141,82 @@ class HomeDashboardService
             ->latest()
             ->get(['id', 'custom_title', 'status', 'batch_id']);
 
-        $averageGrade = CorrectionRequest::where('user_id', $user->id)
+        return [
+            'ds' => $activeDs->map(fn ($ds) => [
+                'id'       => $ds->id,
+                'title'    => $ds->custom_title ?? 'DS',
+                'status'   => $ds->status,
+                'due_date' => $ds->batch?->due_date?->toDateString(),
+            ])->values(),
+            'dm' => $activeDm->map(fn ($dm) => [
+                'id'       => $dm->id,
+                'title'    => $dm->custom_title ?? 'DM',
+                'status'   => $dm->status->value,
+                'due_date' => $dm->batch?->due_date?->toDateString(),
+            ])->values(),
+            'td' => $activeTd->map(fn ($td) => [
+                'id'       => $td->id,
+                'title'    => $td->custom_title ?? 'TD',
+                'status'   => $td->status->value,
+                'due_date' => $td->batch?->due_date?->toDateString(),
+            ])->values(),
+        ];
+    }
+
+    private function studentFeedbackRequests(User $user): Collection
+    {
+        return CorrectionRequest::where('user_id', $user->id)
+            ->whereIn('status', [
+                CorrectionRequestStatus::Corrected->value,
+                CorrectionRequestStatus::Pending->value,
+            ])
+            ->with([
+                'ds:id,custom_title',
+                'dm:id,custom_title',
+            ])
+            ->latest('updated_at')
+            ->get();
+    }
+
+    private function averageFeedbackGrade(Collection $correctionRequests): ?float
+    {
+        $average = $correctionRequests
             ->where('status', CorrectionRequestStatus::Corrected->value)
             ->avg('grade');
 
-        $correctedCount = CorrectionRequest::where('user_id', $user->id)
+        return $average ? round((float) $average, 1) : null;
+    }
+
+    private function correctedFeedbackCount(Collection $correctionRequests): int
+    {
+        return $correctionRequests
             ->where('status', CorrectionRequestStatus::Corrected->value)
             ->count();
+    }
 
-        return [
-            'activeAssignments' => [
-                'ds' => $activeDs->map(fn ($ds) => [
-                    'id'       => $ds->id,
-                    'title'    => $ds->custom_title ?? 'DS',
-                    'status'   => $ds->status,
-                    'due_date' => $ds->batch?->due_date?->toDateString(),
-                ])->values(),
-                'dm' => $activeDm->map(fn ($dm) => [
-                    'id'       => $dm->id,
-                    'title'    => $dm->custom_title ?? 'DM',
-                    'status'   => $dm->status->value,
-                    'due_date' => $dm->batch?->due_date?->toDateString(),
-                ])->values(),
-                'td' => $activeTd->map(fn ($td) => [
-                    'id'       => $td->id,
-                    'title'    => $td->custom_title ?? 'TD',
-                    'status'   => $td->status->value,
-                    'due_date' => $td->batch?->due_date?->toDateString(),
-                ])->values(),
-            ],
-            'averageGrade' => $averageGrade ? round((float) $averageGrade, 1) : null,
-            'correctedCount' => $correctedCount,
-        ];
+    private function pendingFeedbackCount(Collection $correctionRequests): int
+    {
+        return $correctionRequests
+            ->where('status', CorrectionRequestStatus::Pending->value)
+            ->count();
+    }
+
+    private function recentFeedbackItems(Collection $correctionRequests): Collection
+    {
+        return $correctionRequests
+            ->take(5)
+            ->map(fn ($cr) => [
+                'id'         => $cr->id,
+                'type'       => $cr->ds_id ? 'ds' : 'dm',
+                'title'      => $cr->ds?->custom_title ?? $cr->dm?->custom_title ?? 'Devoir',
+                'status'     => $cr->status,
+                'grade'      => $cr->grade,
+                'href'       => $cr->ds_id
+                    ? route('ds.show', $cr->ds_id)
+                    : route('dm.show', $cr->dm_id),
+                'updated_at' => $cr->updated_at->toIso8601String(),
+            ])
+            ->values();
     }
 
     private function assignedThisMonth(User $user): int

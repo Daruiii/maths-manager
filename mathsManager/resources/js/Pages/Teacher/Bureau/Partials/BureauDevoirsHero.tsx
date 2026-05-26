@@ -1,6 +1,3 @@
-import { Link } from '@inertiajs/react';
-import { ChevronLeft } from 'lucide-react';
-
 interface Props {
   totalActive: number;
   totalPending: number;
@@ -22,16 +19,10 @@ export default function BureauDevoirsHero({ totalActive, totalPending, totalArch
       </div>
       <div className="relative flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0 space-y-0.5">
-          <Link
-            href={route('teacher.bureau.index')}
-            className="inline-flex items-center gap-1 text-[11px] font-comfortaa-bold text-teacher-color uppercase tracking-widest hover:opacity-70 transition-opacity"
-          >
-            <ChevronLeft size={12} />
-            Mon Bureau
-          </Link>
-          <h1 className="text-lg sm:text-2xl font-comfortaa-bold text-text-color">
-            Devoirs envoyés
-          </h1>
+          <p className="text-[11px] font-comfortaa-bold text-teacher-color uppercase tracking-widest">
+            Vue d'ensemble
+          </p>
+          <p className="text-sm text-text-gray">Actifs, actions à traiter et archives.</p>
         </div>
         <div className="flex items-center gap-4 shrink-0">
           <HeroStat value={totalActive} label={`Actif${totalActive > 1 ? 's' : ''}`} />

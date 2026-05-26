@@ -4,6 +4,8 @@ import type { HomeActiveAssignment } from '@/types';
 const STATUS_PRIORITY: Record<string, number> = {
   ongoing: 0,
   paused: 1,
+  finished: 2,
+  finished_late: 2,
   not_started: 2,
   sent: 3,
   correction_requested: 4,
@@ -30,10 +32,25 @@ export function buildSortedItems(
   });
 }
 
+const NON_ACTIONABLE = new Set([
+  'sent',
+  'correction_requested',
+  'corrected',
+  'correction_unlocked',
+]);
+
 export function isActionableStatus(status: string): boolean {
-  return !['sent', 'correction_requested'].includes(status);
+  return !NON_ACTIONABLE.has(status);
 }
 
 export function isOngoingStatus(status: string): boolean {
   return ['ongoing', 'paused'].includes(status);
+}
+
+export function studentAssignmentCtaLabel(status?: string): string {
+  if (!status) return 'Voir mes devoirs';
+  if (isOngoingStatus(status)) return 'Reprendre';
+  if (status === 'finished' || status === 'finished_late') return 'Envoyer ma copie';
+  if (status === 'not_started') return 'Commencer';
+  return 'Ouvrir';
 }

@@ -14,22 +14,22 @@ const CTA_LABEL: Record<string, string> = {
 
 const TYPE_STYLE: Record<string, { strip: string; label: string; name: string; border: string }> = {
   ds: {
-    strip: 'bg-tertiary-color',
-    label: 'text-tertiary-color',
+    strip: 'bg-ds-color',
+    label: 'text-ds-color',
     name: 'DS',
-    border: 'border-tertiary-color/50',
+    border: 'border-ds-color/50',
   },
   dm: {
-    strip: 'bg-admin-color',
-    label: 'text-admin-color',
+    strip: 'bg-dm-color',
+    label: 'text-dm-color',
     name: 'DM',
-    border: 'border-admin-color/50',
+    border: 'border-dm-color/50',
   },
   td: {
-    strip: 'bg-info-color',
-    label: 'text-info-color',
+    strip: 'bg-td-color',
+    label: 'text-td-color',
     name: 'TD',
-    border: 'border-info-color/50',
+    border: 'border-td-color/50',
   },
 };
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import { Archive, BookOpen } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
+import PageHeader from '@/Components/Common/UI/PageHeader';
 import BatchList from '@/Pages/Teacher/Bureau/Partials/BatchList';
 import BatchTypeTabBar from '@/Pages/Teacher/Bureau/Partials/BatchTypeTabBar';
 import BureauDevoirsFilters from '@/Pages/Teacher/Bureau/Partials/BureauDevoirsFilters';
@@ -69,6 +70,16 @@ export default function BureauDevoirs({ dsBatches, tdBatches, dmBatches, groups 
       <div className="flex flex-col h-[calc(100vh-72px)] overflow-hidden">
         {/* Header */}
         <div className="flex-shrink-0 px-4 pt-5 pb-4 space-y-3 max-w-6xl mx-auto w-full">
+          <PageHeader
+            title="Devoirs envoyés"
+            subtitle="Suivez vos DS, DM et TD par batch, statut et groupe."
+            breadcrumbs={[
+              { label: 'Mon Bureau', href: route('teacher.bureau.index') },
+              { label: 'Devoirs envoyés' },
+            ]}
+            className="mb-0"
+          />
+
           <BureauDevoirsHero
             totalActive={totalActive}
             totalPending={totalPending}

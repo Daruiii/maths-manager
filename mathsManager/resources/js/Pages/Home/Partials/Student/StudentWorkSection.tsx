@@ -22,15 +22,16 @@ export default function StudentWorkSection({ total, displayItems, remainingCount
           <UrgentAssignmentCard key={`${item.type}-${item.id}`} item={item} index={i} tile />
         ))}
       </div>
-      {remainingCount > 0 && (
-        <Link
-          href={route('student.assignments.index')}
-          className="flex items-center justify-center gap-1.5 text-xs font-comfortaa-bold text-text-gray hover:text-text-color transition-colors py-1"
-        >
-          + {remainingCount} autre{remainingCount > 1 ? 's' : ''} devoir
-          {remainingCount > 1 ? 's' : ''} <ChevronRight size={11} />
-        </Link>
-      )}
+      <Link
+        href={route('student.assignments.index')}
+        className="flex items-center justify-center gap-1.5 text-xs font-comfortaa-bold text-text-gray hover:text-student-color transition-colors py-1"
+      >
+        Voir tous mes devoirs
+        {remainingCount > 0 && (
+          <span className="font-cmu-serif text-text-gray/70">+{remainingCount}</span>
+        )}
+        <ChevronRight size={11} />
+      </Link>
       <StudentAiTeaser />
     </>
   );

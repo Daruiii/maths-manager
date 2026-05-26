@@ -21,7 +21,15 @@ export interface BatchGroup {
   items: HomePendingCorrectionItem[];
 }
 
-export function BatchCorrectionItem({ batch, index }: { batch: BatchGroup; index: number }) {
+export function BatchCorrectionItem({
+  batch,
+  index,
+  compact = false,
+}: {
+  batch: BatchGroup;
+  index: number;
+  compact?: boolean;
+}) {
   const oldest = batch.items.reduce((a, b) =>
     new Date(a.created_at) < new Date(b.created_at) ? a : b
   );
@@ -30,9 +38,11 @@ export function BatchCorrectionItem({ batch, index }: { batch: BatchGroup; index
     <Link
       href={batch.href}
       style={{ animationDelay: `${index * 40}ms` }}
-      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group animate-fadeInUp"
+      className={`flex items-center gap-3 px-3 hover:bg-surface-color rounded-xl transition-colors group animate-fadeInUp ${
+        compact ? 'py-2.5' : 'py-3'
+      }`}
     >
-      <TypeBadge type={batch.type} size="md" />
+      <TypeBadge type={batch.type} size={compact ? 'sm' : 'md'} />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-comfortaa-bold text-text-color truncate">{batch.title}</p>
         <p className="text-xs text-text-gray">
@@ -49,15 +59,25 @@ export function BatchCorrectionItem({ batch, index }: { batch: BatchGroup; index
   );
 }
 
-export function BatchUnlockItem({ item, index }: { item: HomeUnlockRequestItem; index: number }) {
+export function BatchUnlockItem({
+  item,
+  index,
+  compact = false,
+}: {
+  item: HomeUnlockRequestItem;
+  index: number;
+  compact?: boolean;
+}) {
   const n = item.count;
   return (
     <Link
       href={item.batch_url ?? route('teacher.bureau.devoirs')}
       style={{ animationDelay: `${index * 40}ms` }}
-      className="flex items-center gap-3 px-3 py-3 hover:bg-surface-color rounded-xl transition-colors group animate-fadeInUp"
+      className={`flex items-center gap-3 px-3 hover:bg-surface-color rounded-xl transition-colors group animate-fadeInUp ${
+        compact ? 'py-2.5' : 'py-3'
+      }`}
     >
-      <TypeBadge type="td" size="md" />
+      <TypeBadge type="td" size={compact ? 'sm' : 'md'} />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-comfortaa-bold text-text-color truncate">{item.title}</p>
         <p className="text-xs text-text-gray">

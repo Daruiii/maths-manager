@@ -8,57 +8,10 @@ declare global {
 // Re-export all types from organized files
 export * from './models';
 export * from './ui';
+export * from './home';
 
 // Import for PageProps usage
 import type { User, Classe, AppNotification } from './models';
-
-export interface HomePendingCorrectionItem {
-  id: number;
-  student_name: string;
-  subject_title: string;
-  subject_type: 'ds' | 'dm';
-  batch_id?: number | null;
-  batch_url?: string | null;
-  created_at: string;
-}
-
-export interface HomeUnlockRequestItem {
-  batch_id: number | null;
-  title: string;
-  count: number;
-  batch_url: string | null;
-  updated_at: string;
-}
-
-export interface HomeActiveAssignment {
-  id: number;
-  title: string;
-  status: string;
-  due_date?: string | null;
-}
-
-// Props passed to the Home Page directly from HomeController
-export interface HomeProps {
-  // Guest
-  introContent?: Record<string, unknown>;
-  whoamiContent?: Record<string, unknown>;
-  // Admin
-  pendingTeachersCount?: number;
-  // Teacher
-  pendingCorrections?: { count: number; items: HomePendingCorrectionItem[] };
-  unlockRequests?: { count: number; items: HomeUnlockRequestItem[] };
-  activeStudentsCount?: number;
-  assignedThisMonth?: number;
-  activeBatches?: { ds: number; dm: number; td: number };
-  // Student
-  activeAssignments?: {
-    ds: HomeActiveAssignment[];
-    dm: HomeActiveAssignment[];
-    td: HomeActiveAssignment[];
-  };
-  averageGrade?: number | null;
-  correctedCount?: number;
-}
 
 export interface PageProps {
   auth: {

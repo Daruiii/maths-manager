@@ -8,8 +8,9 @@ import {
   buildSortedItems,
   isActionableStatus,
   isOngoingStatus,
+  studentAssignmentCtaLabel,
 } from '@/Pages/Home/Partials/Student/studentHomeData';
-import type { HomeActiveAssignment } from '@/types';
+import type { HomeActiveAssignment, HomeFeedbackItem, HomeFeedbackSummary } from '@/types';
 
 interface Props {
   activeAssignments?: {
@@ -19,12 +20,16 @@ interface Props {
   };
   averageGrade?: number | null;
   correctedCount?: number;
+  feedbackSummary?: HomeFeedbackSummary;
+  recentFeedbackItems?: HomeFeedbackItem[];
 }
 
 export default function StudentHome({
   activeAssignments,
   averageGrade,
   correctedCount = 0,
+  feedbackSummary,
+  recentFeedbackItems,
 }: Props) {
   const { user } = useAuth();
   const firstName = user?.first_name ?? '';
@@ -51,11 +56,7 @@ export default function StudentHome({
 
   const firstAction = dropdownItems[0];
   const ctaHref = firstAction?.href ?? route('student.assignments.index');
-  const ctaLabel = !firstAction
-    ? 'Voir mes devoirs'
-    : isOngoingStatus(firstAction.status)
-      ? 'Reprendre'
-      : 'Commencer';
+  const ctaLabel = studentAssignmentCtaLabel(firstAction?.status);
 
   const nextDue = useMemo(() => {
     const item = actionableItems.find((i) => i.due_date);
@@ -101,7 +102,12 @@ export default function StudentHome({
           />
         </div>
 
-        <StudentSidebar averageGrade={averageGrade} nextDue={nextDue} />
+        <StudentSidebar
+          averageGrade={averageGrade}
+          nextDue={nextDue}
+          feedbackSummary={feedbackSummary}
+          recentFeedbackItems={recentFeedbackItems}
+        />
       </div>
     </div>
   );

@@ -1,21 +1,14 @@
 import { Link } from '@inertiajs/react';
-import {
-  CheckCircle,
-  Clock,
-  Timer,
-  BookOpenCheck,
-  AlertTriangle,
-  Pause,
-  Play,
-  ChevronLeft,
-} from 'lucide-react';
+import { CheckCircle, Timer, AlertTriangle, Pause, Play, ChevronLeft } from 'lucide-react';
 import Button from '@/Components/Common/UI/Button';
 import TheoremCard from '@/Components/Common/UI/TheoremCard';
 import AssignmentMeta from '@/Components/Features/Assignments/AssignmentMeta';
-import CopySubmitSection from '@/Components/Features/Assignments/CopySubmitSection';
-import CorrectionResultBlock from '@/Components/Features/Assignments/CorrectionResultBlock';
+import AwaitingCorrectionCard from '@/Components/Features/Assignments/AwaitingCorrectionCard';
+import CorrectionHero from '@/Components/Features/Assignments/CorrectionHero';
+import CopySubmitModal from '@/Components/Features/Assignments/CopySubmitModal';
 import DsContentList from '@/Pages/Student/DS/Partials/DsContentList';
 import DsHiddenSubjectNotice from '@/Pages/Student/DS/Partials/DsHiddenSubjectNotice';
+import DsTimerDock from '@/Pages/Student/DS/Partials/DsTimerDock';
 import type { DsStatusContentProps } from '@/Pages/Student/DS/Partials/dsStatusContentTypes';
 
 export default function DsStatusContent({
@@ -68,27 +61,13 @@ export default function DsStatusContent({
   if (ds.status === 'ongoing') {
     return (
       <div className="space-y-4">
-        <TheoremCard accent={urgent ? 'teacher' : 'student'}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Timer size={16} className={urgent ? 'text-teacher-color' : 'text-student-color'} />
-              <span
-                className={`text-2xl font-cmu-serif tabular-nums leading-none ${urgent ? 'text-teacher-color' : 'text-text-color'}`}
-              >
-                {remainingFormatted}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" icon={Pause} onClick={onPause}>
-                Pause
-              </Button>
-              <Button variant="teacher" onClick={onFinish}>
-                Terminer
-              </Button>
-            </div>
-          </div>
-        </TheoremCard>
         {contentList}
+        <DsTimerDock
+          remainingFormatted={remainingFormatted}
+          urgent={urgent}
+          onPause={onPause}
+          onFinish={onFinish}
+        />
       </div>
     );
   }
@@ -127,56 +106,44 @@ export default function DsStatusContent({
 
   if (ds.status === 'finished' || ds.status === 'finished_late') {
     return (
-      <form onSubmit={onSubmitCopy} className="space-y-4">
+      <div className="space-y-4">
         {ds.status === 'finished_late' && (
           <TheoremCard accent="teacher">
             <div className="flex items-center gap-2">
               <AlertTriangle size={16} className="text-warning-color" />
               <p className="text-sm font-comfortaa-bold text-warning-color">
-                Temps écoulé — envoyez votre copie.
+                Temps écoulé — envoie ta copie.
               </p>
             </div>
           </TheoremCard>
         )}
         {contentList}
-        <CopySubmitSection
+        <CopySubmitModal
+          onSubmit={onSubmitCopy}
           sessionToken={sessionToken}
           onTokenChange={onTokenChange}
           message={message}
           onMessageChange={onMessageChange}
           submitting={submitting}
           uploadError={uploadError}
+          label="Envoyer le DS"
+          description="DS terminé — envoie ta copie pour correction."
         />
-      </form>
+      </div>
     );
   }
 
   if (ds.status === 'sent' && cr) {
-    return (
-      <div className="space-y-4">
-        <TheoremCard accent="teacher">
-          <div className="flex items-center gap-2">
-            <Clock size={16} className="text-teacher-color" />
-            <p className="text-sm font-comfortaa-bold text-teacher-color">
-              Copie envoyée — en attente de correction
-            </p>
-          </div>
-        </TheoremCard>
-      </div>
-    );
+    return <AwaitingCorrectionCard cr={cr} />;
   }
 
   if (ds.status === 'corrected' && cr) {
     return (
       <div className="space-y-4">
-        <TheoremCard accent="student">
-          <div className="flex items-center gap-2">
-            <BookOpenCheck size={16} className="text-success-color" />
-            <p className="text-sm font-comfortaa-bold text-success-color">Corrigé</p>
-          </div>
-        </TheoremCard>
-        {contentList}
-        <CorrectionResultBlock cr={cr} />
+        <CorrectionHero cr={cr} solutionsAnchor="assignment-content" />
+        <div id="assignment-content" className="border-t border-border-color pt-4">
+          {contentList}
+        </div>
       </div>
     );
   }

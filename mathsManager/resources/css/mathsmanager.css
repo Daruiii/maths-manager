@@ -4,6 +4,10 @@
    ============================================================ */
 
 @layer components {
+  html {
+    scroll-behavior: smooth;
+  }
+
   /* ----------------------------------------
      Recipes cards MathsManager
      Objectif : tester la DA en changeant une classe.
@@ -101,8 +105,32 @@
   }
 
   .academic-paper {
-    @apply border border-border-color rounded-2xl shadow-sm overflow-hidden;
+    @apply border border-border-color rounded-2xl overflow-hidden;
+    background: rgb(var(--secondary-color));
+    box-shadow: var(--shadow-xs);
+  }
+
+  .dark .academic-paper {
     background: rgb(var(--surface-color));
+    box-shadow: var(--shadow-xs), 0 0 0 1px rgb(var(--text-color) / 0.06);
+  }
+
+  /* ----------------------------------------
+     .mm-card-style-raised
+     Card qui contraste avec le fond beige :
+     surface blanche + ombre douce en light,
+     surface sombre + ombre en dark.
+     Alternative à mm-card-style-plain sans
+     toucher à la recette globale.
+     ---------------------------------------- */
+  .mm-card-style-raised {
+    background: rgb(var(--secondary-color));
+    box-shadow: var(--shadow-sm), 0 0 0 1px rgb(var(--text-color) / 0.06);
+  }
+
+  .dark .mm-card-style-raised {
+    background: rgb(var(--surface-color));
+    box-shadow: var(--shadow), 0 0 0 1px rgb(var(--text-color) / 0.10);
   }
 
   /* Points en fond (combine avec .card-theorem) */
@@ -247,5 +275,4 @@
 
   .mm-stat-label {
     @apply text-xs font-comfortaa text-text-gray mt-0.5;
-  }
-}
+  }}
