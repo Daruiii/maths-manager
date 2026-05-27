@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { Star } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import MathAvatar from '@/Components/Common/Avatar/MathAvatar';
+import PageHeader from '@/Components/Common/UI/PageHeader';
 
 const REVIEWS = [
   {
@@ -33,16 +34,11 @@ export default function About() {
     <AppLayout>
       <Head title="À propos — Maths Manager" />
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-10">
-        <div className="space-y-3">
-          <p className="text-[11px] font-comfortaa-bold text-tertiary-color uppercase tracking-widest">
-            À propos
-          </p>
-          <h1 className="text-3xl font-comfortaa-bold text-text-color">Maths Manager</h1>
-          <p className="text-base text-text-gray leading-relaxed max-w-2xl">
-            Une plateforme de soutien scolaire en mathématiques — exercices corrigés, devoirs suivis
-            et accompagnement personnalisé entre élèves et professeurs.
-          </p>
-        </div>
+        <PageHeader
+          title="À propos"
+          subtitle="Une plateforme de soutien scolaire en mathématiques — exercices corrigés, devoirs suivis et accompagnement personnalisé."
+          breadcrumbs={[{ label: 'À propos' }]}
+        />
 
         <div className="bg-secondary-color border border-border-color rounded-2xl p-6 space-y-4">
           <p className="text-[10px] font-comfortaa-bold text-teacher-color uppercase tracking-widest">

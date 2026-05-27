@@ -211,9 +211,19 @@ export interface CorrectionRequest {
   message: string | null;
   created_at: string;
   updated_at: string;
-  user?: Pick<User, 'id' | 'first_name' | 'last_name'>;
-  dm?: { id: number; custom_title: string | null } | null;
-  ds?: { id: number; custom_title?: string | null } | null;
+  user?: Pick<User, 'id' | 'first_name' | 'last_name' | 'avatar' | 'role'>;
+  dm?: CorrectionSubject | null;
+  ds?: CorrectionSubject | null;
+}
+
+export interface CorrectionSubject {
+  id: number;
+  custom_title: string | null;
+  custom_level?: string | null;
+  custom_instructions?: string | null;
+  problems?: AssignmentListItem[];
+  exercises?: AssignmentListItem[];
+  private_exercises?: AssignmentListItem[];
 }
 
 export interface Dm {

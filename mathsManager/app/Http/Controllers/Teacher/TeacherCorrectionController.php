@@ -60,11 +60,76 @@ class TeacherCorrectionController extends Controller
     {
         $this->authorizeTeacher($correctionRequest);
 
-        $correctionRequest->load(['user', 'ds', 'dm']);
+        $correctionRequest->load([
+            'user:id,first_name,last_name,avatar,role',
+            'ds.problems',
+            'ds.exercises',
+            'ds.privateExercises',
+            'dm.problems',
+            'dm.exercises',
+            'dm.privateExercises',
+        ]);
 
         return Inertia::render('Teacher/Corrections/Show', [
-            'correctionRequest' => $correctionRequest,
+            'correctionRequest' => $this->mapCorrectionRequest($correctionRequest),
         ]);
+    }
+
+    private function mapCorrectionRequest(CorrectionRequest $correctionRequest): array
+    {
+        return [
+            'id'                 => $correctionRequest->id,
+            'status'             => $correctionRequest->status,
+            'pictures'           => $correctionRequest->pictures ?? [],
+            'correction_pictures'=> $correctionRequest->correction_pictures,
+            'correction_message' => $correctionRequest->correction_message,
+            'grade'              => $correctionRequest->grade,
+            'message'            => $correctionRequest->message,
+            'created_at'         => $correctionRequest->created_at,
+            'updated_at'         => $correctionRequest->updated_at,
+            'user'               => $correctionRequest->user
+                ? [
+                    'id'         => $correctionRequest->user->id,
+                    'first_name' => $correctionRequest->user->first_name,
+                    'last_name'  => $correctionRequest->user->last_name,
+                    'avatar'     => $correctionRequest->user->avatar,
+                    'role'       => $correctionRequest->user->role,
+                ]
+                : null,
+            'ds'                 => $correctionRequest->ds
+                ? $this->mapCorrectionSubject($correctionRequest->ds)
+                : null,
+            'dm'                 => $correctionRequest->dm
+                ? $this->mapCorrectionSubject($correctionRequest->dm)
+                : null,
+        ];
+    }
+
+    private function mapCorrectionSubject(mixed $subject): array
+    {
+        return [
+            'id'                  => $subject->id,
+            'custom_title'        => $subject->custom_title,
+            'custom_level'        => $subject->custom_level,
+            'custom_instructions' => $subject->custom_instructions,
+            'problems'            => $subject->problems->map(fn ($item) => $this->mapAssignmentItem($item)),
+            'exercises'           => $subject->exercises->map(fn ($item) => $this->mapAssignmentItem($item)),
+            'private_exercises'   => $subject->privateExercises->map(fn ($item) => $this->mapAssignmentItem($item)),
+        ];
+    }
+
+    private function mapAssignmentItem(mixed $item): array
+    {
+        return [
+            'id'              => $item->id,
+            'name'            => $item->name ?? null,
+            'title'           => $item->title ?? null,
+            'statement'       => $item->statement ?? null,
+            'latex_statement' => $item->latex_statement ?? null,
+            'image_paths'     => $item->image_paths ?? null,
+            'difficulty'      => $item->difficulty ?? null,
+            'latex_solution'  => $item->latex_solution ?? null,
+        ];
     }
 
     public function updateCorrection(Request $request, CorrectionRequest $correctionRequest): RedirectResponse

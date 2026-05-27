@@ -33,7 +33,7 @@ export default function SendCorrectionForm({ correctionRequest }: Props) {
   return (
     <form onSubmit={submitCorrection} className="space-y-4">
       <CorrectionFormFields
-        title="Feedback"
+        title="Rédiger la correction"
         message={correctionMessage}
         grade={grade}
         onMessageChange={setCorrectionMessage}
@@ -46,6 +46,7 @@ export default function SendCorrectionForm({ correctionRequest }: Props) {
         icon={Send}
         isLoading={submitting}
         disabled={submitting}
+        className="w-full justify-center"
       >
         Envoyer la correction
       </Button>

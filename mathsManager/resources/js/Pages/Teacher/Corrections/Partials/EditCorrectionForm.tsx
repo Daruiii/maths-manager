@@ -62,10 +62,18 @@ export default function EditCorrectionForm({ correctionRequest, onCancel, onSave
           icon={Save}
           isLoading={updating}
           disabled={updating}
+          className="flex-1 justify-center"
         >
           Enregistrer
         </Button>
-        <Button type="button" variant="ghost" icon={X} onClick={onCancel} disabled={updating}>
+        <Button
+          type="button"
+          variant="ghost"
+          icon={X}
+          onClick={onCancel}
+          disabled={updating}
+          className="justify-center"
+        >
           Annuler
         </Button>
       </div>
