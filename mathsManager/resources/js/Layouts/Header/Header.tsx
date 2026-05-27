@@ -39,8 +39,10 @@ export default function Header() {
           </div>
         )}
 
-        {/* Spacer côté auth */}
+        {/* Spacer auth (desktop + mobile) */}
         {!isGuest && <div className="flex-1" />}
+        {/* Spacer guest mobile uniquement — desktop géré par flex-1 du nav */}
+        {isGuest && <div className="flex-1 lg:hidden" />}
 
         {/* Actions — toujours à droite */}
         <div className="shrink-0 flex items-center gap-1.5 sm:gap-2">

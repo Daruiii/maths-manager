@@ -32,7 +32,17 @@ const REVIEWS = [
 export default function About() {
   return (
     <AppLayout>
-      <Head title="À propos — Maths Manager" />
+      <Head title="À propos — Maths Manager">
+        <meta
+          name="description"
+          content="Maths Manager est une plateforme de soutien scolaire en mathématiques. DS, DM, TD, corrections et suivi personnalisé entre élèves et professeurs. Découvrez Maxime, prof depuis 10 ans, et les avis de ses élèves."
+        />
+        <meta property="og:title" content="À propos — Maths Manager" />
+        <meta
+          property="og:description"
+          content="Plateforme de soutien scolaire en maths : exercices corrigés, devoirs suivis, accompagnement personnalisé."
+        />
+      </Head>
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-10">
         <PageHeader
           title="À propos"

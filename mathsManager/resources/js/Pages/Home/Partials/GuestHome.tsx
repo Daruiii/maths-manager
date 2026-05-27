@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Info } from 'lucide-react';
 import GuestReviews from '@/Pages/Home/Partials/GuestReviews';
 
 const TRUST_ITEMS = [
@@ -66,7 +66,7 @@ export default function GuestHome() {
               </Link>
               <Link
                 href={route('register')}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-border-color text-sm font-comfortaa-bold text-text-color hover:bg-surface-color transition-colors"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-teacher-color/30 bg-teacher-color/10 text-sm font-comfortaa-bold text-teacher-color hover:bg-teacher-color/20 transition-colors"
               >
                 Je suis professeur
               </Link>
@@ -122,6 +122,37 @@ export default function GuestHome() {
           avec un suivi professeur. Demain, des parcours personnalisés pourront proposer des
           exercices adaptés, des étapes à valider et un travail plus ciblé.
         </p>
+      </section>
+
+      <section className="border-t border-border-color pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1.5">
+          <p className="text-sm text-text-gray leading-snug">
+            Prêt à progresser en maths ?<br />
+            <span className="font-comfortaa-bold text-text-color">Rejoignez Maths Manager.</span>
+          </p>
+          <Link
+            href={route('about')}
+            className="inline-flex items-center gap-1 text-[11px] font-comfortaa-bold text-text-gray hover:text-tertiary-color transition-colors"
+          >
+            <Info size={11} />
+            En savoir plus sur la plateforme
+          </Link>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <Link
+            href={route('login')}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-tertiary-color text-white text-sm font-comfortaa-bold shadow-warm-xs hover:opacity-90 transition-opacity"
+          >
+            Commencer maintenant
+            <ArrowRight size={14} />
+          </Link>
+          <Link
+            href={route('register')}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-teacher-color/30 bg-teacher-color/10 text-sm font-comfortaa-bold text-teacher-color hover:bg-teacher-color/20 transition-colors"
+          >
+            Je suis professeur
+          </Link>
+        </div>
       </section>
     </div>
   );
