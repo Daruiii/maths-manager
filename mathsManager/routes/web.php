@@ -11,6 +11,9 @@ use App\Http\Controllers\OrderingController;
 Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/a-propos', fn() => inertia('About'))->name('about');
+Route::get('/conditions-utilisation', fn() => inertia('Legal/ConditionsUtilisation'))->name('legal.terms');
+Route::get('/confidentialite', fn() => inertia('Legal/Confidentialite'))->name('legal.privacy');
+Route::get('/contact', fn() => inertia('Contact'))->name('contact');
 
 // Route pour robots.txt dynamique selon l'environnement
 Route::get('/robots.txt', function () {

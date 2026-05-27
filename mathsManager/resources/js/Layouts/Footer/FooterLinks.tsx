@@ -3,8 +3,8 @@ import { Link } from '@inertiajs/react';
 export default function FooterLinks() {
   const links = [
     { label: 'À propos', href: '/a-propos' },
-    { label: 'CGU', href: '/terms' },
-    { label: 'Confidentialité', href: '/privacy' },
+    { label: 'CGU', href: '/conditions-utilisation' },
+    { label: 'Confidentialité', href: '/confidentialite' },
     { label: 'Contact', href: '/contact' },
   ];
 
