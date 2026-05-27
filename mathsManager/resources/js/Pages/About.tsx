@@ -67,7 +67,7 @@ export default function About() {
           <div className="flex items-center gap-6 pt-1">
             <Stat value="10+" label="ans d'enseignement" />
             <Stat value="5/5" label="note Superprof" />
-            <Stat value="8" label="élèves accompagnés" />
+            <Stat value="50+" label="élèves accompagnés" />
           </div>
         </div>
 
