@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Crop, Trash2, Plus, User as UserIcon } from 'lucide-react';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 
 interface AvatarSelectorProps {
   avatarFile: File | null;

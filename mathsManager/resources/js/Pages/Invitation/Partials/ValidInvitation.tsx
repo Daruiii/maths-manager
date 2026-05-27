@@ -2,7 +2,7 @@ import { Link } from '@inertiajs/react';
 import { UserCheck, LogIn } from 'lucide-react';
 import { TeacherInvitation, User } from '@/types/models';
 import Button from '@/Components/Common/UI/Button';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 
 interface Props {
   teacher: User | null;

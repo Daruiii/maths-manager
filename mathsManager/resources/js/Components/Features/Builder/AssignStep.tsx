@@ -5,7 +5,7 @@ import SearchBar from '@/Components/Common/UI/SearchBar';
 import SlidePanel from '@/Components/Common/UI/SlidePanel';
 import CheckboxCard, { CheckboxIndicator } from '@/Components/Common/UI/CheckboxCard';
 import EmptyState from '@/Components/Common/UI/EmptyState';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 import AssignGroupRow from '@/Components/Features/Builder/AssignGroupRow';
 import { useAssignStep } from '@/Hooks/Builder/useAssignStep';
 

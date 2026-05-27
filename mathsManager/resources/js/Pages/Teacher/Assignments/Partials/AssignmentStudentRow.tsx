@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ChevronRight, LockOpen, Pencil, PencilLine } from 'lucide-react';
 import Button from '@/Components/Common/UI/Button';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 import { BATCH_STATUS_META } from '@/Constants/statuses';
 import { getTeacherStatusLabel } from '@/Constants/statuses';
 import type { AssignmentItem } from '@/Pages/Teacher/Assignments/Partials/types';

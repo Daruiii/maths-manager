@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import GuestReviews from '@/Pages/Home/Partials/GuestReviews';
 
 const TRUST_ITEMS = [
   'Exercices corrigés',
@@ -105,6 +106,8 @@ export default function GuestHome() {
           tone="teacher"
         />
       </section>
+
+      <GuestReviews />
 
       <section className="bg-secondary-color border border-border-color rounded-2xl p-5 sm:p-6 space-y-2">
         <p className="text-[10px] font-comfortaa-bold text-tertiary-color uppercase tracking-widest">

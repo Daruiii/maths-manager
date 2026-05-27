@@ -1,5 +1,5 @@
 import { User } from '@/types';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 import Button from '@/Components/Common/UI/Button';
 import Bubble from '@/Components/Common/UI/Bubble';
 import IconBackgroundContainer from '@/Components/Common/UI/IconBackgroundContainer';

@@ -1,5 +1,5 @@
 import { User } from '@/types';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 
 interface Props {
   user: User;

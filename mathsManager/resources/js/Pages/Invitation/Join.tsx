@@ -4,7 +4,7 @@ import { TeacherInvitation, User } from '@/types/models';
 import { PageProps } from '@/types';
 import { AlertCircle, CheckCircle, RefreshCw, ShieldOff } from 'lucide-react';
 import Button from '@/Components/Common/UI/Button';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 import StatusCard from '@/Components/Common/UI/StatusCard';
 import GuestLayout from '@/Layouts/GuestLayout';
 import ValidInvitation from '@/Pages/Invitation/Partials/ValidInvitation';

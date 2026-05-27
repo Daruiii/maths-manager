@@ -1,6 +1,6 @@
 import { Users, ChevronDown, ChevronRight } from 'lucide-react';
 import type { StudentGroup, User as UserType } from '@/types/models';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 import CheckboxCard, { CheckboxIndicator } from '@/Components/Common/UI/CheckboxCard';
 
 interface Props {

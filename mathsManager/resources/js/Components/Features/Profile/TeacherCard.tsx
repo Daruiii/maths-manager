@@ -1,5 +1,5 @@
 import { GraduationCap, Crown } from 'lucide-react';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 
 interface TeacherCardProps {
   teacherName?: string;

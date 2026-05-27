@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { User } from '@/types/models';
-import UserAvatar from '@/Components/Common/UI/UserAvatar';
+import UserAvatar from '@/Components/Common/Avatar/UserAvatar';
 import { ReactNode } from 'react';
 
 type AccentColor = 'student' | 'teacher' | 'admin';

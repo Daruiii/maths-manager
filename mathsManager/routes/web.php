@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderingController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/a-propos', fn() => inertia('About'))->name('about');
 
 // Route pour robots.txt dynamique selon l'environnement
 Route::get('/robots.txt', function () {
