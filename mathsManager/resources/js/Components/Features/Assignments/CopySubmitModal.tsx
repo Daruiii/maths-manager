@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Upload, X } from 'lucide-react';
 import Modal from '@/Components/Common/UI/Modal';
-import AssignmentActionDock from '@/Components/Features/Assignments/AssignmentActionDock';
+import FloatingActionDock from '@/Components/Common/UI/FloatingActionDock';
 import CopySubmitSection from '@/Components/Features/Assignments/CopySubmitSection';
 
 interface Props {
@@ -31,7 +31,7 @@ export default function CopySubmitModal({
 
   return (
     <>
-      <AssignmentActionDock
+      <FloatingActionDock
         label={label}
         mobileLabel="Envoyer"
         description={description}

@@ -1,6 +1,6 @@
 import { Pause, Timer } from 'lucide-react';
 import Button from '@/Components/Common/UI/Button';
-import AssignmentActionDock from '@/Components/Features/Assignments/AssignmentActionDock';
+import FloatingActionDock from '@/Components/Common/UI/FloatingActionDock';
 
 interface Props {
   remainingFormatted: string;
@@ -15,7 +15,7 @@ export default function DsTimerDock({ remainingFormatted, urgent, onPause, onFin
   const iconBg = urgent ? 'bg-warning-color/10' : 'bg-student-color/10';
 
   return (
-    <AssignmentActionDock
+    <FloatingActionDock
       leading={
         <div className="flex items-center justify-center gap-2.5 sm:justify-start">
           <span className={`flex h-8 w-8 items-center justify-center rounded-full ${iconBg}`}>

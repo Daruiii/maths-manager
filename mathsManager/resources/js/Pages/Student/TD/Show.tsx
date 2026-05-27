@@ -5,7 +5,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import PageHeader from '@/Components/Common/UI/PageHeader';
 import TheoremCard from '@/Components/Common/UI/TheoremCard';
 import ConfirmationModal from '@/Components/Common/UI/ConfirmationModal';
-import AssignmentActionDock from '@/Components/Features/Assignments/AssignmentActionDock';
+import FloatingActionDock from '@/Components/Common/UI/FloatingActionDock';
 import AssignmentContentList from '@/Components/Features/Assignments/AssignmentContentList';
 import AssignmentMeta from '@/Components/Features/Assignments/AssignmentMeta';
 import type { Td } from '@/types/models';
@@ -77,7 +77,7 @@ export default function TdShow({ td }: { td: Td }) {
 
             {!td.is_teacher && (
               <>
-                <AssignmentActionDock
+                <FloatingActionDock
                   label="Demander les solutions"
                   mobileLabel="Demander"
                   description="Fiche terminée ? Demande les solutions à ton professeur."
